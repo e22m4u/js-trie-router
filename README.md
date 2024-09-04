@@ -60,7 +60,7 @@ The first parameter of a route handler is a `RequestContext` instance.
 - `path: string` is a request pathname with a query string
 - `pathname: string` is a request pathname without a query string
 
-Here are possible values of RequestContext properties.
+Here are example values of RequestContext properties.
 
 ```js
 router.defineRoute({
