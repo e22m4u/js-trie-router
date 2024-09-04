@@ -1,0 +1,57 @@
+{
+  "name": "@e22m4u/js-trie-router",
+  "version": "0.0.1",
+  "description": "HTTP роутер для Node.js",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "tsc && eslint .",
+    "lint:fix": "tsc && eslint . --fix",
+    "format": "prettier --write \"./src/**/*.{js,ts}\"",
+    "test": "npm run lint && c8 --reporter=text-summary mocha --bail",
+    "test:coverage": "npm run lint && c8 --reporter=text mocha",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/e22m4u/js-trie-router.git"
+  },
+  "keywords": [
+    "router",
+    "trie",
+    "http",
+    "server",
+    "nodejs"
+  ],
+  "author": "e22m4u <e22m4u@yandex.ru>",
+  "license": "MIT",
+  "homepage": "https://github.com/e22m4u/js-trie-router",
+  "devDependencies": {
+    "@commitlint/cli": "~19.4.0",
+    "@commitlint/config-conventional": "~19.2.2",
+    "@eslint/js": "~9.9.0",
+    "@types/chai-as-promised": "^8.0.0",
+    "c8": "~10.1.2",
+    "chai": "~5.1.1",
+    "chai-as-promised": "^8.0.0",
+    "eslint": "~9.9.0",
+    "eslint-config-prettier": "~9.1.0",
+    "eslint-plugin-chai-expect": "~3.1.0",
+    "eslint-plugin-jsdoc": "^50.2.2",
+    "eslint-plugin-mocha": "~10.5.0",
+    "globals": "~15.9.0",
+    "husky": "~9.1.4",
+    "mocha": "~10.7.3",
+    "prettier": "~3.3.3",
+    "typescript": "~5.5.4"
+  },
+  "dependencies": {
+    "@e22m4u/js-format": "^0.1.0",
+    "@e22m4u/js-path-trie": "^0.0.1",
+    "@e22m4u/js-service": "^0.0.12",
+    "debug": "^4.3.6",
+    "http-errors": "^2.0.0",
+    "path-to-regexp": "^7.1.0",
+    "statuses": "^2.0.1"
+  }
+}

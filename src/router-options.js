@@ -1,0 +1,41 @@
+import {Service} from './service.js';
+import {Errorf} from '@e22m4u/js-format';
+
+/**
+ * Router options.
+ */
+export class RouterOptions extends Service {
+  /**
+   * Request body bytes limit.
+   *
+   * @type {number}
+   * @private
+   */
+  _requestBodyBytesLimit = 512000; // 512kb
+
+  /**
+   * Getter of request body bytes limit.
+   *
+   * @returns {number}
+   */
+  get requestBodyBytesLimit() {
+    return this._requestBodyBytesLimit;
+  }
+
+  /**
+   * Set request body bytes limit.
+   *
+   * @param {number} input
+   * @returns {RouterOptions}
+   */
+  setRequestBodyBytesLimit(input) {
+    if (typeof input !== 'number' || input < 0)
+      throw new Errorf(
+        'The option "requestBodyBytesLimit" must be ' +
+          'a positive Number or 0, but %v given.',
+        input,
+      );
+    this._requestBodyBytesLimit = input;
+    return this;
+  }
+}
