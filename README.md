@@ -170,7 +170,7 @@ A `Router` instance allows you to set following global hooks:
 - `postHandler` is executed after each route handler.
 
 The `addHook` method of a `Router` instance accepts a hook name as the first
-parameter and the hook function as the second.
+parameter and a hook function as the second.
 
 ```js
 router.addHook('preHandler', (ctx) => {
