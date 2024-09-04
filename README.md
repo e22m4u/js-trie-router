@@ -16,6 +16,9 @@ A pure ES-module of the Node.js HTTP router that uses the
 npm install @e22m4u/js-trie-router
 ```
 
+To load an ES-module set `"type": "module"` in the `package.json`
+or use the `.mjs` extension.
+
 ## Overview
 
 A basic "Hello world." example.
@@ -73,8 +76,8 @@ router.defineRoute({
 
 Return values of the route handler will be sent as described below.
 
-| type    | content-type             |
-|---------|--------------------------|
+| value     | content-type             |
+|-----------|--------------------------|
 | `string`  | text/plain               |
 | `number`  | application/json         |
 | `boolean` | application/json         |
