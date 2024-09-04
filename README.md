@@ -125,6 +125,13 @@ DEBUG=jsPathTrie* npm run test
 npm run test
 ```
 
+## Contribution
+
+- Bug fixes.
+- Grammar correction.
+- Documentation improvements.
+- Vulnerability fixes.
+
 ## License
 
 MIT
