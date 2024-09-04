@@ -44,7 +44,7 @@ server.listen(3000, 'localhost');
 
 ### RequestContext
 
-The first parameter of the `Router` handler is the `RequestContext` instance.
+The first parameter of the route handler is the `RequestContext` instance.
 
 - `container: ServiceContainer`
 - `req: IncomingMessage`
@@ -71,7 +71,7 @@ router.defineRoute({
 
 ### Sending response
 
-Return values of the `Route` handler will be sent as described below.
+Return values of the route handler will be sent as described below.
 
 | type    | content-type             |
 |---------|--------------------------|
