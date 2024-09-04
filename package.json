@@ -1,6 +1,6 @@
 {
   "name": "@e22m4u/js-trie-router",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Trie-based router for Node.js",
   "type": "module",
   "main": "src/index.js",
