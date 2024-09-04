@@ -128,26 +128,6 @@ describe('createRequestMock', function () {
     throwable(null)();
   });
 
-  it('requires the parameter "hash" to be a String', function () {
-    const throwable = v => () => createRequestMock({hash: v});
-    const error = v =>
-      format(
-        'The parameter "hash" of "createRequestMock" ' +
-          'should be a String, but %s given.',
-        v,
-      );
-    expect(throwable(10)).to.throw(error('10'));
-    expect(throwable(0)).to.throw(error('0'));
-    expect(throwable(true)).to.throw(error('true'));
-    expect(throwable(false)).to.throw(error('false'));
-    expect(throwable([])).to.throw(error('Array'));
-    expect(throwable({})).to.throw(error('Object'));
-    throwable('str')();
-    throwable('')();
-    throwable(undefined)();
-    throwable(null)();
-  });
-
   it('requires the parameter "cookie" to be a String or Object', function () {
     const throwable = v => () => createRequestMock({cookie: v});
     const error = v =>
@@ -289,7 +269,7 @@ describe('createRequestMock', function () {
     expect(req.socket).to.be.instanceof(Socket);
   });
 
-  it('uses the default path "/" without query and hash', function () {
+  it('uses the default path "/" without a query string', function () {
     const req = createRequestMock();
     expect(req.url).to.be.eq('/');
   });
@@ -377,29 +357,17 @@ describe('createRequestMock', function () {
     expect(req.url).to.be.eq('/?p1=foo&p2=bar');
   });
 
-  it('sets the hash value to the request url', async function () {
-    const req = createRequestMock({hash: 'myHash'});
-    expect(req.url).to.be.eq('/#myHash');
-  });
-
-  it('sets the hash value to the request url with the prefix "#"', async function () {
-    const req = createRequestMock({hash: '#myHash'});
-    expect(req.url).to.be.eq('/#myHash');
-  });
-
-  it('set parameters "path", "query" and "hash" to the request url', function () {
+  it('set parameters "path" and "query" to the request url', function () {
     const req1 = createRequestMock({
       path: 'test',
       query: 'p1=foo&p2=bar',
-      hash: 'myHash1',
     });
     const req2 = createRequestMock({
       path: '/test',
       query: {p1: 'baz', p2: 'qux'},
-      hash: '#myHash2',
     });
-    expect(req1.url).to.be.eq('/test?p1=foo&p2=bar#myHash1');
-    expect(req2.url).to.be.eq('/test?p1=baz&p2=qux#myHash2');
+    expect(req1.url).to.be.eq('/test?p1=foo&p2=bar');
+    expect(req2.url).to.be.eq('/test?p1=baz&p2=qux');
   });
 
   it('sets the parameter "method" in uppercase', async function () {

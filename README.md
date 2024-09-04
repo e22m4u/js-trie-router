@@ -6,7 +6,7 @@ A pure ES-module of the Node.js HTTP router that uses the
 - Uses [path-to-regexp](https://github.com/pillarjs/path-to-regexp) syntax.
 - Supports path parameters.
 - Parses JSON-body automatically.
-- Parses a query string and the Cookie header.
+- Parses a query string and a `cookie` header.
 - Supports `preHandler` and `postHandler` hooks.
 - Asynchronous request handler.
 
@@ -47,26 +47,37 @@ server.listen(3000, 'localhost');
 
 ### RequestContext
 
-The first parameter of the route handler is the `RequestContext` instance.
+The first parameter of a route handler is a `RequestContext` instance.
 
-- `container: ServiceContainer`
-- `req: IncomingMessage`
-- `res: ServerResponse`
-- `query: ParsedQuery`
-- `headers: ParsedHeaders`
-- `cookie: ParsedCookie`
+- `container: ServiceContainer` is an instance of the [ServiceContainer](https://npmjs.com/package/@e22m4u/js-service)
+- `req: IncomingMessage` is a native request from the `http` module
+- `res: ServerResponse` is a native response from the `http` module
+- `params: ParsedParams` is a key-value object of path parameters
+- `query: ParsedQuery` is a key-value object of a parsed query string
+- `headers: ParsedHeaders` is a key-value object of request headers
+- `cookie: ParsedCookie` is a key-value object of a parsed `cookie` header
+- `method: string` is a request method in lower case like `get`, `post` etc.
+- `path: string` is a request pathname with a query string
+- `pathname: string` is a request pathname without a query string
 
-The `RequestContext` can be destructured.
+Here are possible values of RequestContext properties.
 
 ```js
 router.defineRoute({
-  // ...
-  handler({req, res, query, headers, cookie}) {
-    console.log(req);     // IncomingMessage
-    console.log(res);     // ServerResponse
-    console.log(query);   // {id: '10', ...}
-    console.log(headers); // {'cookie': 'foo=bar', ...}
-    console.log(cookie);  // {foo: 'bar', ...}
+  method: 'get',
+  path: '/users/:id',
+  handler(ctx) {
+    // GET /users/10?include=city
+    // Cookie: foo=bar; baz=qux;
+    console.log(ctx.req);      // IncomingMessage
+    console.log(ctx.res);      // ServerResponse
+    console.log(ctx.params);   // {id: 10}
+    console.log(ctx.query);    // {include: 'city'}
+    console.log(ctx.headers);  // {cookie: 'foo=bar; baz=qux;'}
+    console.log(ctx.cookie);   // {foo: 'bar', baz: 'qux'}
+    console.log(ctx.method);   // "get"
+    console.log(ctx.path);     // "/users/10?include=city"
+    console.log(ctx.pathname); // "/users/10"
     // ...
   },
 });
@@ -74,7 +85,7 @@ router.defineRoute({
 
 ### Sending response
 
-Return values of the route handler will be sent as described below.
+Return values of a route handler will be sent as described below.
 
 | value     | content-type             |
 |-----------|--------------------------|
@@ -97,8 +108,8 @@ router.defineRoute({
 });
 ```
 
-If the `ServerResponse` has been sent manually, then the return
-value will be ignored.
+If the `ServerResponse` has been sent manually, then a return
+value of the route handler will be ignored.
 
 ```js
 router.defineRoute({
@@ -110,6 +121,69 @@ router.defineRoute({
   },
 });
 ```
+
+### Route hooks
+
+A route definition allows you to set following hooks:
+
+- `preHandler` is executed before a route handler.
+- `postHandler` is executed after a route handler.
+
+If the `preHandler` hook returns a value other than `undefined`
+or `null`, it will be used as the server response.
+
+```js
+router.defineRoute({
+  // ...
+  preHandler(ctx) {
+    return 'Are you authenticated?';
+  },
+  handler(ctx) {
+    // the request handler will be skipped because
+    // the "preHandler" hook returns a non-empty value
+    return 'Hello world!';
+  },
+});
+```
+
+A return value of the route handler will be passed as the second
+argument to the `preHandler` hook.
+
+```js
+router.defineRoute({
+  // ...
+  handler(ctx) {
+    return 'Hello world!';
+  },
+  preHandler(ctx, data) {
+    // after the route handler
+    return data.toUpperCase(); // HELLO WORLD!
+  },
+});
+```
+
+### Global hooks
+
+A `Router` instance allows you to set following global hooks:
+
+- `preHandler` is executed before each route handler.
+- `postHandler` is executed after each route handler.
+
+The `addHook` method of a `Router` instance accepts a hook name as the first
+parameter and the hook function as the second.
+
+```js
+router.addHook('preHandler', (ctx) => {
+  // executes before each route handler
+});
+
+router.addHook('postHandler', (ctx, data) => {
+  // executes after each route handler
+});
+```
+
+Similar to a route hook, if a global hook returns a value other than
+`undefined` or `null`, that value will be used as the server response.
 
 ## Debug
 

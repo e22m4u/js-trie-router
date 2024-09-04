@@ -1,13 +1,13 @@
 import {expect} from '../chai.js';
 import {format} from '@e22m4u/js-format';
-import {getRequestPath} from './get-request-path.js';
+import {getRequestPathname} from './get-request-pathname.js';
 
-describe('getRequestPath', function () {
+describe('getRequestPathname', function () {
   it('requires the argument to be an Object with "url" property', function () {
-    const throwable = v => () => getRequestPath(v);
+    const throwable = v => () => getRequestPathname(v);
     const error = v =>
       format(
-        'The first argument of "getRequestPath" should be ' +
+        'The first argument of "getRequestPathname" should be ' +
           'an instance of IncomingMessage, but %s given.',
         v,
       );
@@ -24,8 +24,8 @@ describe('getRequestPath', function () {
     throwable({url: ''})();
   });
 
-  it('returns the request path without query parameters', function () {
-    const res = getRequestPath({url: '/test?foo=bar'});
-    expect(res).to.be.eq('/test');
+  it('returns the request path without the query string', function () {
+    const res = getRequestPathname({url: '/pathname?foo=bar'});
+    expect(res).to.be.eq('/pathname');
   });
 });

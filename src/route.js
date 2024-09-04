@@ -2,7 +2,7 @@ import {Errorf} from '@e22m4u/js-format';
 import {HOOK_NAME} from './hooks/index.js';
 import {HookRegistry} from './hooks/index.js';
 import {createDebugger} from './utils/index.js';
-import {getRequestPath} from './utils/index.js';
+import {getRequestPathname} from './utils/index.js';
 
 /**
  * @typedef {import('./request-context.js').RequestContext} RequestContext
@@ -173,7 +173,7 @@ export class Route {
    * @returns {*}
    */
   handle(context) {
-    const requestPath = getRequestPath(context.req);
+    const requestPath = getRequestPathname(context.req);
     debug(
       'Invoking the Route handler for the request %s %v.',
       this.method.toUpperCase(),

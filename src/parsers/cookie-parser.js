@@ -1,6 +1,6 @@
 import {Service} from '../service.js';
 import {parseCookie} from '../utils/index.js';
-import {getRequestPath} from '../utils/index.js';
+import {getRequestPathname} from '../utils/index.js';
 
 /**
  * Cookie parser.
@@ -24,7 +24,7 @@ export class CookieParser extends Service {
       this.debug(
         'The request %s %v has no cookie.',
         req.method,
-        getRequestPath(req),
+        getRequestPathname(req),
       );
     }
     return cookie;

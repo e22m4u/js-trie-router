@@ -40,6 +40,21 @@ export declare class RequestContext {
   cookie: ParsedCookie;
 
   /**
+   * Method.
+   */
+  get method(): string;
+
+  /**
+   * Path.
+   */
+  get path(): string;
+
+  /**
+   * Pathname.
+   */
+  get pathname(): string;
+
+  /**
    * Constructor.
    *
    * @param container

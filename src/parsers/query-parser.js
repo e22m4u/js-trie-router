@@ -1,6 +1,6 @@
 import querystring from 'querystring';
 import {Service} from '../service.js';
-import {getRequestPath} from '../utils/index.js';
+import {getRequestPathname} from '../utils/index.js';
 
 /**
  * Query parser.
@@ -24,7 +24,7 @@ export class QueryParser extends Service {
       this.debug(
         'The request %s %v has no query.',
         req.method,
-        getRequestPath(req),
+        getRequestPathname(req),
       );
     }
     return query;

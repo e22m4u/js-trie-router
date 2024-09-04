@@ -1,12 +1,12 @@
 import {Errorf} from '@e22m4u/js-format';
 
 /**
- * Get request path.
+ * Get request pathname.
  *
  * @param {import('http').IncomingMessage} req
  * @returns {string}
  */
-export function getRequestPath(req) {
+export function getRequestPathname(req) {
   if (
     !req ||
     typeof req !== 'object' ||
@@ -14,7 +14,7 @@ export function getRequestPath(req) {
     typeof req.url !== 'string'
   ) {
     throw new Errorf(
-      'The first argument of "getRequestPath" should be ' +
+      'The first argument of "getRequestPathname" should be ' +
         'an instance of IncomingMessage, but %v given.',
       req,
     );

@@ -86,4 +86,48 @@ describe('RequestContext', function () {
       expect(ctx.res).to.be.eq(res);
     });
   });
+
+  describe('method', function () {
+    it('returns the method name in lower case', function () {
+      const req = createRequestMock({method: 'POST'});
+      const res = createResponseMock();
+      const cnt = new ServiceContainer();
+      const ctx = new RequestContext(cnt, req, res);
+      expect(ctx.method).to.be.eq('post');
+    });
+  });
+
+  describe('path', function () {
+    it('returns the request pathname with the query string', function () {
+      const req = createRequestMock({path: '/pathname?foo=bar'});
+      const res = createResponseMock();
+      const cnt = new ServiceContainer();
+      const ctx = new RequestContext(cnt, req, res);
+      expect(req.url).to.be.eq('/pathname?foo=bar');
+      expect(ctx.path).to.be.eq('/pathname?foo=bar');
+    });
+  });
+
+  describe('pathname', function () {
+    it('returns the request pathname without the query string', function () {
+      const req = createRequestMock({path: '/pathname?foo=bar'});
+      const res = createResponseMock();
+      const cnt = new ServiceContainer();
+      const ctx = new RequestContext(cnt, req, res);
+      expect(req.url).to.be.eq('/pathname?foo=bar');
+      expect(ctx.pathname).to.be.eq('/pathname');
+    });
+
+    it('sets the cache to the "_pathname" property and uses is for next accesses', function () {
+      const req = createRequestMock({path: '/pathname'});
+      const res = createResponseMock();
+      const cnt = new ServiceContainer();
+      const ctx = new RequestContext(cnt, req, res);
+      expect(ctx._pathname).to.be.undefined;
+      expect(ctx.pathname).to.be.eq('/pathname');
+      expect(ctx._pathname).to.be.eq('/pathname');
+      ctx._pathname = '/overridden';
+      expect(ctx.pathname).to.be.eq('/overridden');
+    });
+  });
 });

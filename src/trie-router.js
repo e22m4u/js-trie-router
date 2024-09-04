@@ -35,7 +35,7 @@ export class TrieRouter extends Service {
    *   path: '/users/:id',             // The path template may have parameters.
    *   preHandler(ctx) { ... },        // The "preHandler" is executed before a route handler.
    *   handler(ctx) { ... },           // Request handler function.
-   *   postHandler(ctx, data) { ... }, // The "postHandler" is executed after a route handler
+   *   postHandler(ctx, data) { ... }, // The "postHandler" is executed after a route handler.
    * });
    * ```
    *

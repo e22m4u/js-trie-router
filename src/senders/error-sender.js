@@ -1,7 +1,7 @@
 import {inspect} from 'util';
 import {Service} from '../service.js';
 import getStatusMessage from 'statuses';
-import {getRequestPath} from '../utils/index.js';
+import {getRequestPathname} from '../utils/index.js';
 
 /**
  * Exposed error properties.
@@ -61,7 +61,7 @@ export class ErrorSender extends Service {
       'The %s error is sent for the request %s %v.',
       statusCode,
       req.method,
-      getRequestPath(req),
+      getRequestPathname(req),
     );
   }
 
@@ -79,7 +79,7 @@ export class ErrorSender extends Service {
     this.debug(
       'The 404 error is sent for the request %s %v.',
       req.method,
-      getRequestPath(req),
+      getRequestPathname(req),
     );
   }
 }

@@ -2,6 +2,7 @@ import {Errorf} from '@e22m4u/js-format';
 import {isReadableStream} from './utils/index.js';
 import {isWritableStream} from './utils/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {getRequestPathname} from './utils/index.js';
 
 /**
  * Request context.
@@ -62,6 +63,43 @@ export class RequestContext {
    * @type {object}
    */
   cookie = {};
+
+  /**
+   * Method.
+   *
+   * @returns {string}
+   */
+  get method() {
+    return this.req.method.toLowerCase();
+  }
+
+  /**
+   * Path.
+   *
+   * @returns {string}
+   */
+  get path() {
+    return this.req.url;
+  }
+
+  /**
+   * Pathname.
+   *
+   * @type {string|undefined}
+   * @private
+   */
+  _pathname = undefined;
+
+  /**
+   * Pathname.
+   *
+   * @returns {string}
+   */
+  get pathname() {
+    if (this._pathname != null) return this._pathname;
+    this._pathname = getRequestPathname(this.req);
+    return this._pathname;
+  }
 
   /**
    * Constructor.

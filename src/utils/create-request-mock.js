@@ -14,7 +14,6 @@ import {BUFFER_ENCODING_LIST} from './fetch-request-body.js';
  *   secure?: boolean;
  *   path?: string;
  *   query?: object;
- *   hash?: string;
  *   cookie?: object;
  *   headers?: object;
  *   body?: string;
@@ -74,12 +73,6 @@ export function createRequestMock(patch) {
       patch.query,
     );
   }
-  if (patch.hash != null && typeof patch.hash !== 'string')
-    throw new Errorf(
-      'The parameter "hash" of "createRequestMock" ' +
-        'should be a String, but %v given.',
-      patch.hash,
-    );
   if (
     (patch.cookie != null &&
       typeof patch.cookie !== 'string' &&
@@ -143,7 +136,7 @@ export function createRequestMock(patch) {
   const req =
     patch.stream ||
     createRequestStream(patch.secure, patch.body, patch.encoding);
-  req.url = createRequestUrl(patch.path || '/', patch.query, patch.hash);
+  req.url = createRequestUrl(patch.path || '/', patch.query);
   req.headers = createRequestHeaders(
     patch.host,
     patch.secure,
@@ -199,10 +192,9 @@ function createRequestStream(secure, body, encoding) {
  *
  * @param {string} path
  * @param {string|object|null|undefined} query
- * @param {string|null|undefined} hash
  * @returns {string}
  */
-function createRequestUrl(path, query, hash) {
+function createRequestUrl(path, query) {
   if (typeof path !== 'string')
     throw new Errorf(
       'The parameter "path" of "createRequestUrl" ' +
@@ -219,12 +211,6 @@ function createRequestUrl(path, query, hash) {
       query,
     );
   }
-  if (hash != null && typeof hash !== 'string')
-    throw new Errorf(
-      'The parameter "hash" of "createRequestUrl" ' +
-        'should be a String, but %v given.',
-      path,
-    );
   let url = ('/' + path).replace('//', '/');
   if (typeof query === 'object') {
     const qs = queryString.stringify(query);
@@ -232,8 +218,6 @@ function createRequestUrl(path, query, hash) {
   } else if (typeof query === 'string') {
     url += `?${query.replace(/^\?/, '')}`;
   }
-  hash = (hash || '').replace('#', '');
-  if (hash) url += `#${hash}`;
   return url;
 }
 
