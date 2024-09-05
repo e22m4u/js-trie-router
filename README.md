@@ -2,7 +2,7 @@
 
 ES-модуль HTTP роутера для Node.js, использующий
 [префиксное дерево](https://en.wikipedia.org/wiki/Trie)
-для разрешения маршрутов.
+для маршрутизации.
 
 - Поддержка [path-to-regexp](https://github.com/pillarjs/path-to-regexp) синтаксиса.
 - Автоматический парсинг JSON-тела запроса.
