@@ -47,7 +47,7 @@ export class TrieRouter extends Service {
   }
 
   /**
-   * Request handler.
+   * Request listener.
    *
    * Example:
    * ```
@@ -56,13 +56,13 @@ export class TrieRouter extends Service {
    *
    * const router = new TrieRouter();
    * const server = new http.Server();
-   * server.on('request', router.requestHandler); // Sets the request handler.
-   * server.listen(3000);                         // Starts listening for connections.
+   * server.on('request', router.requestListener); // Sets the request listener.
+   * server.listen(3000);                          // Starts listening for connections.
    * ```
    *
    * @returns {Function}
    */
-  get requestHandler() {
+  get requestListener() {
     return this._handleRequest.bind(this);
   }
 

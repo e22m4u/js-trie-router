@@ -61,7 +61,7 @@ export class RouteRegistry extends Service {
       req.method.toUpperCase(),
       requestPath,
     );
-    const triePath = `${req.method.toLowerCase()}/${requestPath}`;
+    const triePath = `${req.method.toUpperCase()}/${requestPath}`;
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;

@@ -25,10 +25,10 @@ describe('TrieRouter', function () {
     });
   });
 
-  describe('requestHandler', function () {
+  describe('requestListener', function () {
     it('to be a function', function () {
       const router = new TrieRouter();
-      expect(typeof router.requestHandler).to.be.eq('function');
+      expect(typeof router.requestListener).to.be.eq('function');
     });
 
     it('passes request context to the route handler', function (done) {
@@ -43,7 +43,7 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock({path: '/test'});
       const res = createResponseMock();
-      router.requestHandler(req, res);
+      router.requestListener(req, res);
     });
 
     it('passes path parameters to the request context', function (done) {
@@ -58,7 +58,7 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock({path: '/foo-bar'});
       const res = createResponseMock();
-      router.requestHandler(req, res);
+      router.requestListener(req, res);
     });
 
     it('passes query parameters to the request context', function (done) {
@@ -73,7 +73,7 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock({path: '?p1=foo&p2=bar'});
       const res = createResponseMock();
-      router.requestHandler(req, res);
+      router.requestListener(req, res);
     });
 
     it('passes parsed cookie to the request context', function (done) {
@@ -88,7 +88,7 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock({headers: {cookie: 'p1=foo; p2=bar;'}});
       const res = createResponseMock();
-      router.requestHandler(req, res);
+      router.requestListener(req, res);
     });
 
     it('passes plain text body to the request context', function (done) {
@@ -104,7 +104,7 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock({method: HTTP_METHOD.POST, body});
       const res = createResponseMock();
-      router.requestHandler(req, res);
+      router.requestListener(req, res);
     });
 
     it('passes parsed JSON body to the request context', function (done) {
@@ -120,7 +120,7 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock({method: HTTP_METHOD.POST, body: data});
       const res = createResponseMock();
-      router.requestHandler(req, res);
+      router.requestListener(req, res);
     });
 
     it('passes headers to the request context', function (done) {
@@ -138,7 +138,7 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock({headers: {foo: 'bar'}});
       const res = createResponseMock();
-      router.requestHandler(req, res);
+      router.requestListener(req, res);
     });
 
     it('uses DataSender to send the response', function (done) {
@@ -158,7 +158,7 @@ describe('TrieRouter', function () {
           done();
         },
       });
-      router.requestHandler(req, res);
+      router.requestListener(req, res);
     });
 
     it('uses ErrorSender to send the response', function (done) {
@@ -181,7 +181,7 @@ describe('TrieRouter', function () {
           done();
         },
       });
-      router.requestHandler(req, res);
+      router.requestListener(req, res);
     });
 
     describe('hooks', function () {
@@ -207,7 +207,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock();
         const res = createResponseMock();
-        router.requestHandler(req, res);
+        router.requestListener(req, res);
         const result = await res.getBody();
         expect(result).to.be.eq(body);
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
@@ -235,7 +235,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock();
         const res = createResponseMock();
-        router.requestHandler(req, res);
+        router.requestListener(req, res);
         const result = await res.getBody();
         expect(result).to.be.eq(body);
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
@@ -266,7 +266,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock();
         const res = createResponseMock();
-        router.requestHandler(req, res);
+        router.requestListener(req, res);
         const result = await res.getBody();
         expect(result).to.be.eq(body);
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
@@ -301,7 +301,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock();
         const res = createResponseMock();
-        router.requestHandler(req, res);
+        router.requestListener(req, res);
         const result = await res.getBody();
         expect(result).to.be.eq(body);
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
@@ -331,7 +331,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock();
         const res = createResponseMock();
-        router.requestHandler(req, res);
+        router.requestListener(req, res);
         const result = await res.getBody();
         expect(result).to.be.eq(body);
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
@@ -361,7 +361,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock();
         const res = createResponseMock();
-        router.requestHandler(req, res);
+        router.requestListener(req, res);
         const result = await res.getBody();
         expect(result).to.be.eq(body);
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
@@ -391,7 +391,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock();
         const res = createResponseMock();
-        router.requestHandler(req, res);
+        router.requestListener(req, res);
         const result = await res.getBody();
         expect(result).to.be.eq(preHandlerBody);
         expect(result).not.to.be.eq(handlerBody);
@@ -421,7 +421,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock();
         const res = createResponseMock();
-        router.requestHandler(req, res);
+        router.requestListener(req, res);
         const result = await res.getBody();
         expect(result).not.to.be.eq(handlerBody);
         expect(result).to.be.eq(postHandlerBody);
@@ -448,7 +448,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock();
         const res = createResponseMock();
-        router.requestHandler(req, res);
+        router.requestListener(req, res);
         const result = await res.getBody();
         expect(result).to.be.eq(body);
         expect(order).to.be.eql(['preHandler', 'handler', 'postHandler']);

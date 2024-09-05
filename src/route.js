@@ -22,19 +22,19 @@ import {getRequestPathname} from './utils/index.js';
  * Http method.
  *
  * @type {{
- *   DELETE: 'delete',
- *   POST: 'post',
- *   GET: 'get',
- *   PUT: 'put',
- *   PATCH: 'patch',
+ *   GET: 'GET',
+ *   POST: 'POST',
+ *   PUT: 'PUT',
+ *   PATCH: 'PATCH',
+ *   DELETE: 'DELETE',
  * }}
  */
 export const HTTP_METHOD = {
-  GET: 'get',
-  POST: 'post',
-  PUT: 'put',
-  PATCH: 'patch',
-  DELETE: 'delete',
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  PATCH: 'PATCH',
+  DELETE: 'DELETE',
 };
 
 /**
@@ -134,7 +134,7 @@ export class Route {
           'a non-empty String, but %v given.',
         routeDef.method,
       );
-    this._method = routeDef.method.toLowerCase();
+    this._method = routeDef.method.toUpperCase();
     if (typeof routeDef.path !== 'string')
       throw new Errorf(
         'The option "path" of the Route should be ' + 'a String, but %v given.',

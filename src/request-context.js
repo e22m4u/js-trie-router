@@ -70,7 +70,7 @@ export class RequestContext {
    * @returns {string}
    */
   get method() {
-    return this.req.method.toLowerCase();
+    return this.req.method.toUpperCase();
   }
 
   /**

@@ -195,13 +195,13 @@ describe('Route', function () {
       throwable2(() => undefined)();
     });
 
-    it('sets the option "method" in lowercase to the "method" property', function () {
+    it('sets the option "method" in upper case to the "method" property', function () {
       const route = new Route({
-        method: 'POST',
+        method: 'post',
         path: '/',
         handler: () => undefined,
       });
-      expect(route.method).to.be.eq('post');
+      expect(route.method).to.be.eq('POST');
     });
 
     it('sets the option "path" to the "path" property', function () {

@@ -15,7 +15,7 @@ router.defineRoute({
 // создаем экземпляр HTTP сервера
 // и подключаем обработчик запросов
 const server = new http.Server();
-server.on('request', router.requestHandler);
+server.on('request', router.requestListener);
 
 // слушаем входящие запросы
 // на указанный адрес и порт

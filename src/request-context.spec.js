@@ -88,12 +88,12 @@ describe('RequestContext', function () {
   });
 
   describe('method', function () {
-    it('returns the method name in lower case', function () {
-      const req = createRequestMock({method: 'POST'});
+    it('returns the method name in upper case', function () {
+      const req = createRequestMock({method: 'post'});
       const res = createResponseMock();
       const cnt = new ServiceContainer();
       const ctx = new RequestContext(cnt, req, res);
-      expect(ctx.method).to.be.eq('post');
+      expect(ctx.method).to.be.eq('POST');
     });
   });
 

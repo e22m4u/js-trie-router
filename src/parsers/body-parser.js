@@ -11,7 +11,7 @@ import {parseContentType} from '../utils/parse-content-type.js';
  *
  * @type {string[]}
  */
-export const METHODS_WITH_BODY = ['post', 'put', 'patch', 'delete'];
+export const METHODS_WITH_BODY = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
 /**
  * Unparsable media types.
@@ -100,7 +100,7 @@ export class BodyParser extends Service {
    * @returns {Promise<*>|undefined}
    */
   parse(req) {
-    if (!METHODS_WITH_BODY.includes(req.method.toLowerCase())) {
+    if (!METHODS_WITH_BODY.includes(req.method.toUpperCase())) {
       this.debug(
         'Body parsing was skipped for the %s request.',
         req.method.toUpperCase(),
