@@ -1,7 +1,7 @@
 ## @e22m4u/js-trie-router
 
 ES-модуль HTTP роутера для Node.js, использующий
-[префиксное дерево](https://en.wikipedia.org/wiki/Trie)
+[префиксное дерево](https://ru.wikipedia.org/wiki/Trie)
 для маршрутизации.
 
 - Поддержка [path-to-regexp](https://github.com/pillarjs/path-to-regexp) синтаксиса.
