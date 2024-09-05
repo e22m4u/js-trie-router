@@ -52,8 +52,8 @@ server.listen(3000, 'localhost');             // прослушивание за
 данные входящего запроса.
 
 - `container: ServiceContainer` экземпляр [сервис-контейнера](https://npmjs.com/package/@e22m4u/js-service)
-- `req: IncomingMessage` нативный поток запроса модуля `http`
-- `res: ServerResponse` нативный поток ответа модуля `http`
+- `req: IncomingMessage` нативный поток входящего запроса
+- `res: ServerResponse` нативный поток ответа сервера
 - `params: ParsedParams` объект ключ-значение с параметрами пути
 - `query: ParsedQuery` объект ключ-значение с параметрами строки запроса
 - `headers: ParsedHeaders` объект ключ-значение с заголовками запроса 
