@@ -225,7 +225,7 @@ router.addHook('postHandler', (ctx, data) => {
 Установка переменной `DEBUG` перед командой запуска включает вывод логов.
 
 ```bash
-DEBUG=jsPathTrie* npm run test
+DEBUG=jsTrieRouter* npm run test
 ```
 
 ## Тестирование
