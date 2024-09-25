@@ -26,25 +26,6 @@
   "author": "e22m4u <e22m4u@yandex.ru>",
   "license": "MIT",
   "homepage": "https://github.com/e22m4u/js-trie-router",
-  "devDependencies": {
-    "@commitlint/cli": "~19.5.0",
-    "@commitlint/config-conventional": "~19.5.0",
-    "@eslint/js": "~9.10.0",
-    "@types/chai-as-promised": "~8.0.0",
-    "c8": "~10.1.2",
-    "chai": "~5.1.1",
-    "chai-as-promised": "~8.0.0",
-    "eslint": "~9.10.0",
-    "eslint-config-prettier": "~9.1.0",
-    "eslint-plugin-chai-expect": "~3.1.0",
-    "eslint-plugin-jsdoc": "~50.2.3",
-    "eslint-plugin-mocha": "~10.5.0",
-    "globals": "~15.9.0",
-    "husky": "~9.1.6",
-    "mocha": "~10.7.3",
-    "prettier": "~3.3.3",
-    "typescript": "~5.6.2"
-  },
   "dependencies": {
     "@e22m4u/js-format": "~0.1.0",
     "@e22m4u/js-path-trie": "~0.0.2",
@@ -52,5 +33,24 @@
     "debug": "~4.3.7",
     "http-errors": "~2.0.0",
     "statuses": "~2.0.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "~19.5.0",
+    "@commitlint/config-conventional": "~19.5.0",
+    "@eslint/js": "~9.11.1",
+    "@types/chai-as-promised": "~8.0.1",
+    "c8": "~10.1.2",
+    "chai": "~5.1.1",
+    "chai-as-promised": "~8.0.0",
+    "eslint": "~9.11.1",
+    "eslint-config-prettier": "~9.1.0",
+    "eslint-plugin-chai-expect": "~3.1.0",
+    "eslint-plugin-jsdoc": "~50.2.4",
+    "eslint-plugin-mocha": "~10.5.0",
+    "globals": "~15.9.0",
+    "husky": "~9.1.6",
+    "mocha": "~10.7.3",
+    "prettier": "~3.3.3",
+    "typescript": "~5.6.2"
   }
 }
