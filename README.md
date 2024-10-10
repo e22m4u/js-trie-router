@@ -26,7 +26,7 @@ npm install @e22m4u/js-trie-router
 
 ```js
 import http from 'http';
-import {TrieRouter} from '@e22m4u/js-path-trie';
+import {TrieRouter} from '@e22m4u/js-trie-router';
 
 const server = new http.Server(); // создание экземпляра HTTP сервера
 const router = new TrieRouter();  // создание экземпляра роутера
