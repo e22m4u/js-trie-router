@@ -134,8 +134,8 @@ Defining a route with the `defineRoute` method allows
 to set up hooks to monitor and intercept requests and
 responses for a specific route.
 
-- `preHandler` executes before calling a route handler
-- `postHandler` executes after calling a route handler
+- `preHandler` executes before a route handler
+- `postHandler` executes after a route handler
 
 #### preHandler
 
@@ -202,8 +202,8 @@ A `TrieRouter` instance allows to set up global hooks
 that have higher priority over route hooks and are
 called first.
 
-- `preHandler` executes before calling each route handler
-- `postHandler` executes after calling each route handler
+- `preHandler` executes before each route handler
+- `postHandler` executes after each route handler
 
 Global hooks can be added using the `addHook` method
 of a router instance, where the first parameter
