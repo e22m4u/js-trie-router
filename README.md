@@ -198,7 +198,7 @@ router.defineRoute({
 
 ### Global hooks
 
-A `TrieRouter` instance allows setting global hooks
+A `TrieRouter` instance allows to set up global hooks
 that have higher priority over route hooks and are
 called first.
 
