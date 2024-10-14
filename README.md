@@ -202,8 +202,8 @@ A `TrieRouter` instance allows to set up global hooks
 that have higher priority over route hooks and are
 called first.
 
-- `preHandler` executes before calling a handler of each route
-- `postHandler` executes after calling a handler of each route
+- `preHandler` executes before calling each route handler
+- `postHandler` executes after calling each route handler
 
 Global hooks can be added using the `addHook` method
 of a router instance, where the first parameter
