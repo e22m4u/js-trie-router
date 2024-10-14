@@ -146,9 +146,9 @@ router.defineRoute({
 router.defineRoute({ // регистрация маршрута
   // ...
   preHandler(ctx) {
-    // вызов перед обработчиком
+    // перед обработчиком маршрута
     console.log(`Incoming request ${ctx.method} ${ctx.path}`);
-    // Incoming request GET /myPath
+    // > incoming request GET /myPath
   },
   handler(ctx) {
     return 'Hello world!';
@@ -189,7 +189,7 @@ router.defineRoute({
     return 'Hello world!';
   },
   postHandler(ctx, data) {
-    // вызов после обработчика маршрута
+    // после обработчика маршрута
     return data.toUpperCase(); // HELLO WORLD!
   },
 });
@@ -209,11 +209,11 @@ router.defineRoute({
 
 ```js
 router.addHook('preHandler', (ctx) => {
-  // вызов перед обработчиком маршрута
+  // перед обработчиком маршрута
 });
 
 router.addHook('postHandler', (ctx, data) => {
-  // вызов после обработчика маршрута
+  // после обработчика маршрута
 });
 ```
 

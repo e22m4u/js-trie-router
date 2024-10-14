@@ -147,9 +147,9 @@ hook.
 router.defineRoute({ // register a route
   // ...
   preHandler(ctx) {
-    // called before the route handler
-    console.log(`Incoming request ${ctx.method} ${ctx.path}`);
-    // Incoming request GET /myPath
+    // before the route handler
+    console.log(`incoming request ${ctx.method} ${ctx.path}`);
+    // > incoming request GET /myPath
   },
   handler(ctx) {
     return 'Hello world!';
