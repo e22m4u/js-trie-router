@@ -178,11 +178,9 @@ router.defineRoute({ // register a route
 
 #### postHandler
 
-Return value of a route handler will be passed as a second
-argument of `postHandler` hook. If return value is not
-`undefined` and `null` that value will be sent as server
-response. The hook may be useful to modify response data
-before send.
+Return value of a route handler is passed to the second
+parameter of `postHandler` hook. It may be useful to modify
+the value before being sent.
 
 ```js
 router.defineRoute({
