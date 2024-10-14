@@ -207,15 +207,15 @@ called first.
 
 Global hooks can be added using the `addHook` method
 of a router instance, where the first parameter
-is the hook name, and the second is a function.
+is the hook name and the second is a function.
 
 ```js
 router.addHook('preHandler', (ctx) => {
-  // called before a route handler
+  // before a route handler
 });
 
 router.addHook('postHandler', (ctx, data) => {
-  // called after a route handler
+  // after a route handler
 });
 ```
 
