@@ -3,7 +3,7 @@
 *English | [Русский](./README-ru.md)*
 
 HTTP router for Node.js based on
-[prefix tree](https://en.wikipedia.org/wiki/Trie) (trie).
+a [prefix tree](https://en.wikipedia.org/wiki/Trie) (trie).
 
 - Supports [path-to-regexp](https://github.com/pillarjs/path-to-regexp) syntax.
 - Parses JSON request body automatically.
