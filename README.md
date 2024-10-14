@@ -50,7 +50,7 @@ server.listen(3000, 'localhost');             // listen for requests
 
 The first parameter of a route handler is an instance
 of the `RequestContext` class which has a properties
-set with contents of a parsed request data.
+set with contents of a parsed incoming request.
 
 - `container: ServiceContainer` instance of [service container](https://npmjs.com/package/@e22m4u/js-service)
 - `req: IncomingMessage` native incoming request stream
