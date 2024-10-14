@@ -131,8 +131,8 @@ router.defineRoute({
 ### Route hooks
 
 Defining a route with the `defineRoute` method allows setting
-hooks to monitor and intercept incoming requests and sending
-responses for a specific route.
+hooks to monitor and intercept requests and responses for
+a specific route.
 
 - `preHandler` executes before calling a route handler
 - `postHandler` executes after calling a route handler
