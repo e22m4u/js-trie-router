@@ -17,13 +17,24 @@ HTTP роутер для Node.js на основе
 npm install @e22m4u/js-trie-router
 ```
 
-Для загрузки ES-модуля требуется установить `"type": "module"` в файле
-`package.json`, или использовать `.mjs` расширение.
+Модуль поддерживает ESM и CommonJS стандарты.
+
+*ESM*
+
+```js
+import {TrieRouter} from '@e22m4u/js-trie-router';
+```
+
+*CommonJS*
+
+```js
+const {TrieRouter} = require('@e22m4u/js-trie-router');
+```
 
 ## Обзор
 
 Базовый пример создания экземпляра роутера, объявления маршрута
-и передачи слушателя запросов `http` серверу.
+и передачи слушателя запросов HTTP серверу.
 
 ```js
 import http from 'http';

@@ -17,8 +17,19 @@ a [prefix tree](https://en.wikipedia.org/wiki/Trie) (trie).
 npm install @e22m4u/js-trie-router
 ```
 
-To load the ES-module, you need to set `"type": "module"`
-in the `package.json` file, or use the `.mjs` extension.
+The module supports ESM and CommonJS standards.
+
+*ESM*
+
+```js
+import {TrieRouter} from '@e22m4u/js-trie-router';
+```
+
+*CommonJS*
+
+```js
+const {TrieRouter} = require('@e22m4u/js-trie-router');
+```
 
 ## Overview
 
