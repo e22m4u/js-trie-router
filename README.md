@@ -13,6 +13,8 @@ a [prefix tree](https://en.wikipedia.org/wiki/Trie) (trie).
 
 ## Installation
 
+Node.js 16 or higher is required.
+
 ```bash
 npm install @e22m4u/js-trie-router
 ```
