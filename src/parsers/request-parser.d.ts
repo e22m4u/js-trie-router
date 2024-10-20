@@ -1,8 +1,8 @@
 import {IncomingMessage} from 'http';
-import {Service} from '../service.js';
 import {ValueOrPromise} from '../types.js';
 import {ParsedQuery} from './query-parser.js';
-import {ParsedCookie} from './cookie-parser.js';
+import {ParsedCookie} from '../utils/index.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Parsed headers.
@@ -24,7 +24,7 @@ type ParsedRequestData = {
 /**
  * Request parser.
  */
-export declare class RequestParser extends Service {
+export declare class RequestParser extends DebuggableService {
   /**
    * Parse.
    *

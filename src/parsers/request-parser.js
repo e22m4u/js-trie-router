@@ -1,15 +1,15 @@
 import {IncomingMessage} from 'http';
-import {Service} from '../service.js';
 import {Errorf} from '@e22m4u/js-format';
 import {isPromise} from '../utils/index.js';
 import {BodyParser} from './body-parser.js';
 import {QueryParser} from './query-parser.js';
 import {CookieParser} from './cookie-parser.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Request parser.
  */
-export class RequestParser extends Service {
+export class RequestParser extends DebuggableService {
   /**
    * Parse.
    *

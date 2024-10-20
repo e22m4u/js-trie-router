@@ -1,11 +1,11 @@
 import querystring from 'querystring';
-import {Service} from '../service.js';
 import {getRequestPathname} from '../utils/index.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Query parser.
  */
-export class QueryParser extends Service {
+export class QueryParser extends DebuggableService {
   /**
    * Parse
    *

@@ -2189,6 +2189,135 @@ function getRequestPathname(req) {
   return (req.url || "/").replace(/\?.*$/, "");
 }
 
+// src/route.js
+var HTTP_METHOD = {
+  GET: "GET",
+  POST: "POST",
+  PUT: "PUT",
+  PATCH: "PATCH",
+  DELETE: "DELETE"
+};
+var debug = createDebugger("route");
+var Route = class {
+  /**
+   * Method.
+   *
+   * @type {string}
+   * @private
+   */
+  _method;
+  /**
+   * Getter of the method.
+   *
+   * @returns {string}
+   */
+  get method() {
+    return this._method;
+  }
+  /**
+   * Path template.
+   *
+   * @type {string}
+   * @private
+   */
+  _path;
+  /**
+   * Getter of the path.
+   *
+   * @returns {string}
+   */
+  get path() {
+    return this._path;
+  }
+  /**
+   * Handler.
+   *
+   * @type {RouteHandler}
+   * @private
+   */
+  _handler;
+  /**
+   * Getter of the handler.
+   *
+   * @returns {*}
+   */
+  get handler() {
+    return this._handler;
+  }
+  /**
+   * Hook registry.
+   *
+   * @type {HookRegistry}
+   * @private
+   */
+  _hookRegistry = new HookRegistry();
+  /**
+   * Getter of the hook registry.
+   *
+   * @returns {HookRegistry}
+   */
+  get hookRegistry() {
+    return this._hookRegistry;
+  }
+  /**
+   * Constructor.
+   *
+   * @param {RouteDefinition} routeDef
+   */
+  constructor(routeDef) {
+    if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef))
+      throw new Errorf(
+        "The first parameter of Route.controller should be an Object, but %v given.",
+        routeDef
+      );
+    if (!routeDef.method || typeof routeDef.method !== "string")
+      throw new Errorf(
+        'The option "method" of the Route should be a non-empty String, but %v given.',
+        routeDef.method
+      );
+    this._method = routeDef.method.toUpperCase();
+    if (typeof routeDef.path !== "string")
+      throw new Errorf(
+        'The option "path" of the Route should be a String, but %v given.',
+        routeDef.path
+      );
+    this._path = routeDef.path;
+    if (typeof routeDef.handler !== "function")
+      throw new Errorf(
+        'The option "handler" of the Route should be a Function, but %v given.',
+        routeDef.handler
+      );
+    this._handler = routeDef.handler;
+    if (routeDef.preHandler != null) {
+      const preHandlerHooks = Array.isArray(routeDef.preHandler) ? routeDef.preHandler : [routeDef.preHandler];
+      preHandlerHooks.forEach((hook) => {
+        this._hookRegistry.addHook(HOOK_NAME.PRE_HANDLER, hook);
+      });
+    }
+    if (routeDef.postHandler != null) {
+      const postHandlerHooks = Array.isArray(routeDef.postHandler) ? routeDef.postHandler : [routeDef.postHandler];
+      postHandlerHooks.forEach((hook) => {
+        this._hookRegistry.addHook(HOOK_NAME.POST_HANDLER, hook);
+      });
+    }
+  }
+  /**
+   * Handle request.
+   *
+   * @param {RequestContext} context
+   * @returns {*}
+   */
+  handle(context) {
+    const requestPath = getRequestPathname(context.req);
+    debug(
+      "Invoking the Route handler for the request %s %v.",
+      this.method.toUpperCase(),
+      requestPath
+    );
+    return this._handler(context);
+  }
+};
+
 // node_modules/@e22m4u/js-service/src/errors/invalid-argument-error.js
 var InvalidArgumentError = class extends Errorf {
 };
@@ -2388,8 +2517,8 @@ var Service = class {
   }
 };
 
-// src/service.js
-var Service2 = class extends Service {
+// src/debuggable-service.js
+var DebuggableService = class extends Service {
   /**
    * Debug.
    *
@@ -2414,7 +2543,7 @@ var HOOK_NAME = {
   PRE_HANDLER: "preHandler",
   POST_HANDLER: "postHandler"
 };
-var HookRegistry = class extends Service2 {
+var HookRegistry = class extends DebuggableService {
   /**
    * Hooks.
    *
@@ -2482,7 +2611,7 @@ var HookRegistry = class extends Service2 {
 };
 
 // src/hooks/hook-invoker.js
-var HookInvoker = class extends Service2 {
+var HookInvoker = class extends DebuggableService {
   /**
    * Invoke and continue until value received.
    *
@@ -2540,267 +2669,11 @@ var HookInvoker = class extends Service2 {
   }
 };
 
-// src/route.js
-var HTTP_METHOD = {
-  GET: "GET",
-  POST: "POST",
-  PUT: "PUT",
-  PATCH: "PATCH",
-  DELETE: "DELETE"
-};
-var debug = createDebugger("route");
-var Route = class {
-  /**
-   * Method.
-   *
-   * @type {string}
-   * @private
-   */
-  _method;
-  /**
-   * Getter of the method.
-   *
-   * @returns {string}
-   */
-  get method() {
-    return this._method;
-  }
-  /**
-   * Path template.
-   *
-   * @type {string}
-   * @private
-   */
-  _path;
-  /**
-   * Getter of the path.
-   *
-   * @returns {string}
-   */
-  get path() {
-    return this._path;
-  }
-  /**
-   * Handler.
-   *
-   * @type {RouteHandler}
-   * @private
-   */
-  _handler;
-  /**
-   * Getter of the handler.
-   *
-   * @returns {*}
-   */
-  get handler() {
-    return this._handler;
-  }
-  /**
-   * Hook registry.
-   *
-   * @type {HookRegistry}
-   * @private
-   */
-  _hookRegistry = new HookRegistry();
-  /**
-   * Getter of the hook registry.
-   *
-   * @returns {HookRegistry}
-   */
-  get hookRegistry() {
-    return this._hookRegistry;
-  }
-  /**
-   * Constructor.
-   *
-   * @param {RouteDefinition} routeDef
-   */
-  constructor(routeDef) {
-    if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef))
-      throw new Errorf(
-        "The first parameter of Route.controller should be an Object, but %v given.",
-        routeDef
-      );
-    if (!routeDef.method || typeof routeDef.method !== "string")
-      throw new Errorf(
-        'The option "method" of the Route should be a non-empty String, but %v given.',
-        routeDef.method
-      );
-    this._method = routeDef.method.toUpperCase();
-    if (typeof routeDef.path !== "string")
-      throw new Errorf(
-        'The option "path" of the Route should be a String, but %v given.',
-        routeDef.path
-      );
-    this._path = routeDef.path;
-    if (typeof routeDef.handler !== "function")
-      throw new Errorf(
-        'The option "handler" of the Route should be a Function, but %v given.',
-        routeDef.handler
-      );
-    this._handler = routeDef.handler;
-    if (routeDef.preHandler != null) {
-      const preHandlerHooks = Array.isArray(routeDef.preHandler) ? routeDef.preHandler : [routeDef.preHandler];
-      preHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(HOOK_NAME.PRE_HANDLER, hook);
-      });
-    }
-    if (routeDef.postHandler != null) {
-      const postHandlerHooks = Array.isArray(routeDef.postHandler) ? routeDef.postHandler : [routeDef.postHandler];
-      postHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(HOOK_NAME.POST_HANDLER, hook);
-      });
-    }
-  }
-  /**
-   * Handle request.
-   *
-   * @param {RequestContext} context
-   * @returns {*}
-   */
-  handle(context) {
-    const requestPath = getRequestPathname(context.req);
-    debug(
-      "Invoking the Route handler for the request %s %v.",
-      this.method.toUpperCase(),
-      requestPath
-    );
-    return this._handler(context);
-  }
-};
-
-// src/senders/data-sender.js
-var DataSender = class extends Service2 {
-  /**
-   * Send.
-   *
-   * @param {import('http').ServerResponse} res
-   * @param {*} data
-   * @returns {undefined}
-   */
-  send(res, data) {
-    if (data === res || res.headersSent) {
-      this.debug(
-        "Response sending was skipped because its headers where sent already ."
-      );
-      return;
-    }
-    if (data == null) {
-      res.statusCode = 204;
-      res.end();
-      this.debug("The empty response was sent.");
-      return;
-    }
-    if (isReadableStream(data)) {
-      res.setHeader("Content-Type", "application/octet-stream");
-      data.pipe(res);
-      this.debug("The stream response was sent.");
-      return;
-    }
-    let debugMsg;
-    switch (typeof data) {
-      case "object":
-      case "boolean":
-      case "number":
-        if (Buffer.isBuffer(data)) {
-          res.setHeader("content-type", "application/octet-stream");
-          debugMsg = "The Buffer was sent as binary data.";
-        } else {
-          res.setHeader("content-type", "application/json");
-          debugMsg = format("The %v was sent as JSON.", typeof data);
-          data = JSON.stringify(data);
-        }
-        break;
-      default:
-        res.setHeader("content-type", "text/plain");
-        debugMsg = "The response data was sent as plain text.";
-        data = String(data);
-        break;
-    }
-    res.end(data);
-    this.debug(debugMsg);
-  }
-};
-
-// src/senders/error-sender.js
-var import_util = require("util");
-var import_statuses = __toESM(require_statuses(), 1);
-var EXPOSED_ERROR_PROPERTIES = ["code", "details"];
-var ErrorSender = class extends Service2 {
-  /**
-   * Handle.
-   *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
-   * @param {Error} error
-   * @returns {undefined}
-   */
-  send(req, res, error) {
-    let safeError = {};
-    if (error) {
-      if (typeof error === "object") {
-        safeError = error;
-      } else {
-        safeError = { message: String(error) };
-      }
-    }
-    const statusCode = error.statusCode || error.status || 500;
-    const body = { error: {} };
-    if (safeError.message && typeof safeError.message === "string") {
-      body.error.message = safeError.message;
-    } else {
-      body.error.message = (0, import_statuses.default)(statusCode);
-    }
-    EXPOSED_ERROR_PROPERTIES.forEach((name) => {
-      if (name in safeError) body.error[name] = safeError[name];
-    });
-    const requestData = {
-      url: req.url,
-      method: req.method,
-      headers: req.headers
-    };
-    const inspectOptions = {
-      showHidden: false,
-      depth: null,
-      colors: true,
-      compact: false
-    };
-    console.warn((0, import_util.inspect)(requestData, inspectOptions));
-    console.warn((0, import_util.inspect)(body, inspectOptions));
-    res.statusCode = statusCode;
-    res.setHeader("content-type", "application/json; charset=utf-8");
-    res.end(JSON.stringify(body, null, 2), "utf-8");
-    this.debug(
-      "The %s error is sent for the request %s %v.",
-      statusCode,
-      req.method,
-      getRequestPathname(req)
-    );
-  }
-  /**
-   * Send 404.
-   *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
-   * @returns {undefined}
-   */
-  send404(req, res) {
-    res.statusCode = 404;
-    res.setHeader("content-type", "text/plain; charset=utf-8");
-    res.end("404 Not Found", "utf-8");
-    this.debug(
-      "The 404 error is sent for the request %s %v.",
-      req.method,
-      getRequestPathname(req)
-    );
-  }
-};
-
 // src/parsers/body-parser.js
 var import_http_errors2 = __toESM(require_http_errors(), 1);
 
 // src/router-options.js
-var RouterOptions = class extends Service2 {
+var RouterOptions = class extends DebuggableService {
   /**
    * Request body bytes limit.
    *
@@ -2837,7 +2710,7 @@ var RouterOptions = class extends Service2 {
 // src/parsers/body-parser.js
 var METHODS_WITH_BODY = ["POST", "PUT", "PATCH", "DELETE"];
 var UNPARSABLE_MEDIA_TYPES = ["multipart/form-data"];
-var BodyParser = class extends Service2 {
+var BodyParser = class extends DebuggableService {
   /**
    * Parsers.
    *
@@ -2961,7 +2834,7 @@ function parseJsonBody(input) {
 
 // src/parsers/query-parser.js
 var import_querystring = __toESM(require("querystring"), 1);
-var QueryParser = class extends Service2 {
+var QueryParser = class extends DebuggableService {
   /**
    * Parse
    *
@@ -2988,7 +2861,7 @@ var QueryParser = class extends Service2 {
 };
 
 // src/parsers/cookie-parser.js
-var CookieParser = class extends Service2 {
+var CookieParser = class extends DebuggableService {
   /**
    * Parse
    *
@@ -3016,7 +2889,7 @@ var CookieParser = class extends Service2 {
 
 // src/parsers/request-parser.js
 var import_http2 = require("http");
-var RequestParser = class extends Service2 {
+var RequestParser = class extends DebuggableService {
   /**
    * Parse.
    *
@@ -3051,6 +2924,247 @@ var RequestParser = class extends Service2 {
     }
     data.headers = JSON.parse(JSON.stringify(req.headers));
     return promises.length ? Promise.all(promises).then(() => data) : data;
+  }
+};
+
+// src/senders/data-sender.js
+var DataSender = class extends DebuggableService {
+  /**
+   * Send.
+   *
+   * @param {import('http').ServerResponse} res
+   * @param {*} data
+   * @returns {undefined}
+   */
+  send(res, data) {
+    if (data === res || res.headersSent) {
+      this.debug(
+        "Response sending was skipped because its headers where sent already ."
+      );
+      return;
+    }
+    if (data == null) {
+      res.statusCode = 204;
+      res.end();
+      this.debug("The empty response was sent.");
+      return;
+    }
+    if (isReadableStream(data)) {
+      res.setHeader("Content-Type", "application/octet-stream");
+      data.pipe(res);
+      this.debug("The stream response was sent.");
+      return;
+    }
+    let debugMsg;
+    switch (typeof data) {
+      case "object":
+      case "boolean":
+      case "number":
+        if (Buffer.isBuffer(data)) {
+          res.setHeader("content-type", "application/octet-stream");
+          debugMsg = "The Buffer was sent as binary data.";
+        } else {
+          res.setHeader("content-type", "application/json");
+          debugMsg = format("The %v was sent as JSON.", typeof data);
+          data = JSON.stringify(data);
+        }
+        break;
+      default:
+        res.setHeader("content-type", "text/plain");
+        debugMsg = "The response data was sent as plain text.";
+        data = String(data);
+        break;
+    }
+    res.end(data);
+    this.debug(debugMsg);
+  }
+};
+
+// src/senders/error-sender.js
+var import_util = require("util");
+var import_statuses = __toESM(require_statuses(), 1);
+var EXPOSED_ERROR_PROPERTIES = ["code", "details"];
+var ErrorSender = class extends DebuggableService {
+  /**
+   * Handle.
+   *
+   * @param {import('http').IncomingMessage} req
+   * @param {import('http').ServerResponse} res
+   * @param {Error} error
+   * @returns {undefined}
+   */
+  send(req, res, error) {
+    let safeError = {};
+    if (error) {
+      if (typeof error === "object") {
+        safeError = error;
+      } else {
+        safeError = { message: String(error) };
+      }
+    }
+    const statusCode = error.statusCode || error.status || 500;
+    const body = { error: {} };
+    if (safeError.message && typeof safeError.message === "string") {
+      body.error.message = safeError.message;
+    } else {
+      body.error.message = (0, import_statuses.default)(statusCode);
+    }
+    EXPOSED_ERROR_PROPERTIES.forEach((name) => {
+      if (name in safeError) body.error[name] = safeError[name];
+    });
+    const requestData = {
+      url: req.url,
+      method: req.method,
+      headers: req.headers
+    };
+    const inspectOptions = {
+      showHidden: false,
+      depth: null,
+      colors: true,
+      compact: false
+    };
+    console.warn((0, import_util.inspect)(requestData, inspectOptions));
+    console.warn((0, import_util.inspect)(body, inspectOptions));
+    res.statusCode = statusCode;
+    res.setHeader("content-type", "application/json; charset=utf-8");
+    res.end(JSON.stringify(body, null, 2), "utf-8");
+    this.debug(
+      "The %s error is sent for the request %s %v.",
+      statusCode,
+      req.method,
+      getRequestPathname(req)
+    );
+  }
+  /**
+   * Send 404.
+   *
+   * @param {import('http').IncomingMessage} req
+   * @param {import('http').ServerResponse} res
+   * @returns {undefined}
+   */
+  send404(req, res) {
+    res.statusCode = 404;
+    res.setHeader("content-type", "text/plain; charset=utf-8");
+    res.end("404 Not Found", "utf-8");
+    this.debug(
+      "The 404 error is sent for the request %s %v.",
+      req.method,
+      getRequestPathname(req)
+    );
+  }
+};
+
+// src/request-context.js
+var RequestContext = class {
+  /**
+   * Service container.
+   *
+   * @type {import('@e22m4u/js-service').ServiceContainer}
+   */
+  container;
+  /**
+   * Request.
+   *
+   * @type {import('http').IncomingMessage}
+   */
+  req;
+  /**
+   * Response.
+   *
+   * @type {import('http').ServerResponse}
+   */
+  res;
+  /**
+   * Query.
+   *
+   * @type {object}
+   */
+  query = {};
+  /**
+   * Path parameters.
+   *
+   * @type {object}
+   */
+  params = {};
+  /**
+   * Parsed body.
+   *
+   * @type {*}
+   */
+  body;
+  /**
+   * Headers.
+   *
+   * @type {object}
+   */
+  headers = {};
+  /**
+   * Parsed cookie.
+   *
+   * @type {object}
+   */
+  cookie = {};
+  /**
+   * Method.
+   *
+   * @returns {string}
+   */
+  get method() {
+    return this.req.method.toUpperCase();
+  }
+  /**
+   * Path.
+   *
+   * @returns {string}
+   */
+  get path() {
+    return this.req.url;
+  }
+  /**
+   * Pathname.
+   *
+   * @type {string|undefined}
+   * @private
+   */
+  _pathname = void 0;
+  /**
+   * Pathname.
+   *
+   * @returns {string}
+   */
+  get pathname() {
+    if (this._pathname != null) return this._pathname;
+    this._pathname = getRequestPathname(this.req);
+    return this._pathname;
+  }
+  /**
+   * Constructor.
+   *
+   * @param {ServiceContainer} container
+   * @param {import('http').IncomingMessage} request
+   * @param {import('http').ServerResponse} response
+   */
+  constructor(container, request, response) {
+    if (!(container instanceof ServiceContainer))
+      throw new Errorf(
+        'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v given.',
+        container
+      );
+    this.container = container;
+    if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
+      throw new Errorf(
+        'The parameter "request" of RequestContext.constructor should be an instance of IncomingMessage, but %v given.',
+        request
+      );
+    }
+    this.req = request;
+    if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
+      throw new Errorf(
+        'The parameter "response" of RequestContext.constructor should be an instance of ServerResponse, but %v given.',
+        response
+      );
+    }
+    this.res = response;
   }
 };
 
@@ -3329,7 +3443,7 @@ var PathTrie = class {
 };
 
 // src/route-registry.js
-var RouteRegistry = class extends Service2 {
+var RouteRegistry = class extends DebuggableService {
   /**
    * Constructor.
    *
@@ -3407,122 +3521,8 @@ var RouteRegistry = class extends Service2 {
   }
 };
 
-// src/request-context.js
-var RequestContext = class {
-  /**
-   * Service container.
-   *
-   * @type {import('@e22m4u/js-service').ServiceContainer}
-   */
-  container;
-  /**
-   * Request.
-   *
-   * @type {import('http').IncomingMessage}
-   */
-  req;
-  /**
-   * Response.
-   *
-   * @type {import('http').ServerResponse}
-   */
-  res;
-  /**
-   * Query.
-   *
-   * @type {object}
-   */
-  query = {};
-  /**
-   * Path parameters.
-   *
-   * @type {object}
-   */
-  params = {};
-  /**
-   * Parsed body.
-   *
-   * @type {*}
-   */
-  body;
-  /**
-   * Headers.
-   *
-   * @type {object}
-   */
-  headers = {};
-  /**
-   * Parsed cookie.
-   *
-   * @type {object}
-   */
-  cookie = {};
-  /**
-   * Method.
-   *
-   * @returns {string}
-   */
-  get method() {
-    return this.req.method.toUpperCase();
-  }
-  /**
-   * Path.
-   *
-   * @returns {string}
-   */
-  get path() {
-    return this.req.url;
-  }
-  /**
-   * Pathname.
-   *
-   * @type {string|undefined}
-   * @private
-   */
-  _pathname = void 0;
-  /**
-   * Pathname.
-   *
-   * @returns {string}
-   */
-  get pathname() {
-    if (this._pathname != null) return this._pathname;
-    this._pathname = getRequestPathname(this.req);
-    return this._pathname;
-  }
-  /**
-   * Constructor.
-   *
-   * @param {ServiceContainer} container
-   * @param {import('http').IncomingMessage} request
-   * @param {import('http').ServerResponse} response
-   */
-  constructor(container, request, response) {
-    if (!(container instanceof ServiceContainer))
-      throw new Errorf(
-        'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v given.',
-        container
-      );
-    this.container = container;
-    if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
-      throw new Errorf(
-        'The parameter "request" of RequestContext.constructor should be an instance of IncomingMessage, but %v given.',
-        request
-      );
-    }
-    this.req = request;
-    if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
-      throw new Errorf(
-        'The parameter "response" of RequestContext.constructor should be an instance of ServerResponse, but %v given.',
-        response
-      );
-    }
-    this.res = response;
-  }
-};
-
 // src/trie-router.js
-var TrieRouter = class extends Service2 {
+var TrieRouter = class extends DebuggableService {
   /**
    * Define route.
    *

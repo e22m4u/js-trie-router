@@ -1,11 +1,11 @@
-import {Service} from '../service.js';
 import {format} from '@e22m4u/js-format';
 import {isReadableStream} from '../utils/index.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Data sender.
  */
-export class DataSender extends Service {
+export class DataSender extends DebuggableService {
   /**
    * Send.
    *

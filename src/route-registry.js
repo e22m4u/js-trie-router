@@ -1,8 +1,8 @@
 import {Route} from './route.js';
-import {Service} from './service.js';
 import {Errorf} from '@e22m4u/js-format';
 import {PathTrie} from '@e22m4u/js-path-trie';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {DebuggableService} from './debuggable-service.js';
 
 /**
  * @typedef {{
@@ -14,7 +14,7 @@ import {ServiceContainer} from '@e22m4u/js-service';
 /**
  * Route registry.
  */
-export class RouteRegistry extends Service {
+export class RouteRegistry extends DebuggableService {
   /**
    * Constructor.
    *

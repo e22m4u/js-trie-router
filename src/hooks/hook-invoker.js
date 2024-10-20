@@ -1,15 +1,15 @@
 import {Route} from '../route.js';
-import {Service} from '../service.js';
 import {Errorf} from '@e22m4u/js-format';
 import {isPromise} from '../utils/index.js';
 import {HOOK_NAME} from './hook-registry.js';
 import {HookRegistry} from './hook-registry.js';
 import {isResponseSent} from '../utils/index.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Hook invoker.
  */
-export class HookInvoker extends Service {
+export class HookInvoker extends DebuggableService {
   /**
    * Invoke and continue until value received.
    *

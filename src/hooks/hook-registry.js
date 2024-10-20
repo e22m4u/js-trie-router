@@ -1,5 +1,5 @@
-import {Service} from '../service.js';
 import {Errorf} from '@e22m4u/js-format';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Router hook.
@@ -17,7 +17,7 @@ export const HOOK_NAME = {
 /**
  * Hook registry.
  */
-export class HookRegistry extends Service {
+export class HookRegistry extends DebuggableService {
   /**
    * Hooks.
    *

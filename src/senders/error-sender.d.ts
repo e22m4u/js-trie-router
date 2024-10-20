@@ -1,11 +1,11 @@
 import {ServerResponse} from 'http';
 import {IncomingMessage} from 'http';
-import {Service} from '../service.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Error sender.
  */
-export declare class ErrorSender extends Service {
+export declare class ErrorSender extends DebuggableService {
   /**
    * Send.
    *

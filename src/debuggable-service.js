@@ -1,12 +1,12 @@
+import {Service} from '@e22m4u/js-service';
 import {toCamelCase} from './utils/index.js';
 import {createDebugger} from './utils/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {Service as BaseService} from '@e22m4u/js-service';
 
 /**
- * Service.
+ * Debuggable service.
  */
-export class Service extends BaseService {
+export class DebuggableService extends Service {
   /**
    * Debug.
    *

@@ -1,6 +1,6 @@
 import {IncomingMessage} from 'http';
-import {Service} from '../service.js';
 import {ValueOrPromise} from '../types.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Method names to be parsed.
@@ -20,7 +20,7 @@ export type BodyParserFunction = <T = unknown>(input: string) => T;
 /**
  * Body parser.
  */
-export declare class BodyParser extends Service {
+export declare class BodyParser extends DebuggableService {
   /**
    * Define parser.
    *

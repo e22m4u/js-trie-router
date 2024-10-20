@@ -1,8 +1,8 @@
 import {Route} from './route.js';
-import {Service} from './service.js';
 import {IncomingMessage} from 'http';
 import {RouteDefinition} from './route.js';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {DebuggableService} from './debuggable-service.js';
 
 /**
  * Resolved route.
@@ -15,7 +15,7 @@ export type ResolvedRoute = {
 /**
  * Route registry.
  */
-export declare class RouteRegistry extends Service {
+export declare class RouteRegistry extends DebuggableService {
   /**
    * Constructor.
    *

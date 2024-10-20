@@ -1,10 +1,10 @@
-import {Service} from '../service.js';
 import {ServerResponse} from 'http';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Data sender.
  */
-export declare class DataSender extends Service {
+export declare class DataSender extends DebuggableService {
   /**
    * Send.
    *

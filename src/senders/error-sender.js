@@ -1,7 +1,7 @@
 import {inspect} from 'util';
-import {Service} from '../service.js';
 import getStatusMessage from 'statuses';
 import {getRequestPathname} from '../utils/index.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Exposed error properties.
@@ -13,7 +13,7 @@ export const EXPOSED_ERROR_PROPERTIES = ['code', 'details'];
 /**
  * Error sender.
  */
-export class ErrorSender extends Service {
+export class ErrorSender extends DebuggableService {
   /**
    * Handle.
    *

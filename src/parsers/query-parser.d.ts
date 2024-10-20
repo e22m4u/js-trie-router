@@ -1,5 +1,5 @@
 import {IncomingMessage} from 'http';
-import {Service} from '../service.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Parsed query.
@@ -11,7 +11,7 @@ export type ParsedQuery = {
 /**
  * Query parser.
  */
-export declare class QueryParser extends Service {
+export declare class QueryParser extends DebuggableService {
   /**
    * Parse.
    *

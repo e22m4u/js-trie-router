@@ -1,5 +1,5 @@
 import {Callable} from '../types.js';
-import {Service} from '../service.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Hook type.
@@ -17,7 +17,7 @@ export type RouterHook<T = unknown> = Callable<T>;
 /**
  * Hook registry.
  */
-export declare class HookRegistry extends Service {
+export declare class HookRegistry extends DebuggableService {
   /**
    * Add hook.
    *

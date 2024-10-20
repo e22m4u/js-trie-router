@@ -1,10 +1,10 @@
 import {expect} from './chai.js';
-import {Service} from './service.js';
+import {DebuggableService} from './debuggable-service.js';
 
-describe('Service', function () {
+describe('DebuggableService', function () {
   describe('constructor', function () {
     it('sets the debugger to the "debug" property', function () {
-      const service = new Service();
+      const service = new DebuggableService();
       expect(service.debug).to.be.instanceof(Function);
     });
   });

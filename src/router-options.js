@@ -1,10 +1,10 @@
-import {Service} from './service.js';
 import {Errorf} from '@e22m4u/js-format';
+import {DebuggableService} from './debuggable-service.js';
 
 /**
  * Router options.
  */
-export class RouterOptions extends Service {
+export class RouterOptions extends DebuggableService {
   /**
    * Request body bytes limit.
    *

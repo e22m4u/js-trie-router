@@ -1,9 +1,9 @@
-import {Service} from './service.js';
+import {DebuggableService} from './debuggable-service.js';
 
 /**
  * Router options.
  */
-export declare class RouterOptions extends Service {
+export declare class RouterOptions extends DebuggableService {
   /**
    * Request body bytes limit.
    */

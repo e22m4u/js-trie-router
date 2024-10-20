@@ -1,4 +1,3 @@
-import {Service} from './service.js';
 import {isPromise} from './utils/index.js';
 import {HOOK_NAME} from './hooks/index.js';
 import {HookInvoker} from './hooks/index.js';
@@ -9,11 +8,12 @@ import {RequestParser} from './parsers/index.js';
 import {RouteRegistry} from './route-registry.js';
 import {RequestContext} from './request-context.js';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {DebuggableService} from './debuggable-service.js';
 
 /**
  * Trie router.
  */
-export class TrieRouter extends Service {
+export class TrieRouter extends DebuggableService {
   /**
    * Define route.
    *

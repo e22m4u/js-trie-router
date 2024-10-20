@@ -1,10 +1,10 @@
 import {Debugger} from './utils/index.js';
-import {Service as BaseService} from '@e22m4u/js-service';
+import {Service} from '@e22m4u/js-service';
 
 /**
- * Service.
+ * Debuggable service.
  */
-declare class Service extends BaseService {
+declare class DebuggableService extends Service {
   /**
    * Debug.
    *

@@ -1,14 +1,14 @@
 import {Route} from './route.js';
-import {Service} from './service.js';
 import {RequestListener} from 'http';
 import {RouteDefinition} from './route.js';
 import {HOOK_NAME} from './hooks/index.js';
 import {RouterHook} from './hooks/index.js';
+import {DebuggableService} from './debuggable-service.js';
 
 /**
  * Trie router.
  */
-export declare class TrieRouter extends Service {
+export declare class TrieRouter extends DebuggableService {
   /**
    * Define route.
    *

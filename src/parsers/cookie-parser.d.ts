@@ -1,17 +1,11 @@
 import {IncomingMessage} from 'http';
-import {Service} from '../service.js';
-
-/**
- * Parsed cookie.
- */
-export type ParsedCookie = {
-  [key: string]: string | undefined;
-};
+import {ParsedCookie} from '../utils/index.js';
+import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Cookie parser.
  */
-export declare class CookieParser extends Service {
+export declare class CookieParser extends DebuggableService {
   /**
    * Parse.
    *

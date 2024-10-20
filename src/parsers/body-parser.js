@@ -1,9 +1,9 @@
 import HttpErrors from 'http-errors';
-import {Service} from '../service.js';
 import {Errorf} from '@e22m4u/js-format';
 import {createError} from '../utils/index.js';
 import {RouterOptions} from '../router-options.js';
 import {fetchRequestBody} from '../utils/index.js';
+import {DebuggableService} from '../debuggable-service.js';
 import {parseContentType} from '../utils/parse-content-type.js';
 
 /**
@@ -23,7 +23,7 @@ export const UNPARSABLE_MEDIA_TYPES = ['multipart/form-data'];
 /**
  * Body parser.
  */
-export class BodyParser extends Service {
+export class BodyParser extends DebuggableService {
   /**
    * Parsers.
    *
