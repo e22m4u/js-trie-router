@@ -1,6 +1,6 @@
 {
   "name": "@e22m4u/js-trie-router",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "HTTP router for Node.js based on a prefix tree",
   "type": "module",
   "module": "./src/index.js",
