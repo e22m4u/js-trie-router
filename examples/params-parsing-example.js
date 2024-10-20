@@ -1,13 +1,13 @@
 import http from 'http';
 import {TrieRouter} from '../src/index.js';
-import {HTTP_METHOD} from '../src/route.js';
+import {HttpMethod} from '../src/route.js';
 
 const router = new TrieRouter();
 
 // регистрация роута для вывода
 // переданных параметров пути
 router.defineRoute({
-  method: HTTP_METHOD.GET,
+  method: HttpMethod.GET,
   path: '/showParams/:p1/:p2',
   handler: ({params}) => params,
 });

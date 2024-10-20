@@ -1,5 +1,5 @@
 import {expect} from '../chai.js';
-import {HTTP_METHOD} from '../route.js';
+import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';
 import {RequestParser} from './request-parser.js';
 import {createRequestMock} from '../utils/create-request-mock.js';
@@ -45,7 +45,7 @@ describe('RequestParser', function () {
       const s = new RequestParser();
       const body = 'Lorem Ipsum is simply dummy text.';
       const req = createRequestMock({
-        method: HTTP_METHOD.POST,
+        method: HttpMethod.POST,
         headers: {'content-type': 'text/plain'},
         body,
       });
@@ -95,7 +95,7 @@ describe('RequestParser', function () {
       const s = new RequestParser();
       const body = 'Lorem Ipsum is simply dummy text.';
       const req = createRequestMock({
-        method: HTTP_METHOD.POST,
+        method: HttpMethod.POST,
         headers: {'content-type': 'text/plain'},
         body,
       });
@@ -117,7 +117,7 @@ describe('RequestParser', function () {
       const body = {foo: 'bar', baz: 'qux'};
       const json = JSON.stringify(body);
       const req = createRequestMock({
-        method: HTTP_METHOD.POST,
+        method: HttpMethod.POST,
         headers: {'content-type': 'application/json'},
         body,
       });

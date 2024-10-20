@@ -1,5 +1,5 @@
 import {expect} from '../chai.js';
-import {HTTP_METHOD} from '../route.js';
+import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';
 import {BodyParser} from './body-parser.js';
 import {METHODS_WITH_BODY} from './body-parser.js';
@@ -167,7 +167,7 @@ describe('BodyParser', function () {
 
     it('returns undefined if no "content-type" header', async function () {
       const parser = new BodyParser();
-      const req = createRequestMock({method: HTTP_METHOD.POST});
+      const req = createRequestMock({method: HttpMethod.POST});
       const result = await parser.parse(req);
       expect(result).to.be.undefined;
     });
@@ -176,7 +176,7 @@ describe('BodyParser', function () {
       const parser = new BodyParser();
       for await (const mediaType of UNPARSABLE_MEDIA_TYPES) {
         const req = createRequestMock({
-          method: HTTP_METHOD.POST,
+          method: HttpMethod.POST,
           headers: {'content-type': mediaType},
           body: 'Lorem Ipsum is simply dummy text.',
         });
@@ -199,7 +199,7 @@ describe('BodyParser', function () {
     it('throws an error for unsupported media type', function () {
       const parser = new BodyParser();
       const req = createRequestMock({
-        method: HTTP_METHOD.POST,
+        method: HttpMethod.POST,
         headers: {'content-type': 'media/unknown'},
       });
       const throwable = () => parser.parse(req);
@@ -212,7 +212,7 @@ describe('BodyParser', function () {
       const parser = new BodyParser();
       parser.getService(RouterOptions).setRequestBodyBytesLimit(1);
       const req = createRequestMock({
-        method: HTTP_METHOD.POST,
+        method: HttpMethod.POST,
         headers: {
           'content-type': 'text/plain',
           'content-length': '2',
@@ -226,7 +226,7 @@ describe('BodyParser', function () {
       it('returns undefined if no request body', async function () {
         const parser = new BodyParser();
         const req = createRequestMock({
-          method: HTTP_METHOD.POST,
+          method: HttpMethod.POST,
           headers: {'content-type': 'text/plain'},
         });
         const result = await parser.parse(req);
@@ -237,7 +237,7 @@ describe('BodyParser', function () {
         const body = 'Lorem Ipsum is simply dummy text.';
         const parser = new BodyParser();
         const req = createRequestMock({
-          method: HTTP_METHOD.POST,
+          method: HttpMethod.POST,
           headers: {'content-type': 'text/plain'},
           body,
         });
@@ -249,7 +249,7 @@ describe('BodyParser', function () {
         const body = 'Lorem Ipsum is simply dummy text.';
         const parser = new BodyParser();
         const req = createRequestMock({
-          method: HTTP_METHOD.POST,
+          method: HttpMethod.POST,
           headers: {'content-type': 'text/plain'},
           body: Buffer.from(body, 'utf-8'),
         });
@@ -262,7 +262,7 @@ describe('BodyParser', function () {
       it('returns undefined if no request body', async function () {
         const parser = new BodyParser();
         const req = createRequestMock({
-          method: HTTP_METHOD.POST,
+          method: HttpMethod.POST,
           headers: {'content-type': 'application/json'},
         });
         const result = await parser.parse(req);
@@ -273,7 +273,7 @@ describe('BodyParser', function () {
         const body = {foo: 'bar'};
         const parser = new BodyParser();
         const req = createRequestMock({
-          method: HTTP_METHOD.POST,
+          method: HttpMethod.POST,
           headers: {'content-type': 'application/json'},
           body: JSON.stringify(body),
         });
@@ -285,7 +285,7 @@ describe('BodyParser', function () {
         const body = {foo: 'bar'};
         const parser = new BodyParser();
         const req = createRequestMock({
-          method: HTTP_METHOD.POST,
+          method: HttpMethod.POST,
           headers: {'content-type': 'application/json'},
           body: Buffer.from(JSON.stringify(body)),
         });

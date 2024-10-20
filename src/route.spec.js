@@ -1,6 +1,6 @@
 import {Route} from './route.js';
 import {expect} from './chai.js';
-import {HTTP_METHOD} from './route.js';
+import {HttpMethod} from './route.js';
 import {format} from '@e22m4u/js-format';
 import {HOOK_NAME} from './hooks/index.js';
 import {RequestContext} from './request-context.js';
@@ -29,7 +29,7 @@ describe('Route', function () {
       expect(throwable(undefined)).to.throw(error('undefined'));
       expect(throwable(() => undefined)).to.throw(error('Function'));
       throwable({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: () => undefined,
       })();
@@ -58,13 +58,13 @@ describe('Route', function () {
       expect(throwable([])).to.throw(error('Array'));
       expect(throwable(undefined)).to.throw(error('undefined'));
       expect(throwable(() => undefined)).to.throw(error('Function'));
-      throwable(HTTP_METHOD.GET)();
+      throwable(HttpMethod.GET)();
     });
 
     it('requires the option "path" to be a non-empty String', function () {
       const throwable = v => () =>
         new Route({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: v,
           handler: () => undefined,
         });
@@ -90,7 +90,7 @@ describe('Route', function () {
     it('requires the option "handler" to be a non-empty String', function () {
       const throwable = v => () =>
         new Route({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           handler: v,
         });
@@ -116,7 +116,7 @@ describe('Route', function () {
     it('requires the option "preHandler" to be a Function or an Array of Function', function () {
       const throwable1 = v => () =>
         new Route({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           preHandler: v,
           handler: () => undefined,
@@ -136,7 +136,7 @@ describe('Route', function () {
       throwable1(undefined)();
       const throwable2 = v => () =>
         new Route({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           preHandler: [v],
           handler: () => undefined,
@@ -157,7 +157,7 @@ describe('Route', function () {
     it('requires the option "postHandler" to be a Function or an Array of Function', function () {
       const throwable1 = v => () =>
         new Route({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           handler: () => undefined,
           postHandler: v,
@@ -177,7 +177,7 @@ describe('Route', function () {
       throwable1(undefined)();
       const throwable2 = v => () =>
         new Route({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           handler: () => undefined,
           postHandler: [v],
@@ -207,7 +207,7 @@ describe('Route', function () {
     it('sets the option "path" to the "path" property', function () {
       const value = '/myPath';
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: value,
         handler: () => undefined,
       });
@@ -217,7 +217,7 @@ describe('Route', function () {
     it('sets the option "handler" to the "handler" property', function () {
       const value = () => undefined;
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: value,
       });
@@ -227,7 +227,7 @@ describe('Route', function () {
     it('adds a Function to "preHandler" hooks', function () {
       const value = () => undefined;
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: value,
         handler: () => undefined,
@@ -239,7 +239,7 @@ describe('Route', function () {
     it('adds Function items of an Array to "preHandler" hooks', function () {
       const value = [() => undefined, () => undefined];
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: value,
         handler: () => undefined,
@@ -253,7 +253,7 @@ describe('Route', function () {
     it('adds a Function to "postHandler" hooks', function () {
       const value = () => undefined;
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: () => undefined,
         postHandler: value,
@@ -265,7 +265,7 @@ describe('Route', function () {
     it('adds Function items of an Array to "postHandler" hooks', function () {
       const value = [() => undefined, () => undefined];
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: () => undefined,
         postHandler: value,
@@ -284,7 +284,7 @@ describe('Route', function () {
         return 'OK';
       };
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler,
       });

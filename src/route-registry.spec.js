@@ -1,6 +1,6 @@
 import {Route} from './route.js';
 import {expect} from './chai.js';
-import {HTTP_METHOD} from './route.js';
+import {HttpMethod} from './route.js';
 import {format} from '@e22m4u/js-format';
 import {RouteRegistry} from './route-registry.js';
 import {ServiceContainer} from '@e22m4u/js-service';
@@ -23,7 +23,7 @@ describe('RouteRegistry', function () {
       expect(throwable(undefined)).to.throw(error('undefined'));
       expect(throwable(() => undefined)).to.throw(error('Function'));
       throwable({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/path',
         handler: () => undefined,
       })();
@@ -31,7 +31,7 @@ describe('RouteRegistry', function () {
 
     it('returns a new route with the given "method", "path" and "handler"', function () {
       const s = new RouteRegistry();
-      const method = HTTP_METHOD.PATCH;
+      const method = HttpMethod.PATCH;
       const path = '/myPath';
       const handler = () => undefined;
       const route = s.defineRoute({method, path, handler});
@@ -42,7 +42,7 @@ describe('RouteRegistry', function () {
 
     it('adds a new route to the Trie', function () {
       const s = new RouteRegistry();
-      const method = HTTP_METHOD.PATCH;
+      const method = HttpMethod.PATCH;
       const path = '/myPath';
       const handler = () => undefined;
       const route = s.defineRoute({method, path, handler});
@@ -58,17 +58,17 @@ describe('RouteRegistry', function () {
       const s = new RouteRegistry(new ServiceContainer());
       const handler = () => undefined;
       s.defineRoute({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/foo/:p1/bar/:p2',
         handler,
       });
       const res = s.matchRouteByRequest({
         url: '/foo/baz/bar/qux',
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
       });
       expect(typeof res).to.be.eq('object');
       expect(res.route).to.be.instanceof(Route);
-      expect(res.route.method).to.be.eq(HTTP_METHOD.GET);
+      expect(res.route.method).to.be.eq(HttpMethod.GET);
       expect(res.route.path).to.be.eq('/foo/:p1/bar/:p2');
       expect(res.route.handler).to.be.eq(handler);
       expect(res.params).to.be.eql({p1: 'baz', p2: 'qux'});

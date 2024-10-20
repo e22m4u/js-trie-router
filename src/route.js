@@ -29,7 +29,7 @@ import {getRequestPathname} from './utils/index.js';
  *   DELETE: 'DELETE',
  * }}
  */
-export const HTTP_METHOD = {
+export const HttpMethod = {
   GET: 'GET',
   POST: 'POST',
   PUT: 'PUT',

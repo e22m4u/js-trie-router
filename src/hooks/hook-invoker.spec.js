@@ -1,6 +1,6 @@
 import {expect} from '../chai.js';
 import {Route} from '../route.js';
-import {HTTP_METHOD} from '../route.js';
+import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';
 import {HOOK_NAME} from './hook-registry.js';
 import {HookInvoker} from './hook-invoker.js';
@@ -33,7 +33,7 @@ describe('HookInvoker', function () {
       expect(throwable(undefined)).to.throw(error('undefined'));
       throwable(
         new Route({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           handler: () => undefined,
         }),
@@ -43,7 +43,7 @@ describe('HookInvoker', function () {
     it('requires the parameter "hookName" to be a non-empty String', function () {
       const s = new HookInvoker();
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: () => undefined,
       });
@@ -72,7 +72,7 @@ describe('HookInvoker', function () {
     it('requires the parameter "hookName" to be a supported hook', function () {
       const s = new HookInvoker();
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: () => undefined,
       });
@@ -88,7 +88,7 @@ describe('HookInvoker', function () {
     it('requires the parameter "response" to be an instance of ServerResponse', function () {
       const s = new HookInvoker();
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: () => undefined,
       });
@@ -124,7 +124,7 @@ describe('HookInvoker', function () {
         order.push('globalHook2');
       });
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: [
           () => {
@@ -164,7 +164,7 @@ describe('HookInvoker', function () {
         order.push('globalHook3');
       });
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: [
           () => {
@@ -196,7 +196,7 @@ describe('HookInvoker', function () {
         order.push('globalHook2');
       });
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: [
           () => {
@@ -241,7 +241,7 @@ describe('HookInvoker', function () {
         order.push('globalHook3');
       });
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: [
           () => {
@@ -273,7 +273,7 @@ describe('HookInvoker', function () {
         order.push('globalHook2');
       });
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: [
           () => {
@@ -316,7 +316,7 @@ describe('HookInvoker', function () {
         order.push('globalHook3');
       });
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: [
           () => {
@@ -354,7 +354,7 @@ describe('HookInvoker', function () {
         order.push('globalHook2');
       });
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: [
           () => {
@@ -391,7 +391,7 @@ describe('HookInvoker', function () {
         order.push('globalHook2');
       });
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: [
           () => {
@@ -432,7 +432,7 @@ describe('HookInvoker', function () {
         order.push('globalHook2');
       });
       const route = new Route({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         preHandler: [
           async () => {

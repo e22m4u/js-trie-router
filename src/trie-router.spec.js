@@ -1,7 +1,7 @@
 import {describe} from 'mocha';
 import {Route} from './route.js';
 import {expect} from './chai.js';
-import {HTTP_METHOD} from './route.js';
+import {HttpMethod} from './route.js';
 import {TrieRouter} from './trie-router.js';
 import {HOOK_NAME} from './hooks/index.js';
 import {HookRegistry} from './hooks/index.js';
@@ -17,9 +17,9 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       const path = '/path';
       const handler = () => 'ok';
-      const res = router.defineRoute({method: HTTP_METHOD.GET, path, handler});
+      const res = router.defineRoute({method: HttpMethod.GET, path, handler});
       expect(res).to.be.instanceof(Route);
-      expect(res.method).to.be.eq(HTTP_METHOD.GET);
+      expect(res.method).to.be.eq(HttpMethod.GET);
       expect(res.path).to.be.eq(path);
       expect(res.handler).to.be.eq(handler);
     });
@@ -34,7 +34,7 @@ describe('TrieRouter', function () {
     it('passes request context to the route handler', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/test',
         handler: ctx => {
           expect(ctx).to.be.instanceof(RequestContext);
@@ -49,7 +49,7 @@ describe('TrieRouter', function () {
     it('passes path parameters to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/:p1-:p2',
         handler: ({params}) => {
           expect(params).to.be.eql({p1: 'foo', p2: 'bar'});
@@ -64,7 +64,7 @@ describe('TrieRouter', function () {
     it('passes query parameters to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: ({query}) => {
           expect(query).to.be.eql({p1: 'foo', p2: 'bar'});
@@ -79,7 +79,7 @@ describe('TrieRouter', function () {
     it('passes parsed cookie to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: ({cookie}) => {
           expect(cookie).to.be.eql({p1: 'foo', p2: 'bar'});
@@ -95,14 +95,14 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       const body = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
-        method: HTTP_METHOD.POST,
+        method: HttpMethod.POST,
         path: '/',
         handler: ctx => {
           expect(ctx.body).to.be.eq(body);
           done();
         },
       });
-      const req = createRequestMock({method: HTTP_METHOD.POST, body});
+      const req = createRequestMock({method: HttpMethod.POST, body});
       const res = createResponseMock();
       router.requestListener(req, res);
     });
@@ -111,14 +111,14 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       const data = {p1: 'foo', p2: 'bar'};
       router.defineRoute({
-        method: HTTP_METHOD.POST,
+        method: HttpMethod.POST,
         path: '/',
         handler: ({body}) => {
           expect(body).to.be.eql(data);
           done();
         },
       });
-      const req = createRequestMock({method: HTTP_METHOD.POST, body: data});
+      const req = createRequestMock({method: HttpMethod.POST, body: data});
       const res = createResponseMock();
       router.requestListener(req, res);
     });
@@ -126,7 +126,7 @@ describe('TrieRouter', function () {
     it('passes headers to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: ({headers}) => {
           expect(headers).to.be.eql({
@@ -145,7 +145,7 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       const resBody = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: () => resBody,
       });
@@ -165,7 +165,7 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       const error = new Error();
       router.defineRoute({
-        method: HTTP_METHOD.GET,
+        method: HttpMethod.GET,
         path: '/',
         handler: () => {
           throw error;
@@ -190,7 +190,7 @@ describe('TrieRouter', function () {
         const order = [];
         const body = 'OK';
         router.defineRoute({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           preHandler: [
             () => {
@@ -218,7 +218,7 @@ describe('TrieRouter', function () {
         const order = [];
         const body = 'OK';
         router.defineRoute({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           handler: () => {
             order.push('handler');
@@ -246,7 +246,7 @@ describe('TrieRouter', function () {
         const order = [];
         const body = 'OK';
         router.defineRoute({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           preHandler: [
             ctx => {
@@ -278,7 +278,7 @@ describe('TrieRouter', function () {
         const body = 'OK';
         let requestContext;
         router.defineRoute({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           handler: ctx => {
             order.push('handler');
@@ -312,7 +312,7 @@ describe('TrieRouter', function () {
         const order = [];
         const body = 'OK';
         router.defineRoute({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           preHandler: [
             () => {
@@ -342,7 +342,7 @@ describe('TrieRouter', function () {
         const order = [];
         const body = 'OK';
         router.defineRoute({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           handler: () => {
             order.push('handler');
@@ -374,7 +374,7 @@ describe('TrieRouter', function () {
         const handlerBody = 'bar';
         const postHandlerBody = 'baz';
         router.defineRoute({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           preHandler() {
             order.push('preHandler');
@@ -405,7 +405,7 @@ describe('TrieRouter', function () {
         const handlerBody = 'foo';
         const postHandlerBody = 'bar';
         router.defineRoute({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           preHandler() {
             order.push('preHandler');
@@ -433,7 +433,7 @@ describe('TrieRouter', function () {
         const order = [];
         const body = 'OK';
         router.defineRoute({
-          method: HTTP_METHOD.GET,
+          method: HttpMethod.GET,
           path: '/',
           preHandler() {
             order.push('preHandler');

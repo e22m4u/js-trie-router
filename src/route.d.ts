@@ -5,7 +5,7 @@ import {RequestContext} from './request-context.js';
 /**
  * Http method.
  */
-export enum HTTP_METHOD {
+export enum HttpMethod {
   GET = 'get',
   POST = 'post',
   PUT = 'put',

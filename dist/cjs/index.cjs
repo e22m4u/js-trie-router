@@ -1842,9 +1842,9 @@ __export(src_exports, {
   EXPOSED_ERROR_PROPERTIES: () => EXPOSED_ERROR_PROPERTIES,
   ErrorSender: () => ErrorSender,
   HOOK_NAME: () => HOOK_NAME,
-  HTTP_METHOD: () => HTTP_METHOD,
   HookInvoker: () => HookInvoker,
   HookRegistry: () => HookRegistry,
+  HttpMethod: () => HttpMethod,
   METHODS_WITH_BODY: () => METHODS_WITH_BODY,
   QueryParser: () => QueryParser,
   RequestContext: () => RequestContext,
@@ -2512,7 +2512,7 @@ var HookInvoker = class extends DebuggableService {
 };
 
 // src/route.js
-var HTTP_METHOD = {
+var HttpMethod = {
   GET: "GET",
   POST: "POST",
   PUT: "PUT",
@@ -3501,7 +3501,7 @@ var TrieRouter = class extends DebuggableService {
    * ```
    * const router = new TrieRouter();
    * router.defineRoute({
-   *   method: HTTP_METHOD.GET,        // Request method.
+   *   method: HttpMethod.GET,        // Request method.
    *   path: '/',                      // Path template.
    *   handler: ctx => 'Hello world!', // Request handler.
    * });
@@ -3511,7 +3511,7 @@ var TrieRouter = class extends DebuggableService {
    * ```
    * const router = new TrieRouter();
    * router.defineRoute({
-   *   method: HTTP_METHOD.POST,       // Request method.
+   *   method: HttpMethod.POST,       // Request method.
    *   path: '/users/:id',             // The path template may have parameters.
    *   preHandler(ctx) { ... },        // The "preHandler" is executed before a route handler.
    *   handler(ctx) { ... },           // Request handler function.
@@ -3646,9 +3646,9 @@ var TrieRouter = class extends DebuggableService {
   EXPOSED_ERROR_PROPERTIES,
   ErrorSender,
   HOOK_NAME,
-  HTTP_METHOD,
   HookInvoker,
   HookRegistry,
+  HttpMethod,
   METHODS_WITH_BODY,
   QueryParser,
   RequestContext,
