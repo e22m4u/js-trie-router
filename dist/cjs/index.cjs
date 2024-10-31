@@ -3411,12 +3411,6 @@ var RequestContext = class {
    */
   params = {};
   /**
-   * Parsed body.
-   *
-   * @type {*}
-   */
-  body;
-  /**
    * Headers.
    *
    * @type {object}
@@ -3428,6 +3422,12 @@ var RequestContext = class {
    * @type {object}
    */
   cookie = {};
+  /**
+   * Parsed body.
+   *
+   * @type {*}
+   */
+  body;
   /**
    * Method.
    *

@@ -44,13 +44,6 @@ export class RequestContext {
   params = {};
 
   /**
-   * Parsed body.
-   *
-   * @type {*}
-   */
-  body;
-
-  /**
    * Headers.
    *
    * @type {object}
@@ -63,6 +56,13 @@ export class RequestContext {
    * @type {object}
    */
   cookie = {};
+
+  /**
+   * Parsed body.
+   *
+   * @type {*}
+   */
+  body;
 
   /**
    * Method.

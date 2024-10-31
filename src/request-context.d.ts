@@ -52,6 +52,11 @@ export declare class RequestContext {
   cookie: ParsedCookie;
 
   /**
+   * Body.
+   */
+  body: unknown;
+
+  /**
    * Method.
    */
   get method(): string;

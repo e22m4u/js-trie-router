@@ -75,6 +75,7 @@ set with contents of a parsed incoming request.
 - `method: string` request method in uppercase, e.g. `GET`, `POST`, etc.
 - `path: string` path including query string, e.g. `/myPath?foo=bar`
 - `pathname: string` request path, e.g. `/myMath`
+- `body: unknown` request body
 
 Example of accessing the context from a route handler.
 
