@@ -1842,8 +1842,8 @@ __export(src_exports, {
   DataSender: () => DataSender,
   EXPOSED_ERROR_PROPERTIES: () => EXPOSED_ERROR_PROPERTIES,
   ErrorSender: () => ErrorSender,
-  HOOK_NAME: () => HOOK_NAME,
   HookInvoker: () => HookInvoker,
+  HookName: () => HookName,
   HookRegistry: () => HookRegistry,
   HttpMethod: () => HttpMethod,
   METHODS_WITH_BODY: () => METHODS_WITH_BODY,
@@ -2713,7 +2713,7 @@ var DebuggableService = class extends Service {
 };
 
 // src/hooks/hook-registry.js
-var HOOK_NAME = {
+var HookName = {
   PRE_HANDLER: "preHandler",
   POST_HANDLER: "postHandler"
 };
@@ -2735,7 +2735,7 @@ var HookRegistry = class extends DebuggableService {
   addHook(name, hook) {
     if (!name || typeof name !== "string")
       throw new Errorf("The hook name is required, but %v given.", name);
-    if (!Object.values(HOOK_NAME).includes(name))
+    if (!Object.values(HookName).includes(name))
       throw new Errorf("The hook name %v is not supported.", name);
     if (!hook || typeof hook !== "function")
       throw new Errorf(
@@ -2758,7 +2758,7 @@ var HookRegistry = class extends DebuggableService {
   hasHook(name, hook) {
     if (!name || typeof name !== "string")
       throw new Errorf("The hook name is required, but %v given.", name);
-    if (!Object.values(HOOK_NAME).includes(name))
+    if (!Object.values(HookName).includes(name))
       throw new Errorf("The hook name %v is not supported.", name);
     if (!hook || typeof hook !== "function")
       throw new Errorf(
@@ -2778,7 +2778,7 @@ var HookRegistry = class extends DebuggableService {
   getHooks(name) {
     if (!name || typeof name !== "string")
       throw new Errorf("The hook name is required, but %v given.", name);
-    if (!Object.values(HOOK_NAME).includes(name))
+    if (!Object.values(HookName).includes(name))
       throw new Errorf("The hook name %v is not supported.", name);
     return this._hooks.get(name) || [];
   }
@@ -2806,7 +2806,7 @@ var HookInvoker = class extends DebuggableService {
         'The parameter "hookName" of the HookInvoker.invokeAndContinueUntilValueReceived should be a non-empty String, but %v given.',
         hookName
       );
-    if (!Object.values(HOOK_NAME).includes(hookName))
+    if (!Object.values(HookName).includes(hookName))
       throw new Errorf("The hook name %v is not supported.", hookName);
     if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
       throw new Errorf(
@@ -2945,13 +2945,13 @@ var Route = class {
     if (routeDef.preHandler != null) {
       const preHandlerHooks = Array.isArray(routeDef.preHandler) ? routeDef.preHandler : [routeDef.preHandler];
       preHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(HOOK_NAME.PRE_HANDLER, hook);
+        this._hookRegistry.addHook(HookName.PRE_HANDLER, hook);
       });
     }
     if (routeDef.postHandler != null) {
       const postHandlerHooks = Array.isArray(routeDef.postHandler) ? routeDef.postHandler : [routeDef.postHandler];
       postHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(HOOK_NAME.POST_HANDLER, hook);
+        this._hookRegistry.addHook(HookName.POST_HANDLER, hook);
       });
     }
   }
@@ -3908,7 +3908,7 @@ var TrieRouter = class extends DebuggableService {
       try {
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
-          HOOK_NAME.PRE_HANDLER,
+          HookName.PRE_HANDLER,
           res,
           context
         );
@@ -3918,7 +3918,7 @@ var TrieRouter = class extends DebuggableService {
           if (isPromise(data)) data = await data;
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
             route,
-            HOOK_NAME.POST_HANDLER,
+            HookName.POST_HANDLER,
             res,
             context,
             data
@@ -3943,20 +3943,20 @@ var TrieRouter = class extends DebuggableService {
    * Example:
    * ```
    * import {TrieRouter} from '@e22m4u/js-trie-router';
-   * import {HOOK_NAME} from '@e22m4u/js-trie-router';
+   * import {HookName} from '@e22m4u/js-trie-router';
    *
    * // Router instance.
    * const router = new TrieRouter();
    *
    * // Adds the "preHandler" hook for each route.
    * router.addHook(
-   *   HOOK_NAME.PRE_HANDLER,
+   *   HookName.PRE_HANDLER,
    *   ctx => { ... },
    * );
    *
    * // Adds the "postHandler" hook for each route.
    * router.addHook(
-   *   HOOK_NAME.POST_HANDLER,
+   *   HookName.POST_HANDLER,
    *   ctx => { ... },
    * );
    * ```
@@ -3978,8 +3978,8 @@ var TrieRouter = class extends DebuggableService {
   DataSender,
   EXPOSED_ERROR_PROPERTIES,
   ErrorSender,
-  HOOK_NAME,
   HookInvoker,
+  HookName,
   HookRegistry,
   HttpMethod,
   METHODS_WITH_BODY,

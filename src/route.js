@@ -1,5 +1,5 @@
 import {Errorf} from '@e22m4u/js-format';
-import {HOOK_NAME} from './hooks/index.js';
+import {HookName} from './hooks/index.js';
 import {HookRegistry} from './hooks/index.js';
 import {createDebugger} from './utils/index.js';
 import {getRequestPathname} from './utils/index.js';
@@ -153,7 +153,7 @@ export class Route {
         ? routeDef.preHandler
         : [routeDef.preHandler];
       preHandlerHooks.forEach(hook => {
-        this._hookRegistry.addHook(HOOK_NAME.PRE_HANDLER, hook);
+        this._hookRegistry.addHook(HookName.PRE_HANDLER, hook);
       });
     }
     if (routeDef.postHandler != null) {
@@ -161,7 +161,7 @@ export class Route {
         ? routeDef.postHandler
         : [routeDef.postHandler];
       postHandlerHooks.forEach(hook => {
-        this._hookRegistry.addHook(HOOK_NAME.POST_HANDLER, hook);
+        this._hookRegistry.addHook(HookName.POST_HANDLER, hook);
       });
     }
   }

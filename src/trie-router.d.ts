@@ -1,7 +1,7 @@
 import {Route} from './route.js';
 import {RequestListener} from 'http';
+import {HookName} from './hooks/index.js';
 import {RouteDefinition} from './route.js';
-import {HOOK_NAME} from './hooks/index.js';
 import {RouterHook} from './hooks/index.js';
 import {DebuggableService} from './debuggable-service.js';
 
@@ -62,5 +62,5 @@ export declare class TrieRouter extends DebuggableService {
    * @param name
    * @param hook
    */
-  addHook(name: HOOK_NAME, hook: RouterHook): this;
+  addHook(name: HookName, hook: RouterHook): this;
 }

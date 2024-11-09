@@ -2,8 +2,8 @@ import {describe} from 'mocha';
 import {Route} from './route.js';
 import {expect} from './chai.js';
 import {HttpMethod} from './route.js';
+import {HookName} from './hooks/index.js';
 import {TrieRouter} from './trie-router.js';
-import {HOOK_NAME} from './hooks/index.js';
 import {HookRegistry} from './hooks/index.js';
 import {DataSender} from './senders/index.js';
 import {ErrorSender} from './senders/index.js';
@@ -460,7 +460,7 @@ describe('TrieRouter', function () {
     it('adds the given hook to the HookRegistry and returns itself', function () {
       const router = new TrieRouter();
       const reg = router.getService(HookRegistry);
-      const name = HOOK_NAME.PRE_HANDLER;
+      const name = HookName.PRE_HANDLER;
       const hook = () => undefined;
       expect(reg.hasHook(name, hook)).to.be.false;
       const res = router.addHook(name, hook);

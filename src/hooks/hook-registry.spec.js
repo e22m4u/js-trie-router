@@ -1,6 +1,6 @@
 import {expect} from '../chai.js';
 import {format} from '@e22m4u/js-format';
-import {HOOK_NAME} from './hook-registry.js';
+import {HookName} from './hook-registry.js';
 import {HookRegistry} from './hook-registry.js';
 
 describe('HookRegistry', function () {
@@ -19,12 +19,12 @@ describe('HookRegistry', function () {
       expect(throwable([])).to.throw(error('Array'));
       expect(throwable(undefined)).to.throw(error('undefined'));
       expect(throwable(() => undefined)).to.throw(error('Function'));
-      throwable(HOOK_NAME.PRE_HANDLER)();
+      throwable(HookName.PRE_HANDLER)();
     });
 
     it('requires the parameter "hook" to be a Function', function () {
       const s = new HookRegistry();
-      const throwable = v => () => s.addHook(HOOK_NAME.PRE_HANDLER, v);
+      const throwable = v => () => s.addHook(HookName.PRE_HANDLER, v);
       const error = v =>
         format('The hook "preHandler" should be a Function, but %s given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
@@ -43,14 +43,14 @@ describe('HookRegistry', function () {
     it('requires the parameter "name" to be a supported hook', function () {
       const s = new HookRegistry();
       const hook = () => undefined;
-      Object.values(HOOK_NAME).forEach(name => s.addHook(name, hook));
+      Object.values(HookName).forEach(name => s.addHook(name, hook));
       const throwable = () => s.addHook('unknown', hook);
       expect(throwable).to.throw('The hook name "unknown" is not supported.');
     });
 
     it('sets the given function to the map array by the hook name', function () {
       const s = new HookRegistry();
-      const name = HOOK_NAME.PRE_HANDLER;
+      const name = HookName.PRE_HANDLER;
       const hook = () => undefined;
       s.addHook(name, hook);
       expect(s._hooks.get(name)).to.include(hook);
@@ -59,7 +59,7 @@ describe('HookRegistry', function () {
     it('returns this', function () {
       const s = new HookRegistry();
       const hook = () => undefined;
-      const name = HOOK_NAME.PRE_HANDLER;
+      const name = HookName.PRE_HANDLER;
       const res = s.addHook(name, hook);
       expect(res).to.be.eq(s);
     });
@@ -80,12 +80,12 @@ describe('HookRegistry', function () {
       expect(throwable([])).to.throw(error('Array'));
       expect(throwable(undefined)).to.throw(error('undefined'));
       expect(throwable(() => undefined)).to.throw(error('Function'));
-      throwable(HOOK_NAME.PRE_HANDLER)();
+      throwable(HookName.PRE_HANDLER)();
     });
 
     it('requires the parameter "hook" to be a Function', function () {
       const s = new HookRegistry();
-      const throwable = v => () => s.hasHook(HOOK_NAME.PRE_HANDLER, v);
+      const throwable = v => () => s.hasHook(HookName.PRE_HANDLER, v);
       const error = v =>
         format('The hook "preHandler" should be a Function, but %s given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
@@ -104,14 +104,14 @@ describe('HookRegistry', function () {
     it('requires the parameter "name" to be a supported hook', function () {
       const s = new HookRegistry();
       const hook = () => undefined;
-      Object.values(HOOK_NAME).forEach(name => s.hasHook(name, hook));
+      Object.values(HookName).forEach(name => s.hasHook(name, hook));
       const throwable = () => s.hasHook('unknown', hook);
       expect(throwable).to.throw('The hook name "unknown" is not supported.');
     });
 
     it('returns true if the given hook is set or false', function () {
       const s = new HookRegistry();
-      const name = HOOK_NAME.PRE_HANDLER;
+      const name = HookName.PRE_HANDLER;
       const hook = () => undefined;
       expect(s.hasHook(name, hook)).to.be.false;
       s.addHook(name, hook);
@@ -134,12 +134,12 @@ describe('HookRegistry', function () {
       expect(throwable([])).to.throw(error('Array'));
       expect(throwable(undefined)).to.throw(error('undefined'));
       expect(throwable(() => undefined)).to.throw(error('Function'));
-      throwable(HOOK_NAME.PRE_HANDLER)();
+      throwable(HookName.PRE_HANDLER)();
     });
 
     it('requires the parameter "name" to be a supported hook', function () {
       const s = new HookRegistry();
-      Object.values(HOOK_NAME).forEach(name => s.getHooks(name));
+      Object.values(HookName).forEach(name => s.getHooks(name));
       const throwable = () => s.getHooks('unknown');
       expect(throwable).to.throw('The hook name "unknown" is not supported.');
     });
@@ -147,7 +147,7 @@ describe('HookRegistry', function () {
     it('returns existing hooks', function () {
       const s = new HookRegistry();
       const hook = () => undefined;
-      const name = HOOK_NAME.PRE_HANDLER;
+      const name = HookName.PRE_HANDLER;
       const res1 = s.getHooks(name);
       expect(res1).to.be.eql([]);
       s.addHook(name, hook);
@@ -158,7 +158,7 @@ describe('HookRegistry', function () {
 
     it('returns an empty array if no hook exists', function () {
       const s = new HookRegistry();
-      const res = s.getHooks(HOOK_NAME.PRE_HANDLER);
+      const res = s.getHooks(HookName.PRE_HANDLER);
       expect(res).to.be.eql([]);
     });
   });

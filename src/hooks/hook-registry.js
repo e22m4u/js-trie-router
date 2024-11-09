@@ -9,7 +9,7 @@ import {DebuggableService} from '../debuggable-service.js';
  *   POST_HANDLER: 'postHandler',
  * }}
  */
-export const HOOK_NAME = {
+export const HookName = {
   PRE_HANDLER: 'preHandler',
   POST_HANDLER: 'postHandler',
 };
@@ -36,7 +36,7 @@ export class HookRegistry extends DebuggableService {
   addHook(name, hook) {
     if (!name || typeof name !== 'string')
       throw new Errorf('The hook name is required, but %v given.', name);
-    if (!Object.values(HOOK_NAME).includes(name))
+    if (!Object.values(HookName).includes(name))
       throw new Errorf('The hook name %v is not supported.', name);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
@@ -60,7 +60,7 @@ export class HookRegistry extends DebuggableService {
   hasHook(name, hook) {
     if (!name || typeof name !== 'string')
       throw new Errorf('The hook name is required, but %v given.', name);
-    if (!Object.values(HOOK_NAME).includes(name))
+    if (!Object.values(HookName).includes(name))
       throw new Errorf('The hook name %v is not supported.', name);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
@@ -81,7 +81,7 @@ export class HookRegistry extends DebuggableService {
   getHooks(name) {
     if (!name || typeof name !== 'string')
       throw new Errorf('The hook name is required, but %v given.', name);
-    if (!Object.values(HOOK_NAME).includes(name))
+    if (!Object.values(HookName).includes(name))
       throw new Errorf('The hook name %v is not supported.', name);
     return this._hooks.get(name) || [];
   }

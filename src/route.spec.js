@@ -2,7 +2,7 @@ import {Route} from './route.js';
 import {expect} from './chai.js';
 import {HttpMethod} from './route.js';
 import {format} from '@e22m4u/js-format';
-import {HOOK_NAME} from './hooks/index.js';
+import {HookName} from './hooks/index.js';
 import {createRequestMock} from './utils/index.js';
 import {createResponseMock} from './utils/index.js';
 import {RequestContext} from './request-context.js';
@@ -232,7 +232,7 @@ describe('Route', function () {
         preHandler: value,
         handler: () => undefined,
       });
-      expect(route.hookRegistry.hasHook(HOOK_NAME.PRE_HANDLER, value)).to.be
+      expect(route.hookRegistry.hasHook(HookName.PRE_HANDLER, value)).to.be
         .true;
     });
 
@@ -244,9 +244,9 @@ describe('Route', function () {
         preHandler: value,
         handler: () => undefined,
       });
-      expect(route.hookRegistry.hasHook(HOOK_NAME.PRE_HANDLER, value[0])).to.be
+      expect(route.hookRegistry.hasHook(HookName.PRE_HANDLER, value[0])).to.be
         .true;
-      expect(route.hookRegistry.hasHook(HOOK_NAME.PRE_HANDLER, value[1])).to.be
+      expect(route.hookRegistry.hasHook(HookName.PRE_HANDLER, value[1])).to.be
         .true;
     });
 
@@ -258,7 +258,7 @@ describe('Route', function () {
         handler: () => undefined,
         postHandler: value,
       });
-      expect(route.hookRegistry.hasHook(HOOK_NAME.POST_HANDLER, value)).to.be
+      expect(route.hookRegistry.hasHook(HookName.POST_HANDLER, value)).to.be
         .true;
     });
 
@@ -270,9 +270,9 @@ describe('Route', function () {
         handler: () => undefined,
         postHandler: value,
       });
-      expect(route.hookRegistry.hasHook(HOOK_NAME.POST_HANDLER, value[0])).to.be
+      expect(route.hookRegistry.hasHook(HookName.POST_HANDLER, value[0])).to.be
         .true;
-      expect(route.hookRegistry.hasHook(HOOK_NAME.POST_HANDLER, value[1])).to.be
+      expect(route.hookRegistry.hasHook(HookName.POST_HANDLER, value[1])).to.be
         .true;
     });
   });

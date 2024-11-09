@@ -1,7 +1,7 @@
 import {Route} from '../route.js';
 import {ServerResponse} from 'http';
 import {ValueOrPromise} from '../types.js';
-import {HOOK_NAME} from './hook-registry.js';
+import {HookName} from './hook-registry.js';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
@@ -18,7 +18,7 @@ export declare class HookInvoker extends DebuggableService {
    */
   invokeAndContinueUntilValueReceived(
     route: Route,
-    hookName: HOOK_NAME,
+    hookName: HookName,
     response: ServerResponse,
     ...args: unknown[]
   ): ValueOrPromise<unknown>;

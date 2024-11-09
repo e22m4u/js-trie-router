@@ -1,5 +1,5 @@
+import {HookName} from './hooks/index.js';
 import {isPromise} from './utils/index.js';
-import {HOOK_NAME} from './hooks/index.js';
 import {HookInvoker} from './hooks/index.js';
 import {DataSender} from './senders/index.js';
 import {HookRegistry} from './hooks/index.js';
@@ -118,7 +118,7 @@ export class TrieRouter extends DebuggableService {
         // то такое значение используется в качестве ответа
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
-          HOOK_NAME.PRE_HANDLER,
+          HookName.PRE_HANDLER,
           res,
           context,
         );
@@ -134,7 +134,7 @@ export class TrieRouter extends DebuggableService {
           // в качестве ответа
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
             route,
-            HOOK_NAME.POST_HANDLER,
+            HookName.POST_HANDLER,
             res,
             context,
             data,
@@ -160,20 +160,20 @@ export class TrieRouter extends DebuggableService {
    * Example:
    * ```
    * import {TrieRouter} from '@e22m4u/js-trie-router';
-   * import {HOOK_NAME} from '@e22m4u/js-trie-router';
+   * import {HookName} from '@e22m4u/js-trie-router';
    *
    * // Router instance.
    * const router = new TrieRouter();
    *
    * // Adds the "preHandler" hook for each route.
    * router.addHook(
-   *   HOOK_NAME.PRE_HANDLER,
+   *   HookName.PRE_HANDLER,
    *   ctx => { ... },
    * );
    *
    * // Adds the "postHandler" hook for each route.
    * router.addHook(
-   *   HOOK_NAME.POST_HANDLER,
+   *   HookName.POST_HANDLER,
    *   ctx => { ... },
    * );
    * ```
