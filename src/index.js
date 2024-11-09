@@ -1,4 +1,5 @@
 export * from './route.js';
+export * from './utils/index.js';
 export * from './hooks/index.js';
 export * from './trie-router.js';
 export * from './parsers/index.js';

@@ -1836,6 +1836,7 @@ var require_dist = __commonJS({
 // src/index.js
 var src_exports = {};
 __export(src_exports, {
+  BUFFER_ENCODING_LIST: () => BUFFER_ENCODING_LIST,
   BodyParser: () => BodyParser,
   CookieParser: () => CookieParser,
   DataSender: () => DataSender,
@@ -1854,7 +1855,18 @@ __export(src_exports, {
   RouterOptions: () => RouterOptions,
   TrieRouter: () => TrieRouter,
   UNPARSABLE_MEDIA_TYPES: () => UNPARSABLE_MEDIA_TYPES,
-  parseJsonBody: () => parseJsonBody
+  createCookieString: () => createCookieString,
+  createDebugger: () => createDebugger,
+  createError: () => createError,
+  fetchRequestBody: () => fetchRequestBody,
+  getRequestPathname: () => getRequestPathname,
+  isPromise: () => isPromise,
+  isReadableStream: () => isReadableStream,
+  isResponseSent: () => isResponseSent,
+  isWritableStream: () => isWritableStream,
+  parseCookie: () => parseCookie,
+  parseJsonBody: () => parseJsonBody,
+  toCamelCase: () => toCamelCase
 });
 module.exports = __toCommonJS(src_exports);
 
@@ -2147,6 +2159,23 @@ function fetchRequestBody(req, bodyBytesLimit = 0) {
     req.on("error", onError);
     req.resume();
   });
+}
+
+// src/utils/create-cookie-string.js
+function createCookieString(data) {
+  if (!data || typeof data !== "object" || Array.isArray(data))
+    throw new Errorf(
+      'The first parameter of "createCookieString" should be an Object, but %v given.',
+      data
+    );
+  let cookies = "";
+  for (const key in data) {
+    if (!Object.prototype.hasOwnProperty.call(data, key)) continue;
+    const val = data[key];
+    if (val == null) continue;
+    cookies += `${key}=${val}; `;
+  }
+  return cookies.trim();
 }
 
 // src/utils/get-request-pathname.js
@@ -3640,6 +3669,7 @@ var TrieRouter = class extends DebuggableService {
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  BUFFER_ENCODING_LIST,
   BodyParser,
   CookieParser,
   DataSender,
@@ -3658,7 +3688,18 @@ var TrieRouter = class extends DebuggableService {
   RouterOptions,
   TrieRouter,
   UNPARSABLE_MEDIA_TYPES,
-  parseJsonBody
+  createCookieString,
+  createDebugger,
+  createError,
+  fetchRequestBody,
+  getRequestPathname,
+  isPromise,
+  isReadableStream,
+  isResponseSent,
+  isWritableStream,
+  parseCookie,
+  parseJsonBody,
+  toCamelCase
 });
 /*! Bundled license information:
 
