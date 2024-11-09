@@ -2,9 +2,9 @@ import {Writable} from 'stream';
 import {expect} from '../chai.js';
 import HttpErrors from 'http-errors';
 import {ErrorSender} from './error-sender.js';
+import {createRequestMock} from '../utils/index.js';
+import {createResponseMock} from '../utils/index.js';
 import {EXPOSED_ERROR_PROPERTIES} from './error-sender.js';
-import {createRequestMock} from '../utils/create-request-mock.js';
-import {createResponseMock} from '../utils/create-response-mock.js';
 
 describe('ErrorSender', function () {
   describe('send', function () {

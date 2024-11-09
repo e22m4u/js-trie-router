@@ -5,7 +5,7 @@ import {format} from '@e22m4u/js-format';
 import {HOOK_NAME} from './hook-registry.js';
 import {HookInvoker} from './hook-invoker.js';
 import {HookRegistry} from './hook-registry.js';
-import {createResponseMock} from '../utils/create-response-mock.js';
+import {createResponseMock} from '../utils/index.js';
 
 describe('HookInvoker', function () {
   describe('invokeAndContinueUntilValueReceived', function () {

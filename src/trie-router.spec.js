@@ -7,9 +7,9 @@ import {HOOK_NAME} from './hooks/index.js';
 import {HookRegistry} from './hooks/index.js';
 import {DataSender} from './senders/index.js';
 import {ErrorSender} from './senders/index.js';
+import {createRequestMock} from './utils/index.js';
+import {createResponseMock} from './utils/index.js';
 import {RequestContext} from './request-context.js';
-import {createRequestMock} from './utils/create-request-mock.js';
-import {createResponseMock} from './utils/create-response-mock.js';
 
 describe('TrieRouter', function () {
   describe('defineRoute', function () {

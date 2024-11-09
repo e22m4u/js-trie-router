@@ -3,10 +3,10 @@ import {expect} from './chai.js';
 import {HttpMethod} from './route.js';
 import {format} from '@e22m4u/js-format';
 import {HOOK_NAME} from './hooks/index.js';
+import {createRequestMock} from './utils/index.js';
+import {createResponseMock} from './utils/index.js';
 import {RequestContext} from './request-context.js';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {createRequestMock} from './utils/create-request-mock.js';
-import {createResponseMock} from './utils/create-response-mock.js';
 
 describe('Route', function () {
   describe('constructor', function () {

@@ -2,7 +2,7 @@ import {expect} from '../chai.js';
 import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';
 import {RequestParser} from './request-parser.js';
-import {createRequestMock} from '../utils/create-request-mock.js';
+import {createRequestMock} from '../utils/index.js';
 
 describe('RequestParser', function () {
   describe('parse', function () {

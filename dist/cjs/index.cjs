@@ -1858,12 +1858,15 @@ __export(src_exports, {
   createCookieString: () => createCookieString,
   createDebugger: () => createDebugger,
   createError: () => createError,
+  createRequestMock: () => createRequestMock,
+  createResponseMock: () => createResponseMock,
   fetchRequestBody: () => fetchRequestBody,
   getRequestPathname: () => getRequestPathname,
   isPromise: () => isPromise,
   isReadableStream: () => isReadableStream,
   isResponseSent: () => isResponseSent,
   isWritableStream: () => isWritableStream,
+  parseContentType: () => parseContentType,
   parseCookie: () => parseCookie,
   parseJsonBody: () => parseJsonBody,
   toCamelCase: () => toCamelCase
@@ -2042,15 +2045,6 @@ function isReadableStream(value) {
   return typeof value.pipe === "function";
 }
 
-// src/utils/is-writable-stream.js
-function isWritableStream(value) {
-  if (!value || typeof value !== "object") return false;
-  return typeof value.end === "function";
-}
-
-// src/utils/fetch-request-body.js
-var import_http_errors = __toESM(require_http_errors(), 1);
-
 // src/utils/parse-content-type.js
 function parseContentType(input) {
   if (typeof input !== "string")
@@ -2069,7 +2063,14 @@ function parseContentType(input) {
   return res;
 }
 
+// src/utils/is-writable-stream.js
+function isWritableStream(value) {
+  if (!value || typeof value !== "object") return false;
+  return typeof value.end === "function";
+}
+
 // src/utils/fetch-request-body.js
+var import_http_errors = __toESM(require_http_errors(), 1);
 var import_http = require("http");
 var BUFFER_ENCODING_LIST = [
   "ascii",
@@ -2161,6 +2162,12 @@ function fetchRequestBody(req, bodyBytesLimit = 0) {
   });
 }
 
+// src/utils/create-request-mock.js
+var import_net = require("net");
+var import_tls = require("tls");
+var import_http2 = require("http");
+var import_querystring = __toESM(require("querystring"), 1);
+
 // src/utils/create-cookie-string.js
 function createCookieString(data) {
   if (!data || typeof data !== "object" || Array.isArray(data))
@@ -2176,6 +2183,302 @@ function createCookieString(data) {
     cookies += `${key}=${val}; `;
   }
   return cookies.trim();
+}
+
+// src/utils/create-request-mock.js
+function createRequestMock(patch) {
+  if (patch != null && typeof patch !== "object" || Array.isArray(patch)) {
+    throw new Errorf(
+      'The first parameter of "createRequestMock" should be an Object, but %v given.',
+      patch
+    );
+  }
+  patch = patch || {};
+  if (patch.host != null && typeof patch.host !== "string")
+    throw new Errorf(
+      'The parameter "host" of "createRequestMock" should be a String, but %v given.',
+      patch.host
+    );
+  if (patch.method != null && typeof patch.method !== "string")
+    throw new Errorf(
+      'The parameter "method" of "createRequestMock" should be a String, but %v given.',
+      patch.method
+    );
+  if (patch.secure != null && typeof patch.secure !== "boolean")
+    throw new Errorf(
+      'The parameter "secure" of "createRequestMock" should be a Boolean, but %v given.',
+      patch.secure
+    );
+  if (patch.path != null && typeof patch.path !== "string")
+    throw new Errorf(
+      'The parameter "path" of "createRequestMock" should be a String, but %v given.',
+      patch.path
+    );
+  if (patch.query != null && typeof patch.query !== "object" && typeof patch.query !== "string" || Array.isArray(patch.query)) {
+    throw new Errorf(
+      'The parameter "query" of "createRequestMock" should be a String or Object, but %v given.',
+      patch.query
+    );
+  }
+  if (patch.cookie != null && typeof patch.cookie !== "string" && typeof patch.cookie !== "object" || Array.isArray(patch.cookie)) {
+    throw new Errorf(
+      'The parameter "cookie" of "createRequestMock" should be a String or Object, but %v given.',
+      patch.cookie
+    );
+  }
+  if (patch.headers != null && typeof patch.headers !== "object" || Array.isArray(patch.headers)) {
+    throw new Errorf(
+      'The parameter "headers" of "createRequestMock" should be an Object, but %v given.',
+      patch.headers
+    );
+  }
+  if (patch.stream != null && !isReadableStream(patch.stream))
+    throw new Errorf(
+      'The parameter "stream" of "createRequestMock" should be a Stream, but %v given.',
+      patch.stream
+    );
+  if (patch.encoding != null) {
+    if (typeof patch.encoding !== "string")
+      throw new Errorf(
+        'The parameter "encoding" of "createRequestMock" should be a String, but %v given.',
+        patch.encoding
+      );
+    if (!BUFFER_ENCODING_LIST.includes(patch.encoding))
+      throw new Errorf("Buffer encoding %v is not supported.", patch.encoding);
+  }
+  if (patch.stream) {
+    if (patch.secure != null)
+      throw new Errorf(
+        'The "createRequestMock" does not allow specifying the "stream" and "secure" options simultaneously.'
+      );
+    if (patch.body != null)
+      throw new Errorf(
+        'The "createRequestMock" does not allow specifying the "stream" and "body" options simultaneously.'
+      );
+    if (patch.encoding != null)
+      throw new Errorf(
+        'The "createRequestMock" does not allow specifying the "stream" and "encoding" options simultaneously.'
+      );
+  }
+  const req = patch.stream || createRequestStream(patch.secure, patch.body, patch.encoding);
+  req.url = createRequestUrl(patch.path || "/", patch.query);
+  req.headers = createRequestHeaders(
+    patch.host,
+    patch.secure,
+    patch.body,
+    patch.cookie,
+    patch.encoding,
+    patch.headers
+  );
+  req.method = (patch.method || "get").toUpperCase();
+  return req;
+}
+function createRequestStream(secure, body, encoding) {
+  if (encoding != null && typeof encoding !== "string")
+    throw new Errorf(
+      'The parameter "encoding" of "createRequestStream" should be a String, but %v given.',
+      encoding
+    );
+  encoding = encoding || "utf-8";
+  let socket = new import_net.Socket();
+  if (secure) socket = new import_tls.TLSSocket(socket);
+  const req = new import_http2.IncomingMessage(socket);
+  if (body != null) {
+    if (typeof body === "string") {
+      req.push(body, encoding);
+    } else if (Buffer.isBuffer(body)) {
+      req.push(body);
+    } else {
+      req.push(JSON.stringify(body));
+    }
+  }
+  req.push(null);
+  return req;
+}
+function createRequestUrl(path, query) {
+  if (typeof path !== "string")
+    throw new Errorf(
+      'The parameter "path" of "createRequestUrl" should be a String, but %v given.',
+      path
+    );
+  if (query != null && typeof query !== "string" && typeof query !== "object" || Array.isArray(query)) {
+    throw new Errorf(
+      'The parameter "query" of "createRequestUrl" should be a String or Object, but %v given.',
+      query
+    );
+  }
+  let url = ("/" + path).replace("//", "/");
+  if (typeof query === "object") {
+    const qs = import_querystring.default.stringify(query);
+    if (qs) url += `?${qs}`;
+  } else if (typeof query === "string") {
+    url += `?${query.replace(/^\?/, "")}`;
+  }
+  return url;
+}
+function createRequestHeaders(host, secure, body, cookie, encoding, headers) {
+  if (host != null && typeof host !== "string")
+    throw new Errorf(
+      'The parameter "host" of "createRequestHeaders" a non-empty String, but %v given.',
+      host
+    );
+  host = host || "localhost";
+  if (secure != null && typeof secure !== "boolean")
+    throw new Errorf(
+      'The parameter "secure" of "createRequestHeaders" should be a String, but %v given.',
+      secure
+    );
+  secure = Boolean(secure);
+  if (cookie != null && typeof cookie !== "object" && typeof cookie !== "string" || Array.isArray(cookie)) {
+    throw new Errorf(
+      'The parameter "cookie" of "createRequestHeaders" should be a String or Object, but %v given.',
+      cookie
+    );
+  }
+  if (headers != null && typeof headers !== "object" || Array.isArray(headers)) {
+    throw new Errorf(
+      'The parameter "headers" of "createRequestHeaders" should be an Object, but %v given.',
+      headers
+    );
+  }
+  headers = headers || {};
+  if (encoding != null && typeof encoding !== "string")
+    throw new Errorf(
+      'The parameter "encoding" of "createRequestHeaders" should be a String, but %v given.',
+      encoding
+    );
+  encoding = encoding || "utf-8";
+  const obj = { ...headers };
+  obj["host"] = host;
+  if (secure) obj["x-forwarded-proto"] = "https";
+  if (cookie != null) {
+    if (typeof cookie === "string") {
+      obj["cookie"] = obj["cookie"] ? obj["cookie"] : "";
+      obj["cookie"] += cookie;
+    } else if (typeof cookie === "object") {
+      obj["cookie"] = obj["cookie"] ? obj["cookie"] : "";
+      obj["cookie"] += createCookieString(cookie);
+    }
+  }
+  if (obj["content-type"] == null) {
+    if (typeof body === "string") {
+      obj["content-type"] = "text/plain";
+    } else if (Buffer.isBuffer(body)) {
+      obj["content-type"] = "application/octet-stream";
+    } else if (typeof body === "object" || typeof body === "boolean" || typeof body === "number") {
+      obj["content-type"] = "application/json";
+    }
+  }
+  if (body != null && obj["content-length"] == null) {
+    if (typeof body === "string") {
+      const length = Buffer.byteLength(body, encoding);
+      obj["content-length"] = String(length);
+    } else if (Buffer.isBuffer(body)) {
+      const length = Buffer.byteLength(body);
+      obj["content-length"] = String(length);
+    } else if (typeof body === "object" || typeof body === "boolean" || typeof body === "number") {
+      const json = JSON.stringify(body);
+      const length = Buffer.byteLength(json, encoding);
+      obj["content-length"] = String(length);
+    }
+  }
+  return obj;
+}
+
+// src/utils/create-response-mock.js
+var import_stream = require("stream");
+function createResponseMock() {
+  const res = new import_stream.PassThrough();
+  patchEncoding(res);
+  patchHeaders(res);
+  patchBody(res);
+  return res;
+}
+function patchEncoding(res) {
+  Object.defineProperty(res, "_encoding", {
+    configurable: true,
+    writable: true,
+    value: void 0
+  });
+  Object.defineProperty(res, "setEncoding", {
+    configurable: true,
+    value: function(enc) {
+      this._encoding = enc;
+      return this;
+    }
+  });
+  Object.defineProperty(res, "getEncoding", {
+    configurable: true,
+    value: function() {
+      return this._encoding;
+    }
+  });
+}
+function patchHeaders(res) {
+  Object.defineProperty(res, "_headersSent", {
+    configurable: true,
+    writable: true,
+    value: false
+  });
+  Object.defineProperty(res, "headersSent", {
+    configurable: true,
+    get() {
+      return this._headersSent;
+    }
+  });
+  Object.defineProperty(res, "_headers", {
+    configurable: true,
+    writable: true,
+    value: {}
+  });
+  Object.defineProperty(res, "setHeader", {
+    configurable: true,
+    value: function(name, value) {
+      if (this.headersSent)
+        throw new Error(
+          "Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client"
+        );
+      const key = name.toLowerCase();
+      this._headers[key] = String(value);
+      return this;
+    }
+  });
+  Object.defineProperty(res, "getHeader", {
+    configurable: true,
+    value: function(name) {
+      return this._headers[name.toLowerCase()];
+    }
+  });
+  Object.defineProperty(res, "getHeaders", {
+    configurable: true,
+    value: function() {
+      return JSON.parse(JSON.stringify(this._headers));
+    }
+  });
+}
+function patchBody(res) {
+  let resolve, reject;
+  const promise = new Promise((res2, rej) => {
+    resolve = res2;
+    reject = rej;
+  });
+  const data = [];
+  res.on("data", (c) => data.push(c));
+  res.on("error", (e) => reject(e));
+  res.on("end", () => {
+    res._headersSent = true;
+    resolve(Buffer.concat(data));
+  });
+  Object.defineProperty(res, "getBody", {
+    configurable: true,
+    value: function() {
+      return promise.then((buffer) => {
+        const enc = this.getEncoding();
+        const str = buffer.toString(enc);
+        return data.length ? str : void 0;
+      });
+    }
+  });
 }
 
 // src/utils/get-request-pathname.js
@@ -2960,7 +3263,7 @@ function parseJsonBody(input) {
 }
 
 // src/parsers/query-parser.js
-var import_querystring = __toESM(require("querystring"), 1);
+var import_querystring2 = __toESM(require("querystring"), 1);
 var QueryParser = class extends DebuggableService {
   /**
    * Parse
@@ -2970,7 +3273,7 @@ var QueryParser = class extends DebuggableService {
    */
   parse(req) {
     const queryStr = req.url.replace(/^[^?]*\??/, "");
-    const query = queryStr ? import_querystring.default.parse(queryStr) : {};
+    const query = queryStr ? import_querystring2.default.parse(queryStr) : {};
     const queryKeys = Object.keys(query);
     if (queryKeys.length) {
       queryKeys.forEach((key) => {
@@ -3015,7 +3318,7 @@ var CookieParser = class extends DebuggableService {
 };
 
 // src/parsers/request-parser.js
-var import_http2 = require("http");
+var import_http3 = require("http");
 var RequestParser = class extends DebuggableService {
   /**
    * Parse.
@@ -3024,7 +3327,7 @@ var RequestParser = class extends DebuggableService {
    * @returns {Promise<object>|object}
    */
   parse(req) {
-    if (!(req instanceof import_http2.IncomingMessage))
+    if (!(req instanceof import_http3.IncomingMessage))
       throw new Errorf(
         "The first argument of RequestParser.parse should be an instance of IncomingMessage, but %v given.",
         req
@@ -3691,12 +3994,15 @@ var TrieRouter = class extends DebuggableService {
   createCookieString,
   createDebugger,
   createError,
+  createRequestMock,
+  createResponseMock,
   fetchRequestBody,
   getRequestPathname,
   isPromise,
   isReadableStream,
   isResponseSent,
   isWritableStream,
+  parseContentType,
   parseCookie,
   parseJsonBody,
   toCamelCase

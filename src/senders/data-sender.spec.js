@@ -1,7 +1,7 @@
 import {expect} from '../chai.js';
 import {Readable, Writable} from 'stream';
 import {DataSender} from './data-sender.js';
-import {createResponseMock} from '../utils/create-response-mock.js';
+import {createResponseMock} from '../utils/index.js';
 
 describe('DataSender', function () {
   describe('send', function () {

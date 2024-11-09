@@ -1,9 +1,9 @@
 import {expect} from './chai.js';
 import {format} from '@e22m4u/js-format';
+import {createRequestMock} from './utils/index.js';
 import {RequestContext} from './request-context.js';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {createRequestMock} from './utils/create-request-mock.js';
-import {createResponseMock} from './utils/create-response-mock.js';
+import {createResponseMock} from './utils/index.js';
 
 describe('RequestContext', function () {
   describe('constructor', function () {
