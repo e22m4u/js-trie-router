@@ -1,4 +1,5 @@
 import * as esbuild from 'esbuild';
+import packageJson from './package.json' with {type: 'json'};
 
 await esbuild.build({
   entryPoints: ['src/index.js'],
@@ -7,4 +8,9 @@ await esbuild.build({
   platform: 'node',
   target: ['node16'],
   bundle: true,
+  keepNames: true,
+  external: [
+    ...Object.keys(packageJson.peerDependencies || {}),
+    ...Object.keys(packageJson.dependencies || {}),
+  ],
 });
