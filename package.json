@@ -38,9 +38,9 @@
   "license": "MIT",
   "homepage": "https://github.com/e22m4u/js-trie-router",
   "dependencies": {
-    "@e22m4u/js-format": "~0.1.7",
-    "@e22m4u/js-path-trie": "~0.0.8",
-    "@e22m4u/js-service": "~0.1.11",
+    "@e22m4u/js-format": "0.1.x",
+    "@e22m4u/js-path-trie": "0.0.x",
+    "@e22m4u/js-service": "0.2.x",
     "debug": "~4.3.7",
     "http-errors": "~2.0.0",
     "statuses": "~2.0.1"
@@ -52,7 +52,7 @@
     "@types/chai-as-promised": "~8.0.1",
     "c8": "~10.1.2",
     "chai": "~5.1.2",
-    "chai-as-promised": "~8.0.0",
+    "chai-as-promised": "~8.0.1",
     "esbuild": "~0.24.0",
     "eslint": "~9.15.0",
     "eslint-config-prettier": "~9.1.0",
@@ -63,7 +63,7 @@
     "husky": "~9.1.7",
     "mocha": "~10.8.2",
     "prettier": "~3.3.3",
-    "rimraf": "^6.0.1",
+    "rimraf": "~6.0.1",
     "typescript": "~5.7.2"
   }
 }
