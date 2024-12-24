@@ -29,8 +29,8 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/index.js
-var src_exports = {};
-__export(src_exports, {
+var index_exports = {};
+__export(index_exports, {
   BUFFER_ENCODING_LIST: () => BUFFER_ENCODING_LIST,
   BodyParser: () => BodyParser,
   CookieParser: () => CookieParser,
@@ -66,7 +66,7 @@ __export(src_exports, {
   parseJsonBody: () => parseJsonBody,
   toCamelCase: () => toCamelCase
 });
-module.exports = __toCommonJS(src_exports);
+module.exports = __toCommonJS(index_exports);
 
 // src/route.js
 var import_js_format14 = require("@e22m4u/js-format");
