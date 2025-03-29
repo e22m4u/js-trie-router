@@ -2,6 +2,20 @@
   "name": "@e22m4u/js-trie-router",
   "version": "0.0.17",
   "description": "HTTP router for Node.js based on a prefix tree",
+  "author": "e22m4u <e22m4u@yandex.ru>",
+  "license": "MIT",
+  "keywords": [
+    "router",
+    "trie",
+    "http",
+    "server",
+    "nodejs"
+  ],
+  "homepage": "https://github.com/e22m4u/js-trie-router",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/e22m4u/js-trie-router.git"
+  },
   "type": "module",
   "types": "./src/index.d.ts",
   "module": "./src/index.js",
@@ -23,20 +37,6 @@
     "build:cjs": "rimraf ./dist/cjs && node --no-warnings=ExperimentalWarning build-cjs.js",
     "prepare": "husky"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/e22m4u/js-trie-router.git"
-  },
-  "keywords": [
-    "router",
-    "trie",
-    "http",
-    "server",
-    "nodejs"
-  ],
-  "author": "e22m4u <e22m4u@yandex.ru>",
-  "license": "MIT",
-  "homepage": "https://github.com/e22m4u/js-trie-router",
   "dependencies": {
     "@e22m4u/js-format": "~0.1.0",
     "@e22m4u/js-path-trie": "~0.0.1",
