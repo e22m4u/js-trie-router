@@ -1,25 +1,23 @@
 ## @e22m4u/js-trie-router
 
-*English | [Русский](./README-ru.md)*
+HTTP маршрутизатор для Node.js на основе
+[префиксного дерева](https://ru.wikipedia.org/wiki/Trie) (trie).
 
-HTTP router for Node.js based on
-a [prefix tree](https://en.wikipedia.org/wiki/Trie) (trie).
+- Поддержка [path-to-regexp](https://github.com/pillarjs/path-to-regexp) синтаксиса.
+- Автоматический парсинг JSON-тела запроса.
+- Парсинг строки запроса и заголовка `cookie`.
+- Поддержка `preHandler` и `postHandler` хуков.
+- Позволяет использовать асинхронные обработчики.
 
-- Supports [path-to-regexp](https://github.com/pillarjs/path-to-regexp) syntax.
-- Parses JSON request body automatically.
-- Parses query string and `cookie` header.
-- Supports `preHandler` and `postHandler` hooks.
-- Supports asynchronous handlers.
+## Установка
 
-## Installation
-
-Node.js 16 or higher is required.
+Требуется Node.js 16 и выше.
 
 ```bash
 npm install @e22m4u/js-trie-router
 ```
 
-The module supports ESM and CommonJS standards.
+Модуль поддерживает ESM и CommonJS стандарты.
 
 *ESM*
 
@@ -33,51 +31,51 @@ import {TrieRouter} from '@e22m4u/js-trie-router';
 const {TrieRouter} = require('@e22m4u/js-trie-router');
 ```
 
-## Overview
+## Обзор
 
-A basic example of creating a router instance, defining
-a route and startup Node.js HTTP server.
+Базовый пример создания экземпляра роутера, объявления маршрута
+и передачи слушателя запросов HTTP серверу.
 
 ```js
 import http from 'http';
 import {TrieRouter} from '@e22m4u/js-trie-router';
 
-const server = new http.Server(); // Node.js HTTP server
-const router = new TrieRouter();  // TrieRouter instance
+const server = new http.Server(); // создание экземпляра HTTP сервера
+const router = new TrieRouter();  // создание экземпляра роутера
 
-router.defineRoute({              // route definition
-  method: 'GET',                  // request method "GET", "POST", etc.
-  path: '/',                      // path template, example "/user/:id"
-  handler(ctx) {                  // route handler
+router.defineRoute({
+  method: 'GET',                  // метод запроса "GET", "POST" и т.д.
+  path: '/',                      // шаблон пути, пример "/user/:id"
+  handler(ctx) {                  // обработчик маршрута
     return 'Hello world!';
   },
 });
 
-server.on('request', router.requestListener); // inject request listener
-server.listen(3000, 'localhost');             // listen for requests
+server.on('request', router.requestListener); // подключение роутера
+server.listen(3000, 'localhost');             // прослушивание запросов
 
 // Open in browser http://localhost:3000
 ```
 
-### Request context
+### Контекст запроса
 
-The first parameter of a route handler is an instance
-of the `RequestContext` class which has a properties
-set with contents of a parsed incoming request.
+Первый параметр обработчика маршрута принимает экземпляр класса
+`RequestContext` с набором свойств, содержащих разобранные
+данные входящего запроса.
 
-- `container: ServiceContainer` instance of [service container](https://npmjs.com/package/@e22m4u/js-service)
-- `req: IncomingMessage` native incoming request stream
-- `res: ServerResponse` native server response stream
-- `params: ParsedParams` key-value object with path parameters
-- `query: ParsedQuery` key-value object with query string parameters
-- `headers: ParsedHeaders` key-value object with request headers
-- `cookie: ParsedCookie` key-value object of parsed `cookie` header
-- `method: string` request method in uppercase, e.g. `GET`, `POST`, etc.
-- `path: string` path including query string, e.g. `/myPath?foo=bar`
-- `pathname: string` request path, e.g. `/myMath`
-- `body: unknown` request body
+- `container: ServiceContainer` экземпляр [сервис-контейнера](https://npmjs.com/package/@e22m4u/js-service)
+- `req: IncomingMessage` нативный поток входящего запроса
+- `res: ServerResponse` нативный поток ответа сервера
+- `params: ParsedParams` объект ключ-значение с параметрами пути
+- `query: ParsedQuery` объект ключ-значение с параметрами строки запроса
+- `headers: ParsedHeaders` объект ключ-значение с заголовками запроса 
+- `cookie: ParsedCookie` объект ключ-значение разобранного заголовка `cookie`
+- `method: string` метод запроса в верхнем регистре, например `GET`, `POST` и т.д.
+- `path: string` путь включающий строку запроса, например `/myPath?foo=bar`
+- `pathname: string` путь запроса, например `/myMath`
+- `body: unknown` тело запроса
 
-Example of accessing the context from a route handler.
+Пример доступа к контексту из обработчика маршрута.
 
 ```js
 router.defineRoute({
@@ -100,12 +98,12 @@ router.defineRoute({
 });
 ```
 
-### Response sending
+### Отправка ответа
 
-Return value of a route handler is used as response data.
-Value type affects representation of a response data. For example,
-if a response data is of type `object`, it will be automatically
-serialized to JSON.
+Возвращаемое значение обработчика маршрута используется в качестве ответа
+сервера. Тип значения влияет на представление возвращаемых данных. Например,
+если результатом будет являться тип `object`, то такое значение автоматически
+сериализуется в JSON.
 
 | value     | content-type             |
 |-----------|--------------------------|
@@ -116,20 +114,19 @@ serialized to JSON.
 | `Buffer`  | application/octet-stream |
 | `Stream`  | application/octet-stream |
 
-Example of sending data as JSON.
+Пример возвращаемого значения обработчиком маршрута.
 
 ```js
-router.defineRoute({     // register a route
+router.defineRoute({     // регистрация маршрута
   // ...
-  handler(ctx) {         // incoming request handler
-    return {foo: 'bar'}; // response will be encoded to JSON
+  handler(ctx) {         // обработчик входящего запроса
+    return {foo: 'bar'}; // ответ будет представлен в виде JSON
   },
 });
 ```
 
-The request context `ctx` contains a native instance
-of the `ServerResponse` class from the `http` module,
-which can be used for manual response management.
+Контекст запроса `ctx` содержит нативный экземпляр класса `ServerResponse`
+модуля `http`, который может быть использован для ручного управления ответом.
 
 ```js
 router.defineRoute({
@@ -142,27 +139,27 @@ router.defineRoute({
 });
 ```
 
-### Route hooks
+### Хуки маршрута
 
-Defining a route with the `defineRoute` method allows
-to set up hooks to monitor and intercept requests and
-responses for a specific route.
+Определение маршрута методом `defineRoute` позволяет задать хуки
+для отслеживания и перехвата входящего запроса и ответа
+конкретного маршрута.
 
-- `preHandler` executes before a route handler
-- `postHandler` executes after a route handler
+- `preHandler` выполняется перед вызовом обработчика
+- `postHandler` выполняется после вызова обработчика
 
 #### preHandler
 
-Before calling a route handler, operations such as authorization
-and request validation may be performed in the `preHandler`
-hook.
+Перед вызовом обработчика маршрута может потребоваться выполнение
+таких операции как авторизация и проверка параметров запроса. Для
+этого можно использовать хук `preHandler`.
 
 ```js
-router.defineRoute({ // register a route
+router.defineRoute({ // регистрация маршрута
   // ...
   preHandler(ctx) {
-    // before the route handler
-    console.log(`incoming request ${ctx.method} ${ctx.path}`);
+    // перед обработчиком маршрута
+    console.log(`Incoming request ${ctx.method} ${ctx.path}`);
     // > incoming request GET /myPath
   },
   handler(ctx) {
@@ -171,86 +168,85 @@ router.defineRoute({ // register a route
 });
 ```
 
-A route handler will not be called if `preHandler` hook
-returns a value other than `undefined` and `null`, because
-that value will be sent as response data.
+Если хук `preHandler` возвращает значение отличное от `undefined` и `null`,
+то такое значение будет использовано в качестве ответа сервера, а вызов
+обработчика маршрута будет пропущен.
 
 ```js
-router.defineRoute({ // register a route
+router.defineRoute({ // регистрация маршрута
   // ...
   preHandler(ctx) {
-    // return the response data
+    // возвращение ответа сервера
     return 'Are you authorized?';
   },
   handler(ctx) {
-    // this handler will not be called
-    // because the "preHandler" hook
-    // has already sent the data
+    // данный обработчик не будет вызван, так как
+    // хук "preHandler" уже отправил ответ
   },
 });
 ```
 
 #### postHandler
 
-Return value of a route handler is passed to the second
-parameter of `postHandler` hook. It may be useful to modify
-the value before being sent.
+Возвращаемое значение обработчика маршрута передается вторым аргументом
+хука `postHandler`. По аналогии с `preHandler`, если возвращаемое
+значение отличается от `undefined` и `null`, то такое значение будет
+использовано в качестве ответа сервера. Это может быть полезно для
+модификации возвращаемого ответа.
 
 ```js
 router.defineRoute({
   // ...
   handler(ctx) {
-    // return the response data
     return 'Hello world!';
   },
   postHandler(ctx, data) {
-    // modify the response data before send
+    // после обработчика маршрута
     return data.toUpperCase(); // HELLO WORLD!
   },
 });
 ```
 
-### Global hooks
+### Глобальные хуки
 
-A `TrieRouter` instance allows to set up global hooks
-that have higher priority over route hooks and are
-called first.
+Экземпляр роутера `TrieRouter` позволяет задать глобальные хуки, которые
+имеют более высокий приоритет перед хуками маршрута, и вызываются
+в первую очередь.
 
-- `preHandler` executes before each route handler
-- `postHandler` executes after each route handler
+- `preHandler` выполняется перед вызовом обработчика каждого маршрута
+- `postHandler` выполняется после вызова обработчика каждого маршрута
 
-Global hooks can be added using the `addHook` method
-of a router instance, where the first parameter
-is the hook name and the second is a function.
+Добавить глобальные хуки можно методом `addHook` экземпляра роутера,
+где первым параметром передается название хука, а вторым его функция.
 
 ```js
 router.addHook('preHandler', (ctx) => {
-  // before a route handler
+  // перед обработчиком маршрута
 });
 
 router.addHook('postHandler', (ctx, data) => {
-  // after a route handler
+  // после обработчика маршрута
 });
 ```
 
-Similar to route hooks, if a global hook returns
-a value other than `undefined` and `null`, that
-value will be sent as response data.
+Аналогично хукам маршрута, если глобальный хук возвращает значение
+отличное от `undefined` и `null`, то такое значение будет использовано
+как ответ сервера.
 
-## Debugging
+## Отладка
 
-Set the `DEBUG` variable to enable log output.
+Установка переменной `DEBUG` включает вывод логов.
 
 ```bash
 DEBUG=jsTrieRouter* npm run test
 ```
 
-## Testing
+## Тестирование
 
 ```bash
 npm run test
 ```
 
-## License
+## Лицензия
 
 MIT

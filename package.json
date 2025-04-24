@@ -1,7 +1,7 @@
 {
   "name": "@e22m4u/js-trie-router",
   "version": "0.0.17",
-  "description": "HTTP router for Node.js based on a prefix tree",
+  "description": "HTTP маршрутизатор для Node.js на основе префиксного дерева",
   "author": "e22m4u <e22m4u@yandex.ru>",
   "license": "MIT",
   "keywords": [
