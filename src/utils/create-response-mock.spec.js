@@ -1,4 +1,3 @@
-import {describe} from 'mocha';
 import {expect} from '../chai.js';
 import {PassThrough} from 'stream';
 import {createResponseMock} from './create-response-mock.js';

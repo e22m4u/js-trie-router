@@ -1,4 +1,3 @@
-import {describe} from 'mocha';
 import {expect} from './chai.js';
 import {format} from '@e22m4u/js-format';
 import {RouterOptions} from './router-options.js';

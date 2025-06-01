@@ -1,4 +1,3 @@
-import {describe} from 'mocha';
 import {Route} from './route.js';
 import {expect} from './chai.js';
 import {HttpMethod} from './route.js';
