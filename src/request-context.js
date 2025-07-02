@@ -3,6 +3,7 @@ import {isReadableStream} from './utils/index.js';
 import {isWritableStream} from './utils/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {getRequestPathname} from './utils/index.js';
+import {isServiceContainer} from '@e22m4u/js-service';
 
 /**
  * Request context.
@@ -109,7 +110,7 @@ export class RequestContext {
    * @param {import('http').ServerResponse} response
    */
   constructor(container, request, response) {
-    if (!(container instanceof ServiceContainer))
+    if (!isServiceContainer(container))
       throw new Errorf(
         'The parameter "container" of RequestContext.constructor ' +
           'should be an instance of ServiceContainer, but %v given.',

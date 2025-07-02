@@ -1417,6 +1417,7 @@ var RouteRegistry = _RouteRegistry;
 // src/request-context.js
 var import_js_format20 = require("@e22m4u/js-format");
 var import_js_service4 = require("@e22m4u/js-service");
+var import_js_service5 = require("@e22m4u/js-service");
 var _RequestContext = class _RequestContext {
   /**
    * Service container.
@@ -1507,7 +1508,7 @@ var _RequestContext = class _RequestContext {
    * @param {import('http').ServerResponse} response
    */
   constructor(container, request, response) {
-    if (!(container instanceof import_js_service4.ServiceContainer))
+    if (!(0, import_js_service5.isServiceContainer)(container))
       throw new import_js_format20.Errorf(
         'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v given.',
         container
@@ -1533,7 +1534,7 @@ __name(_RequestContext, "RequestContext");
 var RequestContext = _RequestContext;
 
 // src/trie-router.js
-var import_js_service5 = require("@e22m4u/js-service");
+var import_js_service6 = require("@e22m4u/js-service");
 var _TrieRouter = class _TrieRouter extends DebuggableService {
   /**
    * Define route.
@@ -1602,7 +1603,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
       this.getService(ErrorSender).send404(req, res);
     } else {
       const { route, params } = resolved;
-      const container = new import_js_service5.ServiceContainer(this.container);
+      const container = new import_js_service6.ServiceContainer(this.container);
       const context = new RequestContext(container, req, res);
       context.params = params;
       const reqDataOrPromise = this.getService(RequestParser).parse(req);
