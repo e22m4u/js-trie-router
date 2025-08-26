@@ -37,9 +37,9 @@ export type RoutePostHandler<T = unknown, U = unknown> = (
 export type RouteDefinition = {
   method: string;
   path: string;
-  preHandler: RoutePreHandler | RoutePreHandler[] | undefined;
   handler: RouteHandler;
-  postHandler: RoutePostHandler | RoutePostHandler[] | undefined;
+  preHandler?: RoutePreHandler | RoutePreHandler[];
+  postHandler?: RoutePostHandler | RoutePostHandler[];
 };
 
 /**

@@ -12,8 +12,8 @@ import {getRequestPathname} from './utils/index.js';
  * @typedef {{
  *   method: string,
  *   path: string,
- *   preHandler: RoutePreHandler|(RoutePreHandler[])|undefined
  *   handler: RouteHandler,
+ *   preHandler: RoutePreHandler|(RoutePreHandler[])|undefined,
  *   postHandler: RoutePostHandler|(RoutePostHandler[])|undefined
  * }} RouteDefinition
  */
