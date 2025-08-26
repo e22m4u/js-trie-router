@@ -12,9 +12,9 @@ import {getRequestPathname} from './utils/index.js';
  * @typedef {{
  *   method: string,
  *   path: string,
- *   preHandler: RoutePreHandler|(RoutePreHandler[])
+ *   preHandler: RoutePreHandler|(RoutePreHandler[])|undefined
  *   handler: RouteHandler,
- *   postHandler: RoutePostHandler|(RoutePostHandler[])
+ *   postHandler: RoutePostHandler|(RoutePostHandler[])|undefined
  * }} RouteDefinition
  */
 
