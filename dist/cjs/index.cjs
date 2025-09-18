@@ -1605,6 +1605,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
       const { route, params } = resolved;
       const container = new import_js_service6.ServiceContainer(this.container);
       const context = new RequestContext(container, req, res);
+      container.set(RequestContext, context);
       context.params = params;
       const reqDataOrPromise = this.getService(RequestParser).parse(req);
       if (isPromise(reqDataOrPromise)) {

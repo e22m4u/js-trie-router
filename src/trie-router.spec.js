@@ -25,7 +25,7 @@ describe('TrieRouter', function () {
   });
 
   describe('requestListener', function () {
-    it('to be a function', function () {
+    it('should be a function', function () {
       const router = new TrieRouter();
       expect(typeof router.requestListener).to.be.eq('function');
     });
@@ -452,6 +452,25 @@ describe('TrieRouter', function () {
         expect(result).to.be.eq(body);
         expect(order).to.be.eql(['preHandler', 'handler', 'postHandler']);
       });
+    });
+  });
+
+  describe('_handleRequest', function () {
+    it('should register the RequestContext in the request-scope ServiceContainer', function (done) {
+      const router = new TrieRouter();
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: '/',
+        handler(ctx) {
+          const res = ctx.container.getRegistered(RequestContext);
+          expect(res).to.be.eq(ctx);
+          expect(res).to.be.not.eq(router.container);
+          done();
+        },
+      });
+      const req = createRequestMock();
+      const res = createResponseMock();
+      router.requestListener(req, res);
     });
   });
 

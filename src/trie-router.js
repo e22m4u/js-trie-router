@@ -88,6 +88,9 @@ export class TrieRouter extends DebuggableService {
       // нельзя было модифицировать
       const container = new ServiceContainer(this.container);
       const context = new RequestContext(container, req, res);
+      // регистрация контекста запроса в сервис-контейнере
+      // для удобного доступа через container.getRegistered(RequestContext)
+      container.set(RequestContext, context);
       // запись параметров пути в контекст запроса,
       // так как они были определены в момент
       // поиска подходящего роута
