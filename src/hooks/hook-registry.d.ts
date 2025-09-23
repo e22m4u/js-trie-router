@@ -4,10 +4,15 @@ import {DebuggableService} from '../debuggable-service.js';
 /**
  * Hook type.
  */
-export enum HookName {
-  PRE_HANDLER = 'preHandler',
-  POST_HANDLER = 'postHandler',
-}
+export declare const HookType: {
+  PRE_HANDLER: 'preHandler';
+  POST_HANDLER: 'postHandler';
+};
+
+/**
+ * Type of HookType.
+ */
+export type HookType = (typeof HookType)[keyof typeof HookType];
 
 /**
  * Router hook.
@@ -21,23 +26,23 @@ export declare class HookRegistry extends DebuggableService {
   /**
    * Add hook.
    *
-   * @param name
+   * @param type
    * @param hook
    */
-  addHook(name: HookName, hook: RouterHook): this;
+  addHook(type: HookType, hook: RouterHook): this;
 
   /**
    * Has hook.
    *
-   * @param name
+   * @param type
    * @param hook
    */
-  hasHook(name: HookName, hook: RouterHook): this;
+  hasHook(type: HookType, hook: RouterHook): this;
 
   /**
    * Get hooks.
    *
-   * @param name
+   * @param type
    */
-  getHooks(name: HookName): RouterHook[];
+  getHooks(type: HookType): RouterHook[];
 }

@@ -1,7 +1,7 @@
 import {Route} from '../route.js';
 import {Errorf} from '@e22m4u/js-format';
 import {isPromise} from '../utils/index.js';
-import {HookName} from './hook-registry.js';
+import {HookType} from './hook-registry.js';
 import {HookRegistry} from './hook-registry.js';
 import {isResponseSent} from '../utils/index.js';
 import {DebuggableService} from '../debuggable-service.js';
@@ -14,12 +14,12 @@ export class HookInvoker extends DebuggableService {
    * Invoke and continue until value received.
    *
    * @param {Route} route
-   * @param {string} hookName
+   * @param {string} hookType
    * @param {import('http').ServerResponse} response
    * @param {*[]} args
    * @returns {Promise<*>|*}
    */
-  invokeAndContinueUntilValueReceived(route, hookName, response, ...args) {
+  invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
     if (!route || !(route instanceof Route))
       throw new Errorf(
         'The parameter "route" of ' +
@@ -27,15 +27,15 @@ export class HookInvoker extends DebuggableService {
           'should be a Route instance, but %v given.',
         route,
       );
-    if (!hookName || typeof hookName !== 'string')
+    if (!hookType || typeof hookType !== 'string')
       throw new Errorf(
-        'The parameter "hookName" of ' +
+        'The parameter "hookType" of ' +
           'the HookInvoker.invokeAndContinueUntilValueReceived ' +
           'should be a non-empty String, but %v given.',
-        hookName,
+        hookType,
       );
-    if (!Object.values(HookName).includes(hookName))
-      throw new Errorf('The hook name %v is not supported.', hookName);
+    if (!Object.values(HookType).includes(hookType))
+      throw new Errorf('The hook type %v is not supported.', hookType);
     if (
       !response ||
       typeof response !== 'object' ||
@@ -53,8 +53,8 @@ export class HookInvoker extends DebuggableService {
     // после глобальных, то объединяем
     // их в данной последовательности
     const hooks = [
-      ...this.getService(HookRegistry).getHooks(hookName),
-      ...route.hookRegistry.getHooks(hookName),
+      ...this.getService(HookRegistry).getHooks(hookType),
+      ...route.hookRegistry.getHooks(hookType),
     ];
     // последовательный вызов хуков будет прерван,
     // если один из них вернет значение (или Promise)

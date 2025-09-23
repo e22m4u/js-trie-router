@@ -38,8 +38,8 @@ __export(index_exports, {
   EXPOSED_ERROR_PROPERTIES: () => EXPOSED_ERROR_PROPERTIES,
   ErrorSender: () => ErrorSender,
   HookInvoker: () => HookInvoker,
-  HookName: () => HookName,
   HookRegistry: () => HookRegistry,
+  HookType: () => HookType,
   HttpMethod: () => HttpMethod,
   METHODS_WITH_BODY: () => METHODS_WITH_BODY,
   QueryParser: () => QueryParser,
@@ -661,7 +661,7 @@ __name(_DebuggableService, "DebuggableService");
 var DebuggableService = _DebuggableService;
 
 // src/hooks/hook-registry.js
-var HookName = {
+var HookType = {
   PRE_HANDLER: "preHandler",
   POST_HANDLER: "postHandler"
 };
@@ -676,59 +676,59 @@ var _HookRegistry = class _HookRegistry extends DebuggableService {
   /**
    * Add hook.
    *
-   * @param {string} name
+   * @param {string} type
    * @param {Function} hook
    * @returns {this}
    */
-  addHook(name, hook) {
-    if (!name || typeof name !== "string")
-      throw new import_js_format12.Errorf("The hook name is required, but %v given.", name);
-    if (!Object.values(HookName).includes(name))
-      throw new import_js_format12.Errorf("The hook name %v is not supported.", name);
+  addHook(type, hook) {
+    if (!type || typeof type !== "string")
+      throw new import_js_format12.Errorf("The hook type is required, but %v given.", type);
+    if (!Object.values(HookType).includes(type))
+      throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     if (!hook || typeof hook !== "function")
       throw new import_js_format12.Errorf(
         "The hook %v should be a Function, but %v given.",
-        name,
+        type,
         hook
       );
-    const hooks = this._hooks.get(name) || [];
+    const hooks = this._hooks.get(type) || [];
     hooks.push(hook);
-    this._hooks.set(name, hooks);
+    this._hooks.set(type, hooks);
     return this;
   }
   /**
    * Has hook.
    *
-   * @param {string} name
+   * @param {string} type
    * @param {Function} hook
    * @returns {boolean}
    */
-  hasHook(name, hook) {
-    if (!name || typeof name !== "string")
-      throw new import_js_format12.Errorf("The hook name is required, but %v given.", name);
-    if (!Object.values(HookName).includes(name))
-      throw new import_js_format12.Errorf("The hook name %v is not supported.", name);
+  hasHook(type, hook) {
+    if (!type || typeof type !== "string")
+      throw new import_js_format12.Errorf("The hook type is required, but %v given.", type);
+    if (!Object.values(HookType).includes(type))
+      throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     if (!hook || typeof hook !== "function")
       throw new import_js_format12.Errorf(
         "The hook %v should be a Function, but %v given.",
-        name,
+        type,
         hook
       );
-    const hooks = this._hooks.get(name) || [];
+    const hooks = this._hooks.get(type) || [];
     return hooks.indexOf(hook) > -1;
   }
   /**
    * Get hooks.
    *
-   * @param {string} name
+   * @param {string} type
    * @returns {Function[]}
    */
-  getHooks(name) {
-    if (!name || typeof name !== "string")
-      throw new import_js_format12.Errorf("The hook name is required, but %v given.", name);
-    if (!Object.values(HookName).includes(name))
-      throw new import_js_format12.Errorf("The hook name %v is not supported.", name);
-    return this._hooks.get(name) || [];
+  getHooks(type) {
+    if (!type || typeof type !== "string")
+      throw new import_js_format12.Errorf("The hook type is required, but %v given.", type);
+    if (!Object.values(HookType).includes(type))
+      throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
+    return this._hooks.get(type) || [];
   }
 };
 __name(_HookRegistry, "HookRegistry");
@@ -740,24 +740,24 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
    * Invoke and continue until value received.
    *
    * @param {Route} route
-   * @param {string} hookName
+   * @param {string} hookType
    * @param {import('http').ServerResponse} response
    * @param {*[]} args
    * @returns {Promise<*>|*}
    */
-  invokeAndContinueUntilValueReceived(route, hookName, response, ...args) {
+  invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
     if (!route || !(route instanceof Route))
       throw new import_js_format13.Errorf(
         'The parameter "route" of the HookInvoker.invokeAndContinueUntilValueReceived should be a Route instance, but %v given.',
         route
       );
-    if (!hookName || typeof hookName !== "string")
+    if (!hookType || typeof hookType !== "string")
       throw new import_js_format13.Errorf(
-        'The parameter "hookName" of the HookInvoker.invokeAndContinueUntilValueReceived should be a non-empty String, but %v given.',
-        hookName
+        'The parameter "hookType" of the HookInvoker.invokeAndContinueUntilValueReceived should be a non-empty String, but %v given.',
+        hookType
       );
-    if (!Object.values(HookName).includes(hookName))
-      throw new import_js_format13.Errorf("The hook name %v is not supported.", hookName);
+    if (!Object.values(HookType).includes(hookType))
+      throw new import_js_format13.Errorf("The hook type %v is not supported.", hookType);
     if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
       throw new import_js_format13.Errorf(
         'The parameter "response" of the HookInvoker.invokeAndContinueUntilValueReceived should be a ServerResponse instance, but %v given.',
@@ -765,8 +765,8 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
       );
     }
     const hooks = [
-      ...this.getService(HookRegistry).getHooks(hookName),
-      ...route.hookRegistry.getHooks(hookName)
+      ...this.getService(HookRegistry).getHooks(hookType),
+      ...route.hookRegistry.getHooks(hookType)
     ];
     let result = void 0;
     for (const hook of hooks) {
@@ -897,13 +897,13 @@ var _Route = class _Route {
     if (routeDef.preHandler != null) {
       const preHandlerHooks = Array.isArray(routeDef.preHandler) ? routeDef.preHandler : [routeDef.preHandler];
       preHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(HookName.PRE_HANDLER, hook);
+        this._hookRegistry.addHook(HookType.PRE_HANDLER, hook);
       });
     }
     if (routeDef.postHandler != null) {
       const postHandlerHooks = Array.isArray(routeDef.postHandler) ? routeDef.postHandler : [routeDef.postHandler];
       postHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(HookName.POST_HANDLER, hook);
+        this._hookRegistry.addHook(HookType.POST_HANDLER, hook);
       });
     }
   }
@@ -1619,7 +1619,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
       try {
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
-          HookName.PRE_HANDLER,
+          HookType.PRE_HANDLER,
           res,
           context
         );
@@ -1629,7 +1629,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           if (isPromise(data)) data = await data;
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
             route,
-            HookName.POST_HANDLER,
+            HookType.POST_HANDLER,
             res,
             context,
             data
@@ -1654,30 +1654,30 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * Example:
    * ```
    * import {TrieRouter} from '@e22m4u/js-trie-router';
-   * import {HookName} from '@e22m4u/js-trie-router';
+   * import {HookType} from '@e22m4u/js-trie-router';
    *
    * // Router instance.
    * const router = new TrieRouter();
    *
    * // Adds the "preHandler" hook for each route.
    * router.addHook(
-   *   HookName.PRE_HANDLER,
+   *   HookType.PRE_HANDLER,
    *   ctx => { ... },
    * );
    *
    * // Adds the "postHandler" hook for each route.
    * router.addHook(
-   *   HookName.POST_HANDLER,
+   *   HookType.POST_HANDLER,
    *   ctx => { ... },
    * );
    * ```
    *
-   * @param {string} name
+   * @param {string} type
    * @param {Function} hook
    * @returns {this}
    */
-  addHook(name, hook) {
-    this.getService(HookRegistry).addHook(name, hook);
+  addHook(type, hook) {
+    this.getService(HookRegistry).addHook(type, hook);
     return this;
   }
 };
@@ -1692,8 +1692,8 @@ var TrieRouter = _TrieRouter;
   EXPOSED_ERROR_PROPERTIES,
   ErrorSender,
   HookInvoker,
-  HookName,
   HookRegistry,
+  HookType,
   HttpMethod,
   METHODS_WITH_BODY,
   QueryParser,

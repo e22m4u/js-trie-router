@@ -2,14 +2,14 @@ import {Errorf} from '@e22m4u/js-format';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
- * Router hook.
+ * Hook type.
  *
  * @type {{
  *   PRE_HANDLER: 'preHandler',
  *   POST_HANDLER: 'postHandler',
  * }}
  */
-export const HookName = {
+export const HookType = {
   PRE_HANDLER: 'preHandler',
   POST_HANDLER: 'postHandler',
 };
@@ -29,60 +29,60 @@ export class HookRegistry extends DebuggableService {
   /**
    * Add hook.
    *
-   * @param {string} name
+   * @param {string} type
    * @param {Function} hook
    * @returns {this}
    */
-  addHook(name, hook) {
-    if (!name || typeof name !== 'string')
-      throw new Errorf('The hook name is required, but %v given.', name);
-    if (!Object.values(HookName).includes(name))
-      throw new Errorf('The hook name %v is not supported.', name);
+  addHook(type, hook) {
+    if (!type || typeof type !== 'string')
+      throw new Errorf('The hook type is required, but %v given.', type);
+    if (!Object.values(HookType).includes(type))
+      throw new Errorf('The hook type %v is not supported.', type);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
         'The hook %v should be a Function, but %v given.',
-        name,
+        type,
         hook,
       );
-    const hooks = this._hooks.get(name) || [];
+    const hooks = this._hooks.get(type) || [];
     hooks.push(hook);
-    this._hooks.set(name, hooks);
+    this._hooks.set(type, hooks);
     return this;
   }
 
   /**
    * Has hook.
    *
-   * @param {string} name
+   * @param {string} type
    * @param {Function} hook
    * @returns {boolean}
    */
-  hasHook(name, hook) {
-    if (!name || typeof name !== 'string')
-      throw new Errorf('The hook name is required, but %v given.', name);
-    if (!Object.values(HookName).includes(name))
-      throw new Errorf('The hook name %v is not supported.', name);
+  hasHook(type, hook) {
+    if (!type || typeof type !== 'string')
+      throw new Errorf('The hook type is required, but %v given.', type);
+    if (!Object.values(HookType).includes(type))
+      throw new Errorf('The hook type %v is not supported.', type);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
         'The hook %v should be a Function, but %v given.',
-        name,
+        type,
         hook,
       );
-    const hooks = this._hooks.get(name) || [];
+    const hooks = this._hooks.get(type) || [];
     return hooks.indexOf(hook) > -1;
   }
 
   /**
    * Get hooks.
    *
-   * @param {string} name
+   * @param {string} type
    * @returns {Function[]}
    */
-  getHooks(name) {
-    if (!name || typeof name !== 'string')
-      throw new Errorf('The hook name is required, but %v given.', name);
-    if (!Object.values(HookName).includes(name))
-      throw new Errorf('The hook name %v is not supported.', name);
-    return this._hooks.get(name) || [];
+  getHooks(type) {
+    if (!type || typeof type !== 'string')
+      throw new Errorf('The hook type is required, but %v given.', type);
+    if (!Object.values(HookType).includes(type))
+      throw new Errorf('The hook type %v is not supported.', type);
+    return this._hooks.get(type) || [];
   }
 }

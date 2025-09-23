@@ -72,7 +72,7 @@ server.listen(3000, 'localhost');             // прослушивание за
 - `cookie: ParsedCookie` объект ключ-значение разобранного заголовка `cookie`
 - `method: string` метод запроса в верхнем регистре, например `GET`, `POST` и т.д.
 - `path: string` путь включающий строку запроса, например `/myPath?foo=bar`
-- `pathname: string` путь запроса, например `/myMath`
+- `pathname: string` путь запроса, например `/myPath`
 - `body: unknown` тело запроса
 
 Пример доступа к контексту из обработчика маршрута.
@@ -132,9 +132,9 @@ router.defineRoute({     // регистрация маршрута
 router.defineRoute({
   // ...
   handler(ctx) {
-    res.statusCode = 404;
-    res.setHeader('content-type', 'text/plain; charset=utf-8');
-    res.end('404 Not Found', 'utf-8');
+    ctx.res.statusCode = 404;
+    ctx.res.setHeader('content-type', 'text/plain; charset=utf-8');
+    ctx.res.end('404 Not Found', 'utf-8');
   },
 });
 ```
@@ -217,7 +217,7 @@ router.defineRoute({
 - `postHandler` выполняется после вызова обработчика каждого маршрута
 
 Добавить глобальные хуки можно методом `addHook` экземпляра роутера,
-где первым параметром передается название хука, а вторым его функция.
+где первым параметром передается тип хука, а вторым его функция.
 
 ```js
 router.addHook('preHandler', (ctx) => {
