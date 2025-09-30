@@ -5,7 +5,7 @@ HTTP маршрутизатор для Node.js на основе
 
 - Поддержка [path-to-regexp](https://github.com/pillarjs/path-to-regexp) синтаксиса.
 - Автоматический парсинг JSON-тела запроса.
-- Парсинг строки запроса и заголовка `cookie`.
+- Парсинг строки запроса и заголовка `Cookie`.
 - Поддержка `preHandler` и `postHandler` хуков.
 - Позволяет использовать асинхронные обработчики.
 
@@ -69,7 +69,7 @@ server.listen(3000, 'localhost');             // прослушивание за
 - `params: ParsedParams` объект ключ-значение с параметрами пути
 - `query: ParsedQuery` объект ключ-значение с параметрами строки запроса
 - `headers: ParsedHeaders` объект ключ-значение с заголовками запроса 
-- `cookie: ParsedCookie` объект ключ-значение разобранного заголовка `cookie`
+- `cookies: ParsedCookies` объект ключ-значение разобранного заголовка `Cookie`
 - `method: string` метод запроса в верхнем регистре, например `GET`, `POST` и т.д.
 - `path: string` путь включающий строку запроса, например `/myPath?foo=bar`
 - `pathname: string` путь запроса, например `/myPath`
@@ -89,7 +89,7 @@ router.defineRoute({
     console.log(ctx.params);   // {id: 10}
     console.log(ctx.query);    // {include: 'city'}
     console.log(ctx.headers);  // {cookie: 'foo=bar; baz=qux;'}
-    console.log(ctx.cookie);   // {foo: 'bar', baz: 'qux'}
+    console.log(ctx.cookies);  // {foo: 'bar', baz: 'qux'}
     console.log(ctx.method);   // "GET"
     console.log(ctx.path);     // "/users/10?include=city"
     console.log(ctx.pathname); // "/users/10"
