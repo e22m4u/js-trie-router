@@ -1027,6 +1027,11 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
     };
     console.warn((0, import_util.inspect)(requestData, inspectOptions));
     console.warn((0, import_util.inspect)(body, inspectOptions));
+    if (error.stack) {
+      console.log(error.stack);
+    } else {
+      console.error(error);
+    }
     res.statusCode = statusCode;
     res.setHeader("content-type", "application/json; charset=utf-8");
     res.end(JSON.stringify(body, null, 2), "utf-8");
@@ -1607,16 +1612,16 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
       const context = new RequestContext(container, req, res);
       container.set(RequestContext, context);
       context.params = params;
-      const reqDataOrPromise = this.getService(RequestParser).parse(req);
-      if (isPromise(reqDataOrPromise)) {
-        const reqData = await reqDataOrPromise;
-        Object.assign(context, reqData);
-      } else {
-        Object.assign(context, reqDataOrPromise);
-      }
-      let data, error;
-      const hookInvoker = this.getService(HookInvoker);
+      let data;
       try {
+        const reqDataOrPromise = this.getService(RequestParser).parse(req);
+        if (isPromise(reqDataOrPromise)) {
+          const reqData = await reqDataOrPromise;
+          Object.assign(context, reqData);
+        } else {
+          Object.assign(context, reqDataOrPromise);
+        }
+        const hookInvoker = this.getService(HookInvoker);
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
           HookType.PRE_HANDLER,
@@ -1638,14 +1643,11 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
             postHandlerData = await postHandlerData;
           if (postHandlerData != null) data = postHandlerData;
         }
-      } catch (err) {
-        error = err;
-      }
-      if (error) {
+      } catch (error) {
         this.getService(ErrorSender).send(req, res, error);
-      } else {
-        this.getService(DataSender).send(res, data);
+        return;
       }
+      this.getService(DataSender).send(res, data);
     }
   }
   /**

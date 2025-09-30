@@ -95,27 +95,28 @@ export class TrieRouter extends DebuggableService {
       // так как они были определены в момент
       // поиска подходящего роута
       context.params = params;
-      // разбор тела, заголовков и других данных
-      // запроса выполняется отдельным сервисом,
-      // после чего результат записывается
-      // в контекст передаваемый обработчику
-      const reqDataOrPromise = this.getService(RequestParser).parse(req);
-      // результат разбора может являться асинхронным,
-      // и вместо того, что бы разрывать поток выполнения,
-      // стоит проверить, действительно ли необходимо
-      // использование оператора "await"
-      if (isPromise(reqDataOrPromise)) {
-        const reqData = await reqDataOrPromise;
-        Object.assign(context, reqData);
-      } else {
-        Object.assign(context, reqDataOrPromise);
-      }
-      // получение данных от обработчика, который
-      // находится в найденном роуте, и отправка
-      // результата в качестве ответа сервера
-      let data, error;
-      const hookInvoker = this.getService(HookInvoker);
+      // при разборе входящих данных и выполнении обработчиков
+      // запроса, требуется перехватывать возможные ошибки
+      // для корректной отправки сервисом ErrorSender
+      let data;
       try {
+        // разбор тела, заголовков и других данных запроса
+        // выполняется отдельным сервисом, после чего результат
+        // записывается в контекст передаваемый обработчику
+        const reqDataOrPromise = this.getService(RequestParser).parse(req);
+        // результат разбора может являться асинхронным, и вместо
+        // того, что бы разрывать поток выполнения, стоит проверить,
+        // действительно ли необходимо использование оператора "await"
+        if (isPromise(reqDataOrPromise)) {
+          const reqData = await reqDataOrPromise;
+          Object.assign(context, reqData);
+        } else {
+          Object.assign(context, reqDataOrPromise);
+        }
+        // получение данных от обработчика, который находится
+        // в найденном маршруте, и отправка результата в качестве
+        // ответа сервера
+        const hookInvoker = this.getService(HookInvoker);
         // если результатом вызова хуков "preHandler" является
         // значение (или Promise) отличное от "undefined" и "null",
         // то такое значение используется в качестве ответа
@@ -146,14 +147,11 @@ export class TrieRouter extends DebuggableService {
             postHandlerData = await postHandlerData;
           if (postHandlerData != null) data = postHandlerData;
         }
-      } catch (err) {
-        error = err;
-      }
-      if (error) {
+      } catch (error) {
         this.getService(ErrorSender).send(req, res, error);
-      } else {
-        this.getService(DataSender).send(res, data);
+        return;
       }
+      this.getService(DataSender).send(res, data);
     }
   }
 

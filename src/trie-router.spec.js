@@ -472,6 +472,27 @@ describe('TrieRouter', function () {
       const res = createResponseMock();
       router.requestListener(req, res);
     });
+
+    it('should send parsing error response instead of throwing error', async function () {
+      const router = new TrieRouter();
+      router.defineRoute({
+        method: HttpMethod.POST,
+        path: '/',
+        handler() {},
+      });
+      const req = createRequestMock({
+        method: HttpMethod.POST,
+        headers: {'content-type': 'application/json'},
+        body: 'invalid json',
+      });
+      const res = createResponseMock();
+      router.requestListener(req, res);
+      const body = await res.getBody();
+      expect(res.statusCode).to.be.eq(400);
+      expect(JSON.parse(body)).to.be.eql({
+        error: {message: 'Unable to parse request body.'},
+      });
+    });
   });
 
   describe('addHook', function () {

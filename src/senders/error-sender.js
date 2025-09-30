@@ -54,6 +54,11 @@ export class ErrorSender extends DebuggableService {
     };
     console.warn(inspect(requestData, inspectOptions));
     console.warn(inspect(body, inspectOptions));
+    if (error.stack) {
+      console.log(error.stack);
+    } else {
+      console.error(error);
+    }
     res.statusCode = statusCode;
     res.setHeader('content-type', 'application/json; charset=utf-8');
     res.end(JSON.stringify(body, null, 2), 'utf-8');
