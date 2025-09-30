@@ -10,7 +10,7 @@ export function toCamelCase(input) {
   if (typeof input !== 'string')
     throw new Errorf(
       'The first argument of "toCamelCase" ' +
-        'should be a String, but %v given.',
+        'should be a String, but %v was given.',
       input,
     );
   return input

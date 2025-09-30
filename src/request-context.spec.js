@@ -14,7 +14,7 @@ describe('RequestContext', function () {
       const error = v =>
         format(
           'The parameter "container" of RequestContext.constructor ' +
-            'should be an instance of ServiceContainer, but %s given.',
+            'should be an instance of ServiceContainer, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -37,7 +37,7 @@ describe('RequestContext', function () {
       const error = v =>
         format(
           'The parameter "request" of RequestContext.constructor ' +
-            'should be an instance of IncomingMessage, but %s given.',
+            'should be an instance of IncomingMessage, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -60,7 +60,7 @@ describe('RequestContext', function () {
       const error = v =>
         format(
           'The parameter "response" of RequestContext.constructor ' +
-            'should be an instance of ServerResponse, but %s given.',
+            'should be an instance of ServerResponse, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));

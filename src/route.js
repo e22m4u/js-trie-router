@@ -1,8 +1,9 @@
 import {Errorf} from '@e22m4u/js-format';
 import {HookType} from './hooks/index.js';
+import {Debuggable} from '@e22m4u/js-debug';
 import {HookRegistry} from './hooks/index.js';
-import {createDebugger} from './utils/index.js';
 import {getRequestPathname} from './utils/index.js';
+import {MODULE_DEBUG_NAMESPACE} from './debuggable-service.js';
 
 /**
  * @typedef {import('./request-context.js').RequestContext} RequestContext
@@ -38,16 +39,9 @@ export const HttpMethod = {
 };
 
 /**
- * Debugger.
- *
- * @type {Function}
- */
-const debug = createDebugger('route');
-
-/**
  * Route.
  */
-export class Route {
+export class Route extends Debuggable {
   /**
    * Method.
    *
@@ -122,29 +116,35 @@ export class Route {
    * @param {RouteDefinition} routeDef
    */
   constructor(routeDef) {
+    super({
+      namespace: MODULE_DEBUG_NAMESPACE,
+      noEnvironmentNamespace: true,
+      noInstantiationMessage: true,
+    });
     if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef))
       throw new Errorf(
-        'The first parameter of Route.controller ' +
-          'should be an Object, but %v given.',
+        'The first parameter of Route.constructor ' +
+          'should be an Object, but %v was given.',
         routeDef,
       );
     if (!routeDef.method || typeof routeDef.method !== 'string')
       throw new Errorf(
         'The option "method" of the Route should be ' +
-          'a non-empty String, but %v given.',
+          'a non-empty String, but %v was given.',
         routeDef.method,
       );
     this._method = routeDef.method.toUpperCase();
     if (typeof routeDef.path !== 'string')
       throw new Errorf(
-        'The option "path" of the Route should be ' + 'a String, but %v given.',
+        'The option "path" of the Route should be ' +
+          'a String, but %v was given.',
         routeDef.path,
       );
     this._path = routeDef.path;
     if (typeof routeDef.handler !== 'function')
       throw new Errorf(
         'The option "handler" of the Route should be ' +
-          'a Function, but %v given.',
+          'a Function, but %v was given.',
         routeDef.handler,
       );
     this._handler = routeDef.handler;
@@ -164,6 +164,7 @@ export class Route {
         this._hookRegistry.addHook(HookType.POST_HANDLER, hook);
       });
     }
+    this.ctorDebug('A new route %s %v was created.', this._method, this._path);
   }
 
   /**
@@ -173,6 +174,7 @@ export class Route {
    * @returns {*}
    */
   handle(context) {
+    const debug = this.getDebuggerFor(this.handle);
     const requestPath = getRequestPathname(context.req);
     debug(
       'Invoking the Route handler for the request %s %v.',

@@ -5,13 +5,18 @@ import {RequestContext} from './request-context.js';
 /**
  * Http method.
  */
-export enum HttpMethod {
-  GET = 'get',
-  POST = 'post',
-  PUT = 'put',
-  PATCH = 'patch',
-  DELETE = 'delete',
-}
+export declare const HttpMethod: {
+  GET: 'GET';
+  POST: 'POST';
+  PUT: 'PUT';
+  PATCH: 'PATCH';
+  DELETE: 'DELETE';
+};
+
+/**
+ * Type of HttpMethod.
+ */
+export type HttpMethod = (typeof HttpMethod)[keyof typeof HttpMethod];
 
 /**
  * Route handler.

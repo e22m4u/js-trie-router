@@ -4,7 +4,7 @@ import {TLSSocket} from 'tls';
 import {expect} from '../chai.js';
 import {format} from '@e22m4u/js-format';
 import {createRequestMock} from './create-request-mock.js';
-import {BUFFER_ENCODING_LIST} from './fetch-request-body.js';
+import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 
 describe('createRequestMock', function () {
   it('requires the first argument to be an Object', function () {
@@ -12,7 +12,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The first parameter of "createRequestMock" ' +
-          'should be an Object, but %s given.',
+          'should be an Object, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -32,7 +32,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "host" of "createRequestMock" ' +
-          'should be a String, but %s given.',
+          'should be a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -52,7 +52,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "method" of "createRequestMock" ' +
-          'should be a String, but %s given.',
+          'should be a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -72,7 +72,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "secure" of "createRequestMock" ' +
-          'should be a Boolean, but %s given.',
+          'should be a Boolean, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -92,7 +92,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "path" of "createRequestMock" ' +
-          'should be a String, but %s given.',
+          'should be a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -112,7 +112,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "query" of "createRequestMock" ' +
-          'should be a String or Object, but %s given.',
+          'should be a String or Object, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -128,12 +128,12 @@ describe('createRequestMock', function () {
     throwable(null)();
   });
 
-  it('requires the parameter "cookie" to be a String or Object', function () {
-    const throwable = v => () => createRequestMock({cookie: v});
+  it('requires the parameter "cookies" to be a String or Object', function () {
+    const throwable = v => () => createRequestMock({cookies: v});
     const error = v =>
       format(
-        'The parameter "cookie" of "createRequestMock" ' +
-          'should be a String or Object, but %s given.',
+        'The parameter "cookies" of "createRequestMock" ' +
+          'should be a String or Object, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -154,7 +154,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "headers" of "createRequestMock" ' +
-          'should be an Object, but %s given.',
+          'should be an Object, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -175,7 +175,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "stream" of "createRequestMock" ' +
-          'should be a Stream, but %s given.',
+          'should be a Stream, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -196,7 +196,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "encoding" of "createRequestMock" ' +
-          'should be a String, but %s given.',
+          'should be a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -212,10 +212,10 @@ describe('createRequestMock', function () {
 
   it('requires the parameter "encoding" to be the BufferEncoding', function () {
     const throwable = v => () => createRequestMock({encoding: v});
-    const error = v => format('Buffer encoding %s is not supported.', v);
+    const error = v => format('Character encoding %s is not supported.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
-    BUFFER_ENCODING_LIST.forEach(v => throwable(v)());
+    CHARACTER_ENCODING_LIST.forEach(v => throwable(v)());
   });
 
   it('does not allow the option "secure" with the "stream"', function () {
@@ -389,12 +389,12 @@ describe('createRequestMock', function () {
   });
 
   it('sets the header "cookie" from a String', function () {
-    const req = createRequestMock({cookie: 'test'});
+    const req = createRequestMock({cookies: 'test'});
     expect(req.headers['cookie']).to.be.eq('test');
   });
 
   it('sets the header "cookie" from an Object', function () {
-    const req = createRequestMock({cookie: {p1: 'foo', p2: 'bar'}});
+    const req = createRequestMock({cookies: {p1: 'foo', p2: 'bar'}});
     expect(req.headers['cookie']).to.be.eq('p1=foo; p2=bar;');
   });
 

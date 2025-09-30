@@ -8,7 +8,7 @@ describe('createDebugger', function () {
     const error = v =>
       format(
         'The first argument of "createDebugger" should be ' +
-          'a String, but %s given.',
+          'a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));

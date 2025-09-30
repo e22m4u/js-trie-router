@@ -32,16 +32,17 @@ export class RouteRegistry extends DebuggableService {
    * @returns {Route}
    */
   defineRoute(routeDef) {
+    const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef))
       throw new Errorf(
-        'The route definition should be an Object, but %v given.',
+        'The route definition should be an Object, but %v was given.',
         routeDef,
       );
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;
     this._trie.add(triePath, route);
-    this.debug(
-      'The route %s %v is registered.',
+    debug(
+      'The route %s %v was registered.',
       route.method.toUpperCase(),
       route.path,
     );
@@ -55,9 +56,10 @@ export class RouteRegistry extends DebuggableService {
    * @returns {ResolvedRoute|undefined}
    */
   matchRouteByRequest(req) {
+    const debug = this.getDebuggerFor(this.matchRouteByRequest);
     const requestPath = (req.url || '/').replace(/\?.*$/, '');
-    this.debug(
-      'Matching %s %v with registered routes.',
+    debug(
+      'Matching routes with the request %s %v.',
       req.method.toUpperCase(),
       requestPath,
     );
@@ -65,28 +67,26 @@ export class RouteRegistry extends DebuggableService {
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;
-      this.debug(
-        'The request %s %v was matched to the route %s %v.',
-        req.method.toUpperCase(),
-        requestPath,
+      debug(
+        'The route %s %v was matched.',
         route.method.toUpperCase(),
         route.path,
       );
       const paramNames = Object.keys(resolved.params);
-      if (paramNames) {
+      if (paramNames.length) {
         paramNames.forEach(name => {
-          this.debug(
-            'The path parameter %v has the value %v.',
+          debug(
+            'The path parameter %v had the value %v.',
             name,
             resolved.params[name],
           );
         });
       } else {
-        this.debug('No path parameters found.');
+        debug('No path parameters found.');
       }
       return {route, params: resolved.params};
     }
-    this.debug(
+    debug(
       'No matched route for the request %s %v.',
       req.method.toUpperCase(),
       requestPath,

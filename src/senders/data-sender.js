@@ -14,14 +14,15 @@ export class DataSender extends DebuggableService {
    * @returns {undefined}
    */
   send(res, data) {
+    const debug = this.getDebuggerFor(this.send);
     // если ответ контроллера является объектом
     // ServerResponse, или имеются отправленные
     // заголовки, то считаем, что контроллер
     // уже отправил ответ самостоятельно
     if (data === res || res.headersSent) {
-      this.debug(
+      debug(
         'Response sending was skipped because ' +
-          'its headers where sent already .',
+          'its headers where sent already.',
       );
       return;
     }
@@ -30,7 +31,7 @@ export class DataSender extends DebuggableService {
     if (data == null) {
       res.statusCode = 204;
       res.end();
-      this.debug('The empty response was sent.');
+      debug('The empty response was sent.');
       return;
     }
     // если ответ контроллера является стримом,
@@ -38,7 +39,7 @@ export class DataSender extends DebuggableService {
     if (isReadableStream(data)) {
       res.setHeader('Content-Type', 'application/octet-stream');
       data.pipe(res);
-      this.debug('The stream response was sent.');
+      debug('The stream response was sent.');
       return;
     }
     // подготовка данных перед отправкой, и установка
@@ -67,6 +68,6 @@ export class DataSender extends DebuggableService {
     }
     // отправка подготовленных данных
     res.end(data);
-    this.debug(debugMsg);
+    debug(debugMsg);
   }
 }

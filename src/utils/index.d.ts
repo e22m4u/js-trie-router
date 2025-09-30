@@ -1,6 +1,6 @@
 export * from './is-promise.js';
-export * from './parse-cookie.js';
 export * from './create-error.js';
+export * from './parse-cookies.js';
 export * from './to-camel-case.js';
 export * from './create-debugger.js';
 export * from './is-response-sent.js';
@@ -10,5 +10,5 @@ export * from './is-writable-stream.js';
 export * from './fetch-request-body.js';
 export * from './create-request-mock.js';
 export * from './create-response-mock.js';
-export * from './create-cookie-string.js';
+export * from './create-cookies-string.js';
 export * from './get-request-pathname.js';

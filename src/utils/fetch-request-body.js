@@ -1,15 +1,13 @@
 import HttpErrors from 'http-errors';
+import {IncomingMessage} from 'http';
+import {Errorf} from '@e22m4u/js-format';
 import {createError} from './create-error.js';
 import {parseContentType} from './parse-content-type.js';
-import {Errorf} from '@e22m4u/js-format';
-import {IncomingMessage} from 'http';
 
 /**
- * Buffer encoding.
- *
- * @type {import('buffer').BufferEncoding[]}
+ * Character encoding list.
  */
-export const BUFFER_ENCODING_LIST = [
+export const CHARACTER_ENCODING_LIST = [
   'ascii',
   'utf8',
   'utf-8',
@@ -17,11 +15,7 @@ export const BUFFER_ENCODING_LIST = [
   'utf-16le',
   'ucs2',
   'ucs-2',
-  'base64',
-  'base64url',
   'latin1',
-  'binary',
-  'hex',
 ];
 
 /**
@@ -35,13 +29,13 @@ export function fetchRequestBody(req, bodyBytesLimit = 0) {
   if (!(req instanceof IncomingMessage))
     throw new Errorf(
       'The first parameter of "fetchRequestBody" should be ' +
-        'an IncomingMessage instance, but %v given.',
+        'an IncomingMessage instance, but %v was given.',
       req,
     );
   if (typeof bodyBytesLimit !== 'number')
     throw new Errorf(
       'The parameter "bodyBytesLimit" of "fetchRequestBody" ' +
-        'should be a number, but %v given.',
+        'should be a number, but %v was given.',
       bodyBytesLimit,
     );
   return new Promise((resolve, reject) => {
@@ -64,7 +58,7 @@ export function fetchRequestBody(req, bodyBytesLimit = 0) {
       const parsedContentType = parseContentType(contentType);
       if (parsedContentType && parsedContentType.charset) {
         encoding = parsedContentType.charset.toLowerCase();
-        if (!BUFFER_ENCODING_LIST.includes(encoding))
+        if (!CHARACTER_ENCODING_LIST.includes(encoding))
           throw createError(
             HttpErrors.UnsupportedMediaType,
             'Request encoding %v is not supported.',
@@ -106,12 +100,11 @@ export function fetchRequestBody(req, bodyBytesLimit = 0) {
         reject(error);
         return;
       }
-      // объединение массива байтов в буфер,
-      // кодирование результата в строку,
-      // и передача полученных данных
+      // объединение массива байтов в буфер, кодирование
+      // результата в строку, и передача полученных данных
       // в ожидающий Promise
       const buffer = Buffer.concat(data);
-      const body = Buffer.from(buffer, encoding).toString();
+      const body = buffer.toString(encoding);
       resolve(body || undefined);
     };
     // при ошибке загрузки тела запроса,

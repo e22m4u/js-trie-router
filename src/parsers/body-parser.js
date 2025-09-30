@@ -45,13 +45,13 @@ export class BodyParser extends DebuggableService {
     if (!mediaType || typeof mediaType !== 'string')
       throw new Errorf(
         'The parameter "mediaType" of BodyParser.defineParser ' +
-          'should be a non-empty String, but %v given.',
+          'should be a non-empty String, but %v was given.',
         mediaType,
       );
     if (!parser || typeof parser !== 'function')
       throw new Errorf(
         'The parameter "parser" of BodyParser.defineParser ' +
-          'should be a Function, but %v given.',
+          'should be a Function, but %v was given.',
         parser,
       );
     this._parsers[mediaType] = parser;
@@ -68,7 +68,7 @@ export class BodyParser extends DebuggableService {
     if (!mediaType || typeof mediaType !== 'string')
       throw new Errorf(
         'The parameter "mediaType" of BodyParser.hasParser ' +
-          'should be a non-empty String, but %v given.',
+          'should be a non-empty String, but %v was given.',
         mediaType,
       );
     return Boolean(this._parsers[mediaType]);
@@ -84,7 +84,7 @@ export class BodyParser extends DebuggableService {
     if (!mediaType || typeof mediaType !== 'string')
       throw new Errorf(
         'The parameter "mediaType" of BodyParser.deleteParser ' +
-          'should be a non-empty String, but %v given.',
+          'should be a non-empty String, but %v was given.',
         mediaType,
       );
     const parser = this._parsers[mediaType];
@@ -100,8 +100,9 @@ export class BodyParser extends DebuggableService {
    * @returns {Promise<*>|undefined}
    */
   parse(req) {
+    const debug = this.getDebuggerFor(this.parse);
     if (!METHODS_WITH_BODY.includes(req.method.toUpperCase())) {
-      this.debug(
+      debug(
         'Body parsing was skipped for the %s request.',
         req.method.toUpperCase(),
       );
@@ -112,8 +113,8 @@ export class BodyParser extends DebuggableService {
       '$1',
     );
     if (!contentType) {
-      this.debug(
-        'Body parsing was skipped because the request has no content type.',
+      debug(
+        'Body parsing was skipped because the request had no content type.',
       );
       return;
     }
@@ -126,7 +127,7 @@ export class BodyParser extends DebuggableService {
     const parser = this._parsers[mediaType];
     if (!parser) {
       if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
-        this.debug('Body parsing was skipped for %v.', mediaType);
+        debug('Body parsing was skipped for %v.', mediaType);
         return;
       }
       throw createError(
@@ -154,8 +155,6 @@ export function parseJsonBody(input) {
   try {
     return JSON.parse(input);
   } catch (error) {
-    if (process.env['DEBUG'] || process.env['NODE_ENV'] === 'development')
-      console.warn(error);
-    throw createError(HttpErrors.BadRequest, 'Unable to parse request body.');
+    throw createError(HttpErrors.BadRequest, error.message);
   }
 }

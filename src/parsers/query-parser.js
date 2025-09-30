@@ -13,16 +13,17 @@ export class QueryParser extends DebuggableService {
    * @returns {object}
    */
   parse(req) {
+    const debug = this.getDebuggerFor(this.parse);
     const queryStr = req.url.replace(/^[^?]*\??/, '');
     const query = queryStr ? querystring.parse(queryStr) : {};
     const queryKeys = Object.keys(query);
     if (queryKeys.length) {
       queryKeys.forEach(key => {
-        this.debug('The query %v has the value %v.', key, query[key]);
+        debug('The query parameter %v had the value %v.', key, query[key]);
       });
     } else {
-      this.debug(
-        'The request %s %v has no query.',
+      debug(
+        'The request %s %v had no query parameters.',
         req.method,
         getRequestPathname(req),
       );

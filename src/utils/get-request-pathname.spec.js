@@ -8,7 +8,7 @@ describe('getRequestPathname', function () {
     const error = v =>
       format(
         'The first argument of "getRequestPathname" should be ' +
-          'an instance of IncomingMessage, but %s given.',
+          'an instance of IncomingMessage, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));

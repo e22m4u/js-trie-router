@@ -15,7 +15,7 @@ export function getRequestPathname(req) {
   ) {
     throw new Errorf(
       'The first argument of "getRequestPathname" should be ' +
-        'an instance of IncomingMessage, but %v given.',
+        'an instance of IncomingMessage, but %v was given.',
       req,
     );
   }

@@ -11,7 +11,7 @@ export function createDebugger(name) {
   if (typeof name !== 'string')
     throw new Errorf(
       'The first argument of "createDebugger" should be ' +
-        'a String, but %v given.',
+        'a String, but %v was given.',
       name,
     );
   const debug = DebugFactory(`jsTrieRouter:${name}`);

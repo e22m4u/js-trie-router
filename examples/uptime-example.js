@@ -4,7 +4,7 @@ import {HttpMethod} from '../src/route.js';
 
 const router = new TrieRouter();
 
-// регистрация роута для вывода
+// регистрация маршрута для вывода
 // времени работы сервера
 router.defineRoute({
   method: HttpMethod.GET,
@@ -24,12 +24,12 @@ router.defineRoute({
   },
 })
 
-// создаем экземпляр HTTP сервера
-// и подключаем обработчик запросов
+// создание экземпляра HTTP сервера
+// и подключение обработчика запросов
 const server = new http.Server();
 server.on('request', router.requestListener);
 
-// слушаем входящие запросы
+// прослушивание входящих запросов
 // на указанный адрес и порт
 const port = 3000;
 const host = '0.0.0.0';

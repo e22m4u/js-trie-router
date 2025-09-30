@@ -75,13 +75,13 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('passes parsed cookie to the request context', function (done) {
+    it('passes parsed cookies to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
         path: '/',
-        handler: ({cookie}) => {
-          expect(cookie).to.be.eql({p1: 'foo', p2: 'bar'});
+        handler: ({cookies}) => {
+          expect(cookies).to.be.eql({p1: 'foo', p2: 'bar'});
           done();
         },
       });
@@ -483,15 +483,45 @@ describe('TrieRouter', function () {
       const req = createRequestMock({
         method: HttpMethod.POST,
         headers: {'content-type': 'application/json'},
-        body: 'invalid json',
+        body: 'invalid',
       });
       const res = createResponseMock();
       router.requestListener(req, res);
       const body = await res.getBody();
       expect(res.statusCode).to.be.eq(400);
       expect(JSON.parse(body)).to.be.eql({
-        error: {message: 'Unable to parse request body.'},
+        error: {
+          message: `Unexpected token 'i', "invalid" is not valid JSON`,
+        },
       });
+    });
+
+    it('should not invoke the main handler if a preHandler sends the response asynchronously', async function () {
+      let handlerCalled = false;
+      const router = new TrieRouter();
+      router.defineRoute({
+        method: 'GET',
+        path: '/',
+        preHandler(ctx) {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              ctx.res.setHeader('Content-Type', 'text/plain');
+              ctx.res.end('Response from preHandler');
+              resolve(undefined);
+            }, 10);
+          });
+        },
+        handler() {
+          handlerCalled = true;
+          return 'Response from main handler';
+        },
+      });
+      const req = createRequestMock({method: 'GET', path: '/'});
+      const res = createResponseMock();
+      await router._handleRequest(req, res);
+      const responseBody = await res.getBody();
+      expect(responseBody).to.equal('Response from preHandler');
+      expect(handlerCalled).to.be.false;
     });
   });
 

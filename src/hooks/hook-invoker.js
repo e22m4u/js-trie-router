@@ -24,14 +24,14 @@ export class HookInvoker extends DebuggableService {
       throw new Errorf(
         'The parameter "route" of ' +
           'the HookInvoker.invokeAndContinueUntilValueReceived ' +
-          'should be a Route instance, but %v given.',
+          'should be a Route instance, but %v was given.',
         route,
       );
     if (!hookType || typeof hookType !== 'string')
       throw new Errorf(
         'The parameter "hookType" of ' +
           'the HookInvoker.invokeAndContinueUntilValueReceived ' +
-          'should be a non-empty String, but %v given.',
+          'should be a non-empty String, but %v was given.',
         hookType,
       );
     if (!Object.values(HookType).includes(hookType))
@@ -45,7 +45,7 @@ export class HookInvoker extends DebuggableService {
       throw new Errorf(
         'The parameter "response" of ' +
           'the HookInvoker.invokeAndContinueUntilValueReceived ' +
-          'should be a ServerResponse instance, but %v given.',
+          'should be a ServerResponse instance, but %v was given.',
         response,
       );
     }
@@ -82,7 +82,6 @@ export class HookInvoker extends DebuggableService {
           // если ответ уже был отправлен,
           // то останавливаем выполнение
           if (isResponseSent(response)) {
-            result = response;
             return;
           }
           // если предыдущий Promise вернул значение

@@ -1,14 +1,14 @@
 import {expect} from '../chai.js';
 import {format} from '@e22m4u/js-format';
-import {createCookieString} from './create-cookie-string.js';
+import {createCookiesString} from './create-cookies-string.js';
 
-describe('createCookieString', function () {
+describe('createCookiesString', function () {
   it('requires the first argument to be an object', function () {
-    const throwable = v => () => createCookieString(v);
+    const throwable = v => () => createCookiesString(v);
     const error = v =>
       format(
-        'The first parameter of "createCookieString" should be ' +
-          'an Object, but %s given.',
+        'The first parameter of "createCookiesString" should be ' +
+          'an Object, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -25,12 +25,12 @@ describe('createCookieString', function () {
   });
 
   it('returns an empty string if no keys', function () {
-    expect(createCookieString({})).to.be.eq('');
+    expect(createCookiesString({})).to.be.eq('');
   });
 
   it('returns a cookies string from a given object', function () {
     const data = {foo: 'bar', baz: 'quz'};
-    const result = createCookieString(data);
+    const result = createCookiesString(data);
     expect(result).to.be.eq('foo=bar; baz=quz;');
   });
 });

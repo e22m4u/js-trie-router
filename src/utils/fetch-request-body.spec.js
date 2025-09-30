@@ -9,7 +9,7 @@ describe('fetchRequestBody', function () {
     const error = v =>
       format(
         'The first parameter of "fetchRequestBody" should be ' +
-          'an IncomingMessage instance, but %s given.',
+          'an IncomingMessage instance, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -31,7 +31,7 @@ describe('fetchRequestBody', function () {
     const error = v =>
       format(
         'The parameter "bodyBytesLimit" of "fetchRequestBody" ' +
-          'should be a number, but %s given.',
+          'should be a number, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -83,16 +83,15 @@ describe('fetchRequestBody', function () {
       expect(result).to.be.eq(body);
     });
 
-    it('decodes non-standard encoding', async function () {
-      const body = 'Lorem Ipsum is simply dummy text.';
-      const encoding = 'base64';
-      const encodedBody = Buffer.from(body).toString(encoding);
+    it('decodes non-UTF-8 encoding to a plain text', async function () {
+      const originalBody = 'Hello, world!';
       const req = createRequestMock({
-        body: Buffer.from(encodedBody, encoding),
-        headers: {'content-type': `text/plain; charset=${encoding}`},
+        body: originalBody,
+        encoding: 'latin1',
+        headers: {'content-type': `text/plain; charset=latin1`},
       });
       const result = await fetchRequestBody(req);
-      expect(result).to.be.eq(body);
+      expect(result).to.be.eq(originalBody);
     });
   });
 

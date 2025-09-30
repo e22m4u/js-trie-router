@@ -1,5 +1,5 @@
 import {HookType} from './hooks/index.js';
-import {isPromise} from './utils/index.js';
+import {isPromise, isResponseSent} from './utils/index.js';
 import {HookInvoker} from './hooks/index.js';
 import {DataSender} from './senders/index.js';
 import {HookRegistry} from './hooks/index.js';
@@ -31,11 +31,11 @@ export class TrieRouter extends DebuggableService {
    * ```
    * const router = new TrieRouter();
    * router.defineRoute({
-   *   method: HttpMethod.POST,       // Request method.
+   *   method: HttpMethod.POST,        // Request method.
    *   path: '/users/:id',             // The path template may have parameters.
-   *   preHandler(ctx) { ... },        // The "preHandler" is executed before a route handler.
+   *   preHandler(ctx) { ... },        // The "preHandler" executes before a route handler.
    *   handler(ctx) { ... },           // Request handler function.
-   *   postHandler(ctx, data) { ... }, // The "postHandler" is executed after a route handler.
+   *   postHandler(ctx, data) { ... }, // The "postHandler" executes after a route handler.
    * });
    * ```
    *
@@ -75,11 +75,16 @@ export class TrieRouter extends DebuggableService {
    * @private
    */
   async _handleRequest(req, res) {
+    const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = (req.url || '/').replace(/\?.*$/, '');
-    this.debug('Preparing to handle %s %v.', req.method, requestPath);
+    debug(
+      'Preparing to handle an incoming request %s %v.',
+      req.method,
+      requestPath,
+    );
     const resolved = this.getService(RouteRegistry).matchRouteByRequest(req);
     if (!resolved) {
-      this.debug('No route for the request %s %v.', req.method, requestPath);
+      debug('No route for the request %s %v.', req.method, requestPath);
       this.getService(ErrorSender).send404(req, res);
     } else {
       const {route, params} = resolved;
@@ -127,15 +132,15 @@ export class TrieRouter extends DebuggableService {
           context,
         );
         if (isPromise(data)) data = await data;
-        // если ответ не определен хуками "preHandler",
-        // то вызывается обработчик роута, результат
-        // которого передается в хуки "postHandler"
-        if (data == null) {
+        // если ответ не бы отправлен внутри "preHandler" хуков,
+        // и сами "preHandler" хуки не вернули значения, то вызывается
+        // основной обработчик маршрута, результат которого передается
+        // в хуки "postHandler"
+        if (!isResponseSent(res) && data == null) {
           data = route.handle(context);
           if (isPromise(data)) data = await data;
-          // вызываются хуки "postHandler", результат
-          // которых также может быть использован
-          // в качестве ответа
+          // вызываются хуки "postHandler", результат которых
+          // также может быть использован в качестве ответа
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
             route,
             HookType.POST_HANDLER,
@@ -151,7 +156,12 @@ export class TrieRouter extends DebuggableService {
         this.getService(ErrorSender).send(req, res, error);
         return;
       }
-      this.getService(DataSender).send(res, data);
+      // если ответ не был отправлен во время выполнения
+      // хуков и основного обработчика запроса,
+      // то результат передается в DataSender
+      if (!isResponseSent(res)) {
+        this.getService(DataSender).send(res, data);
+      }
     }
   }
 

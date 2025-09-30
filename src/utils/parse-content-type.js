@@ -14,7 +14,7 @@ export function parseContentType(input) {
   if (typeof input !== 'string')
     throw new Errorf(
       'The parameter "input" of "parseContentType" ' +
-        'should be a String, but %v given.',
+        'should be a String, but %v was given.',
       input,
     );
   const res = {mediaType: undefined, charset: undefined, boundary: undefined};

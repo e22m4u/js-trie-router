@@ -23,6 +23,7 @@ export class ErrorSender extends DebuggableService {
    * @returns {undefined}
    */
   send(req, res, error) {
+    const debug = this.getDebuggerFor(this.send);
     let safeError = {};
     if (error) {
       if (typeof error === 'object') {
@@ -62,8 +63,8 @@ export class ErrorSender extends DebuggableService {
     res.statusCode = statusCode;
     res.setHeader('content-type', 'application/json; charset=utf-8');
     res.end(JSON.stringify(body, null, 2), 'utf-8');
-    this.debug(
-      'The %s error is sent for the request %s %v.',
+    debug(
+      'The %s error was sent for the request %s %v.',
       statusCode,
       req.method,
       getRequestPathname(req),
@@ -78,11 +79,12 @@ export class ErrorSender extends DebuggableService {
    * @returns {undefined}
    */
   send404(req, res) {
+    const debug = this.getDebuggerFor(this.send404);
     res.statusCode = 404;
     res.setHeader('content-type', 'text/plain; charset=utf-8');
     res.end('404 Not Found', 'utf-8');
-    this.debug(
-      'The 404 error is sent for the request %s %v.',
+    debug(
+      'The 404 error was sent for the request %s %v.',
       req.method,
       getRequestPathname(req),
     );

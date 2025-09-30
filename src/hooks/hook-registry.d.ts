@@ -37,7 +37,7 @@ export declare class HookRegistry extends DebuggableService {
    * @param type
    * @param hook
    */
-  hasHook(type: HookType, hook: RouterHook): this;
+  hasHook(type: HookType, hook: RouterHook): boolean;
 
   /**
    * Get hooks.

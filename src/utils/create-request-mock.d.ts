@@ -10,7 +10,7 @@ type RequestPatch = {
   secure?: boolean;
   path?: string;
   query?: object;
-  cookie?: object;
+  cookies?: object;
   headers?: object;
   body?: string;
   stream?: Readable;

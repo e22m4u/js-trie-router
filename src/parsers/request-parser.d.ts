@@ -1,7 +1,7 @@
 import {IncomingMessage} from 'http';
 import {ValueOrPromise} from '../types.js';
 import {ParsedQuery} from './query-parser.js';
-import {ParsedCookie} from '../utils/index.js';
+import {ParsedCookies} from '../utils/index.js';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
@@ -16,7 +16,7 @@ export type ParsedHeaders = {
  */
 type ParsedRequestData = {
   query: ParsedQuery;
-  cookie: ParsedCookie;
+  cookies: ParsedCookies;
   body: unknown;
   headers: ParsedHeaders;
 };

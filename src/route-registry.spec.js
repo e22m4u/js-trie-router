@@ -11,7 +11,10 @@ describe('RouteRegistry', function () {
       const s = new RouteRegistry();
       const throwable = v => () => s.defineRoute(v);
       const error = v =>
-        format('The route definition should be an Object, but %s given.', v);
+        format(
+          'The route definition should be an Object, but %s was given.',
+          v,
+        );
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));

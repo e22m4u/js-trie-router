@@ -8,7 +8,7 @@ describe('createError', function () {
     const error = v =>
       format(
         'The first argument of "createError" should be ' +
-          'a constructor, but %s given.',
+          'a constructor, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -29,7 +29,7 @@ describe('createError', function () {
     const error = v =>
       format(
         'The second argument of "createError" should be ' +
-          'a String, but %s given.',
+          'a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));

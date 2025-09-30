@@ -1,6 +1,5 @@
 /**
- * Check whether a value has a pipe
- * method.
+ * Check whether a value has a pipe method.
  *
  * @param {*} value
  * @returns {boolean}

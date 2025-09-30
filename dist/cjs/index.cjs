@@ -31,9 +31,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.js
 var index_exports = {};
 __export(index_exports, {
-  BUFFER_ENCODING_LIST: () => BUFFER_ENCODING_LIST,
   BodyParser: () => BodyParser,
-  CookieParser: () => CookieParser,
+  CHARACTER_ENCODING_LIST: () => CHARACTER_ENCODING_LIST,
+  CookiesParser: () => CookiesParser,
   DataSender: () => DataSender,
   EXPOSED_ERROR_PROPERTIES: () => EXPOSED_ERROR_PROPERTIES,
   ErrorSender: () => ErrorSender,
@@ -50,7 +50,7 @@ __export(index_exports, {
   RouterOptions: () => RouterOptions,
   TrieRouter: () => TrieRouter,
   UNPARSABLE_MEDIA_TYPES: () => UNPARSABLE_MEDIA_TYPES,
-  createCookieString: () => createCookieString,
+  createCookiesString: () => createCookiesString,
   createDebugger: () => createDebugger,
   createError: () => createError,
   createRequestMock: () => createRequestMock,
@@ -62,7 +62,7 @@ __export(index_exports, {
   isResponseSent: () => isResponseSent,
   isWritableStream: () => isWritableStream,
   parseContentType: () => parseContentType,
-  parseCookie: () => parseCookie,
+  parseCookies: () => parseCookies,
   parseJsonBody: () => parseJsonBody,
   toCamelCase: () => toCamelCase
 });
@@ -82,48 +82,49 @@ function isPromise(value) {
 }
 __name(isPromise, "isPromise");
 
-// src/utils/parse-cookie.js
+// src/utils/create-error.js
 var import_js_format = require("@e22m4u/js-format");
-function parseCookie(input) {
+var import_js_format2 = require("@e22m4u/js-format");
+function createError(errorCtor, message, ...args) {
+  if (typeof errorCtor !== "function")
+    throw new import_js_format2.Errorf(
+      'The first argument of "createError" should be a constructor, but %v was given.',
+      errorCtor
+    );
+  if (message != null && typeof message !== "string")
+    throw new import_js_format2.Errorf(
+      'The second argument of "createError" should be a String, but %v was given.',
+      message
+    );
+  if (message == null) return new errorCtor();
+  const interpolatedMessage = (0, import_js_format.format)(message, ...args);
+  return new errorCtor(interpolatedMessage);
+}
+__name(createError, "createError");
+
+// src/utils/parse-cookies.js
+var import_js_format3 = require("@e22m4u/js-format");
+function parseCookies(input) {
   if (typeof input !== "string")
-    throw new import_js_format.Errorf(
-      'The first parameter of "parseCookie" should be a String, but %v given.',
+    throw new import_js_format3.Errorf(
+      'The first parameter of "parseCookies" should be a String, but %v was given.',
       input
     );
   return input.split(";").filter((v) => v !== "").map((v) => v.split("=")).reduce((cookies, tuple) => {
     const key = decodeURIComponent(tuple[0]).trim();
-    cookies[key] = decodeURIComponent(tuple[1]).trim();
+    const value = tuple[1] !== void 0 ? decodeURIComponent(tuple[1]).trim() : "";
+    cookies[key] = value;
     return cookies;
   }, {});
 }
-__name(parseCookie, "parseCookie");
-
-// src/utils/create-error.js
-var import_js_format2 = require("@e22m4u/js-format");
-var import_js_format3 = require("@e22m4u/js-format");
-function createError(errorCtor, message, ...args) {
-  if (typeof errorCtor !== "function")
-    throw new import_js_format3.Errorf(
-      'The first argument of "createError" should be a constructor, but %v given.',
-      errorCtor
-    );
-  if (message != null && typeof message !== "string")
-    throw new import_js_format3.Errorf(
-      'The second argument of "createError" should be a String, but %v given.',
-      message
-    );
-  if (message == null) return new errorCtor();
-  const interpolatedMessage = (0, import_js_format2.format)(message, ...args);
-  return new errorCtor(interpolatedMessage);
-}
-__name(createError, "createError");
+__name(parseCookies, "parseCookies");
 
 // src/utils/to-camel-case.js
 var import_js_format4 = require("@e22m4u/js-format");
 function toCamelCase(input) {
   if (typeof input !== "string")
     throw new import_js_format4.Errorf(
-      'The first argument of "toCamelCase" should be a String, but %v given.',
+      'The first argument of "toCamelCase" should be a String, but %v was given.',
       input
     );
   return input.replace(/(^\w|[A-Z]|\b\w)/g, (c) => c.toUpperCase()).replace(/\W+/g, "").replace(/(^\w)/g, (c) => c.toLowerCase());
@@ -136,13 +137,13 @@ var import_js_format5 = require("@e22m4u/js-format");
 function createDebugger(name) {
   if (typeof name !== "string")
     throw new import_js_format5.Errorf(
-      'The first argument of "createDebugger" should be a String, but %v given.',
+      'The first argument of "createDebugger" should be a String, but %v was given.',
       name
     );
-  const debug2 = (0, import_debug.default)(`jsTrieRouter:${name}`);
+  const debug = (0, import_debug.default)(`jsTrieRouter:${name}`);
   return function(message, ...args) {
     const interpolatedMessage = (0, import_js_format5.format)(message, ...args);
-    return debug2(interpolatedMessage);
+    return debug(interpolatedMessage);
   };
 }
 __name(createDebugger, "createDebugger");
@@ -152,7 +153,7 @@ var import_js_format6 = require("@e22m4u/js-format");
 function isResponseSent(res) {
   if (!res || typeof res !== "object" || Array.isArray(res) || typeof res.headersSent !== "boolean") {
     throw new import_js_format6.Errorf(
-      'The first argument of "isResponseSent" should be an instance of ServerResponse, but %v given.',
+      'The first argument of "isResponseSent" should be an instance of ServerResponse, but %v was given.',
       res
     );
   }
@@ -172,7 +173,7 @@ var import_js_format7 = require("@e22m4u/js-format");
 function parseContentType(input) {
   if (typeof input !== "string")
     throw new import_js_format7.Errorf(
-      'The parameter "input" of "parseContentType" should be a String, but %v given.',
+      'The parameter "input" of "parseContentType" should be a String, but %v was given.',
       input
     );
   const res = { mediaType: void 0, charset: void 0, boundary: void 0 };
@@ -196,9 +197,9 @@ __name(isWritableStream, "isWritableStream");
 
 // src/utils/fetch-request-body.js
 var import_http_errors = __toESM(require("http-errors"), 1);
-var import_js_format8 = require("@e22m4u/js-format");
 var import_http = require("http");
-var BUFFER_ENCODING_LIST = [
+var import_js_format8 = require("@e22m4u/js-format");
+var CHARACTER_ENCODING_LIST = [
   "ascii",
   "utf8",
   "utf-8",
@@ -206,21 +207,17 @@ var BUFFER_ENCODING_LIST = [
   "utf-16le",
   "ucs2",
   "ucs-2",
-  "base64",
-  "base64url",
-  "latin1",
-  "binary",
-  "hex"
+  "latin1"
 ];
 function fetchRequestBody(req, bodyBytesLimit = 0) {
   if (!(req instanceof import_http.IncomingMessage))
     throw new import_js_format8.Errorf(
-      'The first parameter of "fetchRequestBody" should be an IncomingMessage instance, but %v given.',
+      'The first parameter of "fetchRequestBody" should be an IncomingMessage instance, but %v was given.',
       req
     );
   if (typeof bodyBytesLimit !== "number")
     throw new import_js_format8.Errorf(
-      'The parameter "bodyBytesLimit" of "fetchRequestBody" should be a number, but %v given.',
+      'The parameter "bodyBytesLimit" of "fetchRequestBody" should be a number, but %v was given.',
       bodyBytesLimit
     );
   return new Promise((resolve, reject) => {
@@ -238,7 +235,7 @@ function fetchRequestBody(req, bodyBytesLimit = 0) {
       const parsedContentType = parseContentType(contentType);
       if (parsedContentType && parsedContentType.charset) {
         encoding = parsedContentType.charset.toLowerCase();
-        if (!BUFFER_ENCODING_LIST.includes(encoding))
+        if (!CHARACTER_ENCODING_LIST.includes(encoding))
           throw createError(
             import_http_errors.default.UnsupportedMediaType,
             "Request encoding %v is not supported.",
@@ -274,7 +271,7 @@ function fetchRequestBody(req, bodyBytesLimit = 0) {
         return;
       }
       const buffer = Buffer.concat(data);
-      const body = Buffer.from(buffer, encoding).toString();
+      const body = buffer.toString(encoding);
       resolve(body || void 0);
     }, "onEnd");
     const onError = /* @__PURE__ */ __name((error) => {
@@ -296,12 +293,12 @@ var import_http2 = require("http");
 var import_querystring = __toESM(require("querystring"), 1);
 var import_js_format10 = require("@e22m4u/js-format");
 
-// src/utils/create-cookie-string.js
+// src/utils/create-cookies-string.js
 var import_js_format9 = require("@e22m4u/js-format");
-function createCookieString(data) {
+function createCookiesString(data) {
   if (!data || typeof data !== "object" || Array.isArray(data))
     throw new import_js_format9.Errorf(
-      'The first parameter of "createCookieString" should be an Object, but %v given.',
+      'The first parameter of "createCookiesString" should be an Object, but %v was given.',
       data
     );
   let cookies = "";
@@ -313,68 +310,71 @@ function createCookieString(data) {
   }
   return cookies.trim();
 }
-__name(createCookieString, "createCookieString");
+__name(createCookiesString, "createCookiesString");
 
 // src/utils/create-request-mock.js
 function createRequestMock(patch) {
   if (patch != null && typeof patch !== "object" || Array.isArray(patch)) {
     throw new import_js_format10.Errorf(
-      'The first parameter of "createRequestMock" should be an Object, but %v given.',
+      'The first parameter of "createRequestMock" should be an Object, but %v was given.',
       patch
     );
   }
   patch = patch || {};
   if (patch.host != null && typeof patch.host !== "string")
     throw new import_js_format10.Errorf(
-      'The parameter "host" of "createRequestMock" should be a String, but %v given.',
+      'The parameter "host" of "createRequestMock" should be a String, but %v was given.',
       patch.host
     );
   if (patch.method != null && typeof patch.method !== "string")
     throw new import_js_format10.Errorf(
-      'The parameter "method" of "createRequestMock" should be a String, but %v given.',
+      'The parameter "method" of "createRequestMock" should be a String, but %v was given.',
       patch.method
     );
   if (patch.secure != null && typeof patch.secure !== "boolean")
     throw new import_js_format10.Errorf(
-      'The parameter "secure" of "createRequestMock" should be a Boolean, but %v given.',
+      'The parameter "secure" of "createRequestMock" should be a Boolean, but %v was given.',
       patch.secure
     );
   if (patch.path != null && typeof patch.path !== "string")
     throw new import_js_format10.Errorf(
-      'The parameter "path" of "createRequestMock" should be a String, but %v given.',
+      'The parameter "path" of "createRequestMock" should be a String, but %v was given.',
       patch.path
     );
   if (patch.query != null && typeof patch.query !== "object" && typeof patch.query !== "string" || Array.isArray(patch.query)) {
     throw new import_js_format10.Errorf(
-      'The parameter "query" of "createRequestMock" should be a String or Object, but %v given.',
+      'The parameter "query" of "createRequestMock" should be a String or Object, but %v was given.',
       patch.query
     );
   }
-  if (patch.cookie != null && typeof patch.cookie !== "string" && typeof patch.cookie !== "object" || Array.isArray(patch.cookie)) {
+  if (patch.cookies != null && typeof patch.cookies !== "string" && typeof patch.cookies !== "object" || Array.isArray(patch.cookies)) {
     throw new import_js_format10.Errorf(
-      'The parameter "cookie" of "createRequestMock" should be a String or Object, but %v given.',
-      patch.cookie
+      'The parameter "cookies" of "createRequestMock" should be a String or Object, but %v was given.',
+      patch.cookies
     );
   }
   if (patch.headers != null && typeof patch.headers !== "object" || Array.isArray(patch.headers)) {
     throw new import_js_format10.Errorf(
-      'The parameter "headers" of "createRequestMock" should be an Object, but %v given.',
+      'The parameter "headers" of "createRequestMock" should be an Object, but %v was given.',
       patch.headers
     );
   }
   if (patch.stream != null && !isReadableStream(patch.stream))
     throw new import_js_format10.Errorf(
-      'The parameter "stream" of "createRequestMock" should be a Stream, but %v given.',
+      'The parameter "stream" of "createRequestMock" should be a Stream, but %v was given.',
       patch.stream
     );
   if (patch.encoding != null) {
     if (typeof patch.encoding !== "string")
       throw new import_js_format10.Errorf(
-        'The parameter "encoding" of "createRequestMock" should be a String, but %v given.',
+        'The parameter "encoding" of "createRequestMock" should be a String, but %v was given.',
         patch.encoding
       );
-    if (!BUFFER_ENCODING_LIST.includes(patch.encoding))
-      throw new import_js_format10.Errorf("Buffer encoding %v is not supported.", patch.encoding);
+    if (!CHARACTER_ENCODING_LIST.includes(patch.encoding))
+      throw new import_js_format10.Errorf(
+        "Character encoding %v is not supported.",
+        patch.encoding
+      );
   }
   if (patch.stream) {
     if (patch.secure != null)
@@ -396,7 +396,7 @@ function createRequestMock(patch) {
     patch.host,
     patch.secure,
     patch.body,
-    patch.cookie,
+    patch.cookies,
     patch.encoding,
     patch.headers
   );
@@ -407,7 +407,7 @@ __name(createRequestMock, "createRequestMock");
 function createRequestStream(secure, body, encoding) {
   if (encoding != null && typeof encoding !== "string")
     throw new import_js_format10.Errorf(
-      'The parameter "encoding" of "createRequestStream" should be a String, but %v given.',
+      'The parameter "encoding" of "createRequestStream" should be a String, but %v was given.',
       encoding
     );
   encoding = encoding || "utf-8";
@@ -430,12 +430,12 @@ __name(createRequestStream, "createRequestStream");
 function createRequestUrl(path, query) {
   if (typeof path !== "string")
     throw new import_js_format10.Errorf(
-      'The parameter "path" of "createRequestUrl" should be a String, but %v given.',
+      'The parameter "path" of "createRequestUrl" should be a String, but %v was given.',
       path
     );
   if (query != null && typeof query !== "string" && typeof query !== "object" || Array.isArray(query)) {
     throw new import_js_format10.Errorf(
-      'The parameter "query" of "createRequestUrl" should be a String or Object, but %v given.',
+      'The parameter "query" of "createRequestUrl" should be a String or Object, but %v was given.',
       query
     );
   }
@@ -449,48 +449,49 @@ function createRequestUrl(path, query) {
   return url;
 }
 __name(createRequestUrl, "createRequestUrl");
-function createRequestHeaders(host, secure, body, cookie, encoding, headers) {
+function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (host != null && typeof host !== "string")
     throw new import_js_format10.Errorf(
-      'The parameter "host" of "createRequestHeaders" a non-empty String, but %v given.',
+      'The parameter "host" of "createRequestHeaders" a non-empty String, but %v was given.',
       host
     );
   host = host || "localhost";
   if (secure != null && typeof secure !== "boolean")
     throw new import_js_format10.Errorf(
-      'The parameter "secure" of "createRequestHeaders" should be a String, but %v given.',
+      'The parameter "secure" of "createRequestHeaders" should be a String, but %v was given.',
       secure
     );
   secure = Boolean(secure);
-  if (cookie != null && typeof cookie !== "object" && typeof cookie !== "string" || Array.isArray(cookie)) {
+  if (cookies != null && typeof cookies !== "object" && typeof cookies !== "string" || Array.isArray(cookies)) {
     throw new import_js_format10.Errorf(
-      'The parameter "cookie" of "createRequestHeaders" should be a String or Object, but %v given.',
-      cookie
+      'The parameter "cookies" of "createRequestHeaders" should be a String or Object, but %v was given.',
+      cookies
     );
   }
   if (headers != null && typeof headers !== "object" || Array.isArray(headers)) {
     throw new import_js_format10.Errorf(
-      'The parameter "headers" of "createRequestHeaders" should be an Object, but %v given.',
+      'The parameter "headers" of "createRequestHeaders" should be an Object, but %v was given.',
       headers
     );
   }
   headers = headers || {};
   if (encoding != null && typeof encoding !== "string")
     throw new import_js_format10.Errorf(
-      'The parameter "encoding" of "createRequestHeaders" should be a String, but %v given.',
+      'The parameter "encoding" of "createRequestHeaders" should be a String, but %v was given.',
       encoding
     );
   encoding = encoding || "utf-8";
   const obj = { ...headers };
   obj["host"] = host;
   if (secure) obj["x-forwarded-proto"] = "https";
-  if (cookie != null) {
-    if (typeof cookie === "string") {
+  if (cookies != null) {
+    if (typeof cookies === "string") {
       obj["cookie"] = obj["cookie"] ? obj["cookie"] : "";
-      obj["cookie"] += cookie;
-    } else if (typeof cookie === "object") {
+      obj["cookie"] += obj["cookie"] ? `; ${cookies}` : cookies;
+    } else if (typeof cookies === "object") {
       obj["cookie"] = obj["cookie"] ? obj["cookie"] : "";
-      obj["cookie"] += createCookieString(cookie);
+      const newCookies = createCookiesString(cookies);
+      obj["cookie"] += obj["cookie"] ? `; ${newCookies}` : newCookies;
     }
   }
   if (obj["content-type"] == null) {
@@ -624,7 +625,7 @@ var import_js_format11 = require("@e22m4u/js-format");
 function getRequestPathname(req) {
   if (!req || typeof req !== "object" || Array.isArray(req) || typeof req.url !== "string") {
     throw new import_js_format11.Errorf(
-      'The first argument of "getRequestPathname" should be an instance of IncomingMessage, but %v given.',
+      'The first argument of "getRequestPathname" should be an instance of IncomingMessage, but %v was given.',
       req
     );
   }
@@ -634,38 +635,11 @@ __name(getRequestPathname, "getRequestPathname");
 
 // src/hooks/hook-registry.js
 var import_js_format12 = require("@e22m4u/js-format");
-
-// src/debuggable-service.js
-var import_js_service = require("@e22m4u/js-service");
-var import_js_service2 = require("@e22m4u/js-service");
-var _DebuggableService = class _DebuggableService extends import_js_service.Service {
-  /**
-   * Debug.
-   *
-   * @type {Function}
-   */
-  debug;
-  /**
-   * Constructor.
-   *
-   * @param {ServiceContainer} container
-   */
-  constructor(container) {
-    super(container);
-    const serviceName = toCamelCase(this.constructor.name);
-    this.debug = createDebugger(serviceName);
-    this.debug("The %v is created.", this.constructor);
-  }
-};
-__name(_DebuggableService, "DebuggableService");
-var DebuggableService = _DebuggableService;
-
-// src/hooks/hook-registry.js
 var HookType = {
   PRE_HANDLER: "preHandler",
   POST_HANDLER: "postHandler"
 };
-var _HookRegistry = class _HookRegistry extends DebuggableService {
+var _HookRegistry = class _HookRegistry {
   /**
    * Hooks.
    *
@@ -682,12 +656,12 @@ var _HookRegistry = class _HookRegistry extends DebuggableService {
    */
   addHook(type, hook) {
     if (!type || typeof type !== "string")
-      throw new import_js_format12.Errorf("The hook type is required, but %v given.", type);
+      throw new import_js_format12.Errorf("The hook type is required, but %v was given.", type);
     if (!Object.values(HookType).includes(type))
       throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     if (!hook || typeof hook !== "function")
       throw new import_js_format12.Errorf(
-        "The hook %v should be a Function, but %v given.",
+        "The hook %v should be a Function, but %v was given.",
         type,
         hook
       );
@@ -705,12 +679,12 @@ var _HookRegistry = class _HookRegistry extends DebuggableService {
    */
   hasHook(type, hook) {
     if (!type || typeof type !== "string")
-      throw new import_js_format12.Errorf("The hook type is required, but %v given.", type);
+      throw new import_js_format12.Errorf("The hook type is required, but %v was given.", type);
     if (!Object.values(HookType).includes(type))
       throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     if (!hook || typeof hook !== "function")
       throw new import_js_format12.Errorf(
-        "The hook %v should be a Function, but %v given.",
+        "The hook %v should be a Function, but %v was given.",
         type,
         hook
       );
@@ -725,7 +699,7 @@ var _HookRegistry = class _HookRegistry extends DebuggableService {
    */
   getHooks(type) {
     if (!type || typeof type !== "string")
-      throw new import_js_format12.Errorf("The hook type is required, but %v given.", type);
+      throw new import_js_format12.Errorf("The hook type is required, but %v was given.", type);
     if (!Object.values(HookType).includes(type))
       throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     return this._hooks.get(type) || [];
@@ -733,6 +707,25 @@ var _HookRegistry = class _HookRegistry extends DebuggableService {
 };
 __name(_HookRegistry, "HookRegistry");
 var HookRegistry = _HookRegistry;
+
+// src/debuggable-service.js
+var import_js_service = require("@e22m4u/js-service");
+var MODULE_DEBUG_NAMESPACE = "jsTrieRouter";
+var _DebuggableService = class _DebuggableService extends import_js_service.DebuggableService {
+  /**
+   * Constructor.
+   *
+   * @param {ServiceContainer} container
+   */
+  constructor(container = void 0) {
+    super(container, {
+      namespace: MODULE_DEBUG_NAMESPACE,
+      noEnvironmentNamespace: true
+    });
+  }
+};
+__name(_DebuggableService, "DebuggableService");
+var DebuggableService = _DebuggableService;
 
 // src/hooks/hook-invoker.js
 var _HookInvoker = class _HookInvoker extends DebuggableService {
@@ -748,19 +741,19 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
   invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
     if (!route || !(route instanceof Route))
       throw new import_js_format13.Errorf(
-        'The parameter "route" of the HookInvoker.invokeAndContinueUntilValueReceived should be a Route instance, but %v given.',
+        'The parameter "route" of the HookInvoker.invokeAndContinueUntilValueReceived should be a Route instance, but %v was given.',
         route
       );
     if (!hookType || typeof hookType !== "string")
       throw new import_js_format13.Errorf(
-        'The parameter "hookType" of the HookInvoker.invokeAndContinueUntilValueReceived should be a non-empty String, but %v given.',
+        'The parameter "hookType" of the HookInvoker.invokeAndContinueUntilValueReceived should be a non-empty String, but %v was given.',
         hookType
       );
     if (!Object.values(HookType).includes(hookType))
       throw new import_js_format13.Errorf("The hook type %v is not supported.", hookType);
     if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
       throw new import_js_format13.Errorf(
-        'The parameter "response" of the HookInvoker.invokeAndContinueUntilValueReceived should be a ServerResponse instance, but %v given.',
+        'The parameter "response" of the HookInvoker.invokeAndContinueUntilValueReceived should be a ServerResponse instance, but %v was given.',
         response
       );
     }
@@ -779,7 +772,6 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
       } else if (isPromise(result)) {
         result = result.then((prevVal) => {
           if (isResponseSent(response)) {
-            result = response;
             return;
           }
           if (prevVal != null) return prevVal;
@@ -796,6 +788,7 @@ __name(_HookInvoker, "HookInvoker");
 var HookInvoker = _HookInvoker;
 
 // src/route.js
+var import_js_debug = require("@e22m4u/js-debug");
 var HttpMethod = {
   GET: "GET",
   POST: "POST",
@@ -803,8 +796,7 @@ var HttpMethod = {
   PATCH: "PATCH",
   DELETE: "DELETE"
 };
-var debug = createDebugger("route");
-var _Route = class _Route {
+var _Route = class _Route extends import_js_debug.Debuggable {
   /**
    * Method.
    *
@@ -871,26 +863,31 @@ var _Route = class _Route {
    * @param {RouteDefinition} routeDef
    */
   constructor(routeDef) {
+    super({
+      namespace: MODULE_DEBUG_NAMESPACE,
+      noEnvironmentNamespace: true,
+      noInstantiationMessage: true
+    });
     if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef))
       throw new import_js_format14.Errorf(
-        "The first parameter of Route.controller should be an Object, but %v given.",
+        "The first parameter of Route.constructor should be an Object, but %v was given.",
         routeDef
       );
     if (!routeDef.method || typeof routeDef.method !== "string")
       throw new import_js_format14.Errorf(
-        'The option "method" of the Route should be a non-empty String, but %v given.',
+        'The option "method" of the Route should be a non-empty String, but %v was given.',
         routeDef.method
       );
     this._method = routeDef.method.toUpperCase();
     if (typeof routeDef.path !== "string")
       throw new import_js_format14.Errorf(
-        'The option "path" of the Route should be a String, but %v given.',
+        'The option "path" of the Route should be a String, but %v was given.',
         routeDef.path
       );
     this._path = routeDef.path;
     if (typeof routeDef.handler !== "function")
       throw new import_js_format14.Errorf(
-        'The option "handler" of the Route should be a Function, but %v given.',
+        'The option "handler" of the Route should be a Function, but %v was given.',
         routeDef.handler
       );
     this._handler = routeDef.handler;
@@ -906,6 +903,7 @@ var _Route = class _Route {
         this._hookRegistry.addHook(HookType.POST_HANDLER, hook);
       });
     }
+    this.ctorDebug("A new route %s %v was created.", this._method, this._path);
   }
   /**
    * Handle request.
@@ -914,6 +912,7 @@ var _Route = class _Route {
    * @returns {*}
    */
   handle(context) {
+    const debug = this.getDebuggerFor(this.handle);
     const requestPath = getRequestPathname(context.req);
     debug(
       "Invoking the Route handler for the request %s %v.",
@@ -937,22 +936,23 @@ var _DataSender = class _DataSender extends DebuggableService {
    * @returns {undefined}
    */
   send(res, data) {
+    const debug = this.getDebuggerFor(this.send);
     if (data === res || res.headersSent) {
-      this.debug(
-        "Response sending was skipped because its headers where sent already ."
+      debug(
+        "Response sending was skipped because its headers where sent already."
       );
       return;
     }
     if (data == null) {
       res.statusCode = 204;
       res.end();
-      this.debug("The empty response was sent.");
+      debug("The empty response was sent.");
       return;
     }
     if (isReadableStream(data)) {
       res.setHeader("Content-Type", "application/octet-stream");
       data.pipe(res);
-      this.debug("The stream response was sent.");
+      debug("The stream response was sent.");
       return;
     }
     let debugMsg;
@@ -976,7 +976,7 @@ var _DataSender = class _DataSender extends DebuggableService {
         break;
     }
     res.end(data);
-    this.debug(debugMsg);
+    debug(debugMsg);
   }
 };
 __name(_DataSender, "DataSender");
@@ -996,6 +996,7 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
    * @returns {undefined}
    */
   send(req, res, error) {
+    const debug = this.getDebuggerFor(this.send);
     let safeError = {};
     if (error) {
       if (typeof error === "object") {
@@ -1035,8 +1036,8 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
     res.statusCode = statusCode;
     res.setHeader("content-type", "application/json; charset=utf-8");
     res.end(JSON.stringify(body, null, 2), "utf-8");
-    this.debug(
-      "The %s error is sent for the request %s %v.",
+    debug(
+      "The %s error was sent for the request %s %v.",
       statusCode,
       req.method,
       getRequestPathname(req)
@@ -1050,11 +1051,12 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
    * @returns {undefined}
    */
   send404(req, res) {
+    const debug = this.getDebuggerFor(this.send404);
     res.statusCode = 404;
     res.setHeader("content-type", "text/plain; charset=utf-8");
     res.end("404 Not Found", "utf-8");
-    this.debug(
-      "The 404 error is sent for the request %s %v.",
+    debug(
+      "The 404 error was sent for the request %s %v.",
       req.method,
       getRequestPathname(req)
     );
@@ -1095,7 +1097,7 @@ var _RouterOptions = class _RouterOptions extends DebuggableService {
   setRequestBodyBytesLimit(input) {
     if (typeof input !== "number" || input < 0)
       throw new import_js_format16.Errorf(
-        'The option "requestBodyBytesLimit" must be a positive Number or 0, but %v given.',
+        'The option "requestBodyBytesLimit" must be a positive Number or 0, but %v was given.',
         input
       );
     this._requestBodyBytesLimit = input;
@@ -1128,12 +1130,12 @@ var _BodyParser = class _BodyParser extends DebuggableService {
   defineParser(mediaType, parser) {
     if (!mediaType || typeof mediaType !== "string")
       throw new import_js_format17.Errorf(
-        'The parameter "mediaType" of BodyParser.defineParser should be a non-empty String, but %v given.',
+        'The parameter "mediaType" of BodyParser.defineParser should be a non-empty String, but %v was given.',
         mediaType
       );
     if (!parser || typeof parser !== "function")
       throw new import_js_format17.Errorf(
-        'The parameter "parser" of BodyParser.defineParser should be a Function, but %v given.',
+        'The parameter "parser" of BodyParser.defineParser should be a Function, but %v was given.',
         parser
       );
     this._parsers[mediaType] = parser;
@@ -1148,7 +1150,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
   hasParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string")
       throw new import_js_format17.Errorf(
-        'The parameter "mediaType" of BodyParser.hasParser should be a non-empty String, but %v given.',
+        'The parameter "mediaType" of BodyParser.hasParser should be a non-empty String, but %v was given.',
         mediaType
       );
     return Boolean(this._parsers[mediaType]);
@@ -1162,7 +1164,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
   deleteParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string")
       throw new import_js_format17.Errorf(
-        'The parameter "mediaType" of BodyParser.deleteParser should be a non-empty String, but %v given.',
+        'The parameter "mediaType" of BodyParser.deleteParser should be a non-empty String, but %v was given.',
         mediaType
       );
     const parser = this._parsers[mediaType];
@@ -1177,8 +1179,9 @@ var _BodyParser = class _BodyParser extends DebuggableService {
    * @returns {Promise<*>|undefined}
    */
   parse(req) {
+    const debug = this.getDebuggerFor(this.parse);
     if (!METHODS_WITH_BODY.includes(req.method.toUpperCase())) {
-      this.debug(
+      debug(
         "Body parsing was skipped for the %s request.",
         req.method.toUpperCase()
       );
@@ -1189,8 +1192,8 @@ var _BodyParser = class _BodyParser extends DebuggableService {
       "$1"
     );
     if (!contentType) {
-      this.debug(
-        "Body parsing was skipped because the request has no content type."
+      debug(
+        "Body parsing was skipped because the request had no content type."
       );
       return;
     }
@@ -1203,7 +1206,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
     const parser = this._parsers[mediaType];
     if (!parser) {
       if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
-        this.debug("Body parsing was skipped for %v.", mediaType);
+        debug("Body parsing was skipped for %v.", mediaType);
         return;
       }
       throw createError(
@@ -1226,9 +1229,7 @@ function parseJsonBody(input) {
   try {
     return JSON.parse(input);
   } catch (error) {
-    if (process.env["DEBUG"] || process.env["NODE_ENV"] === "development")
-      console.warn(error);
-    throw createError(import_http_errors2.default.BadRequest, "Unable to parse request body.");
+    throw createError(import_http_errors2.default.BadRequest, error.message);
   }
 }
 __name(parseJsonBody, "parseJsonBody");
@@ -1243,16 +1244,17 @@ var _QueryParser = class _QueryParser extends DebuggableService {
    * @returns {object}
    */
   parse(req) {
+    const debug = this.getDebuggerFor(this.parse);
     const queryStr = req.url.replace(/^[^?]*\??/, "");
     const query = queryStr ? import_querystring2.default.parse(queryStr) : {};
     const queryKeys = Object.keys(query);
     if (queryKeys.length) {
       queryKeys.forEach((key) => {
-        this.debug("The query %v has the value %v.", key, query[key]);
+        debug("The query parameter %v had the value %v.", key, query[key]);
       });
     } else {
-      this.debug(
-        "The request %s %v has no query.",
+      debug(
+        "The request %s %v had no query parameters.",
         req.method,
         getRequestPathname(req)
       );
@@ -1263,8 +1265,8 @@ var _QueryParser = class _QueryParser extends DebuggableService {
 __name(_QueryParser, "QueryParser");
 var QueryParser = _QueryParser;
 
-// src/parsers/cookie-parser.js
-var _CookieParser = class _CookieParser extends DebuggableService {
+// src/parsers/cookies-parser.js
+var _CookiesParser = class _CookiesParser extends DebuggableService {
   /**
    * Parse
    *
@@ -1272,25 +1274,26 @@ var _CookieParser = class _CookieParser extends DebuggableService {
    * @returns {object}
    */
   parse(req) {
-    const cookieString = req.headers["cookie"] || "";
-    const cookie = parseCookie(cookieString);
-    const cookieKeys = Object.keys(cookie);
-    if (cookieKeys.length) {
-      cookieKeys.forEach((key) => {
-        this.debug("The cookie %v has the value %v.", key, cookie[key]);
+    const debug = this.getDebuggerFor(this.parse);
+    const cookiesString = req.headers["cookie"] || "";
+    const cookies = parseCookies(cookiesString);
+    const cookiesKeys = Object.keys(cookies);
+    if (cookiesKeys.length) {
+      cookiesKeys.forEach((key) => {
+        debug("The cookie %v had the value %v.", key, cookies[key]);
       });
     } else {
-      this.debug(
-        "The request %s %v has no cookie.",
+      debug(
+        "The request %s %v had no cookies.",
         req.method,
         getRequestPathname(req)
       );
     }
-    return cookie;
+    return cookies;
   }
 };
-__name(_CookieParser, "CookieParser");
-var CookieParser = _CookieParser;
+__name(_CookiesParser, "CookiesParser");
+var CookiesParser = _CookiesParser;
 
 // src/parsers/request-parser.js
 var import_http3 = require("http");
@@ -1305,7 +1308,7 @@ var _RequestParser = class _RequestParser extends DebuggableService {
   parse(req) {
     if (!(req instanceof import_http3.IncomingMessage))
       throw new import_js_format18.Errorf(
-        "The first argument of RequestParser.parse should be an instance of IncomingMessage, but %v given.",
+        "The first argument of RequestParser.parse should be an instance of IncomingMessage, but %v was given.",
         req
       );
     const data = {};
@@ -1316,11 +1319,11 @@ var _RequestParser = class _RequestParser extends DebuggableService {
     } else {
       data.query = parsedQuery;
     }
-    const parsedCookie = this.getService(CookieParser).parse(req);
-    if (isPromise(parsedCookie)) {
-      promises.push(parsedCookie.then((v) => data.cookie = v));
+    const parsedCookies = this.getService(CookiesParser).parse(req);
+    if (isPromise(parsedCookies)) {
+      promises.push(parsedCookies.then((v) => data.cookies = v));
     } else {
-      data.cookie = parsedCookie;
+      data.cookies = parsedCookies;
     }
     const parsedBody = this.getService(BodyParser).parse(req);
     if (isPromise(parsedBody)) {
@@ -1328,7 +1331,7 @@ var _RequestParser = class _RequestParser extends DebuggableService {
     } else {
       data.body = parsedBody;
     }
-    data.headers = JSON.parse(JSON.stringify(req.headers));
+    data.headers = Object.assign({}, req.headers);
     return promises.length ? Promise.all(promises).then(() => data) : data;
   }
 };
@@ -1338,7 +1341,7 @@ var RequestParser = _RequestParser;
 // src/route-registry.js
 var import_js_format19 = require("@e22m4u/js-format");
 var import_js_path_trie = require("@e22m4u/js-path-trie");
-var import_js_service3 = require("@e22m4u/js-service");
+var import_js_service2 = require("@e22m4u/js-service");
 var _RouteRegistry = class _RouteRegistry extends DebuggableService {
   /**
    * Constructor.
@@ -1356,16 +1359,17 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
    * @returns {Route}
    */
   defineRoute(routeDef) {
+    const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef))
       throw new import_js_format19.Errorf(
-        "The route definition should be an Object, but %v given.",
+        "The route definition should be an Object, but %v was given.",
         routeDef
       );
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;
     this._trie.add(triePath, route);
-    this.debug(
-      "The route %s %v is registered.",
+    debug(
+      "The route %s %v was registered.",
       route.method.toUpperCase(),
       route.path
     );
@@ -1378,9 +1382,10 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
    * @returns {ResolvedRoute|undefined}
    */
   matchRouteByRequest(req) {
+    const debug = this.getDebuggerFor(this.matchRouteByRequest);
     const requestPath = (req.url || "/").replace(/\?.*$/, "");
-    this.debug(
-      "Matching %s %v with registered routes.",
+    debug(
+      "Matching routes with the request %s %v.",
       req.method.toUpperCase(),
       requestPath
     );
@@ -1388,28 +1393,26 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;
-      this.debug(
-        "The request %s %v was matched to the route %s %v.",
-        req.method.toUpperCase(),
-        requestPath,
+      debug(
+        "The route %s %v was matched.",
         route.method.toUpperCase(),
         route.path
       );
       const paramNames = Object.keys(resolved.params);
-      if (paramNames) {
+      if (paramNames.length) {
         paramNames.forEach((name) => {
-          this.debug(
-            "The path parameter %v has the value %v.",
+          debug(
+            "The path parameter %v had the value %v.",
             name,
             resolved.params[name]
           );
         });
       } else {
-        this.debug("No path parameters found.");
+        debug("No path parameters found.");
       }
       return { route, params: resolved.params };
     }
-    this.debug(
+    debug(
       "No matched route for the request %s %v.",
       req.method.toUpperCase(),
       requestPath
@@ -1421,8 +1424,8 @@ var RouteRegistry = _RouteRegistry;
 
 // src/request-context.js
 var import_js_format20 = require("@e22m4u/js-format");
+var import_js_service3 = require("@e22m4u/js-service");
 var import_js_service4 = require("@e22m4u/js-service");
-var import_js_service5 = require("@e22m4u/js-service");
 var _RequestContext = class _RequestContext {
   /**
    * Service container.
@@ -1461,11 +1464,11 @@ var _RequestContext = class _RequestContext {
    */
   headers = {};
   /**
-   * Parsed cookie.
+   * Parsed cookies.
    *
    * @type {object}
    */
-  cookie = {};
+  cookies = {};
   /**
    * Parsed body.
    *
@@ -1513,22 +1516,22 @@ var _RequestContext = class _RequestContext {
    * @param {import('http').ServerResponse} response
    */
   constructor(container, request, response) {
-    if (!(0, import_js_service5.isServiceContainer)(container))
+    if (!(0, import_js_service4.isServiceContainer)(container))
       throw new import_js_format20.Errorf(
-        'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v given.',
+        'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v was given.',
         container
       );
     this.container = container;
     if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
       throw new import_js_format20.Errorf(
-        'The parameter "request" of RequestContext.constructor should be an instance of IncomingMessage, but %v given.',
+        'The parameter "request" of RequestContext.constructor should be an instance of IncomingMessage, but %v was given.',
         request
       );
     }
     this.req = request;
     if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
       throw new import_js_format20.Errorf(
-        'The parameter "response" of RequestContext.constructor should be an instance of ServerResponse, but %v given.',
+        'The parameter "response" of RequestContext.constructor should be an instance of ServerResponse, but %v was given.',
         response
       );
     }
@@ -1539,7 +1542,7 @@ __name(_RequestContext, "RequestContext");
 var RequestContext = _RequestContext;
 
 // src/trie-router.js
-var import_js_service6 = require("@e22m4u/js-service");
+var import_js_service5 = require("@e22m4u/js-service");
 var _TrieRouter = class _TrieRouter extends DebuggableService {
   /**
    * Define route.
@@ -1558,11 +1561,11 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * ```
    * const router = new TrieRouter();
    * router.defineRoute({
-   *   method: HttpMethod.POST,       // Request method.
+   *   method: HttpMethod.POST,        // Request method.
    *   path: '/users/:id',             // The path template may have parameters.
-   *   preHandler(ctx) { ... },        // The "preHandler" is executed before a route handler.
+   *   preHandler(ctx) { ... },        // The "preHandler" executes before a route handler.
    *   handler(ctx) { ... },           // Request handler function.
-   *   postHandler(ctx, data) { ... }, // The "postHandler" is executed after a route handler.
+   *   postHandler(ctx, data) { ... }, // The "postHandler" executes after a route handler.
    * });
    * ```
    *
@@ -1600,15 +1603,20 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * @private
    */
   async _handleRequest(req, res) {
+    const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = (req.url || "/").replace(/\?.*$/, "");
-    this.debug("Preparing to handle %s %v.", req.method, requestPath);
+    debug(
+      "Preparing to handle an incoming request %s %v.",
+      req.method,
+      requestPath
+    );
     const resolved = this.getService(RouteRegistry).matchRouteByRequest(req);
     if (!resolved) {
-      this.debug("No route for the request %s %v.", req.method, requestPath);
+      debug("No route for the request %s %v.", req.method, requestPath);
       this.getService(ErrorSender).send404(req, res);
     } else {
       const { route, params } = resolved;
-      const container = new import_js_service6.ServiceContainer(this.container);
+      const container = new import_js_service5.ServiceContainer(this.container);
       const context = new RequestContext(container, req, res);
       container.set(RequestContext, context);
       context.params = params;
@@ -1629,7 +1637,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           context
         );
         if (isPromise(data)) data = await data;
-        if (data == null) {
+        if (!isResponseSent(res) && data == null) {
           data = route.handle(context);
           if (isPromise(data)) data = await data;
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
@@ -1647,7 +1655,9 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
         this.getService(ErrorSender).send(req, res, error);
         return;
       }
-      this.getService(DataSender).send(res, data);
+      if (!isResponseSent(res)) {
+        this.getService(DataSender).send(res, data);
+      }
     }
   }
   /**
@@ -1687,9 +1697,9 @@ __name(_TrieRouter, "TrieRouter");
 var TrieRouter = _TrieRouter;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  BUFFER_ENCODING_LIST,
   BodyParser,
-  CookieParser,
+  CHARACTER_ENCODING_LIST,
+  CookiesParser,
   DataSender,
   EXPOSED_ERROR_PROPERTIES,
   ErrorSender,
@@ -1706,7 +1716,7 @@ var TrieRouter = _TrieRouter;
   RouterOptions,
   TrieRouter,
   UNPARSABLE_MEDIA_TYPES,
-  createCookieString,
+  createCookiesString,
   createDebugger,
   createError,
   createRequestMock,
@@ -1718,7 +1728,7 @@ var TrieRouter = _TrieRouter;
   isResponseSent,
   isWritableStream,
   parseContentType,
-  parseCookie,
+  parseCookies,
   parseJsonBody,
   toCamelCase
 });

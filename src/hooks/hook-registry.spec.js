@@ -8,7 +8,8 @@ describe('HookRegistry', function () {
     it('requires the parameter "type" to be a non-empty String', function () {
       const s = new HookRegistry();
       const throwable = v => () => s.addHook(v, () => undefined);
-      const error = v => format('The hook type is required, but %s given.', v);
+      const error = v =>
+        format('The hook type is required, but %s was given.', v);
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
       expect(throwable(0)).to.throw(error('0'));
@@ -26,7 +27,10 @@ describe('HookRegistry', function () {
       const s = new HookRegistry();
       const throwable = v => () => s.addHook(HookType.PRE_HANDLER, v);
       const error = v =>
-        format('The hook "preHandler" should be a Function, but %s given.', v);
+        format(
+          'The hook "preHandler" should be a Function, but %s was given.',
+          v,
+        );
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -69,7 +73,8 @@ describe('HookRegistry', function () {
     it('requires the parameter "type" to be a non-empty String', function () {
       const s = new HookRegistry();
       const throwable = v => () => s.hasHook(v, () => undefined);
-      const error = v => format('The hook type is required, but %s given.', v);
+      const error = v =>
+        format('The hook type is required, but %s was given.', v);
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
       expect(throwable(0)).to.throw(error('0'));
@@ -87,7 +92,10 @@ describe('HookRegistry', function () {
       const s = new HookRegistry();
       const throwable = v => () => s.hasHook(HookType.PRE_HANDLER, v);
       const error = v =>
-        format('The hook "preHandler" should be a Function, but %s given.', v);
+        format(
+          'The hook "preHandler" should be a Function, but %s was given.',
+          v,
+        );
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -123,7 +131,8 @@ describe('HookRegistry', function () {
     it('requires the parameter "type" to be a non-empty String', function () {
       const s = new HookRegistry();
       const throwable = v => () => s.getHooks(v);
-      const error = v => format('The hook type is required, but %s given.', v);
+      const error = v =>
+        format('The hook type is required, but %s was given.', v);
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
       expect(throwable(0)).to.throw(error('0'));

@@ -3,7 +3,7 @@ import {Errorf} from '@e22m4u/js-format';
 import {isPromise} from '../utils/index.js';
 import {BodyParser} from './body-parser.js';
 import {QueryParser} from './query-parser.js';
-import {CookieParser} from './cookie-parser.js';
+import {CookiesParser} from './cookies-parser.js';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
@@ -20,7 +20,7 @@ export class RequestParser extends DebuggableService {
     if (!(req instanceof IncomingMessage))
       throw new Errorf(
         'The first argument of RequestParser.parse should be ' +
-          'an instance of IncomingMessage, but %v given.',
+          'an instance of IncomingMessage, but %v was given.',
         req,
       );
     const data = {};
@@ -39,11 +39,11 @@ export class RequestParser extends DebuggableService {
     // данные заголовка "cookie" с проверкой
     // значения на Promise, и разрываем
     // "eventLoop" при необходимости
-    const parsedCookie = this.getService(CookieParser).parse(req);
-    if (isPromise(parsedCookie)) {
-      promises.push(parsedCookie.then(v => (data.cookie = v)));
+    const parsedCookies = this.getService(CookiesParser).parse(req);
+    if (isPromise(parsedCookies)) {
+      promises.push(parsedCookies.then(v => (data.cookies = v)));
     } else {
-      data.cookie = parsedCookie;
+      data.cookies = parsedCookies;
     }
     // аналогично предыдущей операции, разбираем
     // тело запроса с проверкой результата
@@ -56,7 +56,7 @@ export class RequestParser extends DebuggableService {
     }
     // что бы предотвратить модификацию
     // заголовков, возвращаем их копию
-    data.headers = JSON.parse(JSON.stringify(req.headers));
+    data.headers = Object.assign({}, req.headers);
     // если имеются асинхронные операции, то результат
     // будет обернут в Promise, в противном случае
     // данные возвращаются сразу

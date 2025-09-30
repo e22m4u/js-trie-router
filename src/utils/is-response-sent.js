@@ -15,7 +15,7 @@ export function isResponseSent(res) {
   ) {
     throw new Errorf(
       'The first argument of "isResponseSent" should be ' +
-        'an instance of ServerResponse, but %v given.',
+        'an instance of ServerResponse, but %v was given.',
       res,
     );
   }

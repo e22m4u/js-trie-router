@@ -32,7 +32,7 @@ export class RouterOptions extends DebuggableService {
     if (typeof input !== 'number' || input < 0)
       throw new Errorf(
         'The option "requestBodyBytesLimit" must be ' +
-          'a positive Number or 0, but %v given.',
+          'a positive Number or 0, but %v was given.',
         input,
       );
     this._requestBodyBytesLimit = input;

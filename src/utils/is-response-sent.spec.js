@@ -8,7 +8,7 @@ describe('isResponseSent', function () {
     const error = v =>
       format(
         'The first argument of "isResponseSent" should be ' +
-          'an instance of ServerResponse, but %s given.',
+          'an instance of ServerResponse, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));

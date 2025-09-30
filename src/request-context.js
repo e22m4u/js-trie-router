@@ -52,11 +52,11 @@ export class RequestContext {
   headers = {};
 
   /**
-   * Parsed cookie.
+   * Parsed cookies.
    *
    * @type {object}
    */
-  cookie = {};
+  cookies = {};
 
   /**
    * Parsed body.
@@ -113,7 +113,7 @@ export class RequestContext {
     if (!isServiceContainer(container))
       throw new Errorf(
         'The parameter "container" of RequestContext.constructor ' +
-          'should be an instance of ServiceContainer, but %v given.',
+          'should be an instance of ServiceContainer, but %v was given.',
         container,
       );
     this.container = container;
@@ -125,7 +125,7 @@ export class RequestContext {
     ) {
       throw new Errorf(
         'The parameter "request" of RequestContext.constructor ' +
-          'should be an instance of IncomingMessage, but %v given.',
+          'should be an instance of IncomingMessage, but %v was given.',
         request,
       );
     }
@@ -138,7 +138,7 @@ export class RequestContext {
     ) {
       throw new Errorf(
         'The parameter "response" of RequestContext.constructor ' +
-          'should be an instance of ServerResponse, but %v given.',
+          'should be an instance of ServerResponse, but %v was given.',
         response,
       );
     }

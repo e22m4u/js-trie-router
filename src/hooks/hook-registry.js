@@ -1,5 +1,4 @@
 import {Errorf} from '@e22m4u/js-format';
-import {DebuggableService} from '../debuggable-service.js';
 
 /**
  * Hook type.
@@ -17,7 +16,7 @@ export const HookType = {
 /**
  * Hook registry.
  */
-export class HookRegistry extends DebuggableService {
+export class HookRegistry {
   /**
    * Hooks.
    *
@@ -35,12 +34,12 @@ export class HookRegistry extends DebuggableService {
    */
   addHook(type, hook) {
     if (!type || typeof type !== 'string')
-      throw new Errorf('The hook type is required, but %v given.', type);
+      throw new Errorf('The hook type is required, but %v was given.', type);
     if (!Object.values(HookType).includes(type))
       throw new Errorf('The hook type %v is not supported.', type);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
-        'The hook %v should be a Function, but %v given.',
+        'The hook %v should be a Function, but %v was given.',
         type,
         hook,
       );
@@ -59,12 +58,12 @@ export class HookRegistry extends DebuggableService {
    */
   hasHook(type, hook) {
     if (!type || typeof type !== 'string')
-      throw new Errorf('The hook type is required, but %v given.', type);
+      throw new Errorf('The hook type is required, but %v was given.', type);
     if (!Object.values(HookType).includes(type))
       throw new Errorf('The hook type %v is not supported.', type);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
-        'The hook %v should be a Function, but %v given.',
+        'The hook %v should be a Function, but %v was given.',
         type,
         hook,
       );
@@ -80,7 +79,7 @@ export class HookRegistry extends DebuggableService {
    */
   getHooks(type) {
     if (!type || typeof type !== 'string')
-      throw new Errorf('The hook type is required, but %v given.', type);
+      throw new Errorf('The hook type is required, but %v was given.', type);
     if (!Object.values(HookType).includes(type))
       throw new Errorf('The hook type %v is not supported.', type);
     return this._hooks.get(type) || [];

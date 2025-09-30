@@ -25,7 +25,7 @@ describe('RouterOptions', function () {
       const error = v =>
         format(
           'The option "requestBodyBytesLimit" must be ' +
-            'a positive Number or 0, but %s given.',
+            'a positive Number or 0, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
