@@ -1,9 +1,12 @@
+import {ServerResponse} from 'http';
+import {IncomingMessage} from 'http';
 import {HookType} from './hooks/index.js';
-import {isPromise, isResponseSent} from './utils/index.js';
+import {isPromise} from './utils/index.js';
 import {HookInvoker} from './hooks/index.js';
 import {DataSender} from './senders/index.js';
 import {HookRegistry} from './hooks/index.js';
 import {ErrorSender} from './senders/index.js';
+import {isResponseSent} from './utils/index.js';
 import {RequestParser} from './parsers/index.js';
 import {RouteRegistry} from './route-registry.js';
 import {RequestContext} from './request-context.js';
@@ -94,8 +97,12 @@ export class TrieRouter extends DebuggableService {
       const container = new ServiceContainer(this.container);
       const context = new RequestContext(container, req, res);
       // регистрация контекста запроса в сервис-контейнере
-      // для удобного доступа через container.getRegistered(RequestContext)
+      // для доступа через container.getRegistered(RequestContext)
       container.set(RequestContext, context);
+      // регистрация текущего экземпляра IncomingMessage
+      // и ServerResponse в сервис-контейнере запроса
+      container.set(IncomingMessage, req);
+      container.set(ServerResponse, res);
       // запись параметров пути в контекст запроса,
       // так как они были определены в момент
       // поиска подходящего роута

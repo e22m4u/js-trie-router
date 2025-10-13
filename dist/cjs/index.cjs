@@ -925,6 +925,10 @@ var _Route = class _Route extends import_js_debug.Debuggable {
 __name(_Route, "Route");
 var Route = _Route;
 
+// src/trie-router.js
+var import_http4 = require("http");
+var import_http5 = require("http");
+
 // src/senders/data-sender.js
 var import_js_format15 = require("@e22m4u/js-format");
 var _DataSender = class _DataSender extends DebuggableService {
@@ -1619,6 +1623,8 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
       const container = new import_js_service5.ServiceContainer(this.container);
       const context = new RequestContext(container, req, res);
       container.set(RequestContext, context);
+      container.set(import_http5.IncomingMessage, req);
+      container.set(import_http4.ServerResponse, res);
       context.params = params;
       let data;
       try {

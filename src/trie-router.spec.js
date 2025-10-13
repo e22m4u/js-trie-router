@@ -1,5 +1,7 @@
 import {Route} from './route.js';
 import {expect} from './chai.js';
+import {ServerResponse} from 'http';
+import {IncomingMessage} from 'http';
 import {HttpMethod} from './route.js';
 import {HookType} from './hooks/index.js';
 import {TrieRouter} from './trie-router.js';
@@ -470,6 +472,38 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock();
       const res = createResponseMock();
+      router.requestListener(req, res);
+    });
+
+    it('should register the IncomingMessage in the request-scope ServiceContainer', function (done) {
+      const router = new TrieRouter();
+      const req = createRequestMock();
+      const res = createResponseMock();
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: '/',
+        handler(ctx) {
+          const result = ctx.container.getRegistered(IncomingMessage);
+          expect(result).to.be.eq(req);
+          done();
+        },
+      });
+      router.requestListener(req, res);
+    });
+
+    it('should register the ServerResponse in the request-scope ServiceContainer', function (done) {
+      const router = new TrieRouter();
+      const req = createRequestMock();
+      const res = createResponseMock();
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: '/',
+        handler(ctx) {
+          const result = ctx.container.getRegistered(ServerResponse);
+          expect(result).to.be.eq(res);
+          done();
+        },
+      });
       router.requestListener(req, res);
     });
 

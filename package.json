@@ -41,7 +41,7 @@
     "@e22m4u/js-debug": "~0.3.1",
     "@e22m4u/js-format": "~0.2.0",
     "@e22m4u/js-path-trie": "~0.0.12",
-    "@e22m4u/js-service": "~0.4.2",
+    "@e22m4u/js-service": "~0.4.3",
     "debug": "~4.4.3",
     "http-errors": "~2.0.0",
     "statuses": "~2.0.2"
@@ -58,7 +58,7 @@
     "eslint": "~9.37.0",
     "eslint-config-prettier": "~10.1.8",
     "eslint-plugin-chai-expect": "~3.1.0",
-    "eslint-plugin-jsdoc": "~61.0.0",
+    "eslint-plugin-jsdoc": "~61.1.1",
     "eslint-plugin-mocha": "~11.2.0",
     "globals": "~16.4.0",
     "husky": "~9.1.7",
