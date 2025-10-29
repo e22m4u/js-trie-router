@@ -1,9 +1,14 @@
 import {Route} from './route.js';
 import {RequestListener} from 'http';
-import {HookType} from './hooks/index.js';
 import {RouteDefinition} from './route.js';
-import {RouterHook} from './hooks/index.js';
 import {DebuggableService} from './debuggable-service.js';
+
+import {
+  HookType,
+  RouterHook,
+  PostHandlerHook,
+  PreHandlerHook,
+} from './hooks/index.js';
 
 /**
  * Trie router.
@@ -55,6 +60,22 @@ export declare class TrieRouter extends DebuggableService {
    * @returns {Function}
    */
   get requestListener(): RequestListener;
+
+  /**
+   * Add hook.
+   *
+   * @param type
+   * @param hook
+   */
+  addHook(type: typeof HookType.PRE_HANDLER, hook: PreHandlerHook): this;
+
+  /**
+   * Add hook.
+   *
+   * @param type
+   * @param hook
+   */
+  addHook(type: typeof HookType.POST_HANDLER, hook: PostHandlerHook): this;
 
   /**
    * Add hook.
