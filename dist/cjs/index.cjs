@@ -1393,7 +1393,8 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
       req.method.toUpperCase(),
       requestPath
     );
-    const triePath = `${req.method.toUpperCase()}/${requestPath}`;
+    const rawTriePath = `${req.method.toUpperCase()}/${requestPath}`;
+    const triePath = rawTriePath.replace(/\/+/, "/");
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;

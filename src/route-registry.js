@@ -63,7 +63,10 @@ export class RouteRegistry extends DebuggableService {
       req.method.toUpperCase(),
       requestPath,
     );
-    const triePath = `${req.method.toUpperCase()}/${requestPath}`;
+    const rawTriePath = `${req.method.toUpperCase()}/${requestPath}`;
+    // маршрут формируется с удалением дубликатов косой черты
+    // "OPTIONS//api/users/login" => "OPTIONS/api/users/login"
+    const triePath = rawTriePath.replace(/\/+/, '/');
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;
