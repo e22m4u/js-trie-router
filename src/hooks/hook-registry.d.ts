@@ -71,5 +71,19 @@ export declare class HookRegistry extends DebuggableService {
    *
    * @param type
    */
+  getHooks(type: typeof HookType.PRE_HANDLER): PreHandlerHook[];
+
+  /**
+   * Get hooks.
+   *
+   * @param type
+   */
+  getHooks(type: typeof HookType.POST_HANDLER): PostHandlerHook[];
+
+  /**
+   * Get hooks.
+   *
+   * @param type
+   */
   getHooks(type: HookType): RouterHook[];
 }
