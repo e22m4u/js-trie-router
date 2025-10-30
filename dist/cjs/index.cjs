@@ -39,7 +39,6 @@ __export(index_exports, {
   ErrorSender: () => ErrorSender,
   HookInvoker: () => HookInvoker,
   HookRegistry: () => HookRegistry,
-  HookType: () => HookType,
   HttpMethod: () => HttpMethod,
   METHODS_WITH_BODY: () => METHODS_WITH_BODY,
   QueryParser: () => QueryParser,
@@ -47,6 +46,7 @@ __export(index_exports, {
   RequestParser: () => RequestParser,
   Route: () => Route,
   RouteRegistry: () => RouteRegistry,
+  RouterHookType: () => RouterHookType,
   RouterOptions: () => RouterOptions,
   TrieRouter: () => TrieRouter,
   UNPARSABLE_MEDIA_TYPES: () => UNPARSABLE_MEDIA_TYPES,
@@ -70,6 +70,7 @@ module.exports = __toCommonJS(index_exports);
 
 // src/route.js
 var import_js_format14 = require("@e22m4u/js-format");
+var import_js_debug = require("@e22m4u/js-debug");
 
 // src/hooks/hook-invoker.js
 var import_js_format13 = require("@e22m4u/js-format");
@@ -635,7 +636,7 @@ __name(getRequestPathname, "getRequestPathname");
 
 // src/hooks/hook-registry.js
 var import_js_format12 = require("@e22m4u/js-format");
-var HookType = {
+var RouterHookType = {
   PRE_HANDLER: "preHandler",
   POST_HANDLER: "postHandler"
 };
@@ -657,7 +658,7 @@ var _HookRegistry = class _HookRegistry {
   addHook(type, hook) {
     if (!type || typeof type !== "string")
       throw new import_js_format12.Errorf("The hook type is required, but %v was given.", type);
-    if (!Object.values(HookType).includes(type))
+    if (!Object.values(RouterHookType).includes(type))
       throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     if (!hook || typeof hook !== "function")
       throw new import_js_format12.Errorf(
@@ -680,7 +681,7 @@ var _HookRegistry = class _HookRegistry {
   hasHook(type, hook) {
     if (!type || typeof type !== "string")
       throw new import_js_format12.Errorf("The hook type is required, but %v was given.", type);
-    if (!Object.values(HookType).includes(type))
+    if (!Object.values(RouterHookType).includes(type))
       throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     if (!hook || typeof hook !== "function")
       throw new import_js_format12.Errorf(
@@ -700,7 +701,7 @@ var _HookRegistry = class _HookRegistry {
   getHooks(type) {
     if (!type || typeof type !== "string")
       throw new import_js_format12.Errorf("The hook type is required, but %v was given.", type);
-    if (!Object.values(HookType).includes(type))
+    if (!Object.values(RouterHookType).includes(type))
       throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     return this._hooks.get(type) || [];
   }
@@ -749,7 +750,7 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
         'The parameter "hookType" of the HookInvoker.invokeAndContinueUntilValueReceived should be a non-empty String, but %v was given.',
         hookType
       );
-    if (!Object.values(HookType).includes(hookType))
+    if (!Object.values(RouterHookType).includes(hookType))
       throw new import_js_format13.Errorf("The hook type %v is not supported.", hookType);
     if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
       throw new import_js_format13.Errorf(
@@ -788,7 +789,6 @@ __name(_HookInvoker, "HookInvoker");
 var HookInvoker = _HookInvoker;
 
 // src/route.js
-var import_js_debug = require("@e22m4u/js-debug");
 var HttpMethod = {
   GET: "GET",
   POST: "POST",
@@ -894,13 +894,13 @@ var _Route = class _Route extends import_js_debug.Debuggable {
     if (routeDef.preHandler != null) {
       const preHandlerHooks = Array.isArray(routeDef.preHandler) ? routeDef.preHandler : [routeDef.preHandler];
       preHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(HookType.PRE_HANDLER, hook);
+        this._hookRegistry.addHook(RouterHookType.PRE_HANDLER, hook);
       });
     }
     if (routeDef.postHandler != null) {
       const postHandlerHooks = Array.isArray(routeDef.postHandler) ? routeDef.postHandler : [routeDef.postHandler];
       postHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(HookType.POST_HANDLER, hook);
+        this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
       });
     }
     this.ctorDebug("A new route %s %v was created.", this._method, this._path);
@@ -1639,7 +1639,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
         const hookInvoker = this.getService(HookInvoker);
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
-          HookType.PRE_HANDLER,
+          RouterHookType.PRE_HANDLER,
           res,
           context
         );
@@ -1649,7 +1649,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           if (isPromise(data)) data = await data;
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
             route,
-            HookType.POST_HANDLER,
+            RouterHookType.POST_HANDLER,
             res,
             context,
             data
@@ -1673,20 +1673,20 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * Example:
    * ```
    * import {TrieRouter} from '@e22m4u/js-trie-router';
-   * import {HookType} from '@e22m4u/js-trie-router';
+   * import {RouterHookType} from '@e22m4u/js-trie-router';
    *
    * // Router instance.
    * const router = new TrieRouter();
    *
    * // Adds the "preHandler" hook for each route.
    * router.addHook(
-   *   HookType.PRE_HANDLER,
+   *   RouterHookType.PRE_HANDLER,
    *   ctx => { ... },
    * );
    *
    * // Adds the "postHandler" hook for each route.
    * router.addHook(
-   *   HookType.POST_HANDLER,
+   *   RouterHookType.POST_HANDLER,
    *   ctx => { ... },
    * );
    * ```
@@ -1712,7 +1712,6 @@ var TrieRouter = _TrieRouter;
   ErrorSender,
   HookInvoker,
   HookRegistry,
-  HookType,
   HttpMethod,
   METHODS_WITH_BODY,
   QueryParser,
@@ -1720,6 +1719,7 @@ var TrieRouter = _TrieRouter;
   RequestParser,
   Route,
   RouteRegistry,
+  RouterHookType,
   RouterOptions,
   TrieRouter,
   UNPARSABLE_MEDIA_TYPES,

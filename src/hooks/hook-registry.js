@@ -8,7 +8,7 @@ import {Errorf} from '@e22m4u/js-format';
  *   POST_HANDLER: 'postHandler',
  * }}
  */
-export const HookType = {
+export const RouterHookType = {
   PRE_HANDLER: 'preHandler',
   POST_HANDLER: 'postHandler',
 };
@@ -35,7 +35,7 @@ export class HookRegistry {
   addHook(type, hook) {
     if (!type || typeof type !== 'string')
       throw new Errorf('The hook type is required, but %v was given.', type);
-    if (!Object.values(HookType).includes(type))
+    if (!Object.values(RouterHookType).includes(type))
       throw new Errorf('The hook type %v is not supported.', type);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
@@ -59,7 +59,7 @@ export class HookRegistry {
   hasHook(type, hook) {
     if (!type || typeof type !== 'string')
       throw new Errorf('The hook type is required, but %v was given.', type);
-    if (!Object.values(HookType).includes(type))
+    if (!Object.values(RouterHookType).includes(type))
       throw new Errorf('The hook type %v is not supported.', type);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
@@ -80,7 +80,7 @@ export class HookRegistry {
   getHooks(type) {
     if (!type || typeof type !== 'string')
       throw new Errorf('The hook type is required, but %v was given.', type);
-    if (!Object.values(HookType).includes(type))
+    if (!Object.values(RouterHookType).includes(type))
       throw new Errorf('The hook type %v is not supported.', type);
     return this._hooks.get(type) || [];
   }

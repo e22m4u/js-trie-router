@@ -5,15 +5,16 @@ import {DebuggableService} from '../debuggable-service.js';
 /**
  * Hook type.
  */
-export declare const HookType: {
+export declare const RouterHookType: {
   PRE_HANDLER: 'preHandler';
   POST_HANDLER: 'postHandler';
 };
 
 /**
- * Type of HookType.
+ * Type of RouterHookType.
  */
-export type HookType = (typeof HookType)[keyof typeof HookType];
+export type RouterHookType =
+  (typeof RouterHookType)[keyof typeof RouterHookType];
 
 /**
  * Router hook.
@@ -40,7 +41,7 @@ export declare class HookRegistry extends DebuggableService {
    * @param type
    * @param hook
    */
-  addHook(type: typeof HookType.PRE_HANDLER, hook: PreHandlerHook): this;
+  addHook(type: typeof RouterHookType.PRE_HANDLER, hook: PreHandlerHook): this;
 
   /**
    * Add hook.
@@ -48,7 +49,10 @@ export declare class HookRegistry extends DebuggableService {
    * @param type
    * @param hook
    */
-  addHook(type: typeof HookType.POST_HANDLER, hook: PostHandlerHook): this;
+  addHook(
+    type: typeof RouterHookType.POST_HANDLER,
+    hook: PostHandlerHook,
+  ): this;
 
   /**
    * Add hook.
@@ -56,7 +60,7 @@ export declare class HookRegistry extends DebuggableService {
    * @param type
    * @param hook
    */
-  addHook(type: HookType, hook: RouterHook): this;
+  addHook(type: RouterHookType, hook: RouterHook): this;
 
   /**
    * Has hook.
@@ -64,26 +68,26 @@ export declare class HookRegistry extends DebuggableService {
    * @param type
    * @param hook
    */
-  hasHook(type: HookType, hook: RouterHook): boolean;
+  hasHook(type: RouterHookType, hook: RouterHook): boolean;
 
   /**
    * Get hooks.
    *
    * @param type
    */
-  getHooks(type: typeof HookType.PRE_HANDLER): PreHandlerHook[];
+  getHooks(type: typeof RouterHookType.PRE_HANDLER): PreHandlerHook[];
 
   /**
    * Get hooks.
    *
    * @param type
    */
-  getHooks(type: typeof HookType.POST_HANDLER): PostHandlerHook[];
+  getHooks(type: typeof RouterHookType.POST_HANDLER): PostHandlerHook[];
 
   /**
    * Get hooks.
    *
    * @param type
    */
-  getHooks(type: HookType): RouterHook[];
+  getHooks(type: RouterHookType): RouterHook[];
 }

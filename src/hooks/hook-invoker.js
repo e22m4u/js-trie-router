@@ -1,9 +1,9 @@
 import {Route} from '../route.js';
 import {Errorf} from '@e22m4u/js-format';
 import {isPromise} from '../utils/index.js';
-import {HookType} from './hook-registry.js';
 import {HookRegistry} from './hook-registry.js';
 import {isResponseSent} from '../utils/index.js';
+import {RouterHookType} from './hook-registry.js';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
@@ -34,7 +34,7 @@ export class HookInvoker extends DebuggableService {
           'should be a non-empty String, but %v was given.',
         hookType,
       );
-    if (!Object.values(HookType).includes(hookType))
+    if (!Object.values(RouterHookType).includes(hookType))
       throw new Errorf('The hook type %v is not supported.', hookType);
     if (
       !response ||

@@ -4,8 +4,8 @@ import {RouteDefinition} from './route.js';
 import {DebuggableService} from './debuggable-service.js';
 
 import {
-  HookType,
   RouterHook,
+  RouterHookType,
   PostHandlerHook,
   PreHandlerHook,
 } from './hooks/index.js';
@@ -67,7 +67,7 @@ export declare class TrieRouter extends DebuggableService {
    * @param type
    * @param hook
    */
-  addHook(type: typeof HookType.PRE_HANDLER, hook: PreHandlerHook): this;
+  addHook(type: typeof RouterHookType.PRE_HANDLER, hook: PreHandlerHook): this;
 
   /**
    * Add hook.
@@ -75,7 +75,10 @@ export declare class TrieRouter extends DebuggableService {
    * @param type
    * @param hook
    */
-  addHook(type: typeof HookType.POST_HANDLER, hook: PostHandlerHook): this;
+  addHook(
+    type: typeof RouterHookType.POST_HANDLER,
+    hook: PostHandlerHook,
+  ): this;
 
   /**
    * Add hook.
@@ -83,5 +86,5 @@ export declare class TrieRouter extends DebuggableService {
    * @param type
    * @param hook
    */
-  addHook(type: HookType, hook: RouterHook): this;
+  addHook(type: RouterHookType, hook: RouterHook): this;
 }

@@ -3,11 +3,11 @@ import {expect} from './chai.js';
 import {ServerResponse} from 'http';
 import {IncomingMessage} from 'http';
 import {HttpMethod} from './route.js';
-import {HookType} from './hooks/index.js';
 import {TrieRouter} from './trie-router.js';
 import {HookRegistry} from './hooks/index.js';
 import {DataSender} from './senders/index.js';
 import {ErrorSender} from './senders/index.js';
+import {RouterHookType} from './hooks/index.js';
 import {createRequestMock} from './utils/index.js';
 import {createResponseMock} from './utils/index.js';
 import {RequestContext} from './request-context.js';
@@ -563,7 +563,7 @@ describe('TrieRouter', function () {
     it('adds the given hook to the HookRegistry and returns itself', function () {
       const router = new TrieRouter();
       const reg = router.getService(HookRegistry);
-      const type = HookType.PRE_HANDLER;
+      const type = RouterHookType.PRE_HANDLER;
       const hook = () => undefined;
       expect(reg.hasHook(type, hook)).to.be.false;
       const res = router.addHook(type, hook);

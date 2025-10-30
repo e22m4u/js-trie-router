@@ -1,7 +1,7 @@
 import {Errorf} from '@e22m4u/js-format';
-import {HookType} from './hooks/index.js';
 import {Debuggable} from '@e22m4u/js-debug';
 import {HookRegistry} from './hooks/index.js';
+import {RouterHookType} from './hooks/index.js';
 import {getRequestPathname} from './utils/index.js';
 import {MODULE_DEBUG_NAMESPACE} from './debuggable-service.js';
 
@@ -153,7 +153,7 @@ export class Route extends Debuggable {
         ? routeDef.preHandler
         : [routeDef.preHandler];
       preHandlerHooks.forEach(hook => {
-        this._hookRegistry.addHook(HookType.PRE_HANDLER, hook);
+        this._hookRegistry.addHook(RouterHookType.PRE_HANDLER, hook);
       });
     }
     if (routeDef.postHandler != null) {
@@ -161,7 +161,7 @@ export class Route extends Debuggable {
         ? routeDef.postHandler
         : [routeDef.postHandler];
       postHandlerHooks.forEach(hook => {
-        this._hookRegistry.addHook(HookType.POST_HANDLER, hook);
+        this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
       });
     }
     this.ctorDebug('A new route %s %v was created.', this._method, this._path);

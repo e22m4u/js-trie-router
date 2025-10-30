@@ -1,12 +1,12 @@
 import {ServerResponse} from 'http';
 import {IncomingMessage} from 'http';
-import {HookType} from './hooks/index.js';
 import {isPromise} from './utils/index.js';
 import {HookInvoker} from './hooks/index.js';
 import {DataSender} from './senders/index.js';
 import {HookRegistry} from './hooks/index.js';
 import {ErrorSender} from './senders/index.js';
 import {isResponseSent} from './utils/index.js';
+import {RouterHookType} from './hooks/index.js';
 import {RequestParser} from './parsers/index.js';
 import {RouteRegistry} from './route-registry.js';
 import {RequestContext} from './request-context.js';
@@ -134,7 +134,7 @@ export class TrieRouter extends DebuggableService {
         // то такое значение используется в качестве ответа
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
-          HookType.PRE_HANDLER,
+          RouterHookType.PRE_HANDLER,
           res,
           context,
         );
@@ -150,7 +150,7 @@ export class TrieRouter extends DebuggableService {
           // также может быть использован в качестве ответа
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
             route,
-            HookType.POST_HANDLER,
+            RouterHookType.POST_HANDLER,
             res,
             context,
             data,
@@ -178,20 +178,20 @@ export class TrieRouter extends DebuggableService {
    * Example:
    * ```
    * import {TrieRouter} from '@e22m4u/js-trie-router';
-   * import {HookType} from '@e22m4u/js-trie-router';
+   * import {RouterHookType} from '@e22m4u/js-trie-router';
    *
    * // Router instance.
    * const router = new TrieRouter();
    *
    * // Adds the "preHandler" hook for each route.
    * router.addHook(
-   *   HookType.PRE_HANDLER,
+   *   RouterHookType.PRE_HANDLER,
    *   ctx => { ... },
    * );
    *
    * // Adds the "postHandler" hook for each route.
    * router.addHook(
-   *   HookType.POST_HANDLER,
+   *   RouterHookType.POST_HANDLER,
    *   ctx => { ... },
    * );
    * ```
