@@ -605,9 +605,13 @@ function patchBody(res) {
   res.on("data", (c) => data.push(c));
   res.on("error", (e) => reject(e));
   res.on("end", () => {
-    res._headersSent = true;
     resolve(Buffer.concat(data));
   });
+  const originalEnd = res.end.bind(res);
+  res.end = function(...args) {
+    this._headersSent = true;
+    return originalEnd(...args);
+  };
   Object.defineProperty(res, "getBody", {
     configurable: true,
     value: /* @__PURE__ */ __name(function() {

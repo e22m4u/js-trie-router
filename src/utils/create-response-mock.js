@@ -103,9 +103,17 @@ function patchBody(res) {
   res.on('data', c => data.push(c));
   res.on('error', e => reject(e));
   res.on('end', () => {
-    res._headersSent = true;
     resolve(Buffer.concat(data));
   });
+  // флаг _headersSent должен быть установлен синхронно
+  // после вызова метода res.end, так как асинхронная
+  // установка (к примеру в res.on('end')) не позволит
+  // отследить отправку ответа при синхронном выполнении
+  const originalEnd = res.end.bind(res);
+  res.end = function (...args) {
+    this._headersSent = true;
+    return originalEnd(...args);
+  };
   Object.defineProperty(res, 'getBody', {
     configurable: true,
     value: function () {

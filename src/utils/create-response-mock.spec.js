@@ -116,14 +116,11 @@ describe('createResponseMock', function () {
   });
 
   describe('Stream', function () {
-    it('sets "headerSent" to true when the stream ends', function (done) {
+    it('sets "headerSent" to true when the stream ends', function () {
       const res = createResponseMock();
       expect(res.headersSent).to.be.false;
-      res.on('end', () => {
-        expect(res.headersSent).to.be.true;
-        done();
-      });
       res.end('test');
+      expect(res.headersSent).to.be.true;
     });
   });
 });
