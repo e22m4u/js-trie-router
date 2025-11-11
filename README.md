@@ -269,14 +269,14 @@ const router = new TrieRouter();
 // глобальный pre-handler хук, который срабатывает
 // перед основным обработчиком каждого маршрута
 router.addPreHandler((ctx) => {
-  // доступ к мета-данным текущего маршрута
+  // доступ к метаданным текущего маршрута
   console.log(ctx.meta); // {foo: 'bar'}
 });
 
 router.defineRoute({
   method: 'GET',
   path: '/',
-  meta: {foo: 'bar'}, // мета-данные
+  meta: {foo: 'bar'}, // <= мета-данные
   handler(ctx) {
     return 'Hello World!';
   },

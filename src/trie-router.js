@@ -91,7 +91,7 @@ export class TrieRouter extends DebuggableService {
       // нельзя было модифицировать
       const container = new ServiceContainer(this.container);
       const context = new RequestContext(container, req, res);
-      // чтобы мета-данные маршрута были доступны в хуках,
+      // чтобы метаданные маршрута были доступны в хуках,
       // их копия устанавливается в контекст запроса
       if (route.meta != null) {
         context.meta = cloneDeep(route.meta);
