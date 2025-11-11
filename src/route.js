@@ -1,9 +1,8 @@
 import {Errorf} from '@e22m4u/js-format';
 import {Debuggable} from '@e22m4u/js-debug';
-import {HookRegistry} from './hooks/index.js';
-import {RouterHookType} from './hooks/index.js';
-import {getRequestPathname} from './utils/index.js';
+import {HookRegistry, RouterHookType} from './hooks/index.js';
 import {MODULE_DEBUG_NAMESPACE} from './debuggable-service.js';
+import {cloneDeep, getRequestPathname} from './utils/index.js';
 
 /**
  * @typedef {import('./request-context.js').RequestContext} RequestContext
@@ -14,8 +13,9 @@ import {MODULE_DEBUG_NAMESPACE} from './debuggable-service.js';
  *   method: string,
  *   path: string,
  *   handler: RouteHandler,
- *   preHandler: RoutePreHandler|(RoutePreHandler[])|undefined,
- *   postHandler: RoutePostHandler|(RoutePostHandler[])|undefined
+ *   preHandler?: RoutePreHandler|(RoutePreHandler[]),
+ *   postHandler?: RoutePostHandler|(RoutePostHandler[]),
+ *   meta?: object,
  * }} RouteDefinition
  */
 
@@ -74,6 +74,22 @@ export class Route extends Debuggable {
    */
   get path() {
     return this._path;
+  }
+
+  /**
+   * Meta.
+   *
+   * @type {object}
+   */
+  _meta = {};
+
+  /**
+   * Getter of the meta.
+   *
+   * @returns {object}
+   */
+  get meta() {
+    return this._meta;
   }
 
   /**
@@ -147,6 +163,15 @@ export class Route extends Debuggable {
           'a Function, but %v was given.',
         routeDef.handler,
       );
+    if (routeDef.meta != null) {
+      if (typeof routeDef.meta !== 'object' || Array.isArray(routeDef.meta))
+        throw new Errorf(
+          'The option "meta" of the Route should be ' +
+            'a plain Object, but %v was given.',
+          routeDef.meta,
+        );
+      this._meta = cloneDeep(routeDef.meta);
+    }
     this._handler = routeDef.handler;
     if (routeDef.preHandler != null) {
       const preHandlerHooks = Array.isArray(routeDef.preHandler)

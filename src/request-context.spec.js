@@ -85,6 +85,14 @@ describe('RequestContext', function () {
       expect(ctx.req).to.be.eq(req);
       expect(ctx.res).to.be.eq(res);
     });
+
+    it('sets an empty object to the "meta" property', function () {
+      const req = createRequestMock();
+      const res = createResponseMock();
+      const cnt = new ServiceContainer();
+      const ctx = new RequestContext(cnt, req, res);
+      expect(ctx.meta).to.be.eql({});
+    });
   });
 
   describe('method', function () {

@@ -1,3 +1,4 @@
+export * from './clone-deep.js';
 export * from './is-promise.js';
 export * from './create-error.js';
 export * from './parse-cookies.js';

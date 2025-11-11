@@ -142,6 +142,28 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
+    it('passes the route meta to the request context as a deep copy', function (done) {
+      const router = new TrieRouter();
+      const metaData = {foo: {bar: {baz: 'qux'}}};
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: '/',
+        meta: metaData,
+        handler: ({meta}) => {
+          expect(meta).to.be.not.eq(metaData);
+          expect(meta).to.be.eql(metaData);
+          expect(meta.foo).to.be.not.eq(metaData.foo);
+          expect(meta.foo).to.be.eql(metaData.foo);
+          expect(meta.foo.bar).to.be.not.eq(metaData.foo.bar);
+          expect(meta.foo.bar).to.be.eql(metaData.foo.bar);
+          done();
+        },
+      });
+      const req = createRequestMock();
+      const res = createResponseMock();
+      router.requestListener(req, res);
+    });
+
     it('uses DataSender to send the response', function (done) {
       const router = new TrieRouter();
       const resBody = 'Lorem Ipsum is simply dummy text.';
@@ -569,6 +591,30 @@ describe('TrieRouter', function () {
       const res = router.addHook(type, hook);
       expect(res).to.be.eq(router);
       expect(reg.hasHook(type, hook)).to.be.true;
+    });
+  });
+
+  describe('addPreHandler', function () {
+    it('adds the given pre-handler hook to the HookRegistry and returns itself', function () {
+      const router = new TrieRouter();
+      const reg = router.getService(HookRegistry);
+      const hook = () => undefined;
+      expect(reg.hasHook(RouterHookType.PRE_HANDLER, hook)).to.be.false;
+      const res = router.addPreHandler(hook);
+      expect(res).to.be.eq(router);
+      expect(reg.hasHook(RouterHookType.PRE_HANDLER, hook)).to.be.true;
+    });
+  });
+
+  describe('addPostHandler', function () {
+    it('adds the given post-handler hook to the HookRegistry and returns itself', function () {
+      const router = new TrieRouter();
+      const reg = router.getService(HookRegistry);
+      const hook = () => undefined;
+      expect(reg.hasHook(RouterHookType.POST_HANDLER, hook)).to.be.false;
+      const res = router.addPostHandler(hook);
+      expect(res).to.be.eq(router);
+      expect(reg.hasHook(RouterHookType.POST_HANDLER, hook)).to.be.true;
     });
   });
 });

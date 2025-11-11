@@ -37,6 +37,11 @@ export type RoutePostHandler<T = unknown, U = unknown> = (
 ) => ValueOrPromise<U>;
 
 /**
+ * Route meta.
+ */
+export type RouteMeta = Record<PropertyKey, any>;
+
+/**
  * Route definition.
  */
 export type RouteDefinition = {
@@ -45,6 +50,7 @@ export type RouteDefinition = {
   handler: RouteHandler;
   preHandler?: RoutePreHandler | RoutePreHandler[];
   postHandler?: RoutePostHandler | RoutePostHandler[];
+  meta?: RouteMeta;
 };
 
 /**
@@ -60,6 +66,11 @@ export declare class Route {
    * Path.
    */
   get path(): string;
+
+  /**
+   * Meta.
+   */
+  get meta(): RouteMeta;
 
   /**
    * Handler.

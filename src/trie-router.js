@@ -1,17 +1,12 @@
-import {ServerResponse} from 'http';
-import {IncomingMessage} from 'http';
-import {isPromise} from './utils/index.js';
-import {HookInvoker} from './hooks/index.js';
-import {DataSender} from './senders/index.js';
-import {HookRegistry} from './hooks/index.js';
-import {ErrorSender} from './senders/index.js';
-import {isResponseSent} from './utils/index.js';
-import {RouterHookType} from './hooks/index.js';
 import {RequestParser} from './parsers/index.js';
 import {RouteRegistry} from './route-registry.js';
 import {RequestContext} from './request-context.js';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {ServerResponse, IncomingMessage} from 'http';
 import {DebuggableService} from './debuggable-service.js';
+import {DataSender, ErrorSender} from './senders/index.js';
+import {cloneDeep, isPromise, isResponseSent} from './utils/index.js';
+import {HookInvoker, HookRegistry, RouterHookType} from './hooks/index.js';
 
 /**
  * Trie router.
@@ -96,6 +91,11 @@ export class TrieRouter extends DebuggableService {
       // нельзя было модифицировать
       const container = new ServiceContainer(this.container);
       const context = new RequestContext(container, req, res);
+      // чтобы мета-данные маршрута были доступны в хуках,
+      // их копия устанавливается в контекст запроса
+      if (route.meta != null) {
+        context.meta = cloneDeep(route.meta);
+      }
       // регистрация контекста запроса в сервис-контейнере
       // для доступа через container.getRegistered(RequestContext)
       container.set(RequestContext, context);
@@ -202,6 +202,28 @@ export class TrieRouter extends DebuggableService {
    */
   addHook(type, hook) {
     this.getService(HookRegistry).addHook(type, hook);
+    return this;
+  }
+
+  /**
+   * Add pre-handler hook.
+   *
+   * @param {Function} hook
+   * @returns {this}
+   */
+  addPreHandler(hook) {
+    this.getService(HookRegistry).addHook(RouterHookType.PRE_HANDLER, hook);
+    return this;
+  }
+
+  /**
+   * Add post-handler hook.
+   *
+   * @param {Function} hook
+   * @returns {this}
+   */
+  addPostHandler(hook) {
+    this.getService(HookRegistry).addHook(RouterHookType.POST_HANDLER, hook);
     return this;
   }
 }

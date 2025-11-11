@@ -66,6 +66,13 @@ export class RequestContext {
   body;
 
   /**
+   * Route meta.
+   *
+   * @type {object}
+   */
+  meta = {};
+
+  /**
    * Method.
    *
    * @returns {string}

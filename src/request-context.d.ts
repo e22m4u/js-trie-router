@@ -1,5 +1,6 @@
 import {ServerResponse} from 'http';
 import {IncomingMessage} from 'http';
+import {RouteMeta} from './route.js';
 import {ParsedQuery} from './parsers/index.js';
 import {ParsedCookies} from './utils/index.js';
 import {ParsedHeaders} from './parsers/index.js';
@@ -55,6 +56,11 @@ export declare class RequestContext {
    * Body.
    */
   body: unknown;
+
+  /**
+   * Route meta.
+   */
+  meta: RouteMeta;
 
   /**
    * Method.

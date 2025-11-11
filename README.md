@@ -74,6 +74,7 @@ server.listen(3000, 'localhost');             // прослушивание за
 - `path: string` путь включающий строку запроса, например `/myPath?foo=bar`
 - `pathname: string` путь запроса, например `/myPath`
 - `body: unknown` тело запроса
+- `meta: object` мета-данные из определения маршрута
 
 Пример доступа к контексту из обработчика маршрута.
 
@@ -81,6 +82,7 @@ server.listen(3000, 'localhost');             // прослушивание за
 router.defineRoute({
   method: 'GET',
   path: '/users/:id',
+  meta: {prop: 'value'},
   handler(ctx) {
     // GET /users/10?include=city
     // Cookie: foo=bar; baz=qux;
@@ -93,6 +95,7 @@ router.defineRoute({
     console.log(ctx.method);   // "GET"
     console.log(ctx.path);     // "/users/10?include=city"
     console.log(ctx.pathname); // "/users/10"
+    console.log(ctx.meta);     // {prop: 'value'}
     // ...
   },
 });
@@ -213,18 +216,16 @@ router.defineRoute({
 имеют более высокий приоритет перед хуками маршрута, и вызываются
 в первую очередь.
 
-- `preHandler` выполняется перед вызовом обработчика каждого маршрута
-- `postHandler` выполняется после вызова обработчика каждого маршрута
+- `preHandler` выполняется перед вызовом обработчика каждого маршрута;
+- `postHandler` выполняется после вызова обработчика каждого маршрута;
 
-Добавить глобальные хуки можно методом `addHook` экземпляра роутера,
-где первым параметром передается тип хука, а вторым его функция.
+Добавить глобальные хуки можно методами экземпляра `TrieRouter`.
 
 ```js
-router.addHook('preHandler', (ctx) => {
+router.addPreHandler((ctx) => {
   // перед обработчиком маршрута
 });
-
-router.addHook('postHandler', (ctx, data) => {
+router.addPostHandler((ctx, data) => {
   // после обработчика маршрута
 });
 ```
@@ -232,6 +233,41 @@ router.addHook('postHandler', (ctx, data) => {
 Аналогично хукам маршрута, если глобальный хук возвращает значение
 отличное от `undefined` и `null`, то такое значение будет использовано
 как ответ сервера.
+
+### Метаданные маршрута
+
+Иногда требуется связать с маршрутом дополнительные, статические данные, которые
+могут быть использованы хуками для расширения функционала. Например, это могут
+быть схемы для валидации данных, правила доступа или настройки кэширования.
+Для этой цели определение маршрута поддерживает необязательное свойство `meta`.
+
+Маршрутизатор лишь обеспечивает передачу мета-данных в контекст запроса,
+откуда его могут прочитать обработчики или хуки.
+
+```js
+import http from 'http';
+import {TrieRouter} from '@e22m4u/js-trie-router';
+
+const server = new http.Server();
+const router = new TrieRouter();
+
+router.addPreHandler((ctx) => {
+  // доступ к мета-данным текущего маршрута
+  console.log(ctx.meta); // {foo: 'bar'}
+});
+
+router.defineRoute({
+  method: 'GET',
+  path: '/',
+  meta: {foo: 'bar'}, // мета-данные
+  handler(ctx) {
+    return 'Hello World!';
+  },
+});
+
+server.on('request', router.requestListener);
+server.listen(3000, 'localhost');
+```
 
 ## Отладка
 

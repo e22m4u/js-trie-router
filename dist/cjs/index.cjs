@@ -50,6 +50,7 @@ __export(index_exports, {
   RouterOptions: () => RouterOptions,
   TrieRouter: () => TrieRouter,
   UNPARSABLE_MEDIA_TYPES: () => UNPARSABLE_MEDIA_TYPES,
+  cloneDeep: () => cloneDeep,
   createCookiesString: () => createCookiesString,
   createDebugger: () => createDebugger,
   createError: () => createError,
@@ -74,6 +75,31 @@ var import_js_debug = require("@e22m4u/js-debug");
 
 // src/hooks/hook-invoker.js
 var import_js_format13 = require("@e22m4u/js-format");
+
+// src/utils/clone-deep.js
+function cloneDeep(value) {
+  if (value == null || typeof value !== "object") {
+    return value;
+  }
+  if (value instanceof Date) {
+    return new Date(value.getTime());
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneDeep(item));
+  }
+  const proto = Object.getPrototypeOf(value);
+  if (proto === Object.prototype || proto === null) {
+    const newObj = {};
+    for (const key in value) {
+      if (Object.prototype.hasOwnProperty.call(value, key)) {
+        newObj[key] = cloneDeep(value[key]);
+      }
+    }
+    return newObj;
+  }
+  return value;
+}
+__name(cloneDeep, "cloneDeep");
 
 // src/utils/is-promise.js
 function isPromise(value) {
@@ -832,6 +858,20 @@ var _Route = class _Route extends import_js_debug.Debuggable {
     return this._path;
   }
   /**
+   * Meta.
+   *
+   * @type {object}
+   */
+  _meta = {};
+  /**
+   * Getter of the meta.
+   *
+   * @returns {object}
+   */
+  get meta() {
+    return this._meta;
+  }
+  /**
    * Handler.
    *
    * @type {RouteHandler}
@@ -894,6 +934,14 @@ var _Route = class _Route extends import_js_debug.Debuggable {
         'The option "handler" of the Route should be a Function, but %v was given.',
         routeDef.handler
       );
+    if (routeDef.meta != null) {
+      if (typeof routeDef.meta !== "object" || Array.isArray(routeDef.meta))
+        throw new import_js_format14.Errorf(
+          'The option "meta" of the Route should be a plain Object, but %v was given.',
+          routeDef.meta
+        );
+      this._meta = cloneDeep(routeDef.meta);
+    }
     this._handler = routeDef.handler;
     if (routeDef.preHandler != null) {
       const preHandlerHooks = Array.isArray(routeDef.preHandler) ? routeDef.preHandler : [routeDef.preHandler];
@@ -929,156 +977,12 @@ var _Route = class _Route extends import_js_debug.Debuggable {
 __name(_Route, "Route");
 var Route = _Route;
 
-// src/trie-router.js
-var import_http4 = require("http");
-var import_http5 = require("http");
-
-// src/senders/data-sender.js
-var import_js_format15 = require("@e22m4u/js-format");
-var _DataSender = class _DataSender extends DebuggableService {
-  /**
-   * Send.
-   *
-   * @param {import('http').ServerResponse} res
-   * @param {*} data
-   * @returns {undefined}
-   */
-  send(res, data) {
-    const debug = this.getDebuggerFor(this.send);
-    if (data === res || res.headersSent) {
-      debug(
-        "Response sending was skipped because its headers where sent already."
-      );
-      return;
-    }
-    if (data == null) {
-      res.statusCode = 204;
-      res.end();
-      debug("The empty response was sent.");
-      return;
-    }
-    if (isReadableStream(data)) {
-      res.setHeader("Content-Type", "application/octet-stream");
-      data.pipe(res);
-      debug("The stream response was sent.");
-      return;
-    }
-    let debugMsg;
-    switch (typeof data) {
-      case "object":
-      case "boolean":
-      case "number":
-        if (Buffer.isBuffer(data)) {
-          res.setHeader("content-type", "application/octet-stream");
-          debugMsg = "The Buffer was sent as binary data.";
-        } else {
-          res.setHeader("content-type", "application/json");
-          debugMsg = (0, import_js_format15.format)("The %v was sent as JSON.", typeof data);
-          data = JSON.stringify(data);
-        }
-        break;
-      default:
-        res.setHeader("content-type", "text/plain");
-        debugMsg = "The response data was sent as plain text.";
-        data = String(data);
-        break;
-    }
-    res.end(data);
-    debug(debugMsg);
-  }
-};
-__name(_DataSender, "DataSender");
-var DataSender = _DataSender;
-
-// src/senders/error-sender.js
-var import_util = require("util");
-var import_statuses = __toESM(require("statuses"), 1);
-var EXPOSED_ERROR_PROPERTIES = ["code", "details"];
-var _ErrorSender = class _ErrorSender extends DebuggableService {
-  /**
-   * Handle.
-   *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
-   * @param {Error} error
-   * @returns {undefined}
-   */
-  send(req, res, error) {
-    const debug = this.getDebuggerFor(this.send);
-    let safeError = {};
-    if (error) {
-      if (typeof error === "object") {
-        safeError = error;
-      } else {
-        safeError = { message: String(error) };
-      }
-    }
-    const statusCode = error.statusCode || error.status || 500;
-    const body = { error: {} };
-    if (safeError.message && typeof safeError.message === "string") {
-      body.error.message = safeError.message;
-    } else {
-      body.error.message = (0, import_statuses.default)(statusCode);
-    }
-    EXPOSED_ERROR_PROPERTIES.forEach((name) => {
-      if (name in safeError) body.error[name] = safeError[name];
-    });
-    const requestData = {
-      url: req.url,
-      method: req.method,
-      headers: req.headers
-    };
-    const inspectOptions = {
-      showHidden: false,
-      depth: null,
-      colors: true,
-      compact: false
-    };
-    console.warn((0, import_util.inspect)(requestData, inspectOptions));
-    console.warn((0, import_util.inspect)(body, inspectOptions));
-    if (error.stack) {
-      console.log(error.stack);
-    } else {
-      console.error(error);
-    }
-    res.statusCode = statusCode;
-    res.setHeader("content-type", "application/json; charset=utf-8");
-    res.end(JSON.stringify(body, null, 2), "utf-8");
-    debug(
-      "The %s error was sent for the request %s %v.",
-      statusCode,
-      req.method,
-      getRequestPathname(req)
-    );
-  }
-  /**
-   * Send 404.
-   *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
-   * @returns {undefined}
-   */
-  send404(req, res) {
-    const debug = this.getDebuggerFor(this.send404);
-    res.statusCode = 404;
-    res.setHeader("content-type", "text/plain; charset=utf-8");
-    res.end("404 Not Found", "utf-8");
-    debug(
-      "The 404 error was sent for the request %s %v.",
-      req.method,
-      getRequestPathname(req)
-    );
-  }
-};
-__name(_ErrorSender, "ErrorSender");
-var ErrorSender = _ErrorSender;
-
 // src/parsers/body-parser.js
 var import_http_errors2 = __toESM(require("http-errors"), 1);
-var import_js_format17 = require("@e22m4u/js-format");
+var import_js_format16 = require("@e22m4u/js-format");
 
 // src/router-options.js
-var import_js_format16 = require("@e22m4u/js-format");
+var import_js_format15 = require("@e22m4u/js-format");
 var _RouterOptions = class _RouterOptions extends DebuggableService {
   /**
    * Request body bytes limit.
@@ -1104,7 +1008,7 @@ var _RouterOptions = class _RouterOptions extends DebuggableService {
    */
   setRequestBodyBytesLimit(input) {
     if (typeof input !== "number" || input < 0)
-      throw new import_js_format16.Errorf(
+      throw new import_js_format15.Errorf(
         'The option "requestBodyBytesLimit" must be a positive Number or 0, but %v was given.',
         input
       );
@@ -1137,12 +1041,12 @@ var _BodyParser = class _BodyParser extends DebuggableService {
    */
   defineParser(mediaType, parser) {
     if (!mediaType || typeof mediaType !== "string")
-      throw new import_js_format17.Errorf(
+      throw new import_js_format16.Errorf(
         'The parameter "mediaType" of BodyParser.defineParser should be a non-empty String, but %v was given.',
         mediaType
       );
     if (!parser || typeof parser !== "function")
-      throw new import_js_format17.Errorf(
+      throw new import_js_format16.Errorf(
         'The parameter "parser" of BodyParser.defineParser should be a Function, but %v was given.',
         parser
       );
@@ -1157,7 +1061,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
    */
   hasParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string")
-      throw new import_js_format17.Errorf(
+      throw new import_js_format16.Errorf(
         'The parameter "mediaType" of BodyParser.hasParser should be a non-empty String, but %v was given.',
         mediaType
       );
@@ -1171,12 +1075,12 @@ var _BodyParser = class _BodyParser extends DebuggableService {
    */
   deleteParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string")
-      throw new import_js_format17.Errorf(
+      throw new import_js_format16.Errorf(
         'The parameter "mediaType" of BodyParser.deleteParser should be a non-empty String, but %v was given.',
         mediaType
       );
     const parser = this._parsers[mediaType];
-    if (!parser) throw new import_js_format17.Errorf("The parser of %v is not found.", mediaType);
+    if (!parser) throw new import_js_format16.Errorf("The parser of %v is not found.", mediaType);
     delete this._parsers[mediaType];
     return this;
   }
@@ -1305,7 +1209,7 @@ var CookiesParser = _CookiesParser;
 
 // src/parsers/request-parser.js
 var import_http3 = require("http");
-var import_js_format18 = require("@e22m4u/js-format");
+var import_js_format17 = require("@e22m4u/js-format");
 var _RequestParser = class _RequestParser extends DebuggableService {
   /**
    * Parse.
@@ -1315,7 +1219,7 @@ var _RequestParser = class _RequestParser extends DebuggableService {
    */
   parse(req) {
     if (!(req instanceof import_http3.IncomingMessage))
-      throw new import_js_format18.Errorf(
+      throw new import_js_format17.Errorf(
         "The first argument of RequestParser.parse should be an instance of IncomingMessage, but %v was given.",
         req
       );
@@ -1347,7 +1251,7 @@ __name(_RequestParser, "RequestParser");
 var RequestParser = _RequestParser;
 
 // src/route-registry.js
-var import_js_format19 = require("@e22m4u/js-format");
+var import_js_format18 = require("@e22m4u/js-format");
 var import_js_path_trie = require("@e22m4u/js-path-trie");
 var import_js_service2 = require("@e22m4u/js-service");
 var _RouteRegistry = class _RouteRegistry extends DebuggableService {
@@ -1369,7 +1273,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
   defineRoute(routeDef) {
     const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef))
-      throw new import_js_format19.Errorf(
+      throw new import_js_format18.Errorf(
         "The route definition should be an Object, but %v was given.",
         routeDef
       );
@@ -1432,7 +1336,7 @@ __name(_RouteRegistry, "RouteRegistry");
 var RouteRegistry = _RouteRegistry;
 
 // src/request-context.js
-var import_js_format20 = require("@e22m4u/js-format");
+var import_js_format19 = require("@e22m4u/js-format");
 var import_js_service3 = require("@e22m4u/js-service");
 var import_js_service4 = require("@e22m4u/js-service");
 var _RequestContext = class _RequestContext {
@@ -1485,6 +1389,12 @@ var _RequestContext = class _RequestContext {
    */
   body;
   /**
+   * Route meta.
+   *
+   * @type {object}
+   */
+  meta = {};
+  /**
    * Method.
    *
    * @returns {string}
@@ -1526,20 +1436,20 @@ var _RequestContext = class _RequestContext {
    */
   constructor(container, request, response) {
     if (!(0, import_js_service4.isServiceContainer)(container))
-      throw new import_js_format20.Errorf(
+      throw new import_js_format19.Errorf(
         'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v was given.',
         container
       );
     this.container = container;
     if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
-      throw new import_js_format20.Errorf(
+      throw new import_js_format19.Errorf(
         'The parameter "request" of RequestContext.constructor should be an instance of IncomingMessage, but %v was given.',
         request
       );
     }
     this.req = request;
     if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
-      throw new import_js_format20.Errorf(
+      throw new import_js_format19.Errorf(
         'The parameter "response" of RequestContext.constructor should be an instance of ServerResponse, but %v was given.',
         response
       );
@@ -1552,6 +1462,149 @@ var RequestContext = _RequestContext;
 
 // src/trie-router.js
 var import_js_service5 = require("@e22m4u/js-service");
+var import_http4 = require("http");
+
+// src/senders/data-sender.js
+var import_js_format20 = require("@e22m4u/js-format");
+var _DataSender = class _DataSender extends DebuggableService {
+  /**
+   * Send.
+   *
+   * @param {import('http').ServerResponse} res
+   * @param {*} data
+   * @returns {undefined}
+   */
+  send(res, data) {
+    const debug = this.getDebuggerFor(this.send);
+    if (data === res || res.headersSent) {
+      debug(
+        "Response sending was skipped because its headers where sent already."
+      );
+      return;
+    }
+    if (data == null) {
+      res.statusCode = 204;
+      res.end();
+      debug("The empty response was sent.");
+      return;
+    }
+    if (isReadableStream(data)) {
+      res.setHeader("Content-Type", "application/octet-stream");
+      data.pipe(res);
+      debug("The stream response was sent.");
+      return;
+    }
+    let debugMsg;
+    switch (typeof data) {
+      case "object":
+      case "boolean":
+      case "number":
+        if (Buffer.isBuffer(data)) {
+          res.setHeader("content-type", "application/octet-stream");
+          debugMsg = "The Buffer was sent as binary data.";
+        } else {
+          res.setHeader("content-type", "application/json");
+          debugMsg = (0, import_js_format20.format)("The %v was sent as JSON.", typeof data);
+          data = JSON.stringify(data);
+        }
+        break;
+      default:
+        res.setHeader("content-type", "text/plain");
+        debugMsg = "The response data was sent as plain text.";
+        data = String(data);
+        break;
+    }
+    res.end(data);
+    debug(debugMsg);
+  }
+};
+__name(_DataSender, "DataSender");
+var DataSender = _DataSender;
+
+// src/senders/error-sender.js
+var import_util = require("util");
+var import_statuses = __toESM(require("statuses"), 1);
+var EXPOSED_ERROR_PROPERTIES = ["code", "details"];
+var _ErrorSender = class _ErrorSender extends DebuggableService {
+  /**
+   * Handle.
+   *
+   * @param {import('http').IncomingMessage} req
+   * @param {import('http').ServerResponse} res
+   * @param {Error} error
+   * @returns {undefined}
+   */
+  send(req, res, error) {
+    const debug = this.getDebuggerFor(this.send);
+    let safeError = {};
+    if (error) {
+      if (typeof error === "object") {
+        safeError = error;
+      } else {
+        safeError = { message: String(error) };
+      }
+    }
+    const statusCode = error.statusCode || error.status || 500;
+    const body = { error: {} };
+    if (safeError.message && typeof safeError.message === "string") {
+      body.error.message = safeError.message;
+    } else {
+      body.error.message = (0, import_statuses.default)(statusCode);
+    }
+    EXPOSED_ERROR_PROPERTIES.forEach((name) => {
+      if (name in safeError) body.error[name] = safeError[name];
+    });
+    const requestData = {
+      url: req.url,
+      method: req.method,
+      headers: req.headers
+    };
+    const inspectOptions = {
+      showHidden: false,
+      depth: null,
+      colors: true,
+      compact: false
+    };
+    console.warn((0, import_util.inspect)(requestData, inspectOptions));
+    console.warn((0, import_util.inspect)(body, inspectOptions));
+    if (error.stack) {
+      console.log(error.stack);
+    } else {
+      console.error(error);
+    }
+    res.statusCode = statusCode;
+    res.setHeader("content-type", "application/json; charset=utf-8");
+    res.end(JSON.stringify(body, null, 2), "utf-8");
+    debug(
+      "The %s error was sent for the request %s %v.",
+      statusCode,
+      req.method,
+      getRequestPathname(req)
+    );
+  }
+  /**
+   * Send 404.
+   *
+   * @param {import('http').IncomingMessage} req
+   * @param {import('http').ServerResponse} res
+   * @returns {undefined}
+   */
+  send404(req, res) {
+    const debug = this.getDebuggerFor(this.send404);
+    res.statusCode = 404;
+    res.setHeader("content-type", "text/plain; charset=utf-8");
+    res.end("404 Not Found", "utf-8");
+    debug(
+      "The 404 error was sent for the request %s %v.",
+      req.method,
+      getRequestPathname(req)
+    );
+  }
+};
+__name(_ErrorSender, "ErrorSender");
+var ErrorSender = _ErrorSender;
+
+// src/trie-router.js
 var _TrieRouter = class _TrieRouter extends DebuggableService {
   /**
    * Define route.
@@ -1627,8 +1680,11 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
       const { route, params } = resolved;
       const container = new import_js_service5.ServiceContainer(this.container);
       const context = new RequestContext(container, req, res);
+      if (route.meta != null) {
+        context.meta = cloneDeep(route.meta);
+      }
       container.set(RequestContext, context);
-      container.set(import_http5.IncomingMessage, req);
+      container.set(import_http4.IncomingMessage, req);
       container.set(import_http4.ServerResponse, res);
       context.params = params;
       let data;
@@ -1703,6 +1759,26 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
     this.getService(HookRegistry).addHook(type, hook);
     return this;
   }
+  /**
+   * Add pre-handler hook.
+   *
+   * @param {Function} hook
+   * @returns {this}
+   */
+  addPreHandler(hook) {
+    this.getService(HookRegistry).addHook(RouterHookType.PRE_HANDLER, hook);
+    return this;
+  }
+  /**
+   * Add post-handler hook.
+   *
+   * @param {Function} hook
+   * @returns {this}
+   */
+  addPostHandler(hook) {
+    this.getService(HookRegistry).addHook(RouterHookType.POST_HANDLER, hook);
+    return this;
+  }
 };
 __name(_TrieRouter, "TrieRouter");
 var TrieRouter = _TrieRouter;
@@ -1727,6 +1803,7 @@ var TrieRouter = _TrieRouter;
   RouterOptions,
   TrieRouter,
   UNPARSABLE_MEDIA_TYPES,
+  cloneDeep,
   createCookiesString,
   createDebugger,
   createError,
