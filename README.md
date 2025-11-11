@@ -251,6 +251,8 @@ import {TrieRouter} from '@e22m4u/js-trie-router';
 const server = new http.Server();
 const router = new TrieRouter();
 
+// глобальный pre-handler хук, который срабатывает
+// перед основным обработчиком каждого маршрута
 router.addPreHandler((ctx) => {
   // доступ к мета-данным текущего маршрута
   console.log(ctx.meta); // {foo: 'bar'}
