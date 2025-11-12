@@ -370,14 +370,13 @@ describe('Route', function () {
 
   describe('handle', function () {
     it('invokes the handler with the given RequestContext and return its result', function () {
-      const handler = ctx => {
-        expect(ctx).to.be.instanceof(RequestContext);
-        return 'OK';
-      };
       const route = new Route({
         method: HttpMethod.GET,
         path: '/',
-        handler,
+        handler(ctx) {
+          expect(ctx).to.be.instanceof(RequestContext);
+          return 'OK';
+        },
       });
       const req = createRequestMock();
       const res = createResponseMock();

@@ -101,16 +101,17 @@ router.defineRoute({
   handler(ctx) {
     // GET /users/10?include=city
     // Cookie: foo=bar; baz=qux;
-    console.log(ctx.req);      // IncomingMessage
-    console.log(ctx.res);      // ServerResponse
-    console.log(ctx.params);   // {id: 10}
-    console.log(ctx.query);    // {include: 'city'}
-    console.log(ctx.headers);  // {cookie: 'foo=bar; baz=qux;'}
-    console.log(ctx.cookies);  // {foo: 'bar', baz: 'qux'}
-    console.log(ctx.method);   // "GET"
-    console.log(ctx.path);     // "/users/10?include=city"
-    console.log(ctx.pathname); // "/users/10"
-    console.log(ctx.meta);     // {prop: 'value'}
+    console.log(ctx.req);       // IncomingMessage
+    console.log(ctx.res);       // ServerResponse
+    console.log(ctx.params);    // {id: 10}
+    console.log(ctx.query);     // {include: 'city'}
+    console.log(ctx.headers);   // {cookie: 'foo=bar; baz=qux;'}
+    console.log(ctx.cookies);   // {foo: 'bar', baz: 'qux'}
+    console.log(ctx.method);    // "GET"
+    console.log(ctx.path);      // "/users/10?include=city"
+    console.log(ctx.pathname);  // "/users/10"
+    console.log(ctx.meta);      // {prop: 'value'}
+    console.log(ctx.container); // ServiceContainer
     // ...
   },
 });
