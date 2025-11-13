@@ -234,7 +234,32 @@ describe('HookInvoker', function () {
       ]);
     });
 
-    it('stops global hooks invocation and returns the given response if it was sent', function () {
+    it('returns the given response and should not call hooks if the response is already sent', function () {
+      const s = new HookInvoker();
+      const res = createResponseMock();
+      res._headersSent = true;
+      s.getService(HookRegistry).addHook(RouterHookType.PRE_HANDLER, () => {
+        throw new Error('Should not be called');
+      });
+      const route = new Route({
+        method: HttpMethod.GET,
+        path: '/',
+        preHandler: [
+          () => {
+            throw new Error('Should not be called');
+          },
+        ],
+        handler: () => undefined,
+      });
+      const result = s.invokeAndContinueUntilValueReceived(
+        route,
+        RouterHookType.PRE_HANDLER,
+        res,
+      );
+      expect(result).to.be.eq(res);
+    });
+
+    it('stops global hooks invocation and returns the given response if it is already sent', function () {
       const s = new HookInvoker();
       const order = [];
       const res = createResponseMock();
@@ -270,7 +295,7 @@ describe('HookInvoker', function () {
       expect(order).to.be.eql(['globalHook1', 'globalHook2']);
     });
 
-    it('stops route hooks invocation and returns the given response if it was sent', function () {
+    it('stops route hooks invocation and returns the given response if it is already sent', function () {
       const s = new HookInvoker();
       const order = [];
       const res = createResponseMock();

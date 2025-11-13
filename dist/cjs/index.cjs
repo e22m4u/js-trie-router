@@ -76,6 +76,25 @@ var import_js_debug = require("@e22m4u/js-debug");
 // src/hooks/hook-invoker.js
 var import_js_format13 = require("@e22m4u/js-format");
 
+// src/debuggable-service.js
+var import_js_service = require("@e22m4u/js-service");
+var MODULE_DEBUG_NAMESPACE = "jsTrieRouter";
+var _DebuggableService = class _DebuggableService extends import_js_service.DebuggableService {
+  /**
+   * Constructor.
+   *
+   * @param {ServiceContainer} container
+   */
+  constructor(container = void 0) {
+    super(container, {
+      namespace: MODULE_DEBUG_NAMESPACE,
+      noEnvironmentNamespace: true
+    });
+  }
+};
+__name(_DebuggableService, "DebuggableService");
+var DebuggableService = _DebuggableService;
+
 // src/utils/clone-deep.js
 function cloneDeep(value) {
   if (value == null || typeof value !== "object") {
@@ -739,25 +758,6 @@ var _HookRegistry = class _HookRegistry {
 __name(_HookRegistry, "HookRegistry");
 var HookRegistry = _HookRegistry;
 
-// src/debuggable-service.js
-var import_js_service = require("@e22m4u/js-service");
-var MODULE_DEBUG_NAMESPACE = "jsTrieRouter";
-var _DebuggableService = class _DebuggableService extends import_js_service.DebuggableService {
-  /**
-   * Constructor.
-   *
-   * @param {ServiceContainer} container
-   */
-  constructor(container = void 0) {
-    super(container, {
-      namespace: MODULE_DEBUG_NAMESPACE,
-      noEnvironmentNamespace: true
-    });
-  }
-};
-__name(_DebuggableService, "DebuggableService");
-var DebuggableService = _DebuggableService;
-
 // src/hooks/hook-invoker.js
 var _HookInvoker = class _HookInvoker extends DebuggableService {
   /**
@@ -788,31 +788,46 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
         response
       );
     }
+    if (isResponseSent(response)) {
+      return response;
+    }
     const hooks = [
       ...this.getService(HookRegistry).getHooks(hookType),
       ...route.hookRegistry.getHooks(hookType)
     ];
     let result = void 0;
-    for (const hook of hooks) {
+    for (let i = 0; i < hooks.length; i++) {
+      const hook = hooks[i];
+      result = hook(...args);
       if (isResponseSent(response)) {
-        result = response;
-        break;
+        return response;
       }
-      if (result == null) {
-        result = hook(...args);
-      } else if (isPromise(result)) {
-        result = result.then((prevVal) => {
-          if (isResponseSent(response)) {
+      if (result != null) {
+        if (isPromise(result)) {
+          return (async () => {
+            let asyncResult = await result;
+            if (isResponseSent(response)) {
+              return response;
+            }
+            if (asyncResult != null) {
+              return asyncResult;
+            }
+            for (let j = i + 1; j < hooks.length; j++) {
+              asyncResult = await hooks[j](...args);
+              if (isResponseSent(response)) {
+                return response;
+              }
+              if (asyncResult != null) {
+                return asyncResult;
+              }
+            }
             return;
-          }
-          if (prevVal != null) return prevVal;
-          return hook(...args);
-        });
-      } else {
-        break;
+          })();
+        }
+        return result;
       }
     }
-    return result;
+    return;
   }
 };
 __name(_HookInvoker, "HookInvoker");

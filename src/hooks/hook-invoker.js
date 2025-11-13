@@ -1,10 +1,8 @@
 import {Route} from '../route.js';
 import {Errorf} from '@e22m4u/js-format';
-import {isPromise} from '../utils/index.js';
-import {HookRegistry} from './hook-registry.js';
-import {isResponseSent} from '../utils/index.js';
-import {RouterHookType} from './hook-registry.js';
 import {DebuggableService} from '../debuggable-service.js';
+import {isPromise, isResponseSent} from '../utils/index.js';
+import {HookRegistry, RouterHookType} from './hook-registry.js';
 
 /**
  * Hook invoker.
@@ -49,6 +47,11 @@ export class HookInvoker extends DebuggableService {
         response,
       );
     }
+    // если ответ уже отправлен,
+    // то возвращается ServerResponse
+    if (isResponseSent(response)) {
+      return response;
+    }
     // так как хуки роута выполняются
     // после глобальных, то объединяем
     // их в данной последовательности
@@ -56,48 +59,72 @@ export class HookInvoker extends DebuggableService {
       ...this.getService(HookRegistry).getHooks(hookType),
       ...route.hookRegistry.getHooks(hookType),
     ];
-    // последовательный вызов хуков будет прерван,
-    // если один из них вернет значение (или Promise)
-    // отличное от "undefined" и "null"
     let result = undefined;
-    for (const hook of hooks) {
-      // если ответ уже был отправлен,
-      // то завершаем обход
+    // итерация по хукам выполняется по индексу,
+    // чтобы знать, с какого места продолжать
+    // в асинхронном режиме
+    for (let i = 0; i < hooks.length; i++) {
+      const hook = hooks[i];
+      // вызов хука выполняется
+      // в синхронном режиме
+      result = hook(...args);
+      // если ответ уже отправлен,
+      // то возвращается ServerResponse
       if (isResponseSent(response)) {
-        result = response;
-        break;
+        return response;
       }
-      // если выполняется первый хук, или предыдущий
-      // хук вернул пустое значение, то выполняем
-      // следующий, записывая возвращаемое
-      // значение в результат
-      if (result == null) {
-        result = hook(...args);
-      }
-      // если какой-то из предыдущих хуков вернул
-      // Promise, то последующие значения будут
-      // оборачиваться именно им
-      else if (isPromise(result)) {
-        result = result.then(prevVal => {
-          // если ответ уже был отправлен,
-          // то останавливаем выполнение
-          if (isResponseSent(response)) {
+      // если синхронный вызов хука вернул значение отличное
+      // от undefined и null, то требуется проверить данное
+      // значение для коррекции режима вызова оставшихся хуков
+      if (result != null) {
+        // если синхронный вызов хука вернул Promise, то дальнейшее
+        // выполнение переключается в асинхронный режим, начиная
+        // с индекса следующего хука
+        if (isPromise(result)) {
+          return (async () => {
+            // ожидание Promise, который был получен
+            // на предыдущем шаге (в синхронном режиме)
+            let asyncResult = await result;
+            // если ответ уже отправлен,
+            // то возвращается ServerResponse
+            if (isResponseSent(response)) {
+              return response;
+            }
+            // если Promise разрешился значением отличным
+            // от undefined и null, то данное значение
+            // возвращается в качестве результата
+            if (asyncResult != null) {
+              return asyncResult;
+            }
+            // продолжение вызова хуков начиная
+            // со следующего индекса (асинхронно)
+            for (let j = i + 1; j < hooks.length; j++) {
+              // с этого момента все синхронные
+              // хуки выполняются как асинхронные
+              asyncResult = await hooks[j](...args);
+              // если ответ уже отправлен,
+              // то возвращается ServerResponse
+              if (isResponseSent(response)) {
+                return response;
+              }
+              // если хук вернул значение отличное
+              // от undefined и null, то данное значение
+              // возвращается в качестве результата
+              if (asyncResult != null) {
+                return asyncResult;
+              }
+            }
             return;
-          }
-          // если предыдущий Promise вернул значение
-          // отличное от "undefined" и "null",
-          // то завершаем обход
-          if (prevVal != null) return prevVal;
-          return hook(...args);
-        });
-      }
-      // если предыдущий хук вернул значение
-      // отличное от "undefined" и "null",
-      // то завершаем обход
-      else {
-        break;
+          })();
+        }
+        // если синхронный хук вернул значение отличное
+        // от undefined и null, то данное значение
+        // возвращается в качестве результата
+        return result;
       }
     }
-    return result;
+    // все хуки были синхронными
+    // и не вернули значения
+    return;
   }
 }
