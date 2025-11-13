@@ -40,7 +40,7 @@ export type RoutePostHandler<T = unknown, U = unknown> = (
  * Route meta.
  */
 export type RouteMeta = {
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 /**
