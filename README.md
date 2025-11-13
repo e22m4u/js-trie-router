@@ -150,6 +150,9 @@ router.defineRoute({     // регистрация маршрута
 ```js
 router.defineRoute({
   // ...
+  // для доступа к свойству `response` (ServerResponse)
+  // используется деструктуризация контекста запроса,
+  // что аналогично записи handler(ctx) { ctx.response ... 
   handler({response}) {
     response.statusCode = 404;
     response.setHeader('content-type', 'text/plain; charset=utf-8');
