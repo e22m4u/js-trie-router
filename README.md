@@ -78,7 +78,7 @@ server.listen(3000, 'localhost');             // прослушивание за
 `RequestContext` с набором свойств, содержащих разобранные
 данные входящего запроса.
 
-- `container: ServiceContainer` экземпляр [сервис-контейнера](https://npmjs.com/package/@e22m4u/js-service)
+- `cont: ServiceContainer` экземпляр [сервис-контейнера](https://npmjs.com/package/@e22m4u/js-service)
 - `req: IncomingMessage` нативный поток входящего запроса
 - `res: ServerResponse` нативный поток ответа сервера
 - `params: ParsedParams` объект ключ-значение с параметрами пути
@@ -101,17 +101,17 @@ router.defineRoute({
   handler(ctx) {
     // GET /users/10?include=city
     // Cookie: foo=bar; baz=qux;
-    console.log(ctx.req);       // IncomingMessage
-    console.log(ctx.res);       // ServerResponse
-    console.log(ctx.params);    // {id: 10}
-    console.log(ctx.query);     // {include: 'city'}
-    console.log(ctx.headers);   // {cookie: 'foo=bar; baz=qux;'}
-    console.log(ctx.cookies);   // {foo: 'bar', baz: 'qux'}
-    console.log(ctx.method);    // "GET"
-    console.log(ctx.path);      // "/users/10?include=city"
-    console.log(ctx.pathname);  // "/users/10"
-    console.log(ctx.meta);      // {prop: 'value'}
-    console.log(ctx.container); // ServiceContainer
+    console.log(ctx.req);      // IncomingMessage
+    console.log(ctx.res);      // ServerResponse
+    console.log(ctx.params);   // {id: 10}
+    console.log(ctx.query);    // {include: 'city'}
+    console.log(ctx.headers);  // {cookie: 'foo=bar; baz=qux;'}
+    console.log(ctx.cookies);  // {foo: 'bar', baz: 'qux'}
+    console.log(ctx.method);   // "GET"
+    console.log(ctx.path);     // "/users/10?include=city"
+    console.log(ctx.pathname); // "/users/10"
+    console.log(ctx.meta);     // {prop: 'value'}
+    console.log(ctx.cont);     // ServiceContainer
     // ...
   },
 });

@@ -486,7 +486,7 @@ describe('TrieRouter', function () {
         method: HttpMethod.GET,
         path: '/',
         handler(ctx) {
-          const res = ctx.container.getRegistered(RequestContext);
+          const res = ctx.cont.getRegistered(RequestContext);
           expect(res).to.be.eq(ctx);
           expect(res).to.be.not.eq(router.container);
           done();
@@ -505,7 +505,7 @@ describe('TrieRouter', function () {
         method: HttpMethod.GET,
         path: '/',
         handler(ctx) {
-          const result = ctx.container.getRegistered(IncomingMessage);
+          const result = ctx.cont.getRegistered(IncomingMessage);
           expect(result).to.be.eq(req);
           done();
         },
@@ -521,7 +521,7 @@ describe('TrieRouter', function () {
         method: HttpMethod.GET,
         path: '/',
         handler(ctx) {
-          const result = ctx.container.getRegistered(ServerResponse);
+          const result = ctx.cont.getRegistered(ServerResponse);
           expect(result).to.be.eq(res);
           done();
         },

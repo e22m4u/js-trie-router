@@ -1360,7 +1360,7 @@ var _RequestContext = class _RequestContext {
    *
    * @type {import('@e22m4u/js-service').ServiceContainer}
    */
-  container;
+  cont;
   /**
    * Request.
    *
@@ -1455,7 +1455,7 @@ var _RequestContext = class _RequestContext {
         'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v was given.',
         container
       );
-    this.container = container;
+    this.cont = container;
     if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
       throw new import_js_format19.Errorf(
         'The parameter "request" of RequestContext.constructor should be an instance of IncomingMessage, but %v was given.',

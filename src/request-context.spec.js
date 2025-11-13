@@ -32,8 +32,8 @@ describe('RequestContext', function () {
 
     it('requires the parameter "request" to be the ServiceContainer', function () {
       const res = createResponseMock();
-      const cnt = new ServiceContainer();
-      const throwable = v => () => new RequestContext(cnt, v, res);
+      const cont = new ServiceContainer();
+      const throwable = v => () => new RequestContext(cont, v, res);
       const error = v =>
         format(
           'The parameter "request" of RequestContext.constructor ' +
@@ -55,8 +55,8 @@ describe('RequestContext', function () {
 
     it('requires the parameter "response" to be the ServiceContainer', function () {
       const req = createRequestMock();
-      const cnt = new ServiceContainer();
-      const throwable = v => () => new RequestContext(cnt, req, v);
+      const cont = new ServiceContainer();
+      const throwable = v => () => new RequestContext(cont, req, v);
       const error = v =>
         format(
           'The parameter "response" of RequestContext.constructor ' +
@@ -79,9 +79,9 @@ describe('RequestContext', function () {
     it('sets properties from given arguments', function () {
       const req = createRequestMock();
       const res = createResponseMock();
-      const cnt = new ServiceContainer();
-      const ctx = new RequestContext(cnt, req, res);
-      expect(ctx.container).to.be.eq(cnt);
+      const cont = new ServiceContainer();
+      const ctx = new RequestContext(cont, req, res);
+      expect(ctx.cont).to.be.eq(cont);
       expect(ctx.req).to.be.eq(req);
       expect(ctx.res).to.be.eq(res);
     });
@@ -89,8 +89,8 @@ describe('RequestContext', function () {
     it('sets an empty object to the "meta" property', function () {
       const req = createRequestMock();
       const res = createResponseMock();
-      const cnt = new ServiceContainer();
-      const ctx = new RequestContext(cnt, req, res);
+      const cont = new ServiceContainer();
+      const ctx = new RequestContext(cont, req, res);
       expect(ctx.meta).to.be.eql({});
     });
   });
@@ -99,8 +99,8 @@ describe('RequestContext', function () {
     it('returns the method name in upper case', function () {
       const req = createRequestMock({method: 'post'});
       const res = createResponseMock();
-      const cnt = new ServiceContainer();
-      const ctx = new RequestContext(cnt, req, res);
+      const cont = new ServiceContainer();
+      const ctx = new RequestContext(cont, req, res);
       expect(ctx.method).to.be.eq('POST');
     });
   });
@@ -109,8 +109,8 @@ describe('RequestContext', function () {
     it('returns the request pathname with the query string', function () {
       const req = createRequestMock({path: '/pathname?foo=bar'});
       const res = createResponseMock();
-      const cnt = new ServiceContainer();
-      const ctx = new RequestContext(cnt, req, res);
+      const cont = new ServiceContainer();
+      const ctx = new RequestContext(cont, req, res);
       expect(req.url).to.be.eq('/pathname?foo=bar');
       expect(ctx.path).to.be.eq('/pathname?foo=bar');
     });
@@ -120,8 +120,8 @@ describe('RequestContext', function () {
     it('returns the request pathname without the query string', function () {
       const req = createRequestMock({path: '/pathname?foo=bar'});
       const res = createResponseMock();
-      const cnt = new ServiceContainer();
-      const ctx = new RequestContext(cnt, req, res);
+      const cont = new ServiceContainer();
+      const ctx = new RequestContext(cont, req, res);
       expect(req.url).to.be.eq('/pathname?foo=bar');
       expect(ctx.pathname).to.be.eq('/pathname');
     });
@@ -129,8 +129,8 @@ describe('RequestContext', function () {
     it('sets the cache to the "_pathname" property and uses is for next accesses', function () {
       const req = createRequestMock({path: '/pathname'});
       const res = createResponseMock();
-      const cnt = new ServiceContainer();
-      const ctx = new RequestContext(cnt, req, res);
+      const cont = new ServiceContainer();
+      const ctx = new RequestContext(cont, req, res);
       expect(ctx._pathname).to.be.undefined;
       expect(ctx.pathname).to.be.eq('/pathname');
       expect(ctx._pathname).to.be.eq('/pathname');

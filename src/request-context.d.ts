@@ -20,7 +20,7 @@ export declare class RequestContext {
   /**
    * Container.
    */
-  container: ServiceContainer;
+  cont: ServiceContainer;
 
   /**
    * Request.

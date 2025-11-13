@@ -14,7 +14,7 @@ export class RequestContext {
    *
    * @type {import('@e22m4u/js-service').ServiceContainer}
    */
-  container;
+  cont;
 
   /**
    * Request.
@@ -123,7 +123,7 @@ export class RequestContext {
           'should be an instance of ServiceContainer, but %v was given.',
         container,
       );
-    this.container = container;
+    this.cont = container;
     if (
       !request ||
       typeof request !== 'object' ||

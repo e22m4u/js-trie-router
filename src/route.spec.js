@@ -380,8 +380,8 @@ describe('Route', function () {
       });
       const req = createRequestMock();
       const res = createResponseMock();
-      const cnt = new ServiceContainer();
-      const ctx = new RequestContext(cnt, req, res);
+      const cont = new ServiceContainer();
+      const ctx = new RequestContext(cont, req, res);
       const result = route.handle(ctx);
       expect(result).to.be.eq('OK');
     });
