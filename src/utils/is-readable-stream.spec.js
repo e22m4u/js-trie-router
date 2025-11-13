@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import {Readable} from 'stream';
 import {isReadableStream} from './is-readable-stream.js';
 

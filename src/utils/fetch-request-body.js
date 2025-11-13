@@ -21,16 +21,16 @@ export const CHARACTER_ENCODING_LIST = [
 /**
  * Fetch request body.
  *
- * @param {IncomingMessage} req
+ * @param {IncomingMessage} request
  * @param {number} bodyBytesLimit
  * @returns {Promise<string|undefined>}
  */
-export function fetchRequestBody(req, bodyBytesLimit = 0) {
-  if (!(req instanceof IncomingMessage))
+export function fetchRequestBody(request, bodyBytesLimit = 0) {
+  if (!(request instanceof IncomingMessage))
     throw new Errorf(
       'The first parameter of "fetchRequestBody" should be ' +
         'an IncomingMessage instance, but %v was given.',
-      req,
+      request,
     );
   if (typeof bodyBytesLimit !== 'number')
     throw new Errorf(
@@ -42,7 +42,10 @@ export function fetchRequestBody(req, bodyBytesLimit = 0) {
     // сравнение внутреннего ограничения
     // размера тела запроса с заголовком
     // "content-length"
-    const contentLength = parseInt(req.headers['content-length'] || '0', 10);
+    const contentLength = parseInt(
+      request.headers['content-length'] || '0',
+      10,
+    );
     if (bodyBytesLimit && contentLength && contentLength > bodyBytesLimit)
       throw createError(
         HttpErrors.PayloadTooLarge,
@@ -53,7 +56,7 @@ export function fetchRequestBody(req, bodyBytesLimit = 0) {
     // определение кодировки
     // по заголовку "content-type"
     let encoding = 'utf-8';
-    const contentType = req.headers['content-type'] || '';
+    const contentType = request.headers['content-type'] || '';
     if (contentType) {
       const parsedContentType = parseContentType(contentType);
       if (parsedContentType && parsedContentType.charset) {
@@ -75,7 +78,7 @@ export function fetchRequestBody(req, bodyBytesLimit = 0) {
     const onData = chunk => {
       receivedLength += chunk.length;
       if (bodyBytesLimit && receivedLength > bodyBytesLimit) {
-        req.removeAllListeners();
+        request.removeAllListeners();
         const error = createError(
           HttpErrors.PayloadTooLarge,
           'Request body limit is %v bytes, but %v bytes given.',
@@ -91,7 +94,7 @@ export function fetchRequestBody(req, bodyBytesLimit = 0) {
     // обработчики событий, и сравнить полученный объем
     // данных с заявленным в заголовке "content-length"
     const onEnd = () => {
-      req.removeAllListeners();
+      request.removeAllListeners();
       if (contentLength && contentLength !== receivedLength) {
         const error = createError(
           HttpErrors.BadRequest,
@@ -112,15 +115,15 @@ export function fetchRequestBody(req, bodyBytesLimit = 0) {
     // и отклоняется ожидающий Promise
     // ошибкой с кодом 400
     const onError = error => {
-      req.removeAllListeners();
+      request.removeAllListeners();
       reject(HttpErrors(400, error));
     };
     // добавление обработчиков прослушивающих
     // события входящего запроса и возобновление
     // потока данных
-    req.on('data', onData);
-    req.on('end', onEnd);
-    req.on('error', onError);
-    req.resume();
+    request.on('data', onData);
+    request.on('end', onEnd);
+    request.on('error', onError);
+    request.resume();
   });
 }

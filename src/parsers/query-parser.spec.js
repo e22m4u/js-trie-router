@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import {QueryParser} from './query-parser.js';
 
 describe('QueryParser', function () {

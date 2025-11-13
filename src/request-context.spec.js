@@ -1,4 +1,4 @@
-import {expect} from './chai.js';
+import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
 import {createRequestMock} from './utils/index.js';
 import {RequestContext} from './request-context.js';
@@ -81,9 +81,9 @@ describe('RequestContext', function () {
       const res = createResponseMock();
       const cont = new ServiceContainer();
       const ctx = new RequestContext(cont, req, res);
-      expect(ctx.cont).to.be.eq(cont);
-      expect(ctx.req).to.be.eq(req);
-      expect(ctx.res).to.be.eq(res);
+      expect(ctx.container).to.be.eq(cont);
+      expect(ctx.request).to.be.eq(req);
+      expect(ctx.response).to.be.eq(res);
     });
 
     it('sets an empty object to the "meta" property', function () {

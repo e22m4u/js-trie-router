@@ -20,17 +20,17 @@ export declare class RequestContext {
   /**
    * Container.
    */
-  cont: ServiceContainer;
+  container: ServiceContainer;
 
   /**
    * Request.
    */
-  req: IncomingMessage;
+  request: IncomingMessage;
 
   /**
    * Response.
    */
-  res: ServerResponse;
+  response: ServerResponse;
 
   /**
    * Query.

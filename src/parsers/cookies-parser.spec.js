@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import {CookiesParser} from './cookies-parser.js';
 
 describe('CookiesParser', function () {

@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import {parseContentType} from './parse-content-type.js';
 
 describe('parseContentType', function () {

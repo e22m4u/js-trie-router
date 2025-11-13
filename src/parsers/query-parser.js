@@ -9,12 +9,12 @@ export class QueryParser extends DebuggableService {
   /**
    * Parse
    *
-   * @param {import('http').IncomingMessage} req
+   * @param {import('http').IncomingMessage} request
    * @returns {object}
    */
-  parse(req) {
+  parse(request) {
     const debug = this.getDebuggerFor(this.parse);
-    const queryStr = req.url.replace(/^[^?]*\??/, '');
+    const queryStr = request.url.replace(/^[^?]*\??/, '');
     const query = queryStr ? querystring.parse(queryStr) : {};
     const queryKeys = Object.keys(query);
     if (queryKeys.length) {
@@ -24,8 +24,8 @@ export class QueryParser extends DebuggableService {
     } else {
       debug(
         'The request %s %v had no query parameters.',
-        req.method,
-        getRequestPathname(req),
+        request.method,
+        getRequestPathname(request),
       );
     }
     return query;

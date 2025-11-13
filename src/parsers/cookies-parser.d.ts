@@ -9,7 +9,7 @@ export declare class CookiesParser extends DebuggableService {
   /**
    * Parse.
    *
-   * @param req
+   * @param request
    */
-  parse(req: IncomingMessage): ParsedCookies;
+  parse(request: IncomingMessage): ParsedCookies;
 }

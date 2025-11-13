@@ -78,18 +78,18 @@ server.listen(3000, 'localhost');             // прослушивание за
 `RequestContext` с набором свойств, содержащих разобранные
 данные входящего запроса.
 
-- `cont: ServiceContainer` экземпляр [сервис-контейнера](https://npmjs.com/package/@e22m4u/js-service)
-- `req: IncomingMessage` нативный поток входящего запроса
-- `res: ServerResponse` нативный поток ответа сервера
-- `params: ParsedParams` объект ключ-значение с параметрами пути
-- `query: ParsedQuery` объект ключ-значение с параметрами строки запроса
-- `headers: ParsedHeaders` объект ключ-значение с заголовками запроса 
-- `cookies: ParsedCookies` объект ключ-значение разобранного заголовка `Cookie`
-- `method: string` метод запроса в верхнем регистре, например `GET`, `POST` и т.д.
-- `path: string` путь включающий строку запроса, например `/myPath?foo=bar`
-- `pathname: string` путь запроса, например `/myPath`
-- `body: unknown` тело запроса
-- `meta: object` мета-данные из определения маршрута
+- `container: ServiceContainer` экземпляр [сервис-контейнера](https://npmjs.com/package/@e22m4u/js-service);
+- `request: IncomingMessage` нативный поток входящего запроса;
+- `response: ServerResponse` нативный поток ответа сервера;
+- `params: ParsedParams` объект ключ-значение с параметрами пути;
+- `query: ParsedQuery` объект ключ-значение с параметрами строки запроса;
+- `headers: ParsedHeaders` объект ключ-значение с заголовками запроса;
+- `cookies: ParsedCookies` объект ключ-значение разобранного заголовка `Cookie`;
+- `method: string` метод запроса в верхнем регистре, например `GET`, `POST` и т.д.;
+- `path: string` путь включающий строку запроса, например `/myPath?foo=bar`;
+- `pathname: string` путь запроса, например `/myPath`;
+- `body: unknown` тело запроса;
+- `meta: object` мета-данные из определения маршрута;
 
 Пример доступа к контексту из обработчика маршрута.
 
@@ -101,17 +101,17 @@ router.defineRoute({
   handler(ctx) {
     // GET /users/10?include=city
     // Cookie: foo=bar; baz=qux;
-    console.log(ctx.req);      // IncomingMessage
-    console.log(ctx.res);      // ServerResponse
-    console.log(ctx.params);   // {id: 10}
-    console.log(ctx.query);    // {include: 'city'}
-    console.log(ctx.headers);  // {cookie: 'foo=bar; baz=qux;'}
-    console.log(ctx.cookies);  // {foo: 'bar', baz: 'qux'}
-    console.log(ctx.method);   // "GET"
-    console.log(ctx.path);     // "/users/10?include=city"
-    console.log(ctx.pathname); // "/users/10"
-    console.log(ctx.meta);     // {prop: 'value'}
-    console.log(ctx.cont);     // ServiceContainer
+    console.log(ctx.container); // ServiceContainer
+    console.log(ctx.request);   // IncomingMessage
+    console.log(ctx.response);  // ServerResponse
+    console.log(ctx.params);    // {id: 10}
+    console.log(ctx.query);     // {include: 'city'}
+    console.log(ctx.headers);   // {cookie: 'foo=bar; baz=qux;'}
+    console.log(ctx.cookies);   // {foo: 'bar', baz: 'qux'}
+    console.log(ctx.method);    // "GET"
+    console.log(ctx.path);      // "/users/10?include=city"
+    console.log(ctx.pathname);  // "/users/10"
+    console.log(ctx.meta);      // {prop: 'value'}
     // ...
   },
 });
@@ -150,10 +150,10 @@ router.defineRoute({     // регистрация маршрута
 ```js
 router.defineRoute({
   // ...
-  handler(ctx) {
-    ctx.res.statusCode = 404;
-    ctx.res.setHeader('content-type', 'text/plain; charset=utf-8');
-    ctx.res.end('404 Not Found', 'utf-8');
+  handler({response}) {
+    response.statusCode = 404;
+    response.setHeader('content-type', 'text/plain; charset=utf-8');
+    response.end('404 Not Found', 'utf-8');
   },
 });
 ```

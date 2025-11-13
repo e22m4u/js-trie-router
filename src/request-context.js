@@ -14,21 +14,21 @@ export class RequestContext {
    *
    * @type {import('@e22m4u/js-service').ServiceContainer}
    */
-  cont;
+  container;
 
   /**
    * Request.
    *
    * @type {import('http').IncomingMessage}
    */
-  req;
+  request;
 
   /**
    * Response.
    *
    * @type {import('http').ServerResponse}
    */
-  res;
+  response;
 
   /**
    * Query.
@@ -78,7 +78,7 @@ export class RequestContext {
    * @returns {string}
    */
   get method() {
-    return this.req.method.toUpperCase();
+    return this.request.method.toUpperCase();
   }
 
   /**
@@ -87,7 +87,7 @@ export class RequestContext {
    * @returns {string}
    */
   get path() {
-    return this.req.url;
+    return this.request.url;
   }
 
   /**
@@ -105,7 +105,7 @@ export class RequestContext {
    */
   get pathname() {
     if (this._pathname != null) return this._pathname;
-    this._pathname = getRequestPathname(this.req);
+    this._pathname = getRequestPathname(this.request);
     return this._pathname;
   }
 
@@ -123,7 +123,7 @@ export class RequestContext {
           'should be an instance of ServiceContainer, but %v was given.',
         container,
       );
-    this.cont = container;
+    this.container = container;
     if (
       !request ||
       typeof request !== 'object' ||
@@ -136,7 +136,7 @@ export class RequestContext {
         request,
       );
     }
-    this.req = request;
+    this.request = request;
     if (
       !response ||
       typeof response !== 'object' ||
@@ -149,6 +149,6 @@ export class RequestContext {
         response,
       );
     }
-    this.res = response;
+    this.response = response;
   }
 }

@@ -1,5 +1,5 @@
 import {Writable} from 'stream';
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import HttpErrors from 'http-errors';
 import {ErrorSender} from './error-sender.js';
 import {createRequestMock} from '../utils/index.js';
@@ -49,8 +49,11 @@ describe('ErrorSender', function () {
         const json = Buffer.concat(chunks).toString('utf-8');
         const data = JSON.parse(json);
         const expectedData = {error: {message: 'Unauthorized'}};
-        EXPOSED_ERROR_PROPERTIES.forEach(name => (expectedData[name] = name));
-        expect(data).not.to.have.property('shouldNotBeExposedProp');
+        EXPOSED_ERROR_PROPERTIES.forEach(
+          name => (expectedData.error[name] = name),
+        );
+        expect(data.error).not.to.have.property('shouldNotBeExposedProp');
+        expect(data).to.be.eql(expectedData);
         expect(res.statusCode).to.be.eq(401);
         const ct = res.getHeader('content-type');
         expect(ct).to.be.eq('application/json; charset=utf-8');

@@ -46,7 +46,7 @@ export declare class BodyParser extends DebuggableService {
   /**
    * Parse.
    *
-   * @param req
+   * @param request
    */
-  parse<T = unknown>(req: IncomingMessage): ValueOrPromise<T>;
+  parse<T = unknown>(request: IncomingMessage): ValueOrPromise<T>;
 }

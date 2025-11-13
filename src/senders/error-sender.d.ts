@@ -3,23 +3,28 @@ import {IncomingMessage} from 'http';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
+ * Exposed error properties.
+ */
+export const EXPOSED_ERROR_PROPERTIES: ['code', 'details'];
+
+/**
  * Error sender.
  */
 export declare class ErrorSender extends DebuggableService {
   /**
    * Send.
    *
-   * @param req
-   * @param res
+   * @param request
+   * @param response
    * @param error
    */
-  send(req: IncomingMessage, res: ServerResponse, error: Error): void;
+  send(request: IncomingMessage, response: ServerResponse, error: Error): void;
 
   /**
    * Send 404.
    *
-   * @param req
-   * @param res
+   * @param request
+   * @param response
    */
-  send404(req: IncomingMessage, res: ServerResponse): void;
+  send404(request: IncomingMessage, response: ServerResponse): void;
 }

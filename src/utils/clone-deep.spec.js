@@ -96,7 +96,7 @@ describe('cloneDeep', function () {
       const cloned = cloneDeep(original);
       expect(cloned).to.be.eql(original);
       expect(cloned).to.be.not.eq(original);
-      expect(Object.getPrototypeOf(cloned)).to.not.be.null;
+      expect(Object.getPrototypeOf(cloned)).to.be.null;
     });
   });
 

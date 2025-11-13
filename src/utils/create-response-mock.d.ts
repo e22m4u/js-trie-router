@@ -6,7 +6,8 @@ import {ServerResponse} from 'http';
 export type ServerResponseMock = ServerResponse & {
   _headersSent: boolean;
   _headers: {[name: string]: string | undefined};
-  getEncoding(encoding: BufferEncoding): ServerResponseMock;
+  setEncoding(encoding: string): ServerResponseMock;
+  getEncoding(): string | undefined;
   getBody(): Promise<string>;
 };
 

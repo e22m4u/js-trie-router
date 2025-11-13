@@ -108,7 +108,7 @@ function cloneDeep(value) {
   }
   const proto = Object.getPrototypeOf(value);
   if (proto === Object.prototype || proto === null) {
-    const newObj = {};
+    const newObj = proto === null ? /* @__PURE__ */ Object.create(null) : {};
     for (const key in value) {
       if (Object.prototype.hasOwnProperty.call(value, key)) {
         newObj[key] = cloneDeep(value[key]);
@@ -196,14 +196,14 @@ __name(createDebugger, "createDebugger");
 
 // src/utils/is-response-sent.js
 var import_js_format6 = require("@e22m4u/js-format");
-function isResponseSent(res) {
-  if (!res || typeof res !== "object" || Array.isArray(res) || typeof res.headersSent !== "boolean") {
+function isResponseSent(response) {
+  if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
     throw new import_js_format6.Errorf(
       'The first argument of "isResponseSent" should be an instance of ServerResponse, but %v was given.',
-      res
+      response
     );
   }
-  return res.headersSent;
+  return response.headersSent;
 }
 __name(isResponseSent, "isResponseSent");
 
@@ -255,11 +255,11 @@ var CHARACTER_ENCODING_LIST = [
   "ucs-2",
   "latin1"
 ];
-function fetchRequestBody(req, bodyBytesLimit = 0) {
-  if (!(req instanceof import_http.IncomingMessage))
+function fetchRequestBody(request, bodyBytesLimit = 0) {
+  if (!(request instanceof import_http.IncomingMessage))
     throw new import_js_format8.Errorf(
       'The first parameter of "fetchRequestBody" should be an IncomingMessage instance, but %v was given.',
-      req
+      request
     );
   if (typeof bodyBytesLimit !== "number")
     throw new import_js_format8.Errorf(
@@ -267,7 +267,10 @@ function fetchRequestBody(req, bodyBytesLimit = 0) {
       bodyBytesLimit
     );
   return new Promise((resolve, reject) => {
-    const contentLength = parseInt(req.headers["content-length"] || "0", 10);
+    const contentLength = parseInt(
+      request.headers["content-length"] || "0",
+      10
+    );
     if (bodyBytesLimit && contentLength && contentLength > bodyBytesLimit)
       throw createError(
         import_http_errors.default.PayloadTooLarge,
@@ -276,7 +279,7 @@ function fetchRequestBody(req, bodyBytesLimit = 0) {
         contentLength
       );
     let encoding = "utf-8";
-    const contentType = req.headers["content-type"] || "";
+    const contentType = request.headers["content-type"] || "";
     if (contentType) {
       const parsedContentType = parseContentType(contentType);
       if (parsedContentType && parsedContentType.charset) {
@@ -294,7 +297,7 @@ function fetchRequestBody(req, bodyBytesLimit = 0) {
     const onData = /* @__PURE__ */ __name((chunk) => {
       receivedLength += chunk.length;
       if (bodyBytesLimit && receivedLength > bodyBytesLimit) {
-        req.removeAllListeners();
+        request.removeAllListeners();
         const error = createError(
           import_http_errors.default.PayloadTooLarge,
           "Request body limit is %v bytes, but %v bytes given.",
@@ -307,7 +310,7 @@ function fetchRequestBody(req, bodyBytesLimit = 0) {
       data.push(chunk);
     }, "onData");
     const onEnd = /* @__PURE__ */ __name(() => {
-      req.removeAllListeners();
+      request.removeAllListeners();
       if (contentLength && contentLength !== receivedLength) {
         const error = createError(
           import_http_errors.default.BadRequest,
@@ -321,13 +324,13 @@ function fetchRequestBody(req, bodyBytesLimit = 0) {
       resolve(body || void 0);
     }, "onEnd");
     const onError = /* @__PURE__ */ __name((error) => {
-      req.removeAllListeners();
+      request.removeAllListeners();
       reject((0, import_http_errors.default)(400, error));
     }, "onError");
-    req.on("data", onData);
-    req.on("end", onEnd);
-    req.on("error", onError);
-    req.resume();
+    request.on("data", onData);
+    request.on("end", onEnd);
+    request.on("error", onError);
+    request.resume();
   });
 }
 __name(fetchRequestBody, "fetchRequestBody");
@@ -436,9 +439,9 @@ function createRequestMock(patch) {
         'The "createRequestMock" does not allow specifying the "stream" and "encoding" options simultaneously.'
       );
   }
-  const req = patch.stream || createRequestStream(patch.secure, patch.body, patch.encoding);
-  req.url = createRequestUrl(patch.path || "/", patch.query);
-  req.headers = createRequestHeaders(
+  const request = patch.stream || createRequestStream(patch.secure, patch.body, patch.encoding);
+  request.url = createRequestUrl(patch.path || "/", patch.query);
+  request.headers = createRequestHeaders(
     patch.host,
     patch.secure,
     patch.body,
@@ -446,8 +449,8 @@ function createRequestMock(patch) {
     patch.encoding,
     patch.headers
   );
-  req.method = (patch.method || "get").toUpperCase();
-  return req;
+  request.method = (patch.method || "get").toUpperCase();
+  return request;
 }
 __name(createRequestMock, "createRequestMock");
 function createRequestStream(secure, body, encoding) {
@@ -459,18 +462,18 @@ function createRequestStream(secure, body, encoding) {
   encoding = encoding || "utf-8";
   let socket = new import_net.Socket();
   if (secure) socket = new import_tls.TLSSocket(socket);
-  const req = new import_http2.IncomingMessage(socket);
+  const request = new import_http2.IncomingMessage(socket);
   if (body != null) {
     if (typeof body === "string") {
-      req.push(body, encoding);
+      request.push(body, encoding);
     } else if (Buffer.isBuffer(body)) {
-      req.push(body);
+      request.push(body);
     } else {
-      req.push(JSON.stringify(body));
+      request.push(JSON.stringify(body));
     }
   }
-  req.push(null);
-  return req;
+  request.push(null);
+  return request;
 }
 __name(createRequestStream, "createRequestStream");
 function createRequestUrl(path, query) {
@@ -569,27 +572,27 @@ __name(createRequestHeaders, "createRequestHeaders");
 // src/utils/create-response-mock.js
 var import_stream = require("stream");
 function createResponseMock() {
-  const res = new import_stream.PassThrough();
-  patchEncoding(res);
-  patchHeaders(res);
-  patchBody(res);
-  return res;
+  const response = new import_stream.PassThrough();
+  patchEncoding(response);
+  patchHeaders(response);
+  patchBody(response);
+  return response;
 }
 __name(createResponseMock, "createResponseMock");
-function patchEncoding(res) {
-  Object.defineProperty(res, "_encoding", {
+function patchEncoding(response) {
+  Object.defineProperty(response, "_encoding", {
     configurable: true,
     writable: true,
     value: void 0
   });
-  Object.defineProperty(res, "setEncoding", {
+  Object.defineProperty(response, "setEncoding", {
     configurable: true,
     value: /* @__PURE__ */ __name(function(enc) {
       this._encoding = enc;
       return this;
     }, "value")
   });
-  Object.defineProperty(res, "getEncoding", {
+  Object.defineProperty(response, "getEncoding", {
     configurable: true,
     value: /* @__PURE__ */ __name(function() {
       return this._encoding;
@@ -597,24 +600,24 @@ function patchEncoding(res) {
   });
 }
 __name(patchEncoding, "patchEncoding");
-function patchHeaders(res) {
-  Object.defineProperty(res, "_headersSent", {
+function patchHeaders(response) {
+  Object.defineProperty(response, "_headersSent", {
     configurable: true,
     writable: true,
     value: false
   });
-  Object.defineProperty(res, "headersSent", {
+  Object.defineProperty(response, "headersSent", {
     configurable: true,
     get() {
       return this._headersSent;
     }
   });
-  Object.defineProperty(res, "_headers", {
+  Object.defineProperty(response, "_headers", {
     configurable: true,
     writable: true,
     value: {}
   });
-  Object.defineProperty(res, "setHeader", {
+  Object.defineProperty(response, "setHeader", {
     configurable: true,
     value: /* @__PURE__ */ __name(function(name, value) {
       if (this.headersSent)
@@ -626,13 +629,13 @@ function patchHeaders(res) {
       return this;
     }, "value")
   });
-  Object.defineProperty(res, "getHeader", {
+  Object.defineProperty(response, "getHeader", {
     configurable: true,
     value: /* @__PURE__ */ __name(function(name) {
       return this._headers[name.toLowerCase()];
     }, "value")
   });
-  Object.defineProperty(res, "getHeaders", {
+  Object.defineProperty(response, "getHeaders", {
     configurable: true,
     value: /* @__PURE__ */ __name(function() {
       return JSON.parse(JSON.stringify(this._headers));
@@ -640,24 +643,24 @@ function patchHeaders(res) {
   });
 }
 __name(patchHeaders, "patchHeaders");
-function patchBody(res) {
+function patchBody(response) {
   let resolve, reject;
-  const promise = new Promise((res2, rej) => {
-    resolve = res2;
+  const promise = new Promise((rsv, rej) => {
+    resolve = rsv;
     reject = rej;
   });
   const data = [];
-  res.on("data", (c) => data.push(c));
-  res.on("error", (e) => reject(e));
-  res.on("end", () => {
+  response.on("data", (c) => data.push(c));
+  response.on("error", (e) => reject(e));
+  response.on("end", () => {
     resolve(Buffer.concat(data));
   });
-  const originalEnd = res.end.bind(res);
-  res.end = function(...args) {
+  const originalEnd = response.end.bind(response);
+  response.end = function(...args) {
     this._headersSent = true;
     return originalEnd(...args);
   };
-  Object.defineProperty(res, "getBody", {
+  Object.defineProperty(response, "getBody", {
     configurable: true,
     value: /* @__PURE__ */ __name(function() {
       return promise.then((buffer) => {
@@ -672,14 +675,14 @@ __name(patchBody, "patchBody");
 
 // src/utils/get-request-pathname.js
 var import_js_format11 = require("@e22m4u/js-format");
-function getRequestPathname(req) {
-  if (!req || typeof req !== "object" || Array.isArray(req) || typeof req.url !== "string") {
+function getRequestPathname(request) {
+  if (!request || typeof request !== "object" || Array.isArray(request) || typeof request.url !== "string") {
     throw new import_js_format11.Errorf(
       'The first argument of "getRequestPathname" should be an instance of IncomingMessage, but %v was given.',
-      req
+      request
     );
   }
-  return (req.url || "/").replace(/\?.*$/, "");
+  return (request.url || "/").replace(/\?.*$/, "");
 }
 __name(getRequestPathname, "getRequestPathname");
 
@@ -980,7 +983,7 @@ var _Route = class _Route extends import_js_debug.Debuggable {
    */
   handle(context) {
     const debug = this.getDebuggerFor(this.handle);
-    const requestPath = getRequestPathname(context.req);
+    const requestPath = getRequestPathname(context.request);
     debug(
       "Invoking the Route handler for the request %s %v.",
       this.method.toUpperCase(),
@@ -1102,19 +1105,19 @@ var _BodyParser = class _BodyParser extends DebuggableService {
   /**
    * Parse.
    *
-   * @param {import('http').IncomingMessage} req
+   * @param {import('http').IncomingMessage} request
    * @returns {Promise<*>|undefined}
    */
-  parse(req) {
+  parse(request) {
     const debug = this.getDebuggerFor(this.parse);
-    if (!METHODS_WITH_BODY.includes(req.method.toUpperCase())) {
+    if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
       debug(
         "Body parsing was skipped for the %s request.",
-        req.method.toUpperCase()
+        request.method.toUpperCase()
       );
       return;
     }
-    const contentType = (req.headers["content-type"] || "").replace(
+    const contentType = (request.headers["content-type"] || "").replace(
       /^([^;]+);.*$/,
       "$1"
     );
@@ -1143,7 +1146,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
       );
     }
     const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
-    return fetchRequestBody(req, bodyBytesLimit).then((rawBody) => {
+    return fetchRequestBody(request, bodyBytesLimit).then((rawBody) => {
       if (rawBody != null) return parser(rawBody);
       return rawBody;
     });
@@ -1167,12 +1170,12 @@ var _QueryParser = class _QueryParser extends DebuggableService {
   /**
    * Parse
    *
-   * @param {import('http').IncomingMessage} req
+   * @param {import('http').IncomingMessage} request
    * @returns {object}
    */
-  parse(req) {
+  parse(request) {
     const debug = this.getDebuggerFor(this.parse);
-    const queryStr = req.url.replace(/^[^?]*\??/, "");
+    const queryStr = request.url.replace(/^[^?]*\??/, "");
     const query = queryStr ? import_querystring2.default.parse(queryStr) : {};
     const queryKeys = Object.keys(query);
     if (queryKeys.length) {
@@ -1182,8 +1185,8 @@ var _QueryParser = class _QueryParser extends DebuggableService {
     } else {
       debug(
         "The request %s %v had no query parameters.",
-        req.method,
-        getRequestPathname(req)
+        request.method,
+        getRequestPathname(request)
       );
     }
     return query;
@@ -1197,12 +1200,12 @@ var _CookiesParser = class _CookiesParser extends DebuggableService {
   /**
    * Parse
    *
-   * @param {import('http').IncomingMessage} req
+   * @param {import('http').IncomingMessage} request
    * @returns {object}
    */
-  parse(req) {
+  parse(request) {
     const debug = this.getDebuggerFor(this.parse);
-    const cookiesString = req.headers["cookie"] || "";
+    const cookiesString = request.headers["cookie"] || "";
     const cookies = parseCookies(cookiesString);
     const cookiesKeys = Object.keys(cookies);
     if (cookiesKeys.length) {
@@ -1212,8 +1215,8 @@ var _CookiesParser = class _CookiesParser extends DebuggableService {
     } else {
       debug(
         "The request %s %v had no cookies.",
-        req.method,
-        getRequestPathname(req)
+        request.method,
+        getRequestPathname(request)
       );
     }
     return cookies;
@@ -1229,36 +1232,36 @@ var _RequestParser = class _RequestParser extends DebuggableService {
   /**
    * Parse.
    *
-   * @param {IncomingMessage} req
+   * @param {IncomingMessage} request
    * @returns {Promise<object>|object}
    */
-  parse(req) {
-    if (!(req instanceof import_http3.IncomingMessage))
+  parse(request) {
+    if (!(request instanceof import_http3.IncomingMessage))
       throw new import_js_format17.Errorf(
         "The first argument of RequestParser.parse should be an instance of IncomingMessage, but %v was given.",
-        req
+        request
       );
     const data = {};
     const promises = [];
-    const parsedQuery = this.getService(QueryParser).parse(req);
+    const parsedQuery = this.getService(QueryParser).parse(request);
     if (isPromise(parsedQuery)) {
       promises.push(parsedQuery.then((v) => data.query = v));
     } else {
       data.query = parsedQuery;
     }
-    const parsedCookies = this.getService(CookiesParser).parse(req);
+    const parsedCookies = this.getService(CookiesParser).parse(request);
     if (isPromise(parsedCookies)) {
       promises.push(parsedCookies.then((v) => data.cookies = v));
     } else {
       data.cookies = parsedCookies;
     }
-    const parsedBody = this.getService(BodyParser).parse(req);
+    const parsedBody = this.getService(BodyParser).parse(request);
     if (isPromise(parsedBody)) {
       promises.push(parsedBody.then((v) => data.body = v));
     } else {
       data.body = parsedBody;
     }
-    data.headers = Object.assign({}, req.headers);
+    data.headers = Object.assign({}, request.headers);
     return promises.length ? Promise.all(promises).then(() => data) : data;
   }
 };
@@ -1305,19 +1308,19 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
   /**
    * Match route by request.
    *
-   * @param {import('http').IncomingRequest} req
+   * @param {import('http').IncomingRequest} request
    * @returns {ResolvedRoute|undefined}
    */
-  matchRouteByRequest(req) {
+  matchRouteByRequest(request) {
     const debug = this.getDebuggerFor(this.matchRouteByRequest);
-    const requestPath = (req.url || "/").replace(/\?.*$/, "");
+    const requestPath = (request.url || "/").replace(/\?.*$/, "");
     debug(
       "Matching routes with the request %s %v.",
-      req.method.toUpperCase(),
+      request.method.toUpperCase(),
       requestPath
     );
-    const rawTriePath = `${req.method.toUpperCase()}/${requestPath}`;
-    const triePath = rawTriePath.replace(/\/+/, "/");
+    const rawTriePath = `${request.method.toUpperCase()}/${requestPath}`;
+    const triePath = rawTriePath.replace(/\/+/g, "/");
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;
@@ -1342,7 +1345,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     }
     debug(
       "No matched route for the request %s %v.",
-      req.method.toUpperCase(),
+      request.method.toUpperCase(),
       requestPath
     );
   }
@@ -1360,19 +1363,19 @@ var _RequestContext = class _RequestContext {
    *
    * @type {import('@e22m4u/js-service').ServiceContainer}
    */
-  cont;
+  container;
   /**
    * Request.
    *
    * @type {import('http').IncomingMessage}
    */
-  req;
+  request;
   /**
    * Response.
    *
    * @type {import('http').ServerResponse}
    */
-  res;
+  response;
   /**
    * Query.
    *
@@ -1415,7 +1418,7 @@ var _RequestContext = class _RequestContext {
    * @returns {string}
    */
   get method() {
-    return this.req.method.toUpperCase();
+    return this.request.method.toUpperCase();
   }
   /**
    * Path.
@@ -1423,7 +1426,7 @@ var _RequestContext = class _RequestContext {
    * @returns {string}
    */
   get path() {
-    return this.req.url;
+    return this.request.url;
   }
   /**
    * Pathname.
@@ -1439,7 +1442,7 @@ var _RequestContext = class _RequestContext {
    */
   get pathname() {
     if (this._pathname != null) return this._pathname;
-    this._pathname = getRequestPathname(this.req);
+    this._pathname = getRequestPathname(this.request);
     return this._pathname;
   }
   /**
@@ -1455,21 +1458,21 @@ var _RequestContext = class _RequestContext {
         'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v was given.',
         container
       );
-    this.cont = container;
+    this.container = container;
     if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
       throw new import_js_format19.Errorf(
         'The parameter "request" of RequestContext.constructor should be an instance of IncomingMessage, but %v was given.',
         request
       );
     }
-    this.req = request;
+    this.request = request;
     if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
       throw new import_js_format19.Errorf(
         'The parameter "response" of RequestContext.constructor should be an instance of ServerResponse, but %v was given.',
         response
       );
     }
-    this.res = response;
+    this.response = response;
   }
 };
 __name(_RequestContext, "RequestContext");
@@ -1485,27 +1488,27 @@ var _DataSender = class _DataSender extends DebuggableService {
   /**
    * Send.
    *
-   * @param {import('http').ServerResponse} res
+   * @param {import('http').ServerResponse} response
    * @param {*} data
    * @returns {undefined}
    */
-  send(res, data) {
+  send(response, data) {
     const debug = this.getDebuggerFor(this.send);
-    if (data === res || res.headersSent) {
+    if (data === response || response.headersSent) {
       debug(
         "Response sending was skipped because its headers where sent already."
       );
       return;
     }
     if (data == null) {
-      res.statusCode = 204;
-      res.end();
+      response.statusCode = 204;
+      response.end();
       debug("The empty response was sent.");
       return;
     }
     if (isReadableStream(data)) {
-      res.setHeader("Content-Type", "application/octet-stream");
-      data.pipe(res);
+      response.setHeader("Content-Type", "application/octet-stream");
+      data.pipe(response);
       debug("The stream response was sent.");
       return;
     }
@@ -1515,21 +1518,21 @@ var _DataSender = class _DataSender extends DebuggableService {
       case "boolean":
       case "number":
         if (Buffer.isBuffer(data)) {
-          res.setHeader("content-type", "application/octet-stream");
+          response.setHeader("content-type", "application/octet-stream");
           debugMsg = "The Buffer was sent as binary data.";
         } else {
-          res.setHeader("content-type", "application/json");
+          response.setHeader("content-type", "application/json");
           debugMsg = (0, import_js_format20.format)("The %v was sent as JSON.", typeof data);
           data = JSON.stringify(data);
         }
         break;
       default:
-        res.setHeader("content-type", "text/plain");
+        response.setHeader("content-type", "text/plain");
         debugMsg = "The response data was sent as plain text.";
         data = String(data);
         break;
     }
-    res.end(data);
+    response.end(data);
     debug(debugMsg);
   }
 };
@@ -1544,12 +1547,12 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
   /**
    * Handle.
    *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
+   * @param {import('http').IncomingMessage} request
+   * @param {import('http').ServerResponse} response
    * @param {Error} error
    * @returns {undefined}
    */
-  send(req, res, error) {
+  send(request, response, error) {
     const debug = this.getDebuggerFor(this.send);
     let safeError = {};
     if (error) {
@@ -1570,9 +1573,9 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
       if (name in safeError) body.error[name] = safeError[name];
     });
     const requestData = {
-      url: req.url,
-      method: req.method,
-      headers: req.headers
+      url: request.url,
+      method: request.method,
+      headers: request.headers
     };
     const inspectOptions = {
       showHidden: false,
@@ -1587,32 +1590,32 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
     } else {
       console.error(error);
     }
-    res.statusCode = statusCode;
-    res.setHeader("content-type", "application/json; charset=utf-8");
-    res.end(JSON.stringify(body, null, 2), "utf-8");
+    response.statusCode = statusCode;
+    response.setHeader("content-type", "application/json; charset=utf-8");
+    response.end(JSON.stringify(body, null, 2), "utf-8");
     debug(
       "The %s error was sent for the request %s %v.",
       statusCode,
-      req.method,
-      getRequestPathname(req)
+      request.method,
+      getRequestPathname(request)
     );
   }
   /**
    * Send 404.
    *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
+   * @param {import('http').IncomingMessage} request
+   * @param {import('http').ServerResponse} response
    * @returns {undefined}
    */
-  send404(req, res) {
+  send404(request, response) {
     const debug = this.getDebuggerFor(this.send404);
-    res.statusCode = 404;
-    res.setHeader("content-type", "text/plain; charset=utf-8");
-    res.end("404 Not Found", "utf-8");
+    response.statusCode = 404;
+    response.setHeader("content-type", "text/plain; charset=utf-8");
+    response.end("404 Not Found", "utf-8");
     debug(
       "The 404 error was sent for the request %s %v.",
-      req.method,
-      getRequestPathname(req)
+      request.method,
+      getRequestPathname(request)
     );
   }
 };
@@ -1674,37 +1677,37 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
   /**
    * Handle incoming request.
    *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
+   * @param {import('http').IncomingMessage} request
+   * @param {import('http').ServerResponse} response
    * @returns {Promise<undefined>}
    * @private
    */
-  async _handleRequest(req, res) {
+  async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
-    const requestPath = (req.url || "/").replace(/\?.*$/, "");
+    const requestPath = (request.url || "/").replace(/\?.*$/, "");
     debug(
       "Preparing to handle an incoming request %s %v.",
-      req.method,
+      request.method,
       requestPath
     );
-    const resolved = this.getService(RouteRegistry).matchRouteByRequest(req);
+    const resolved = this.getService(RouteRegistry).matchRouteByRequest(request);
     if (!resolved) {
-      debug("No route for the request %s %v.", req.method, requestPath);
-      this.getService(ErrorSender).send404(req, res);
+      debug("No route for the request %s %v.", request.method, requestPath);
+      this.getService(ErrorSender).send404(request, response);
     } else {
       const { route, params } = resolved;
       const container = new import_js_service5.ServiceContainer(this.container);
-      const context = new RequestContext(container, req, res);
+      const context = new RequestContext(container, request, response);
       if (route.meta != null) {
         context.meta = cloneDeep(route.meta);
       }
       container.set(RequestContext, context);
-      container.set(import_http4.IncomingMessage, req);
-      container.set(import_http4.ServerResponse, res);
+      container.set(import_http4.IncomingMessage, request);
+      container.set(import_http4.ServerResponse, response);
       context.params = params;
       let data;
       try {
-        const reqDataOrPromise = this.getService(RequestParser).parse(req);
+        const reqDataOrPromise = this.getService(RequestParser).parse(request);
         if (isPromise(reqDataOrPromise)) {
           const reqData = await reqDataOrPromise;
           Object.assign(context, reqData);
@@ -1715,17 +1718,17 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
           RouterHookType.PRE_HANDLER,
-          res,
+          response,
           context
         );
         if (isPromise(data)) data = await data;
-        if (!isResponseSent(res) && data == null) {
+        if (!isResponseSent(response) && data == null) {
           data = route.handle(context);
           if (isPromise(data)) data = await data;
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
             route,
             RouterHookType.POST_HANDLER,
-            res,
+            response,
             context,
             data
           );
@@ -1734,11 +1737,11 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           if (postHandlerData != null) data = postHandlerData;
         }
       } catch (error) {
-        this.getService(ErrorSender).send(req, res, error);
+        this.getService(ErrorSender).send(request, response, error);
         return;
       }
-      if (!isResponseSent(res)) {
-        this.getService(DataSender).send(res, data);
+      if (!isResponseSent(response)) {
+        this.getService(DataSender).send(response, data);
       }
     }
   }

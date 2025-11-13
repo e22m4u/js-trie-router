@@ -15,7 +15,7 @@ export declare class QueryParser extends DebuggableService {
   /**
    * Parse.
    *
-   * @param req
+   * @param request
    */
-  parse(req: IncomingMessage): ParsedQuery;
+  parse(request: IncomingMessage): ParsedQuery;
 }

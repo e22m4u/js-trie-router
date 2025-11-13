@@ -136,11 +136,11 @@ export function createRequestMock(patch) {
   // если передан поток, он будет использован
   // в качестве объекта запроса, в противном
   // случае создается новый
-  const req =
+  const request =
     patch.stream ||
     createRequestStream(patch.secure, patch.body, patch.encoding);
-  req.url = createRequestUrl(patch.path || '/', patch.query);
-  req.headers = createRequestHeaders(
+  request.url = createRequestUrl(patch.path || '/', patch.query);
+  request.headers = createRequestHeaders(
     patch.host,
     patch.secure,
     patch.body,
@@ -148,8 +148,8 @@ export function createRequestMock(patch) {
     patch.encoding,
     patch.headers,
   );
-  req.method = (patch.method || 'get').toUpperCase();
-  return req;
+  request.method = (patch.method || 'get').toUpperCase();
+  return request;
 }
 
 /**
@@ -172,22 +172,22 @@ function createRequestStream(secure, body, encoding) {
   // использует обертка TLSSocket
   let socket = new Socket();
   if (secure) socket = new TLSSocket(socket);
-  const req = new IncomingMessage(socket);
+  const request = new IncomingMessage(socket);
   // тело запроса должно являться
   // строкой или бинарными данными
   if (body != null) {
     if (typeof body === 'string') {
-      req.push(body, encoding);
+      request.push(body, encoding);
     } else if (Buffer.isBuffer(body)) {
-      req.push(body);
+      request.push(body);
     } else {
-      req.push(JSON.stringify(body));
+      request.push(JSON.stringify(body));
     }
   }
   // передача "null" определяет
   // конец данных
-  req.push(null);
-  return req;
+  request.push(null);
+  return request;
 }
 
 /**

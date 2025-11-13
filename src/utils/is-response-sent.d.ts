@@ -3,6 +3,6 @@ import {ServerResponse} from 'http';
 /**
  * Is response sent.
  *
- * @param res
+ * @param response
  */
-export declare function isResponseSent(res: ServerResponse): boolean;
+export declare function isResponseSent(response: ServerResponse): boolean;

@@ -8,8 +8,8 @@ export declare class DataSender extends DebuggableService {
   /**
    * Send.
    *
-   * @param res
+   * @param response
    * @param data
    */
-  send(res: ServerResponse, data: unknown): void;
+  send(response: ServerResponse, data: unknown): void;
 }

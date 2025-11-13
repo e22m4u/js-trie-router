@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import {PassThrough} from 'stream';
 import {createResponseMock} from './create-response-mock.js';
 

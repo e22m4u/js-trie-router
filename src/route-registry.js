@@ -52,21 +52,21 @@ export class RouteRegistry extends DebuggableService {
   /**
    * Match route by request.
    *
-   * @param {import('http').IncomingRequest} req
+   * @param {import('http').IncomingRequest} request
    * @returns {ResolvedRoute|undefined}
    */
-  matchRouteByRequest(req) {
+  matchRouteByRequest(request) {
     const debug = this.getDebuggerFor(this.matchRouteByRequest);
-    const requestPath = (req.url || '/').replace(/\?.*$/, '');
+    const requestPath = (request.url || '/').replace(/\?.*$/, '');
     debug(
       'Matching routes with the request %s %v.',
-      req.method.toUpperCase(),
+      request.method.toUpperCase(),
       requestPath,
     );
-    const rawTriePath = `${req.method.toUpperCase()}/${requestPath}`;
+    const rawTriePath = `${request.method.toUpperCase()}/${requestPath}`;
     // маршрут формируется с удалением дубликатов косой черты
     // "OPTIONS//api/users/login" => "OPTIONS/api/users/login"
-    const triePath = rawTriePath.replace(/\/+/, '/');
+    const triePath = rawTriePath.replace(/\/+/g, '/');
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;
@@ -91,7 +91,7 @@ export class RouteRegistry extends DebuggableService {
     }
     debug(
       'No matched route for the request %s %v.',
-      req.method.toUpperCase(),
+      request.method.toUpperCase(),
       requestPath,
     );
   }

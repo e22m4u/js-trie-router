@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import {isPromise} from './is-promise.js';
 
 describe('isPromise', function () {

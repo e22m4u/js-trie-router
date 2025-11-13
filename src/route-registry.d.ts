@@ -33,7 +33,7 @@ export declare class RouteRegistry extends DebuggableService {
   /**
    * Match route by request.
    *
-   * @param req
+   * @param request
    */
-  matchRouteByRequest(req: IncomingMessage): ResolvedRoute | undefined;
+  matchRouteByRequest(request: IncomingMessage): ResolvedRoute | undefined;
 }

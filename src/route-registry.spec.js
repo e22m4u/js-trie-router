@@ -1,5 +1,5 @@
 import {Route} from './route.js';
-import {expect} from './chai.js';
+import {expect} from 'chai';
 import {HttpMethod} from './route.js';
 import {format} from '@e22m4u/js-format';
 import {RouteRegistry} from './route-registry.js';

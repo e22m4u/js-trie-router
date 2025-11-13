@@ -6,32 +6,32 @@ import {PassThrough} from 'stream';
  * @returns {import('http').ServerResponse}
  */
 export function createResponseMock() {
-  const res = new PassThrough();
-  patchEncoding(res);
-  patchHeaders(res);
-  patchBody(res);
-  return res;
+  const response = new PassThrough();
+  patchEncoding(response);
+  patchHeaders(response);
+  patchBody(response);
+  return response;
 }
 
 /**
  * Patch encoding.
  *
- * @param {object} res
+ * @param {object} response
  */
-function patchEncoding(res) {
-  Object.defineProperty(res, '_encoding', {
+function patchEncoding(response) {
+  Object.defineProperty(response, '_encoding', {
     configurable: true,
     writable: true,
     value: undefined,
   });
-  Object.defineProperty(res, 'setEncoding', {
+  Object.defineProperty(response, 'setEncoding', {
     configurable: true,
     value: function (enc) {
       this._encoding = enc;
       return this;
     },
   });
-  Object.defineProperty(res, 'getEncoding', {
+  Object.defineProperty(response, 'getEncoding', {
     configurable: true,
     value: function () {
       return this._encoding;
@@ -42,26 +42,26 @@ function patchEncoding(res) {
 /**
  * Patch headers.
  *
- * @param {object} res
+ * @param {object} response
  */
-function patchHeaders(res) {
-  Object.defineProperty(res, '_headersSent', {
+function patchHeaders(response) {
+  Object.defineProperty(response, '_headersSent', {
     configurable: true,
     writable: true,
     value: false,
   });
-  Object.defineProperty(res, 'headersSent', {
+  Object.defineProperty(response, 'headersSent', {
     configurable: true,
     get() {
       return this._headersSent;
     },
   });
-  Object.defineProperty(res, '_headers', {
+  Object.defineProperty(response, '_headers', {
     configurable: true,
     writable: true,
     value: {},
   });
-  Object.defineProperty(res, 'setHeader', {
+  Object.defineProperty(response, 'setHeader', {
     configurable: true,
     value: function (name, value) {
       if (this.headersSent)
@@ -74,13 +74,13 @@ function patchHeaders(res) {
       return this;
     },
   });
-  Object.defineProperty(res, 'getHeader', {
+  Object.defineProperty(response, 'getHeader', {
     configurable: true,
     value: function (name) {
       return this._headers[name.toLowerCase()];
     },
   });
-  Object.defineProperty(res, 'getHeaders', {
+  Object.defineProperty(response, 'getHeaders', {
     configurable: true,
     value: function () {
       return JSON.parse(JSON.stringify(this._headers));
@@ -91,30 +91,30 @@ function patchHeaders(res) {
 /**
  * Patch body.
  *
- * @param {object} res
+ * @param {object} response
  */
-function patchBody(res) {
+function patchBody(response) {
   let resolve, reject;
-  const promise = new Promise((res, rej) => {
-    resolve = res;
+  const promise = new Promise((rsv, rej) => {
+    resolve = rsv;
     reject = rej;
   });
   const data = [];
-  res.on('data', c => data.push(c));
-  res.on('error', e => reject(e));
-  res.on('end', () => {
+  response.on('data', c => data.push(c));
+  response.on('error', e => reject(e));
+  response.on('end', () => {
     resolve(Buffer.concat(data));
   });
   // флаг _headersSent должен быть установлен синхронно
-  // после вызова метода res.end, так как асинхронная
-  // установка (к примеру в res.on('end')) не позволит
+  // после вызова метода response.end, так как асинхронная
+  // установка (к примеру в response.on('end')) не позволит
   // отследить отправку ответа при синхронном выполнении
-  const originalEnd = res.end.bind(res);
-  res.end = function (...args) {
+  const originalEnd = response.end.bind(response);
+  response.end = function (...args) {
     this._headersSent = true;
     return originalEnd(...args);
   };
-  Object.defineProperty(res, 'getBody', {
+  Object.defineProperty(response, 'getBody', {
     configurable: true,
     value: function () {
       return promise.then(buffer => {

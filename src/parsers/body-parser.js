@@ -96,19 +96,19 @@ export class BodyParser extends DebuggableService {
   /**
    * Parse.
    *
-   * @param {import('http').IncomingMessage} req
+   * @param {import('http').IncomingMessage} request
    * @returns {Promise<*>|undefined}
    */
-  parse(req) {
+  parse(request) {
     const debug = this.getDebuggerFor(this.parse);
-    if (!METHODS_WITH_BODY.includes(req.method.toUpperCase())) {
+    if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
       debug(
         'Body parsing was skipped for the %s request.',
-        req.method.toUpperCase(),
+        request.method.toUpperCase(),
       );
       return;
     }
-    const contentType = (req.headers['content-type'] || '').replace(
+    const contentType = (request.headers['content-type'] || '').replace(
       /^([^;]+);.*$/,
       '$1',
     );
@@ -137,7 +137,7 @@ export class BodyParser extends DebuggableService {
       );
     }
     const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
-    return fetchRequestBody(req, bodyBytesLimit).then(rawBody => {
+    return fetchRequestBody(request, bodyBytesLimit).then(rawBody => {
       if (rawBody != null) return parser(rawBody);
       return rawBody;
     });

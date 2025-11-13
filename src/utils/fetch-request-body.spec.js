@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
 import {fetchRequestBody} from './fetch-request-body.js';
 import {createRequestMock} from './create-request-mock.js';

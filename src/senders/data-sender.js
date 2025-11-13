@@ -9,17 +9,17 @@ export class DataSender extends DebuggableService {
   /**
    * Send.
    *
-   * @param {import('http').ServerResponse} res
+   * @param {import('http').ServerResponse} response
    * @param {*} data
    * @returns {undefined}
    */
-  send(res, data) {
+  send(response, data) {
     const debug = this.getDebuggerFor(this.send);
     // если ответ контроллера является объектом
     // ServerResponse, или имеются отправленные
     // заголовки, то считаем, что контроллер
     // уже отправил ответ самостоятельно
-    if (data === res || res.headersSent) {
+    if (data === response || response.headersSent) {
       debug(
         'Response sending was skipped because ' +
           'its headers where sent already.',
@@ -29,16 +29,16 @@ export class DataSender extends DebuggableService {
     // если ответ контроллера пуст, то отправляем
     // статус 204 "No Content"
     if (data == null) {
-      res.statusCode = 204;
-      res.end();
+      response.statusCode = 204;
+      response.end();
       debug('The empty response was sent.');
       return;
     }
     // если ответ контроллера является стримом,
     // то отправляем его как бинарные данные
     if (isReadableStream(data)) {
-      res.setHeader('Content-Type', 'application/octet-stream');
-      data.pipe(res);
+      response.setHeader('Content-Type', 'application/octet-stream');
+      data.pipe(response);
       debug('The stream response was sent.');
       return;
     }
@@ -52,22 +52,22 @@ export class DataSender extends DebuggableService {
         if (Buffer.isBuffer(data)) {
           // тип Buffer отправляется
           // как бинарные данные
-          res.setHeader('content-type', 'application/octet-stream');
+          response.setHeader('content-type', 'application/octet-stream');
           debugMsg = 'The Buffer was sent as binary data.';
         } else {
-          res.setHeader('content-type', 'application/json');
+          response.setHeader('content-type', 'application/json');
           debugMsg = format('The %v was sent as JSON.', typeof data);
           data = JSON.stringify(data);
         }
         break;
       default:
-        res.setHeader('content-type', 'text/plain');
+        response.setHeader('content-type', 'text/plain');
         debugMsg = 'The response data was sent as plain text.';
         data = String(data);
         break;
     }
     // отправка подготовленных данных
-    res.end(data);
+    response.end(data);
     debug(debugMsg);
   }
 }

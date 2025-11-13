@@ -20,7 +20,7 @@ export function cloneDeep(value) {
   // handle plain objects (literals) by recursively cloning properties
   const proto = Object.getPrototypeOf(value);
   if (proto === Object.prototype || proto === null) {
-    const newObj = {};
+    const newObj = proto === null ? Object.create(null) : {};
     for (const key in value) {
       // ensure we only copy own properties
       if (Object.prototype.hasOwnProperty.call(value, key)) {

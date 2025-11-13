@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import {Writable} from 'stream';
 import {isWritableStream} from './is-writable-stream.js';
 

@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import HttpErrors from 'http-errors';
 import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';
@@ -104,7 +104,7 @@ describe('BodyParser', function () {
     });
   });
 
-  describe('removesParser', function () {
+  describe('deleteParser', function () {
     it('requires the parameter "mediaType" to be a non-empty String', function () {
       const parser = new BodyParser();
       const throwable = v => () => parser.deleteParser(v);

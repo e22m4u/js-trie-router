@@ -9,12 +9,12 @@ export class CookiesParser extends DebuggableService {
   /**
    * Parse
    *
-   * @param {import('http').IncomingMessage} req
+   * @param {import('http').IncomingMessage} request
    * @returns {object}
    */
-  parse(req) {
+  parse(request) {
     const debug = this.getDebuggerFor(this.parse);
-    const cookiesString = req.headers['cookie'] || '';
+    const cookiesString = request.headers['cookie'] || '';
     const cookies = parseCookies(cookiesString);
     const cookiesKeys = Object.keys(cookies);
     if (cookiesKeys.length) {
@@ -24,8 +24,8 @@ export class CookiesParser extends DebuggableService {
     } else {
       debug(
         'The request %s %v had no cookies.',
-        req.method,
-        getRequestPathname(req),
+        request.method,
+        getRequestPathname(request),
       );
     }
     return cookies;

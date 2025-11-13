@@ -17,10 +17,10 @@ export const CHARACTER_ENCODING_LIST: (
 /**
  * Fetch request body.
  *
- * @param req
+ * @param request
  * @param bodyBytesLimit
  */
 export declare function fetchRequestBody(
-  req: IncomingMessage,
+  request: IncomingMessage,
   bodyBytesLimit?: number,
 ): Promise<string>;

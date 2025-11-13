@@ -13,15 +13,15 @@ export class RequestParser extends DebuggableService {
   /**
    * Parse.
    *
-   * @param {IncomingMessage} req
+   * @param {IncomingMessage} request
    * @returns {Promise<object>|object}
    */
-  parse(req) {
-    if (!(req instanceof IncomingMessage))
+  parse(request) {
+    if (!(request instanceof IncomingMessage))
       throw new Errorf(
         'The first argument of RequestParser.parse should be ' +
           'an instance of IncomingMessage, but %v was given.',
-        req,
+        request,
       );
     const data = {};
     const promises = [];
@@ -29,7 +29,7 @@ export class RequestParser extends DebuggableService {
     // значения, так как парсер может вернуть
     // Promise, и тогда придется разрывать
     // "eventLoop" с помощью "await"
-    const parsedQuery = this.getService(QueryParser).parse(req);
+    const parsedQuery = this.getService(QueryParser).parse(request);
     if (isPromise(parsedQuery)) {
       promises.push(parsedQuery.then(v => (data.query = v)));
     } else {
@@ -39,7 +39,7 @@ export class RequestParser extends DebuggableService {
     // данные заголовка "cookie" с проверкой
     // значения на Promise, и разрываем
     // "eventLoop" при необходимости
-    const parsedCookies = this.getService(CookiesParser).parse(req);
+    const parsedCookies = this.getService(CookiesParser).parse(request);
     if (isPromise(parsedCookies)) {
       promises.push(parsedCookies.then(v => (data.cookies = v)));
     } else {
@@ -48,7 +48,7 @@ export class RequestParser extends DebuggableService {
     // аналогично предыдущей операции, разбираем
     // тело запроса с проверкой результата
     // на наличие Promise
-    const parsedBody = this.getService(BodyParser).parse(req);
+    const parsedBody = this.getService(BodyParser).parse(request);
     if (isPromise(parsedBody)) {
       promises.push(parsedBody.then(v => (data.body = v)));
     } else {
@@ -56,7 +56,7 @@ export class RequestParser extends DebuggableService {
     }
     // что бы предотвратить модификацию
     // заголовков, возвращаем их копию
-    data.headers = Object.assign({}, req.headers);
+    data.headers = Object.assign({}, request.headers);
     // если имеются асинхронные операции, то результат
     // будет обернут в Promise, в противном случае
     // данные возвращаются сразу

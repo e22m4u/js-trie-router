@@ -1,5 +1,5 @@
 import {Route} from './route.js';
-import {expect} from './chai.js';
+import {expect} from 'chai';
 import {ServerResponse} from 'http';
 import {IncomingMessage} from 'http';
 import {HttpMethod} from './route.js';
@@ -486,7 +486,7 @@ describe('TrieRouter', function () {
         method: HttpMethod.GET,
         path: '/',
         handler(ctx) {
-          const res = ctx.cont.getRegistered(RequestContext);
+          const res = ctx.container.getRegistered(RequestContext);
           expect(res).to.be.eq(ctx);
           expect(res).to.be.not.eq(router.container);
           done();
@@ -505,7 +505,7 @@ describe('TrieRouter', function () {
         method: HttpMethod.GET,
         path: '/',
         handler(ctx) {
-          const result = ctx.cont.getRegistered(IncomingMessage);
+          const result = ctx.container.getRegistered(IncomingMessage);
           expect(result).to.be.eq(req);
           done();
         },
@@ -521,7 +521,7 @@ describe('TrieRouter', function () {
         method: HttpMethod.GET,
         path: '/',
         handler(ctx) {
-          const result = ctx.cont.getRegistered(ServerResponse);
+          const result = ctx.container.getRegistered(ServerResponse);
           expect(result).to.be.eq(res);
           done();
         },
@@ -561,8 +561,8 @@ describe('TrieRouter', function () {
         preHandler(ctx) {
           return new Promise(resolve => {
             setTimeout(() => {
-              ctx.res.setHeader('Content-Type', 'text/plain');
-              ctx.res.end('Response from preHandler');
+              ctx.response.setHeader('Content-Type', 'text/plain');
+              ctx.response.end('Response from preHandler');
               resolve(undefined);
             }, 10);
           });

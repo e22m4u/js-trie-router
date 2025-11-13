@@ -67,30 +67,31 @@ export class TrieRouter extends DebuggableService {
   /**
    * Handle incoming request.
    *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
+   * @param {import('http').IncomingMessage} request
+   * @param {import('http').ServerResponse} response
    * @returns {Promise<undefined>}
    * @private
    */
-  async _handleRequest(req, res) {
+  async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
-    const requestPath = (req.url || '/').replace(/\?.*$/, '');
+    const requestPath = (request.url || '/').replace(/\?.*$/, '');
     debug(
       'Preparing to handle an incoming request %s %v.',
-      req.method,
+      request.method,
       requestPath,
     );
-    const resolved = this.getService(RouteRegistry).matchRouteByRequest(req);
+    const resolved =
+      this.getService(RouteRegistry).matchRouteByRequest(request);
     if (!resolved) {
-      debug('No route for the request %s %v.', req.method, requestPath);
-      this.getService(ErrorSender).send404(req, res);
+      debug('No route for the request %s %v.', request.method, requestPath);
+      this.getService(ErrorSender).send404(request, response);
     } else {
       const {route, params} = resolved;
       // создание дочернего сервис-контейнера для передачи
       // в контекст запроса, что бы родительский контекст
       // нельзя было модифицировать
       const container = new ServiceContainer(this.container);
-      const context = new RequestContext(container, req, res);
+      const context = new RequestContext(container, request, response);
       // чтобы метаданные маршрута были доступны в хуках,
       // их копия устанавливается в контекст запроса
       if (route.meta != null) {
@@ -101,8 +102,8 @@ export class TrieRouter extends DebuggableService {
       container.set(RequestContext, context);
       // регистрация текущего экземпляра IncomingMessage
       // и ServerResponse в сервис-контейнере запроса
-      container.set(IncomingMessage, req);
-      container.set(ServerResponse, res);
+      container.set(IncomingMessage, request);
+      container.set(ServerResponse, response);
       // запись параметров пути в контекст запроса,
       // так как они были определены в момент
       // поиска подходящего роута
@@ -115,7 +116,7 @@ export class TrieRouter extends DebuggableService {
         // разбор тела, заголовков и других данных запроса
         // выполняется отдельным сервисом, после чего результат
         // записывается в контекст передаваемый обработчику
-        const reqDataOrPromise = this.getService(RequestParser).parse(req);
+        const reqDataOrPromise = this.getService(RequestParser).parse(request);
         // результат разбора может являться асинхронным, и вместо
         // того, что бы разрывать поток выполнения, стоит проверить,
         // действительно ли необходимо использование оператора "await"
@@ -135,7 +136,7 @@ export class TrieRouter extends DebuggableService {
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
           RouterHookType.PRE_HANDLER,
-          res,
+          response,
           context,
         );
         if (isPromise(data)) data = await data;
@@ -143,7 +144,7 @@ export class TrieRouter extends DebuggableService {
         // и сами "preHandler" хуки не вернули значения, то вызывается
         // основной обработчик маршрута, результат которого передается
         // в хуки "postHandler"
-        if (!isResponseSent(res) && data == null) {
+        if (!isResponseSent(response) && data == null) {
           data = route.handle(context);
           if (isPromise(data)) data = await data;
           // вызываются хуки "postHandler", результат которых
@@ -151,7 +152,7 @@ export class TrieRouter extends DebuggableService {
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
             route,
             RouterHookType.POST_HANDLER,
-            res,
+            response,
             context,
             data,
           );
@@ -160,14 +161,14 @@ export class TrieRouter extends DebuggableService {
           if (postHandlerData != null) data = postHandlerData;
         }
       } catch (error) {
-        this.getService(ErrorSender).send(req, res, error);
+        this.getService(ErrorSender).send(request, response, error);
         return;
       }
       // если ответ не был отправлен во время выполнения
       // хуков и основного обработчика запроса,
       // то результат передается в DataSender
-      if (!isResponseSent(res)) {
-        this.getService(DataSender).send(res, data);
+      if (!isResponseSent(response)) {
+        this.getService(DataSender).send(response, data);
       }
     }
   }

@@ -17,12 +17,12 @@ export class ErrorSender extends DebuggableService {
   /**
    * Handle.
    *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
+   * @param {import('http').IncomingMessage} request
+   * @param {import('http').ServerResponse} response
    * @param {Error} error
    * @returns {undefined}
    */
-  send(req, res, error) {
+  send(request, response, error) {
     const debug = this.getDebuggerFor(this.send);
     let safeError = {};
     if (error) {
@@ -43,9 +43,9 @@ export class ErrorSender extends DebuggableService {
       if (name in safeError) body.error[name] = safeError[name];
     });
     const requestData = {
-      url: req.url,
-      method: req.method,
-      headers: req.headers,
+      url: request.url,
+      method: request.method,
+      headers: request.headers,
     };
     const inspectOptions = {
       showHidden: false,
@@ -60,33 +60,33 @@ export class ErrorSender extends DebuggableService {
     } else {
       console.error(error);
     }
-    res.statusCode = statusCode;
-    res.setHeader('content-type', 'application/json; charset=utf-8');
-    res.end(JSON.stringify(body, null, 2), 'utf-8');
+    response.statusCode = statusCode;
+    response.setHeader('content-type', 'application/json; charset=utf-8');
+    response.end(JSON.stringify(body, null, 2), 'utf-8');
     debug(
       'The %s error was sent for the request %s %v.',
       statusCode,
-      req.method,
-      getRequestPathname(req),
+      request.method,
+      getRequestPathname(request),
     );
   }
 
   /**
    * Send 404.
    *
-   * @param {import('http').IncomingMessage} req
-   * @param {import('http').ServerResponse} res
+   * @param {import('http').IncomingMessage} request
+   * @param {import('http').ServerResponse} response
    * @returns {undefined}
    */
-  send404(req, res) {
+  send404(request, response) {
     const debug = this.getDebuggerFor(this.send404);
-    res.statusCode = 404;
-    res.setHeader('content-type', 'text/plain; charset=utf-8');
-    res.end('404 Not Found', 'utf-8');
+    response.statusCode = 404;
+    response.setHeader('content-type', 'text/plain; charset=utf-8');
+    response.end('404 Not Found', 'utf-8');
     debug(
       'The 404 error was sent for the request %s %v.',
-      req.method,
-      getRequestPathname(req),
+      request.method,
+      getRequestPathname(request),
     );
   }
 }

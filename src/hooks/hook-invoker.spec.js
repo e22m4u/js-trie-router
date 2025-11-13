@@ -1,4 +1,4 @@
-import {expect} from '../chai.js';
+import {expect} from 'chai';
 import {Route} from '../route.js';
 import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';

@@ -28,7 +28,7 @@ export declare class RequestParser extends DebuggableService {
   /**
    * Parse.
    *
-   * @param req
+   * @param request
    */
-  parse(req: IncomingMessage): ValueOrPromise<ParsedRequestData>;
+  parse(request: IncomingMessage): ValueOrPromise<ParsedRequestData>;
 }
