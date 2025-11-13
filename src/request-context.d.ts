@@ -10,7 +10,7 @@ import {ServiceContainer} from '@e22m4u/js-service';
  * Parsed params.
  */
 export type ParsedParams = {
-  [key: string]: string | undefined;
+  [key: string]: any;
 };
 
 /**
@@ -55,7 +55,7 @@ export declare class RequestContext {
   /**
    * Body.
    */
-  body: unknown;
+  body: any;
 
   /**
    * Route meta.

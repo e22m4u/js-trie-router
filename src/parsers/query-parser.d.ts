@@ -5,7 +5,7 @@ import {DebuggableService} from '../debuggable-service.js';
  * Parsed query.
  */
 export type ParsedQuery = {
-  [key: string]: string | undefined;
+  [key: string]: any;
 };
 
 /**

@@ -39,7 +39,9 @@ export type RoutePostHandler<T = unknown, U = unknown> = (
 /**
  * Route meta.
  */
-export type RouteMeta = Record<PropertyKey, any>;
+export type RouteMeta = {
+  [key: string]: any;
+};
 
 /**
  * Route definition.
