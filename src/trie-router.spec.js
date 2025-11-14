@@ -32,7 +32,7 @@ describe('TrieRouter', function () {
       expect(typeof router.requestListener).to.be.eq('function');
     });
 
-    it('passes request context to the route handler', function (done) {
+    it('provides the request context to the route handler', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -47,7 +47,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('passes path parameters to the request context', function (done) {
+    it('provides path parameters to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -62,7 +62,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('passes query parameters to the request context', function (done) {
+    it('provides query parameters to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -77,7 +77,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('passes parsed cookies to the request context', function (done) {
+    it('provides parsed cookies to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -92,7 +92,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('passes plain text body to the request context', function (done) {
+    it('provides the plain text body to the request context', function (done) {
       const router = new TrieRouter();
       const body = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
@@ -108,7 +108,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('passes parsed JSON body to the request context', function (done) {
+    it('provides the parsed JSON body to the request context', function (done) {
       const router = new TrieRouter();
       const data = {p1: 'foo', p2: 'bar'};
       router.defineRoute({
@@ -124,7 +124,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('passes headers to the request context', function (done) {
+    it('provides request headers to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -142,20 +142,15 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('passes the route meta to the request context as a deep copy', function (done) {
+    it('provides the route to the request context', function (done) {
       const router = new TrieRouter();
       const metaData = {foo: {bar: {baz: 'qux'}}};
-      router.defineRoute({
+      const currentRoute = router.defineRoute({
         method: HttpMethod.GET,
         path: '/',
         meta: metaData,
-        handler: ({meta}) => {
-          expect(meta).to.be.not.eq(metaData);
-          expect(meta).to.be.eql(metaData);
-          expect(meta.foo).to.be.not.eq(metaData.foo);
-          expect(meta.foo).to.be.eql(metaData.foo);
-          expect(meta.foo.bar).to.be.not.eq(metaData.foo.bar);
-          expect(meta.foo.bar).to.be.eql(metaData.foo.bar);
+        handler: ({route}) => {
+          expect(route).to.be.eq(currentRoute);
           done();
         },
       });
@@ -164,7 +159,24 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('uses DataSender to send the response', function (done) {
+    it('provides access to route meta via the request context', function (done) {
+      const router = new TrieRouter();
+      const metaData = {role: 'admin'};
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: '/',
+        meta: metaData,
+        handler: ({meta}) => {
+          expect(meta).to.eql(metaData);
+          done();
+        },
+      });
+      const req = createRequestMock();
+      const res = createResponseMock();
+      router.requestListener(req, res);
+    });
+
+    it('uses the DataSender to send the server response', function (done) {
       const router = new TrieRouter();
       const resBody = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
@@ -184,7 +196,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('uses ErrorSender to send the response', function (done) {
+    it('uses the ErrorSender to send the server response', function (done) {
       const router = new TrieRouter();
       const error = new Error();
       router.defineRoute({
@@ -264,7 +276,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
-      it('passes the request context to the "preHandler" hooks', async function () {
+      it('provides the request context to the "preHandler" hooks', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -295,7 +307,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('passes the request context and return value from the route handler to the "postHandler" hooks', async function () {
+      it('provides the request context and return value from the route handler to the "postHandler" hooks', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -480,7 +492,7 @@ describe('TrieRouter', function () {
   });
 
   describe('_handleRequest', function () {
-    it('should register the RequestContext in the request-scope ServiceContainer', function (done) {
+    it('should register the request context in the request-scope ServiceContainer', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,

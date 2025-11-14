@@ -1,10 +1,8 @@
-import {ServerResponse} from 'http';
-import {IncomingMessage} from 'http';
-import {RouteMeta} from './route.js';
-import {ParsedQuery} from './parsers/index.js';
+import {Route, RouteMeta} from './route.js';
 import {ParsedCookies} from './utils/index.js';
-import {ParsedHeaders} from './parsers/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {IncomingMessage, ServerResponse} from 'http';
+import {ParsedQuery, ParsedHeaders} from './parsers/index.js';
 
 /**
  * Parsed params.
@@ -20,17 +18,22 @@ export declare class RequestContext {
   /**
    * Container.
    */
-  container: ServiceContainer;
+  get container(): ServiceContainer;
 
   /**
    * Request.
    */
-  request: IncomingMessage;
+  get request(): IncomingMessage;
 
   /**
    * Response.
    */
-  response: ServerResponse;
+  get response(): ServerResponse;
+
+  /**
+   * Route.
+   */
+  get route(): Route;
 
   /**
    * Query.
@@ -60,7 +63,7 @@ export declare class RequestContext {
   /**
    * Route meta.
    */
-  meta: RouteMeta;
+  get meta(): RouteMeta;
 
   /**
    * Method.
@@ -88,5 +91,6 @@ export declare class RequestContext {
     container: ServiceContainer,
     request: IncomingMessage,
     response: ServerResponse,
+    route: Route,
   );
 }

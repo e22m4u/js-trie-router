@@ -5,7 +5,7 @@ import {ServiceContainer} from '@e22m4u/js-service';
 import {ServerResponse, IncomingMessage} from 'http';
 import {DebuggableService} from './debuggable-service.js';
 import {DataSender, ErrorSender} from './senders/index.js';
-import {cloneDeep, isPromise, isResponseSent} from './utils/index.js';
+import {isPromise, isResponseSent} from './utils/index.js';
 import {HookInvoker, HookRegistry, RouterHookType} from './hooks/index.js';
 
 /**
@@ -91,12 +91,7 @@ export class TrieRouter extends DebuggableService {
       // в контекст запроса, что бы родительский контекст
       // нельзя было модифицировать
       const container = new ServiceContainer(this.container);
-      const context = new RequestContext(container, request, response);
-      // чтобы метаданные маршрута были доступны в хуках,
-      // их копия устанавливается в контекст запроса
-      if (route.meta != null) {
-        context.meta = cloneDeep(route.meta);
-      }
+      const context = new RequestContext(container, request, response, route);
       // регистрация контекста запроса в сервис-контейнере
       // для доступа через container.getRegistered(RequestContext)
       container.set(RequestContext, context);

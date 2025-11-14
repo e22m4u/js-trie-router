@@ -1,9 +1,12 @@
+import {Route} from './route.js';
 import {Errorf} from '@e22m4u/js-format';
-import {isReadableStream} from './utils/index.js';
-import {isWritableStream} from './utils/index.js';
-import {ServiceContainer} from '@e22m4u/js-service';
-import {getRequestPathname} from './utils/index.js';
-import {isServiceContainer} from '@e22m4u/js-service';
+import {ServiceContainer, isServiceContainer} from '@e22m4u/js-service';
+
+import {
+  isReadableStream,
+  isWritableStream,
+  getRequestPathname,
+} from './utils/index.js';
 
 /**
  * Request context.
@@ -12,23 +15,66 @@ export class RequestContext {
   /**
    * Service container.
    *
-   * @type {import('@e22m4u/js-service').ServiceContainer}
+   * @type {ServiceContainer}
    */
-  container;
+  _container;
+
+  /**
+   * Getter of service container.
+   *
+   * @type {ServiceContainer}
+   */
+  get container() {
+    return this._container;
+  }
 
   /**
    * Request.
    *
    * @type {import('http').IncomingMessage}
    */
-  request;
+  _request;
+
+  /**
+   * Getter of request.
+   *
+   * @type {import('http').IncomingMessage}
+   */
+  get request() {
+    return this._request;
+  }
 
   /**
    * Response.
    *
    * @type {import('http').ServerResponse}
    */
-  response;
+  _response;
+
+  /**
+   * Getter of response.
+   *
+   * @type {import('http').ServerResponse}
+   */
+  get response() {
+    return this._response;
+  }
+
+  /**
+   * Route
+   *
+   * @type {Route}
+   */
+  _route;
+
+  /**
+   * Getter of route.
+   *
+   * @type {Route}
+   */
+  get route() {
+    return this._route;
+  }
 
   /**
    * Query.
@@ -68,9 +114,11 @@ export class RequestContext {
   /**
    * Route meta.
    *
-   * @type {object}
+   * @type {import('./route.js').RouteMeta}
    */
-  meta = {};
+  get meta() {
+    return this.route.meta;
+  }
 
   /**
    * Method.
@@ -115,15 +163,16 @@ export class RequestContext {
    * @param {ServiceContainer} container
    * @param {import('http').IncomingMessage} request
    * @param {import('http').ServerResponse} response
+   * @param {Route} route
    */
-  constructor(container, request, response) {
+  constructor(container, request, response, route) {
     if (!isServiceContainer(container))
       throw new Errorf(
         'The parameter "container" of RequestContext.constructor ' +
           'should be an instance of ServiceContainer, but %v was given.',
         container,
       );
-    this.container = container;
+    this._container = container;
     if (
       !request ||
       typeof request !== 'object' ||
@@ -136,7 +185,7 @@ export class RequestContext {
         request,
       );
     }
-    this.request = request;
+    this._request = request;
     if (
       !response ||
       typeof response !== 'object' ||
@@ -149,6 +198,14 @@ export class RequestContext {
         response,
       );
     }
-    this.response = response;
+    this._response = response;
+    if (!(route instanceof Route)) {
+      throw new Errorf(
+        'The parameter "route" of RequestContext.constructor ' +
+          'should be an instance of Route, but %v was given.',
+        route,
+      );
+    }
+    this._route = route;
   }
 }

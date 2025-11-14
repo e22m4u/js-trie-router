@@ -56,6 +56,7 @@ __export(index_exports, {
   createError: () => createError,
   createRequestMock: () => createRequestMock,
   createResponseMock: () => createResponseMock,
+  createRouteMock: () => createRouteMock,
   fetchRequestBody: () => fetchRequestBody,
   getRequestPathname: () => getRequestPathname,
   isPromise: () => isPromise,
@@ -206,6 +207,16 @@ function isResponseSent(response) {
   return response.headersSent;
 }
 __name(isResponseSent, "isResponseSent");
+
+// src/utils/create-route-mock.js
+function createRouteMock(options = {}) {
+  return new Route({
+    method: options.method || HttpMethod.GET,
+    path: options.path || "/",
+    handler: options.handler || (() => "OK")
+  });
+}
+__name(createRouteMock, "createRouteMock");
 
 // src/utils/is-readable-stream.js
 function isReadableStream(value) {
@@ -1356,26 +1367,63 @@ var RouteRegistry = _RouteRegistry;
 // src/request-context.js
 var import_js_format19 = require("@e22m4u/js-format");
 var import_js_service3 = require("@e22m4u/js-service");
-var import_js_service4 = require("@e22m4u/js-service");
 var _RequestContext = class _RequestContext {
   /**
    * Service container.
    *
-   * @type {import('@e22m4u/js-service').ServiceContainer}
+   * @type {ServiceContainer}
    */
-  container;
+  _container;
+  /**
+   * Getter of service container.
+   *
+   * @type {ServiceContainer}
+   */
+  get container() {
+    return this._container;
+  }
   /**
    * Request.
    *
    * @type {import('http').IncomingMessage}
    */
-  request;
+  _request;
+  /**
+   * Getter of request.
+   *
+   * @type {import('http').IncomingMessage}
+   */
+  get request() {
+    return this._request;
+  }
   /**
    * Response.
    *
    * @type {import('http').ServerResponse}
    */
-  response;
+  _response;
+  /**
+   * Getter of response.
+   *
+   * @type {import('http').ServerResponse}
+   */
+  get response() {
+    return this._response;
+  }
+  /**
+   * Route
+   *
+   * @type {Route}
+   */
+  _route;
+  /**
+   * Getter of route.
+   *
+   * @type {Route}
+   */
+  get route() {
+    return this._route;
+  }
   /**
    * Query.
    *
@@ -1409,9 +1457,11 @@ var _RequestContext = class _RequestContext {
   /**
    * Route meta.
    *
-   * @type {object}
+   * @type {import('./route.js').RouteMeta}
    */
-  meta = {};
+  get meta() {
+    return this.route.meta;
+  }
   /**
    * Method.
    *
@@ -1451,35 +1501,43 @@ var _RequestContext = class _RequestContext {
    * @param {ServiceContainer} container
    * @param {import('http').IncomingMessage} request
    * @param {import('http').ServerResponse} response
+   * @param {Route} route
    */
-  constructor(container, request, response) {
-    if (!(0, import_js_service4.isServiceContainer)(container))
+  constructor(container, request, response, route) {
+    if (!(0, import_js_service3.isServiceContainer)(container))
       throw new import_js_format19.Errorf(
         'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v was given.',
         container
       );
-    this.container = container;
+    this._container = container;
     if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
       throw new import_js_format19.Errorf(
         'The parameter "request" of RequestContext.constructor should be an instance of IncomingMessage, but %v was given.',
         request
       );
     }
-    this.request = request;
+    this._request = request;
     if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
       throw new import_js_format19.Errorf(
         'The parameter "response" of RequestContext.constructor should be an instance of ServerResponse, but %v was given.',
         response
       );
     }
-    this.response = response;
+    this._response = response;
+    if (!(route instanceof Route)) {
+      throw new import_js_format19.Errorf(
+        'The parameter "route" of RequestContext.constructor should be an instance of Route, but %v was given.',
+        route
+      );
+    }
+    this._route = route;
   }
 };
 __name(_RequestContext, "RequestContext");
 var RequestContext = _RequestContext;
 
 // src/trie-router.js
-var import_js_service5 = require("@e22m4u/js-service");
+var import_js_service4 = require("@e22m4u/js-service");
 var import_http4 = require("http");
 
 // src/senders/data-sender.js
@@ -1696,11 +1754,8 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
       this.getService(ErrorSender).send404(request, response);
     } else {
       const { route, params } = resolved;
-      const container = new import_js_service5.ServiceContainer(this.container);
-      const context = new RequestContext(container, request, response);
-      if (route.meta != null) {
-        context.meta = cloneDeep(route.meta);
-      }
+      const container = new import_js_service4.ServiceContainer(this.container);
+      const context = new RequestContext(container, request, response, route);
       container.set(RequestContext, context);
       container.set(import_http4.IncomingMessage, request);
       container.set(import_http4.ServerResponse, response);
@@ -1827,6 +1882,7 @@ var TrieRouter = _TrieRouter;
   createError,
   createRequestMock,
   createResponseMock,
+  createRouteMock,
   fetchRequestBody,
   getRequestPathname,
   isPromise,
