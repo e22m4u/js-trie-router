@@ -53,15 +53,15 @@ const {TrieRouter} = require('@e22m4u/js-trie-router');
 
 ```js
 import http from 'http';
-import {TrieRouter} from '@e22m4u/js-trie-router';
+import {TrieRouter, HttpMethod} from '@e22m4u/js-trie-router';
 
 const server = new http.Server(); // создание экземпляра HTTP сервера
 const router = new TrieRouter();  // создание экземпляра роутера
 
 router.defineRoute({
-  method: 'GET',                  // метод запроса "GET", "POST" и т.д.
-  path: '/',                      // шаблон пути, пример "/user/:id"
-  handler(ctx) {                  // обработчик маршрута
+  method: HttpMethod.GET,   // метод запроса "GET", "POST" и т.д.
+  path: '/',                // шаблон пути, пример "/user/:id"
+  handler(ctx) {            // обработчик маршрута
     return 'Hello world!';
   },
 });
@@ -71,6 +71,8 @@ server.listen(3000, 'localhost');             // прослушивание за
 
 // Open in browser http://localhost:3000
 ```
+
+*i. Для указания метода запроса рекомендуется использовать экспортируемую константу `HttpMethod`, чтобы избежать опечаток.*
 
 ### Контекст запроса
 
@@ -99,7 +101,7 @@ server.listen(3000, 'localhost');             // прослушивание за
 
 ```js
 router.defineRoute({
-  method: 'GET',
+  method: HttpMethod.GET,
   path: '/users/:id',
   meta: {prop: 'value'},
   handler(ctx) {
@@ -272,7 +274,7 @@ router.addPostHandler((ctx, data) => {
 
 ```js
 import http from 'http';
-import {TrieRouter} from '@e22m4u/js-trie-router';
+import {TrieRouter, HttpMethod} from '@e22m4u/js-trie-router';
 
 const server = new http.Server();
 const router = new TrieRouter();
@@ -285,7 +287,7 @@ router.addPreHandler((ctx) => {
 });
 
 router.defineRoute({
-  method: 'GET',
+  method: HttpMethod.GET,
   path: '/',
   meta: {foo: 'bar'}, // <= мета-данные
   handler(ctx) {
