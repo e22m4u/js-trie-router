@@ -1,5 +1,8 @@
 ## @e22m4u/js-trie-router
 
+![npm version](https://badge.fury.io/js/@e22m4u%2Fjs-trie-router.svg)
+![license](https://img.shields.io/badge/license-mit-blue.svg)
+
 HTTP маршрутизатор для Node.js на основе
 [префиксного дерева](https://ru.wikipedia.org/wiki/Trie) (trie).
 
