@@ -2,15 +2,15 @@ import {Route, HttpMethod} from '../route.js';
 
 /**
  * @typedef {object} RouteMockOptions
- * @property {HttpMethod} method
- * @property {string} path
- * @property {import('../route.js').RouteHandler} handler
+ * @property {string|undefined} method
+ * @property {string|undefined} path
+ * @property {Function|undefined} handler
  */
 
 /**
  * Create route mock.
  *
- * @param {Route} options
+ * @param {RouteMockOptions|undefined} options
  * @returns {Route}
  */
 export function createRouteMock(options = {}) {

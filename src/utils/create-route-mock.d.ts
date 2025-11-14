@@ -13,7 +13,6 @@ type RouteMockOptions = {
 /**
  * Create route mock.
  *
- * @param {Route} options
- * @returns {Route}
+ * @param options
  */
-export function createRouteMock(options: RouteMockOptions): Route;
+export function createRouteMock(options?: RouteMockOptions): Route;
