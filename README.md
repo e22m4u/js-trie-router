@@ -85,7 +85,7 @@ server.listen(3000, 'localhost');             // прослушивание за
 - `query: ParsedQuery` объект ключ-значение с параметрами строки запроса;
 - `headers: ParsedHeaders` объект ключ-значение с заголовками запроса;
 - `cookies: ParsedCookies` объект ключ-значение разобранного заголовка `Cookie`;
-- `method: string` метод запроса в верхнем регистре, например `GET`, `POST` и т.д.;
+- `method: HttpMethod` метод запроса в верхнем регистре, например `GET`, `POST` и т.д.;
 - `path: string` путь включающий строку запроса, например `/myPath?foo=bar`;
 - `pathname: string` путь запроса, например `/myPath`;
 - `body: unknown` тело запроса;
