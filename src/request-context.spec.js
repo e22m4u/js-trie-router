@@ -166,4 +166,15 @@ describe('RequestContext', function () {
       expect(ctx.pathname).to.be.eq('/overridden');
     });
   });
+
+  describe('state', function () {
+    it('has an empty object by default', function () {
+      const req = createRequestMock({path: '/pathname'});
+      const res = createResponseMock();
+      const route = createRouteMock();
+      const cont = new ServiceContainer();
+      const ctx = new RequestContext(cont, req, res, route);
+      expect(ctx.state).to.be.eql({});
+    });
+  });
 });

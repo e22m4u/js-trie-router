@@ -23,6 +23,7 @@ HTTP маршрутизатор для Node.js на основе
     - [postHandler](#posthandler)
   - [Глобальные хуки](#глобальные-хуки)
   - [Метаданные](#метаданные)
+  - [Состояние запроса](#состояние-запроса)
 - [Отладка](#отладка)
 - [Тестирование](#тестирование)
 - [Лицензия](#лицензия)
@@ -100,6 +101,7 @@ server.listen(3000, 'localhost');             // прослушивание за
 - `response: ServerResponse` нативный поток ответа сервера;
 - `route: Route` экземпляр текущего маршрута;
 - `meta: object` геттер для доступа к метаданным маршрута (`route.meta`);
+- `state: object` объект для обмена данными между хуками и обработчиком;
 
 Пример доступа к контексту из обработчика маршрута.
 
@@ -301,6 +303,38 @@ router.defineRoute({
 
 server.on('request', router.requestListener);
 server.listen(3000, 'localhost');
+```
+
+### Состояние запроса
+
+Объект `ctx.state` инициализируется как пустой объект `{}` для каждого нового
+запроса. Он предназначен для передачи динамических данных (например, профиля
+пользователя после авторизации) из *pre-handler* хуков в основной обработчик
+маршрута или *post-handler* хуки.
+
+```js
+import http from 'http';
+import {TrieRouter, HttpMethod} from '@e22m4u/js-trie-router';
+
+const router = new TrieRouter();
+
+// глобальный хук авторизации
+router.addPreHandler((ctx) => {
+  // логика получения пользователя (например, из заголовков)
+  const user = {id: 1, name: 'John', role: 'admin'};
+  // сохранение данных в state
+  ctx.state.user = user;
+});
+
+router.defineRoute({
+  method: HttpMethod.GET,
+  path: '/profile',
+  handler(ctx) {
+    // доступ к данным, установленным в хуке
+    const user = ctx.state.user;
+    return `Hello, ${user.name}!`;
+  },
+});
 ```
 
 ## Отладка

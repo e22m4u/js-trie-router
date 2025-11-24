@@ -1455,6 +1455,12 @@ var _RequestContext = class _RequestContext {
    */
   body;
   /**
+   * State.
+   *
+   * @type {object}
+   */
+  state = {};
+  /**
    * Route meta.
    *
    * @type {import('./route.js').RouteMeta}

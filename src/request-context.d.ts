@@ -61,6 +61,11 @@ export declare class RequestContext {
   body: unknown;
 
   /**
+   * State.
+   */
+  state: Record<string, any>;
+
+  /**
    * Route meta.
    */
   get meta(): RouteMeta;
