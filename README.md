@@ -126,6 +126,7 @@ router.defineRoute({
     console.log(ctx.response);  // ServerResponse
     console.log(ctx.route);     // Route
     console.log(ctx.meta);      // {prop: 'value'}
+    console.log(ctx.state);     // {}
     // ...
   },
 });
