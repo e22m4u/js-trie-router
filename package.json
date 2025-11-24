@@ -1,6 +1,6 @@
 {
   "name": "@e22m4u/js-trie-router",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "HTTP маршрутизатор для Node.js на основе префиксного дерева",
   "author": "Mikhail Evstropov <e22m4u@yandex.ru>",
   "license": "MIT",
