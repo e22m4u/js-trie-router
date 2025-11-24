@@ -295,7 +295,7 @@ router.addPreHandler((ctx) => {
 router.defineRoute({
   method: HttpMethod.GET,
   path: '/',
-  meta: {foo: 'bar'}, // <= мета-данные
+  meta: {foo: 'bar'}, // <= метаданные
   handler(ctx) {
     return 'Hello World!';
   },
