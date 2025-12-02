@@ -1,16 +1,11 @@
-import {Route} from './route.js';
 import {expect} from 'chai';
-import {ServerResponse} from 'http';
-import {IncomingMessage} from 'http';
-import {HttpMethod} from './route.js';
 import {TrieRouter} from './trie-router.js';
-import {HookRegistry} from './hooks/index.js';
-import {DataSender} from './senders/index.js';
-import {ErrorSender} from './senders/index.js';
-import {RouterHookType} from './hooks/index.js';
-import {createRequestMock} from './utils/index.js';
-import {createResponseMock} from './utils/index.js';
+import {Route, HttpMethod} from './route.js';
 import {RequestContext} from './request-context.js';
+import {ServerResponse, IncomingMessage} from 'http';
+import {DataSender, ErrorSender} from './senders/index.js';
+import {HookRegistry, RouterHookType} from './hooks/index.js';
+import {createRequestMock, createResponseMock} from './utils/index.js';
 
 describe('TrieRouter', function () {
   describe('defineRoute', function () {

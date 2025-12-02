@@ -1,11 +1,9 @@
 import {expect} from 'chai';
-import {Route} from '../route.js';
-import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';
 import {HookInvoker} from './hook-invoker.js';
-import {HookRegistry} from './hook-registry.js';
-import {RouterHookType} from './hook-registry.js';
+import {Route, HttpMethod} from '../route.js';
 import {createResponseMock} from '../utils/index.js';
+import {HookRegistry, RouterHookType} from './hook-registry.js';
 
 describe('HookInvoker', function () {
   describe('invokeAndContinueUntilValueReceived', function () {

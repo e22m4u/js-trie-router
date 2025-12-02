@@ -1,6 +1,5 @@
-import {parseCookies} from '../utils/index.js';
-import {getRequestPathname} from '../utils/index.js';
 import {DebuggableService} from '../debuggable-service.js';
+import {parseCookies, getRequestPathname} from '../utils/index.js';
 
 /**
  * Cookies parser.

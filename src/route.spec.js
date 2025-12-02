@@ -1,12 +1,10 @@
-import {Route} from './route.js';
 import {expect} from 'chai';
-import {HttpMethod} from './route.js';
 import {format} from '@e22m4u/js-format';
+import {Route, HttpMethod} from './route.js';
 import {RouterHookType} from './hooks/index.js';
-import {createRequestMock} from './utils/index.js';
-import {createResponseMock} from './utils/index.js';
 import {RequestContext} from './request-context.js';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {createRequestMock, createResponseMock} from './utils/index.js';
 
 describe('Route', function () {
   describe('constructor', function () {

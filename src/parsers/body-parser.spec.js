@@ -2,11 +2,14 @@ import {expect} from 'chai';
 import HttpErrors from 'http-errors';
 import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';
-import {BodyParser} from './body-parser.js';
-import {METHODS_WITH_BODY} from './body-parser.js';
 import {RouterOptions} from '../router-options.js';
 import {createRequestMock} from '../utils/index.js';
-import {UNPARSABLE_MEDIA_TYPES} from './body-parser.js';
+
+import {
+  BodyParser,
+  METHODS_WITH_BODY,
+  UNPARSABLE_MEDIA_TYPES,
+} from './body-parser.js';
 
 describe('BodyParser', function () {
   describe('defineParser', function () {
