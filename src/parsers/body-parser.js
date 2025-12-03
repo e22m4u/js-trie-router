@@ -1,10 +1,13 @@
 import HttpErrors from 'http-errors';
 import {Errorf} from '@e22m4u/js-format';
-import {createError} from '../utils/index.js';
 import {RouterOptions} from '../router-options.js';
-import {parseContentType} from '../utils/index.js';
-import {fetchRequestBody} from '../utils/index.js';
 import {DebuggableService} from '../debuggable-service.js';
+
+import {
+  createError,
+  parseContentType,
+  fetchRequestBody,
+} from '../utils/index.js';
 
 /**
  * Method names to be parsed.

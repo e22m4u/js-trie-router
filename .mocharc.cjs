@@ -1,5 +1,0 @@
-module.exports = {
-  extension: ['js'],
-  spec: 'src/**/*.spec.js',
-  require: ['./mocha-setup.js'],
-}
