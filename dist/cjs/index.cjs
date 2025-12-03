@@ -1,3 +1,4 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -70,11 +71,11 @@ __export(index_exports, {
 module.exports = __toCommonJS(index_exports);
 
 // src/route.js
-var import_js_format13 = require("@e22m4u/js-format");
+var import_js_format14 = require("@e22m4u/js-format");
 var import_js_debug = require("@e22m4u/js-debug");
 
 // src/hooks/hook-invoker.js
-var import_js_format12 = require("@e22m4u/js-format");
+var import_js_format13 = require("@e22m4u/js-format");
 
 // src/debuggable-service.js
 var import_js_service = require("@e22m4u/js-service");
@@ -130,14 +131,15 @@ __name(isPromise, "isPromise");
 
 // src/utils/create-error.js
 var import_js_format = require("@e22m4u/js-format");
+var import_js_format2 = require("@e22m4u/js-format");
 function createError(errorCtor, message, ...args) {
   if (typeof errorCtor !== "function")
-    throw new import_js_format.Errorf(
+    throw new import_js_format2.Errorf(
       'The first argument of "createError" should be a constructor, but %v was given.',
       errorCtor
     );
   if (message != null && typeof message !== "string")
-    throw new import_js_format.Errorf(
+    throw new import_js_format2.Errorf(
       'The second argument of "createError" should be a String, but %v was given.',
       message
     );
@@ -148,10 +150,10 @@ function createError(errorCtor, message, ...args) {
 __name(createError, "createError");
 
 // src/utils/parse-cookies.js
-var import_js_format2 = require("@e22m4u/js-format");
+var import_js_format3 = require("@e22m4u/js-format");
 function parseCookies(input) {
   if (typeof input !== "string")
-    throw new import_js_format2.Errorf(
+    throw new import_js_format3.Errorf(
       'The first parameter of "parseCookies" should be a String, but %v was given.',
       input
     );
@@ -165,10 +167,10 @@ function parseCookies(input) {
 __name(parseCookies, "parseCookies");
 
 // src/utils/to-camel-case.js
-var import_js_format3 = require("@e22m4u/js-format");
+var import_js_format4 = require("@e22m4u/js-format");
 function toCamelCase(input) {
   if (typeof input !== "string")
-    throw new import_js_format3.Errorf(
+    throw new import_js_format4.Errorf(
       'The first argument of "toCamelCase" should be a String, but %v was given.',
       input
     );
@@ -178,26 +180,26 @@ __name(toCamelCase, "toCamelCase");
 
 // src/utils/create-debugger.js
 var import_debug = __toESM(require("debug"), 1);
-var import_js_format4 = require("@e22m4u/js-format");
+var import_js_format5 = require("@e22m4u/js-format");
 function createDebugger(name) {
   if (typeof name !== "string")
-    throw new import_js_format4.Errorf(
+    throw new import_js_format5.Errorf(
       'The first argument of "createDebugger" should be a String, but %v was given.',
       name
     );
   const debug = (0, import_debug.default)(`jsTrieRouter:${name}`);
   return function(message, ...args) {
-    const interpolatedMessage = (0, import_js_format4.format)(message, ...args);
+    const interpolatedMessage = (0, import_js_format5.format)(message, ...args);
     return debug(interpolatedMessage);
   };
 }
 __name(createDebugger, "createDebugger");
 
 // src/utils/is-response-sent.js
-var import_js_format5 = require("@e22m4u/js-format");
+var import_js_format6 = require("@e22m4u/js-format");
 function isResponseSent(response) {
   if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
-    throw new import_js_format5.Errorf(
+    throw new import_js_format6.Errorf(
       'The first argument of "isResponseSent" should be an instance of ServerResponse, but %v was given.',
       response
     );
@@ -224,10 +226,10 @@ function isReadableStream(value) {
 __name(isReadableStream, "isReadableStream");
 
 // src/utils/parse-content-type.js
-var import_js_format6 = require("@e22m4u/js-format");
+var import_js_format7 = require("@e22m4u/js-format");
 function parseContentType(input) {
   if (typeof input !== "string")
-    throw new import_js_format6.Errorf(
+    throw new import_js_format7.Errorf(
       'The parameter "input" of "parseContentType" should be a String, but %v was given.',
       input
     );
@@ -253,7 +255,7 @@ __name(isWritableStream, "isWritableStream");
 // src/utils/fetch-request-body.js
 var import_http_errors = __toESM(require("http-errors"), 1);
 var import_http = require("http");
-var import_js_format7 = require("@e22m4u/js-format");
+var import_js_format8 = require("@e22m4u/js-format");
 var CHARACTER_ENCODING_LIST = [
   "ascii",
   "utf8",
@@ -266,12 +268,12 @@ var CHARACTER_ENCODING_LIST = [
 ];
 function fetchRequestBody(request, bodyBytesLimit = 0) {
   if (!(request instanceof import_http.IncomingMessage))
-    throw new import_js_format7.Errorf(
+    throw new import_js_format8.Errorf(
       'The first parameter of "fetchRequestBody" should be an IncomingMessage instance, but %v was given.',
       request
     );
   if (typeof bodyBytesLimit !== "number")
-    throw new import_js_format7.Errorf(
+    throw new import_js_format8.Errorf(
       'The parameter "bodyBytesLimit" of "fetchRequestBody" should be a number, but %v was given.',
       bodyBytesLimit
     );
@@ -349,13 +351,13 @@ var import_net = require("net");
 var import_tls = require("tls");
 var import_http2 = require("http");
 var import_querystring = __toESM(require("querystring"), 1);
-var import_js_format9 = require("@e22m4u/js-format");
+var import_js_format10 = require("@e22m4u/js-format");
 
 // src/utils/create-cookies-string.js
-var import_js_format8 = require("@e22m4u/js-format");
+var import_js_format9 = require("@e22m4u/js-format");
 function createCookiesString(data) {
   if (!data || typeof data !== "object" || Array.isArray(data))
-    throw new import_js_format8.Errorf(
+    throw new import_js_format9.Errorf(
       'The first parameter of "createCookiesString" should be an Object, but %v was given.',
       data
     );
@@ -373,78 +375,78 @@ __name(createCookiesString, "createCookiesString");
 // src/utils/create-request-mock.js
 function createRequestMock(patch) {
   if (patch != null && typeof patch !== "object" || Array.isArray(patch)) {
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The first parameter of "createRequestMock" should be an Object, but %v was given.',
       patch
     );
   }
   patch = patch || {};
   if (patch.host != null && typeof patch.host !== "string")
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "host" of "createRequestMock" should be a String, but %v was given.',
       patch.host
     );
   if (patch.method != null && typeof patch.method !== "string")
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "method" of "createRequestMock" should be a String, but %v was given.',
       patch.method
     );
   if (patch.secure != null && typeof patch.secure !== "boolean")
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "secure" of "createRequestMock" should be a Boolean, but %v was given.',
       patch.secure
     );
   if (patch.path != null && typeof patch.path !== "string")
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "path" of "createRequestMock" should be a String, but %v was given.',
       patch.path
     );
   if (patch.query != null && typeof patch.query !== "object" && typeof patch.query !== "string" || Array.isArray(patch.query)) {
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "query" of "createRequestMock" should be a String or Object, but %v was given.',
       patch.query
     );
   }
   if (patch.cookies != null && typeof patch.cookies !== "string" && typeof patch.cookies !== "object" || Array.isArray(patch.cookies)) {
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "cookies" of "createRequestMock" should be a String or Object, but %v was given.',
       patch.cookies
     );
   }
   if (patch.headers != null && typeof patch.headers !== "object" || Array.isArray(patch.headers)) {
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "headers" of "createRequestMock" should be an Object, but %v was given.',
       patch.headers
     );
   }
   if (patch.stream != null && !isReadableStream(patch.stream))
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "stream" of "createRequestMock" should be a Stream, but %v was given.',
       patch.stream
     );
   if (patch.encoding != null) {
     if (typeof patch.encoding !== "string")
-      throw new import_js_format9.Errorf(
+      throw new import_js_format10.Errorf(
         'The parameter "encoding" of "createRequestMock" should be a String, but %v was given.',
         patch.encoding
       );
     if (!CHARACTER_ENCODING_LIST.includes(patch.encoding))
-      throw new import_js_format9.Errorf(
+      throw new import_js_format10.Errorf(
         "Character encoding %v is not supported.",
         patch.encoding
       );
   }
   if (patch.stream) {
     if (patch.secure != null)
-      throw new import_js_format9.Errorf(
+      throw new import_js_format10.Errorf(
         'The "createRequestMock" does not allow specifying the "stream" and "secure" options simultaneously.'
       );
     if (patch.body != null)
-      throw new import_js_format9.Errorf(
+      throw new import_js_format10.Errorf(
         'The "createRequestMock" does not allow specifying the "stream" and "body" options simultaneously.'
       );
     if (patch.encoding != null)
-      throw new import_js_format9.Errorf(
+      throw new import_js_format10.Errorf(
         'The "createRequestMock" does not allow specifying the "stream" and "encoding" options simultaneously.'
       );
   }
@@ -464,7 +466,7 @@ function createRequestMock(patch) {
 __name(createRequestMock, "createRequestMock");
 function createRequestStream(secure, body, encoding) {
   if (encoding != null && typeof encoding !== "string")
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "encoding" of "createRequestStream" should be a String, but %v was given.',
       encoding
     );
@@ -487,12 +489,12 @@ function createRequestStream(secure, body, encoding) {
 __name(createRequestStream, "createRequestStream");
 function createRequestUrl(path, query) {
   if (typeof path !== "string")
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "path" of "createRequestUrl" should be a String, but %v was given.',
       path
     );
   if (query != null && typeof query !== "string" && typeof query !== "object" || Array.isArray(query)) {
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "query" of "createRequestUrl" should be a String or Object, but %v was given.',
       query
     );
@@ -509,32 +511,32 @@ function createRequestUrl(path, query) {
 __name(createRequestUrl, "createRequestUrl");
 function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (host != null && typeof host !== "string")
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "host" of "createRequestHeaders" a non-empty String, but %v was given.',
       host
     );
   host = host || "localhost";
   if (secure != null && typeof secure !== "boolean")
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "secure" of "createRequestHeaders" should be a String, but %v was given.',
       secure
     );
   secure = Boolean(secure);
   if (cookies != null && typeof cookies !== "object" && typeof cookies !== "string" || Array.isArray(cookies)) {
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "cookies" of "createRequestHeaders" should be a String or Object, but %v was given.',
       cookies
     );
   }
   if (headers != null && typeof headers !== "object" || Array.isArray(headers)) {
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "headers" of "createRequestHeaders" should be an Object, but %v was given.',
       headers
     );
   }
   headers = headers || {};
   if (encoding != null && typeof encoding !== "string")
-    throw new import_js_format9.Errorf(
+    throw new import_js_format10.Errorf(
       'The parameter "encoding" of "createRequestHeaders" should be a String, but %v was given.',
       encoding
     );
@@ -683,10 +685,10 @@ function patchBody(response) {
 __name(patchBody, "patchBody");
 
 // src/utils/get-request-pathname.js
-var import_js_format10 = require("@e22m4u/js-format");
+var import_js_format11 = require("@e22m4u/js-format");
 function getRequestPathname(request) {
   if (!request || typeof request !== "object" || Array.isArray(request) || typeof request.url !== "string") {
-    throw new import_js_format10.Errorf(
+    throw new import_js_format11.Errorf(
       'The first argument of "getRequestPathname" should be an instance of IncomingMessage, but %v was given.',
       request
     );
@@ -696,7 +698,7 @@ function getRequestPathname(request) {
 __name(getRequestPathname, "getRequestPathname");
 
 // src/hooks/hook-registry.js
-var import_js_format11 = require("@e22m4u/js-format");
+var import_js_format12 = require("@e22m4u/js-format");
 var RouterHookType = {
   PRE_HANDLER: "preHandler",
   POST_HANDLER: "postHandler"
@@ -718,11 +720,11 @@ var _HookRegistry = class _HookRegistry {
    */
   addHook(type, hook) {
     if (!type || typeof type !== "string")
-      throw new import_js_format11.Errorf("The hook type is required, but %v was given.", type);
+      throw new import_js_format12.Errorf("The hook type is required, but %v was given.", type);
     if (!Object.values(RouterHookType).includes(type))
-      throw new import_js_format11.Errorf("The hook type %v is not supported.", type);
+      throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     if (!hook || typeof hook !== "function")
-      throw new import_js_format11.Errorf(
+      throw new import_js_format12.Errorf(
         "The hook %v should be a Function, but %v was given.",
         type,
         hook
@@ -741,11 +743,11 @@ var _HookRegistry = class _HookRegistry {
    */
   hasHook(type, hook) {
     if (!type || typeof type !== "string")
-      throw new import_js_format11.Errorf("The hook type is required, but %v was given.", type);
+      throw new import_js_format12.Errorf("The hook type is required, but %v was given.", type);
     if (!Object.values(RouterHookType).includes(type))
-      throw new import_js_format11.Errorf("The hook type %v is not supported.", type);
+      throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     if (!hook || typeof hook !== "function")
-      throw new import_js_format11.Errorf(
+      throw new import_js_format12.Errorf(
         "The hook %v should be a Function, but %v was given.",
         type,
         hook
@@ -761,9 +763,9 @@ var _HookRegistry = class _HookRegistry {
    */
   getHooks(type) {
     if (!type || typeof type !== "string")
-      throw new import_js_format11.Errorf("The hook type is required, but %v was given.", type);
+      throw new import_js_format12.Errorf("The hook type is required, but %v was given.", type);
     if (!Object.values(RouterHookType).includes(type))
-      throw new import_js_format11.Errorf("The hook type %v is not supported.", type);
+      throw new import_js_format12.Errorf("The hook type %v is not supported.", type);
     return this._hooks.get(type) || [];
   }
 };
@@ -783,19 +785,19 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
    */
   invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
     if (!route || !(route instanceof Route))
-      throw new import_js_format12.Errorf(
+      throw new import_js_format13.Errorf(
         'The parameter "route" of the HookInvoker.invokeAndContinueUntilValueReceived should be a Route instance, but %v was given.',
         route
       );
     if (!hookType || typeof hookType !== "string")
-      throw new import_js_format12.Errorf(
+      throw new import_js_format13.Errorf(
         'The parameter "hookType" of the HookInvoker.invokeAndContinueUntilValueReceived should be a non-empty String, but %v was given.',
         hookType
       );
     if (!Object.values(RouterHookType).includes(hookType))
-      throw new import_js_format12.Errorf("The hook type %v is not supported.", hookType);
+      throw new import_js_format13.Errorf("The hook type %v is not supported.", hookType);
     if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
-      throw new import_js_format12.Errorf(
+      throw new import_js_format13.Errorf(
         'The parameter "response" of the HookInvoker.invokeAndContinueUntilValueReceived should be a ServerResponse instance, but %v was given.',
         response
       );
@@ -940,30 +942,30 @@ var _Route = class _Route extends import_js_debug.Debuggable {
       noInstantiationMessage: true
     });
     if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef))
-      throw new import_js_format13.Errorf(
+      throw new import_js_format14.Errorf(
         "The first parameter of Route.constructor should be an Object, but %v was given.",
         routeDef
       );
     if (!routeDef.method || typeof routeDef.method !== "string")
-      throw new import_js_format13.Errorf(
+      throw new import_js_format14.Errorf(
         'The option "method" of the Route should be a non-empty String, but %v was given.',
         routeDef.method
       );
     this._method = routeDef.method.toUpperCase();
     if (typeof routeDef.path !== "string")
-      throw new import_js_format13.Errorf(
+      throw new import_js_format14.Errorf(
         'The option "path" of the Route should be a String, but %v was given.',
         routeDef.path
       );
     this._path = routeDef.path;
     if (typeof routeDef.handler !== "function")
-      throw new import_js_format13.Errorf(
+      throw new import_js_format14.Errorf(
         'The option "handler" of the Route should be a Function, but %v was given.',
         routeDef.handler
       );
     if (routeDef.meta != null) {
       if (typeof routeDef.meta !== "object" || Array.isArray(routeDef.meta))
-        throw new import_js_format13.Errorf(
+        throw new import_js_format14.Errorf(
           'The option "meta" of the Route should be a plain Object, but %v was given.',
           routeDef.meta
         );
@@ -1006,10 +1008,10 @@ var Route = _Route;
 
 // src/parsers/body-parser.js
 var import_http_errors2 = __toESM(require("http-errors"), 1);
-var import_js_format15 = require("@e22m4u/js-format");
+var import_js_format16 = require("@e22m4u/js-format");
 
 // src/router-options.js
-var import_js_format14 = require("@e22m4u/js-format");
+var import_js_format15 = require("@e22m4u/js-format");
 var _RouterOptions = class _RouterOptions extends DebuggableService {
   /**
    * Request body bytes limit.
@@ -1035,7 +1037,7 @@ var _RouterOptions = class _RouterOptions extends DebuggableService {
    */
   setRequestBodyBytesLimit(input) {
     if (typeof input !== "number" || input < 0)
-      throw new import_js_format14.Errorf(
+      throw new import_js_format15.Errorf(
         'The option "requestBodyBytesLimit" must be a positive Number or 0, but %v was given.',
         input
       );
@@ -1068,12 +1070,12 @@ var _BodyParser = class _BodyParser extends DebuggableService {
    */
   defineParser(mediaType, parser) {
     if (!mediaType || typeof mediaType !== "string")
-      throw new import_js_format15.Errorf(
+      throw new import_js_format16.Errorf(
         'The parameter "mediaType" of BodyParser.defineParser should be a non-empty String, but %v was given.',
         mediaType
       );
     if (!parser || typeof parser !== "function")
-      throw new import_js_format15.Errorf(
+      throw new import_js_format16.Errorf(
         'The parameter "parser" of BodyParser.defineParser should be a Function, but %v was given.',
         parser
       );
@@ -1088,7 +1090,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
    */
   hasParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string")
-      throw new import_js_format15.Errorf(
+      throw new import_js_format16.Errorf(
         'The parameter "mediaType" of BodyParser.hasParser should be a non-empty String, but %v was given.',
         mediaType
       );
@@ -1102,12 +1104,12 @@ var _BodyParser = class _BodyParser extends DebuggableService {
    */
   deleteParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string")
-      throw new import_js_format15.Errorf(
+      throw new import_js_format16.Errorf(
         'The parameter "mediaType" of BodyParser.deleteParser should be a non-empty String, but %v was given.',
         mediaType
       );
     const parser = this._parsers[mediaType];
-    if (!parser) throw new import_js_format15.Errorf("The parser of %v is not found.", mediaType);
+    if (!parser) throw new import_js_format16.Errorf("The parser of %v is not found.", mediaType);
     delete this._parsers[mediaType];
     return this;
   }
@@ -1236,7 +1238,7 @@ var CookiesParser = _CookiesParser;
 
 // src/parsers/request-parser.js
 var import_http3 = require("http");
-var import_js_format16 = require("@e22m4u/js-format");
+var import_js_format17 = require("@e22m4u/js-format");
 var _RequestParser = class _RequestParser extends DebuggableService {
   /**
    * Parse.
@@ -1246,7 +1248,7 @@ var _RequestParser = class _RequestParser extends DebuggableService {
    */
   parse(request) {
     if (!(request instanceof import_http3.IncomingMessage))
-      throw new import_js_format16.Errorf(
+      throw new import_js_format17.Errorf(
         "The first argument of RequestParser.parse should be an instance of IncomingMessage, but %v was given.",
         request
       );
@@ -1278,7 +1280,7 @@ __name(_RequestParser, "RequestParser");
 var RequestParser = _RequestParser;
 
 // src/route-registry.js
-var import_js_format17 = require("@e22m4u/js-format");
+var import_js_format18 = require("@e22m4u/js-format");
 var import_js_path_trie = require("@e22m4u/js-path-trie");
 var import_js_service2 = require("@e22m4u/js-service");
 var _RouteRegistry = class _RouteRegistry extends DebuggableService {
@@ -1300,7 +1302,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
   defineRoute(routeDef) {
     const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef))
-      throw new import_js_format17.Errorf(
+      throw new import_js_format18.Errorf(
         "The route definition should be an Object, but %v was given.",
         routeDef
       );
@@ -1363,7 +1365,7 @@ __name(_RouteRegistry, "RouteRegistry");
 var RouteRegistry = _RouteRegistry;
 
 // src/request-context.js
-var import_js_format18 = require("@e22m4u/js-format");
+var import_js_format19 = require("@e22m4u/js-format");
 var import_js_service3 = require("@e22m4u/js-service");
 var _RequestContext = class _RequestContext {
   /**
@@ -1509,27 +1511,27 @@ var _RequestContext = class _RequestContext {
    */
   constructor(container, request, response, route) {
     if (!(0, import_js_service3.isServiceContainer)(container))
-      throw new import_js_format18.Errorf(
+      throw new import_js_format19.Errorf(
         'The parameter "container" of RequestContext.constructor should be an instance of ServiceContainer, but %v was given.',
         container
       );
     this._container = container;
     if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
-      throw new import_js_format18.Errorf(
+      throw new import_js_format19.Errorf(
         'The parameter "request" of RequestContext.constructor should be an instance of IncomingMessage, but %v was given.',
         request
       );
     }
     this._request = request;
     if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
-      throw new import_js_format18.Errorf(
+      throw new import_js_format19.Errorf(
         'The parameter "response" of RequestContext.constructor should be an instance of ServerResponse, but %v was given.',
         response
       );
     }
     this._response = response;
     if (!(route instanceof Route)) {
-      throw new import_js_format18.Errorf(
+      throw new import_js_format19.Errorf(
         'The parameter "route" of RequestContext.constructor should be an instance of Route, but %v was given.',
         route
       );
@@ -1545,7 +1547,7 @@ var import_js_service4 = require("@e22m4u/js-service");
 var import_http4 = require("http");
 
 // src/senders/data-sender.js
-var import_js_format19 = require("@e22m4u/js-format");
+var import_js_format20 = require("@e22m4u/js-format");
 var _DataSender = class _DataSender extends DebuggableService {
   /**
    * Send.
@@ -1584,7 +1586,7 @@ var _DataSender = class _DataSender extends DebuggableService {
           debugMsg = "The Buffer was sent as binary data.";
         } else {
           response.setHeader("content-type", "application/json");
-          debugMsg = (0, import_js_format19.format)("The %v was sent as JSON.", typeof data);
+          debugMsg = (0, import_js_format20.format)("The %v was sent as JSON.", typeof data);
           data = JSON.stringify(data);
         }
         break;

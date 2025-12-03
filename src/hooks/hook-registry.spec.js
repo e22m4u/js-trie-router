@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
-import {HookRegistry, RouterHookType} from './hook-registry.js';
+import {HookRegistry} from './hook-registry.js';
+import {RouterHookType} from './hook-registry.js';
 
 describe('HookRegistry', function () {
   describe('addHook', function () {

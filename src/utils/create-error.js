@@ -1,4 +1,5 @@
-import {format, Errorf} from '@e22m4u/js-format';
+import {format} from '@e22m4u/js-format';
+import {Errorf} from '@e22m4u/js-format';
 
 /**
  * Create error.
