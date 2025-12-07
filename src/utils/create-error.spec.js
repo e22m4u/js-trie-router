@@ -7,7 +7,7 @@ describe('createError', function () {
     const throwable = v => () => createError(v);
     const error = v =>
       format(
-        'The first parameter of "createError" should be ' +
+        'The first parameter of "createError" must be ' +
           'a constructor, but %s was given.',
         v,
       );
@@ -28,7 +28,7 @@ describe('createError', function () {
     const throwable = v => () => createError(Error, v);
     const error = v =>
       format(
-        'The second parameter of "createError" should be ' +
+        'The second parameter of "createError" must be ' +
           'a String, but %s was given.',
         v,
       );

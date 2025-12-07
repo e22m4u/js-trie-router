@@ -20,7 +20,7 @@ describe('HookInvoker', function () {
         format(
           'The parameter "route" of ' +
             'the HookInvoker.invokeAndContinueUntilValueReceived ' +
-            'should be a Route instance, but %s was given.',
+            'must be a Route instance, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -56,7 +56,7 @@ describe('HookInvoker', function () {
         format(
           'The parameter "hookType" of ' +
             'the HookInvoker.invokeAndContinueUntilValueReceived ' +
-            'should be a non-empty String, but %s was given.',
+            'must be a non-empty String, but %s was given.',
           v,
         );
       expect(throwable('')).to.throw(error('""'));
@@ -104,7 +104,7 @@ describe('HookInvoker', function () {
         format(
           'The parameter "response" of ' +
             'the HookInvoker.invokeAndContinueUntilValueReceived ' +
-            'should be a ServerResponse instance, but %s was given.',
+            'must be a ServerResponse instance, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));

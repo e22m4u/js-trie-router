@@ -19,7 +19,7 @@ export class RequestParser extends DebuggableService {
   parse(request) {
     if (!(request instanceof IncomingMessage))
       throw new Errorf(
-        'The first parameter of RequestParser.parse should be ' +
+        'The first parameter of RequestParser.parse must be ' +
           'an instance of IncomingMessage, but %v was given.',
         request,
       );

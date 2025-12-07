@@ -7,7 +7,7 @@ describe('getRequestPathname', function () {
     const throwable = v => () => getRequestPathname(v);
     const error = v =>
       format(
-        'The first parameter of "getRequestPathname" should be ' +
+        'The first parameter of "getRequestPathname" must be ' +
           'an instance of IncomingMessage, but %s was given.',
         v,
       );

@@ -12,7 +12,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The first parameter of "createRequestMock" ' +
-          'should be an Object, but %s was given.',
+          'must be an Object, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -32,7 +32,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "host" of "createRequestMock" ' +
-          'should be a String, but %s was given.',
+          'must be a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -52,7 +52,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "method" of "createRequestMock" ' +
-          'should be a String, but %s was given.',
+          'must be a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -72,7 +72,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "secure" of "createRequestMock" ' +
-          'should be a Boolean, but %s was given.',
+          'must be a Boolean, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -92,7 +92,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "path" of "createRequestMock" ' +
-          'should be a String, but %s was given.',
+          'must be a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -112,7 +112,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "query" of "createRequestMock" ' +
-          'should be a String or Object, but %s was given.',
+          'must be a String or Object, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -133,7 +133,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "cookies" of "createRequestMock" ' +
-          'should be a String or Object, but %s was given.',
+          'must be a String or Object, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -154,7 +154,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "headers" of "createRequestMock" ' +
-          'should be an Object, but %s was given.',
+          'must be an Object, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -175,7 +175,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "stream" of "createRequestMock" ' +
-          'should be a Stream, but %s was given.',
+          'must be a Stream, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -196,7 +196,7 @@ describe('createRequestMock', function () {
     const error = v =>
       format(
         'The parameter "encoding" of "createRequestMock" ' +
-          'should be a String, but %s was given.',
+          'must be a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));

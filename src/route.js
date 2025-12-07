@@ -140,33 +140,33 @@ export class Route extends Debuggable {
     if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef))
       throw new Errorf(
         'The first parameter of Route.constructor ' +
-          'should be an Object, but %v was given.',
+          'must be an Object, but %v was given.',
         routeDef,
       );
     if (!routeDef.method || typeof routeDef.method !== 'string')
       throw new Errorf(
-        'The option "method" of the Route should be ' +
+        'The option "method" of the Route must be ' +
           'a non-empty String, but %v was given.',
         routeDef.method,
       );
     this._method = routeDef.method.toUpperCase();
     if (typeof routeDef.path !== 'string')
       throw new Errorf(
-        'The option "path" of the Route should be ' +
+        'The option "path" of the Route must be ' +
           'a String, but %v was given.',
         routeDef.path,
       );
     this._path = routeDef.path;
     if (typeof routeDef.handler !== 'function')
       throw new Errorf(
-        'The option "handler" of the Route should be ' +
+        'The option "handler" of the Route must be ' +
           'a Function, but %v was given.',
         routeDef.handler,
       );
     if (routeDef.meta != null) {
       if (typeof routeDef.meta !== 'object' || Array.isArray(routeDef.meta))
         throw new Errorf(
-          'The option "meta" of the Route should be ' +
+          'The option "meta" of the Route must be ' +
             'a plain Object, but %v was given.',
           routeDef.meta,
         );

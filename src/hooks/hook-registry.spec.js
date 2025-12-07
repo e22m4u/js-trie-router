@@ -27,7 +27,7 @@ describe('HookRegistry', function () {
       const throwable = v => () => s.addHook(RouterHookType.PRE_HANDLER, v);
       const error = v =>
         format(
-          'The hook "preHandler" should be a Function, but %s was given.',
+          'The hook "preHandler" must be a Function, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -92,7 +92,7 @@ describe('HookRegistry', function () {
       const throwable = v => () => s.hasHook(RouterHookType.PRE_HANDLER, v);
       const error = v =>
         format(
-          'The hook "preHandler" should be a Function, but %s was given.',
+          'The hook "preHandler" must be a Function, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));

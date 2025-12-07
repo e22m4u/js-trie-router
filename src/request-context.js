@@ -176,7 +176,7 @@ export class RequestContext {
     if (!isServiceContainer(container))
       throw new Errorf(
         'The parameter "container" of RequestContext.constructor ' +
-          'should be an instance of ServiceContainer, but %v was given.',
+          'must be an instance of ServiceContainer, but %v was given.',
         container,
       );
     this._container = container;
@@ -188,7 +188,7 @@ export class RequestContext {
     ) {
       throw new Errorf(
         'The parameter "request" of RequestContext.constructor ' +
-          'should be an instance of IncomingMessage, but %v was given.',
+          'must be an instance of IncomingMessage, but %v was given.',
         request,
       );
     }
@@ -201,7 +201,7 @@ export class RequestContext {
     ) {
       throw new Errorf(
         'The parameter "response" of RequestContext.constructor ' +
-          'should be an instance of ServerResponse, but %v was given.',
+          'must be an instance of ServerResponse, but %v was given.',
         response,
       );
     }
@@ -209,7 +209,7 @@ export class RequestContext {
     if (!(route instanceof Route)) {
       throw new Errorf(
         'The parameter "route" of RequestContext.constructor ' +
-          'should be an instance of Route, but %v was given.',
+          'must be an instance of Route, but %v was given.',
         route,
       );
     }

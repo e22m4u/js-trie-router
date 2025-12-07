@@ -8,7 +8,7 @@ describe('toCamelCase', function () {
     const error = v =>
       format(
         'The first parameter of "toCamelCase" ' +
-          'should be a String, but %s was given.',
+          'must be a String, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));

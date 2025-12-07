@@ -39,7 +39,7 @@ export class HookRegistry {
       throw new Errorf('The hook type %v is not supported.', type);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
-        'The hook %v should be a Function, but %v was given.',
+        'The hook %v must be a Function, but %v was given.',
         type,
         hook,
       );
@@ -63,7 +63,7 @@ export class HookRegistry {
       throw new Errorf('The hook type %v is not supported.', type);
     if (!hook || typeof hook !== 'function')
       throw new Errorf(
-        'The hook %v should be a Function, but %v was given.',
+        'The hook %v must be a Function, but %v was given.',
         type,
         hook,
       );

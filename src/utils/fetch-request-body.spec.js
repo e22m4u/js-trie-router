@@ -8,7 +8,7 @@ describe('fetchRequestBody', function () {
     const throwable = v => () => fetchRequestBody(v);
     const error = v =>
       format(
-        'The first parameter of "fetchRequestBody" should be ' +
+        'The first parameter of "fetchRequestBody" must be ' +
           'an IncomingMessage instance, but %s was given.',
         v,
       );
@@ -31,7 +31,7 @@ describe('fetchRequestBody', function () {
     const error = v =>
       format(
         'The parameter "bodyBytesLimit" of "fetchRequestBody" ' +
-          'should be a number, but %s was given.',
+          'must be a number, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));

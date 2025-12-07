@@ -28,14 +28,14 @@ export const CHARACTER_ENCODING_LIST = [
 export function fetchRequestBody(request, bodyBytesLimit = 0) {
   if (!(request instanceof IncomingMessage))
     throw new Errorf(
-      'The first parameter of "fetchRequestBody" should be ' +
+      'The first parameter of "fetchRequestBody" must be ' +
         'an IncomingMessage instance, but %v was given.',
       request,
     );
   if (typeof bodyBytesLimit !== 'number')
     throw new Errorf(
       'The parameter "bodyBytesLimit" of "fetchRequestBody" ' +
-        'should be a number, but %v was given.',
+        'must be a number, but %v was given.',
       bodyBytesLimit,
     );
   return new Promise((resolve, reject) => {

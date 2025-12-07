@@ -19,7 +19,7 @@ describe('BodyParser', function () {
       const error = v =>
         format(
           'The parameter "mediaType" of BodyParser.defineParser ' +
-            'should be a non-empty String, but %s was given.',
+            'must be a non-empty String, but %s was given.',
           v,
         );
       expect(throwable('')).to.throw(error('""'));
@@ -41,7 +41,7 @@ describe('BodyParser', function () {
       const error = v =>
         format(
           'The parameter "parser" of BodyParser.defineParser ' +
-            'should be a Function, but %s was given.',
+            'must be a Function, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -79,7 +79,7 @@ describe('BodyParser', function () {
       const error = v =>
         format(
           'The parameter "mediaType" of BodyParser.hasParser ' +
-            'should be a non-empty String, but %s was given.',
+            'must be a non-empty String, but %s was given.',
           v,
         );
       expect(throwable('')).to.throw(error('""'));
@@ -114,7 +114,7 @@ describe('BodyParser', function () {
       const error = v =>
         format(
           'The parameter "mediaType" of BodyParser.deleteParser ' +
-            'should be a non-empty String, but %s was given.',
+            'must be a non-empty String, but %s was given.',
           v,
         );
       expect(throwable('')).to.throw(error('""'));

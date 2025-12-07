@@ -35,7 +35,7 @@ export class RouteRegistry extends DebuggableService {
     const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef))
       throw new Errorf(
-        'The route definition should be an Object, but %v was given.',
+        'The route definition must be an Object, but %v was given.',
         routeDef,
       );
     const route = new Route(routeDef);

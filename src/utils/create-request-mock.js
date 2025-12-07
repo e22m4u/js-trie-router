@@ -32,7 +32,7 @@ export function createRequestMock(patch) {
   if ((patch != null && typeof patch !== 'object') || Array.isArray(patch)) {
     throw new Errorf(
       'The first parameter of "createRequestMock" ' +
-        'should be an Object, but %v was given.',
+        'must be an Object, but %v was given.',
       patch,
     );
   }
@@ -40,25 +40,25 @@ export function createRequestMock(patch) {
   if (patch.host != null && typeof patch.host !== 'string')
     throw new Errorf(
       'The parameter "host" of "createRequestMock" ' +
-        'should be a String, but %v was given.',
+        'must be a String, but %v was given.',
       patch.host,
     );
   if (patch.method != null && typeof patch.method !== 'string')
     throw new Errorf(
       'The parameter "method" of "createRequestMock" ' +
-        'should be a String, but %v was given.',
+        'must be a String, but %v was given.',
       patch.method,
     );
   if (patch.secure != null && typeof patch.secure !== 'boolean')
     throw new Errorf(
       'The parameter "secure" of "createRequestMock" ' +
-        'should be a Boolean, but %v was given.',
+        'must be a Boolean, but %v was given.',
       patch.secure,
     );
   if (patch.path != null && typeof patch.path !== 'string')
     throw new Errorf(
       'The parameter "path" of "createRequestMock" ' +
-        'should be a String, but %v was given.',
+        'must be a String, but %v was given.',
       patch.path,
     );
   if (
@@ -69,7 +69,7 @@ export function createRequestMock(patch) {
   ) {
     throw new Errorf(
       'The parameter "query" of "createRequestMock" ' +
-        'should be a String or Object, but %v was given.',
+        'must be a String or Object, but %v was given.',
       patch.query,
     );
   }
@@ -81,7 +81,7 @@ export function createRequestMock(patch) {
   ) {
     throw new Errorf(
       'The parameter "cookies" of "createRequestMock" ' +
-        'should be a String or Object, but %v was given.',
+        'must be a String or Object, but %v was given.',
       patch.cookies,
     );
   }
@@ -91,21 +91,21 @@ export function createRequestMock(patch) {
   ) {
     throw new Errorf(
       'The parameter "headers" of "createRequestMock" ' +
-        'should be an Object, but %v was given.',
+        'must be an Object, but %v was given.',
       patch.headers,
     );
   }
   if (patch.stream != null && !isReadableStream(patch.stream))
     throw new Errorf(
       'The parameter "stream" of "createRequestMock" ' +
-        'should be a Stream, but %v was given.',
+        'must be a Stream, but %v was given.',
       patch.stream,
     );
   if (patch.encoding != null) {
     if (typeof patch.encoding !== 'string')
       throw new Errorf(
         'The parameter "encoding" of "createRequestMock" ' +
-          'should be a String, but %v was given.',
+          'must be a String, but %v was given.',
         patch.encoding,
       );
     if (!CHARACTER_ENCODING_LIST.includes(patch.encoding))
@@ -164,7 +164,7 @@ function createRequestStream(secure, body, encoding) {
   if (encoding != null && typeof encoding !== 'string')
     throw new Errorf(
       'The parameter "encoding" of "createRequestStream" ' +
-        'should be a String, but %v was given.',
+        'must be a String, but %v was given.',
       encoding,
     );
   encoding = encoding || 'utf-8';
@@ -201,7 +201,7 @@ function createRequestUrl(path, query) {
   if (typeof path !== 'string')
     throw new Errorf(
       'The parameter "path" of "createRequestUrl" ' +
-        'should be a String, but %v was given.',
+        'must be a String, but %v was given.',
       path,
     );
   if (
@@ -210,7 +210,7 @@ function createRequestUrl(path, query) {
   ) {
     throw new Errorf(
       'The parameter "query" of "createRequestUrl" ' +
-        'should be a String or Object, but %v was given.',
+        'must be a String or Object, but %v was given.',
       query,
     );
   }
@@ -246,7 +246,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (secure != null && typeof secure !== 'boolean')
     throw new Errorf(
       'The parameter "secure" of "createRequestHeaders" ' +
-        'should be a String, but %v was given.',
+        'must be a String, but %v was given.',
       secure,
     );
   secure = Boolean(secure);
@@ -258,7 +258,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   ) {
     throw new Errorf(
       'The parameter "cookies" of "createRequestHeaders" ' +
-        'should be a String or Object, but %v was given.',
+        'must be a String or Object, but %v was given.',
       cookies,
     );
   }
@@ -268,7 +268,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   ) {
     throw new Errorf(
       'The parameter "headers" of "createRequestHeaders" ' +
-        'should be an Object, but %v was given.',
+        'must be an Object, but %v was given.',
       headers,
     );
   }
@@ -276,7 +276,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (encoding != null && typeof encoding !== 'string')
     throw new Errorf(
       'The parameter "encoding" of "createRequestHeaders" ' +
-        'should be a String, but %v was given.',
+        'must be a String, but %v was given.',
       encoding,
     );
   encoding = encoding || 'utf-8';

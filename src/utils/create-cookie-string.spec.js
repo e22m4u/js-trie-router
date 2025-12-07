@@ -7,7 +7,7 @@ describe('createCookieString', function () {
     const throwable = v => () => createCookieString(v);
     const error = v =>
       format(
-        'The first parameter of "createCookieString" should be ' +
+        'The first parameter of "createCookieString" must be ' +
           'an Object, but %s was given.',
         v,
       );

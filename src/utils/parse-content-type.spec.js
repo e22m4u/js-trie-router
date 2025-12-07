@@ -8,7 +8,7 @@ describe('parseContentType', function () {
     const error = s =>
       format(
         'The first parameter of `parseContentType` ' +
-          'should be a String, but %s was given.',
+          'must be a String, but %s was given.',
         s,
       );
     expect(throwable(10)).to.throw(error('10'));

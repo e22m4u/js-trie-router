@@ -13,7 +13,7 @@ describe('Route', function () {
       const error = v =>
         format(
           'The first parameter of Route.constructor ' +
-            'should be an Object, but %s was given.',
+            'must be an Object, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -43,7 +43,7 @@ describe('Route', function () {
           });
         const error = v =>
           format(
-            'The option "method" of the Route should be ' +
+            'The option "method" of the Route must be ' +
               'a non-empty String, but %s was given.',
             v,
           );
@@ -80,7 +80,7 @@ describe('Route', function () {
           });
         const error = v =>
           format(
-            'The option "path" of the Route should be ' +
+            'The option "path" of the Route must be ' +
               'a String, but %s was given.',
             v,
           );
@@ -119,7 +119,7 @@ describe('Route', function () {
           });
         const error = v =>
           format(
-            'The option "meta" of the Route should be ' +
+            'The option "meta" of the Route must be ' +
               'a plain Object, but %s was given.',
             v,
           );
@@ -191,7 +191,7 @@ describe('Route', function () {
           });
         const error = v =>
           format(
-            'The option "handler" of the Route should be ' +
+            'The option "handler" of the Route must be ' +
               'a Function, but %s was given.',
             v,
           );
@@ -230,7 +230,7 @@ describe('Route', function () {
           });
         const error = v =>
           format(
-            'The hook "preHandler" should be a Function, but %s was given.',
+            'The hook "preHandler" must be a Function, but %s was given.',
             v,
           );
         expect(throwable1('str')).to.throw(error('"str"'));
@@ -302,7 +302,7 @@ describe('Route', function () {
           });
         const error = v =>
           format(
-            'The hook "postHandler" should be a Function, but %s was given.',
+            'The hook "postHandler" must be a Function, but %s was given.',
             v,
           );
         expect(throwable1('str')).to.throw(error('"str"'));
