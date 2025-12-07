@@ -2,7 +2,6 @@ export * from './clone-deep.js';
 export * from './is-promise.js';
 export * from './create-error.js';
 export * from './to-camel-case.js';
-export * from './create-debugger.js';
 export * from './is-response-sent.js';
 export * from './create-route-mock.js';
 export * from './is-readable-stream.js';

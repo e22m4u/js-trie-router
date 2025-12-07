@@ -13,7 +13,7 @@ import {Errorf} from '@e22m4u/js-format';
 export function parseContentType(input) {
   if (typeof input !== 'string')
     throw new Errorf(
-      'The parameter "input" of "parseContentType" ' +
+      'The first parameter of `parseContentType` ' +
         'should be a String, but %v was given.',
       input,
     );
