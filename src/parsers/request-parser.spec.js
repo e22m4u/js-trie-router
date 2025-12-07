@@ -6,12 +6,12 @@ import {createRequestMock} from '../utils/index.js';
 
 describe('RequestParser', function () {
   describe('parse', function () {
-    it('requires the first argument to be an instance of IncomingMessage', function () {
+    it('requires the first parameter to be an instance of IncomingMessage', function () {
       const s = new RequestParser();
       const throwable = v => () => s.parse(v);
       const error = v =>
         format(
-          'The first argument of RequestParser.parse should be ' +
+          'The first parameter of RequestParser.parse should be ' +
             'an instance of IncomingMessage, but %s was given.',
           v,
         );

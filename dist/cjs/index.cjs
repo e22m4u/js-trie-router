@@ -133,12 +133,12 @@ var import_js_format = require("@e22m4u/js-format");
 function createError(errorCtor, message, ...args) {
   if (typeof errorCtor !== "function")
     throw new import_js_format.Errorf(
-      'The first argument of "createError" should be a constructor, but %v was given.',
+      'The first parameter of "createError" should be a constructor, but %v was given.',
       errorCtor
     );
   if (message != null && typeof message !== "string")
     throw new import_js_format.Errorf(
-      'The second argument of "createError" should be a String, but %v was given.',
+      'The second parameter of "createError" should be a String, but %v was given.',
       message
     );
   if (message == null) return new errorCtor();
@@ -152,7 +152,7 @@ var import_js_format2 = require("@e22m4u/js-format");
 function toCamelCase(input) {
   if (typeof input !== "string")
     throw new import_js_format2.Errorf(
-      'The first argument of "toCamelCase" should be a String, but %v was given.',
+      'The first parameter of "toCamelCase" should be a String, but %v was given.',
       input
     );
   return input.replace(/(^\w|[A-Z]|\b\w)/g, (c) => c.toUpperCase()).replace(/\W+/g, "").replace(/(^\w)/g, (c) => c.toLowerCase());
@@ -164,7 +164,7 @@ var import_js_format3 = require("@e22m4u/js-format");
 function isResponseSent(response) {
   if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
     throw new import_js_format3.Errorf(
-      'The first argument of "isResponseSent" should be an instance of ServerResponse, but %v was given.',
+      'The first parameter of "isResponseSent" should be an instance of ServerResponse, but %v was given.',
       response
     );
   }
@@ -315,7 +315,7 @@ var import_js_format6 = require("@e22m4u/js-format");
 function parseCookieString(input) {
   if (typeof input !== "string")
     throw new import_js_format6.Errorf(
-      "The first parameter of `parseCookieString` must be a String, but %v was given.",
+      'The first parameter of "parseCookieString" must be a String, but %v was given.',
       input
     );
   return input.split(";").filter((v) => v !== "").map((v) => v.split("=")).reduce((cookies, tuple) => {
@@ -339,7 +339,7 @@ var import_js_format7 = require("@e22m4u/js-format");
 function createCookieString(data) {
   if (!data || typeof data !== "object" || Array.isArray(data))
     throw new import_js_format7.Errorf(
-      "The first parameter of `createCookieString` should be an Object, but %v was given.",
+      'The first parameter of "createCookieString" should be an Object, but %v was given.',
       data
     );
   let cookies = "";
@@ -670,7 +670,7 @@ var import_js_format9 = require("@e22m4u/js-format");
 function getRequestPathname(request) {
   if (!request || typeof request !== "object" || Array.isArray(request) || typeof request.url !== "string") {
     throw new import_js_format9.Errorf(
-      'The first argument of "getRequestPathname" should be an instance of IncomingMessage, but %v was given.',
+      'The first parameter of "getRequestPathname" should be an instance of IncomingMessage, but %v was given.',
       request
     );
   }
@@ -1230,7 +1230,7 @@ var _RequestParser = class _RequestParser extends DebuggableService {
   parse(request) {
     if (!(request instanceof import_http3.IncomingMessage))
       throw new import_js_format15.Errorf(
-        "The first argument of RequestParser.parse should be an instance of IncomingMessage, but %v was given.",
+        "The first parameter of RequestParser.parse should be an instance of IncomingMessage, but %v was given.",
         request
       );
     const data = {};

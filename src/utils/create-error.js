@@ -11,13 +11,13 @@ import {format, Errorf} from '@e22m4u/js-format';
 export function createError(errorCtor, message, ...args) {
   if (typeof errorCtor !== 'function')
     throw new Errorf(
-      'The first argument of "createError" should be ' +
+      'The first parameter of "createError" should be ' +
         'a constructor, but %v was given.',
       errorCtor,
     );
   if (message != null && typeof message !== 'string')
     throw new Errorf(
-      'The second argument of "createError" should be ' +
+      'The second parameter of "createError" should be ' +
         'a String, but %v was given.',
       message,
     );

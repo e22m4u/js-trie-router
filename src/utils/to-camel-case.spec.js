@@ -7,7 +7,7 @@ describe('toCamelCase', function () {
     const throwable = v => () => toCamelCase(v);
     const error = v =>
       format(
-        'The first argument of "toCamelCase" ' +
+        'The first parameter of "toCamelCase" ' +
           'should be a String, but %s was given.',
         v,
       );

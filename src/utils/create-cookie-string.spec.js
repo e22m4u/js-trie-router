@@ -3,11 +3,11 @@ import {format} from '@e22m4u/js-format';
 import {createCookieString} from './create-cookie-string.js';
 
 describe('createCookieString', function () {
-  it('requires the first argument to be an object', function () {
+  it('requires the first parameter to be an object', function () {
     const throwable = v => () => createCookieString(v);
     const error = v =>
       format(
-        'The first parameter of `createCookieString` should be ' +
+        'The first parameter of "createCookieString" should be ' +
           'an Object, but %s was given.',
         v,
       );

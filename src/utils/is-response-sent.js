@@ -14,7 +14,7 @@ export function isResponseSent(response) {
     typeof response.headersSent !== 'boolean'
   ) {
     throw new Errorf(
-      'The first argument of "isResponseSent" should be ' +
+      'The first parameter of "isResponseSent" should be ' +
         'an instance of ServerResponse, but %v was given.',
       response,
     );

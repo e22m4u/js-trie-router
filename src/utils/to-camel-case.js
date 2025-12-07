@@ -9,7 +9,7 @@ import {Errorf} from '@e22m4u/js-format';
 export function toCamelCase(input) {
   if (typeof input !== 'string')
     throw new Errorf(
-      'The first argument of "toCamelCase" ' +
+      'The first parameter of "toCamelCase" ' +
         'should be a String, but %v was given.',
       input,
     );

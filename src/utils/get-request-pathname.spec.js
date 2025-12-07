@@ -3,11 +3,11 @@ import {format} from '@e22m4u/js-format';
 import {getRequestPathname} from './get-request-pathname.js';
 
 describe('getRequestPathname', function () {
-  it('requires the argument to be an Object with "url" property', function () {
+  it('requires the first parameter to be an Object with "url" property', function () {
     const throwable = v => () => getRequestPathname(v);
     const error = v =>
       format(
-        'The first argument of "getRequestPathname" should be ' +
+        'The first parameter of "getRequestPathname" should be ' +
           'an instance of IncomingMessage, but %s was given.',
         v,
       );

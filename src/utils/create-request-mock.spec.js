@@ -7,7 +7,7 @@ import {createRequestMock} from './create-request-mock.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 
 describe('createRequestMock', function () {
-  it('requires the first argument to be an Object', function () {
+  it('requires the first parameter to be an Object', function () {
     const throwable = v => () => createRequestMock(v);
     const error = v =>
       format(

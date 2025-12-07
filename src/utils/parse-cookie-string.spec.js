@@ -7,7 +7,7 @@ describe('parseCookieString', function () {
     const throwable = v => () => parseCookieString(v);
     const error = v =>
       format(
-        'The first parameter of `parseCookieString` must be a String, ' +
+        'The first parameter of "parseCookieString" must be a String, ' +
           'but %s was given.',
         v,
       );

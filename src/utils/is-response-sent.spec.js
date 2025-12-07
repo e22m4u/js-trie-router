@@ -3,11 +3,11 @@ import {format} from '@e22m4u/js-format';
 import {isResponseSent} from './is-response-sent.js';
 
 describe('isResponseSent', function () {
-  it('requires the argument to be an Object with "headersSent" property', function () {
+  it('requires the first parameter to be an Object with "headersSent" property', function () {
     const throwable = v => () => isResponseSent(v);
     const error = v =>
       format(
-        'The first argument of "isResponseSent" should be ' +
+        'The first parameter of "isResponseSent" should be ' +
           'an instance of ServerResponse, but %s was given.',
         v,
       );

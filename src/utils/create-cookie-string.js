@@ -9,7 +9,7 @@ import {Errorf} from '@e22m4u/js-format';
 export function createCookieString(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data))
     throw new Errorf(
-      'The first parameter of `createCookieString` should be ' +
+      'The first parameter of "createCookieString" should be ' +
         'an Object, but %v was given.',
       data,
     );

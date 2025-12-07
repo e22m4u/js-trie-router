@@ -14,7 +14,7 @@ export function getRequestPathname(request) {
     typeof request.url !== 'string'
   ) {
     throw new Errorf(
-      'The first argument of "getRequestPathname" should be ' +
+      'The first parameter of "getRequestPathname" should be ' +
         'an instance of IncomingMessage, but %v was given.',
       request,
     );
