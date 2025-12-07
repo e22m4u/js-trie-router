@@ -1,14 +1,14 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
-import {parseCookies} from './parse-cookies.js';
+import {parseCookieString} from './parse-cookie-string.js';
 
-describe('parseCookies', function () {
+describe('parseCookieString', function () {
   it('requires the first parameter to be an IncomingMessage instance', function () {
-    const throwable = v => () => parseCookies(v);
+    const throwable = v => () => parseCookieString(v);
     const error = v =>
       format(
-        'The first parameter of "parseCookies" should be ' +
-          'a String, but %s was given.',
+        'The first parameter of `parseCookieString` must be a String, ' +
+          'but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -25,18 +25,18 @@ describe('parseCookies', function () {
 
   it('returns cookies as a plain object', function () {
     const value = 'pkg=math; equation=E%3Dmc%5E2';
-    const result = parseCookies(value);
+    const result = parseCookieString(value);
     expect(result).to.have.property('pkg', 'math');
     expect(result).to.have.property('equation', 'E=mc^2');
   });
 
   it('returns an empty object for an empty string', function () {
-    const result = parseCookies('');
+    const result = parseCookieString('');
     expect(result).to.be.eql({});
   });
 
   it('parses an empty cookie as an empty string', function () {
-    const result = parseCookies('foo=bar; baz');
+    const result = parseCookieString('foo=bar; baz');
     expect(result).to.be.eql({foo: 'bar', baz: ''});
   });
 });

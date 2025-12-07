@@ -51,7 +51,7 @@ __export(index_exports, {
   TrieRouter: () => TrieRouter,
   UNPARSABLE_MEDIA_TYPES: () => UNPARSABLE_MEDIA_TYPES,
   cloneDeep: () => cloneDeep,
-  createCookiesString: () => createCookiesString,
+  createCookieString: () => createCookieString,
   createDebugger: () => createDebugger,
   createError: () => createError,
   createRequestMock: () => createRequestMock,
@@ -64,7 +64,7 @@ __export(index_exports, {
   isResponseSent: () => isResponseSent,
   isWritableStream: () => isWritableStream,
   parseContentType: () => parseContentType,
-  parseCookies: () => parseCookies,
+  parseCookieString: () => parseCookieString,
   parseJsonBody: () => parseJsonBody,
   toCamelCase: () => toCamelCase
 });
@@ -148,28 +148,11 @@ function createError(errorCtor, message, ...args) {
 }
 __name(createError, "createError");
 
-// src/utils/parse-cookies.js
-var import_js_format2 = require("@e22m4u/js-format");
-function parseCookies(input) {
-  if (typeof input !== "string")
-    throw new import_js_format2.Errorf(
-      'The first parameter of "parseCookies" should be a String, but %v was given.',
-      input
-    );
-  return input.split(";").filter((v) => v !== "").map((v) => v.split("=")).reduce((cookies, tuple) => {
-    const key = decodeURIComponent(tuple[0]).trim();
-    const value = tuple[1] !== void 0 ? decodeURIComponent(tuple[1]).trim() : "";
-    cookies[key] = value;
-    return cookies;
-  }, {});
-}
-__name(parseCookies, "parseCookies");
-
 // src/utils/to-camel-case.js
-var import_js_format3 = require("@e22m4u/js-format");
+var import_js_format2 = require("@e22m4u/js-format");
 function toCamelCase(input) {
   if (typeof input !== "string")
-    throw new import_js_format3.Errorf(
+    throw new import_js_format2.Errorf(
       'The first argument of "toCamelCase" should be a String, but %v was given.',
       input
     );
@@ -179,26 +162,26 @@ __name(toCamelCase, "toCamelCase");
 
 // src/utils/create-debugger.js
 var import_debug = __toESM(require("debug"), 1);
-var import_js_format4 = require("@e22m4u/js-format");
+var import_js_format3 = require("@e22m4u/js-format");
 function createDebugger(name) {
   if (typeof name !== "string")
-    throw new import_js_format4.Errorf(
+    throw new import_js_format3.Errorf(
       'The first argument of "createDebugger" should be a String, but %v was given.',
       name
     );
   const debug = (0, import_debug.default)(`jsTrieRouter:${name}`);
   return function(message, ...args) {
-    const interpolatedMessage = (0, import_js_format4.format)(message, ...args);
+    const interpolatedMessage = (0, import_js_format3.format)(message, ...args);
     return debug(interpolatedMessage);
   };
 }
 __name(createDebugger, "createDebugger");
 
 // src/utils/is-response-sent.js
-var import_js_format5 = require("@e22m4u/js-format");
+var import_js_format4 = require("@e22m4u/js-format");
 function isResponseSent(response) {
   if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
-    throw new import_js_format5.Errorf(
+    throw new import_js_format4.Errorf(
       'The first argument of "isResponseSent" should be an instance of ServerResponse, but %v was given.',
       response
     );
@@ -225,10 +208,10 @@ function isReadableStream(value) {
 __name(isReadableStream, "isReadableStream");
 
 // src/utils/parse-content-type.js
-var import_js_format6 = require("@e22m4u/js-format");
+var import_js_format5 = require("@e22m4u/js-format");
 function parseContentType(input) {
   if (typeof input !== "string")
-    throw new import_js_format6.Errorf(
+    throw new import_js_format5.Errorf(
       'The parameter "input" of "parseContentType" should be a String, but %v was given.',
       input
     );
@@ -254,7 +237,7 @@ __name(isWritableStream, "isWritableStream");
 // src/utils/fetch-request-body.js
 var import_http_errors = __toESM(require("http-errors"), 1);
 var import_http = require("http");
-var import_js_format7 = require("@e22m4u/js-format");
+var import_js_format6 = require("@e22m4u/js-format");
 var CHARACTER_ENCODING_LIST = [
   "ascii",
   "utf8",
@@ -267,12 +250,12 @@ var CHARACTER_ENCODING_LIST = [
 ];
 function fetchRequestBody(request, bodyBytesLimit = 0) {
   if (!(request instanceof import_http.IncomingMessage))
-    throw new import_js_format7.Errorf(
+    throw new import_js_format6.Errorf(
       'The first parameter of "fetchRequestBody" should be an IncomingMessage instance, but %v was given.',
       request
     );
   if (typeof bodyBytesLimit !== "number")
-    throw new import_js_format7.Errorf(
+    throw new import_js_format6.Errorf(
       'The parameter "bodyBytesLimit" of "fetchRequestBody" should be a number, but %v was given.',
       bodyBytesLimit
     );
@@ -345,6 +328,23 @@ function fetchRequestBody(request, bodyBytesLimit = 0) {
 }
 __name(fetchRequestBody, "fetchRequestBody");
 
+// src/utils/parse-cookie-string.js
+var import_js_format7 = require("@e22m4u/js-format");
+function parseCookieString(input) {
+  if (typeof input !== "string")
+    throw new import_js_format7.Errorf(
+      "The first parameter of `parseCookieString` must be a String, but %v was given.",
+      input
+    );
+  return input.split(";").filter((v) => v !== "").map((v) => v.split("=")).reduce((cookies, tuple) => {
+    const key = decodeURIComponent(tuple[0]).trim();
+    const value = tuple[1] !== void 0 ? decodeURIComponent(tuple[1]).trim() : "";
+    cookies[key] = value;
+    return cookies;
+  }, {});
+}
+__name(parseCookieString, "parseCookieString");
+
 // src/utils/create-request-mock.js
 var import_net = require("net");
 var import_tls = require("tls");
@@ -352,12 +352,12 @@ var import_http2 = require("http");
 var import_querystring = __toESM(require("querystring"), 1);
 var import_js_format9 = require("@e22m4u/js-format");
 
-// src/utils/create-cookies-string.js
+// src/utils/create-cookie-string.js
 var import_js_format8 = require("@e22m4u/js-format");
-function createCookiesString(data) {
+function createCookieString(data) {
   if (!data || typeof data !== "object" || Array.isArray(data))
     throw new import_js_format8.Errorf(
-      'The first parameter of "createCookiesString" should be an Object, but %v was given.',
+      "The first parameter of `createCookieString` should be an Object, but %v was given.",
       data
     );
   let cookies = "";
@@ -369,7 +369,7 @@ function createCookiesString(data) {
   }
   return cookies.trim();
 }
-__name(createCookiesString, "createCookiesString");
+__name(createCookieString, "createCookieString");
 
 // src/utils/create-request-mock.js
 function createRequestMock(patch) {
@@ -549,7 +549,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
       obj["cookie"] += obj["cookie"] ? `; ${cookies}` : cookies;
     } else if (typeof cookies === "object") {
       obj["cookie"] = obj["cookie"] ? obj["cookie"] : "";
-      const newCookies = createCookiesString(cookies);
+      const newCookies = createCookieString(cookies);
       obj["cookie"] += obj["cookie"] ? `; ${newCookies}` : newCookies;
     }
   }
@@ -1216,7 +1216,7 @@ var _CookiesParser = class _CookiesParser extends DebuggableService {
   parse(request) {
     const debug = this.getDebuggerFor(this.parse);
     const cookiesString = request.headers["cookie"] || "";
-    const cookies = parseCookies(cookiesString);
+    const cookies = parseCookieString(cookiesString);
     const cookiesKeys = Object.keys(cookies);
     if (cookiesKeys.length) {
       cookiesKeys.forEach((key) => {
@@ -1882,7 +1882,7 @@ var TrieRouter = _TrieRouter;
   TrieRouter,
   UNPARSABLE_MEDIA_TYPES,
   cloneDeep,
-  createCookiesString,
+  createCookieString,
   createDebugger,
   createError,
   createRequestMock,
@@ -1895,7 +1895,7 @@ var TrieRouter = _TrieRouter;
   isResponseSent,
   isWritableStream,
   parseContentType,
-  parseCookies,
+  parseCookieString,
   parseJsonBody,
   toCamelCase
 });

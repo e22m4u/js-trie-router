@@ -1,15 +1,15 @@
 import {Errorf} from '@e22m4u/js-format';
 
 /**
- * Create cookies string.
+ * Create cookie string.
  *
  * @param {object} data
  * @returns {string}
  */
-export function createCookiesString(data) {
+export function createCookieString(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data))
     throw new Errorf(
-      'The first parameter of "createCookiesString" should be ' +
+      'The first parameter of `createCookieString` should be ' +
         'an Object, but %v was given.',
       data,
     );

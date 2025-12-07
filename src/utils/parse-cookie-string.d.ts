@@ -6,14 +6,14 @@ type ParsedCookies = {
 };
 
 /**
- * Parse cookies.
+ * Parse cookie string.
  *
  * @example
  * ```ts
- * parseCookies('pkg=math; equation=E%3Dmc%5E2');
+ * parseCookieString('pkg=math; equation=E%3Dmc%5E2');
  * // {pkg: 'math', equation: 'E=mc^2'}
  * ```
  *
  * @param input
  */
-export declare function parseCookies(input: string): ParsedCookies;
+export declare function parseCookieString(input: string): ParsedCookies;

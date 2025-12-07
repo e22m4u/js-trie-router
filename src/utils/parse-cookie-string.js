@@ -1,21 +1,21 @@
 import {Errorf} from '@e22m4u/js-format';
 
 /**
- * Parse cookies.
+ * Parse cookie string.
  *
  * @example
  * ```ts
- * parseCookies('pkg=math; equation=E%3Dmc%5E2');
+ * parseCookieString('pkg=math; equation=E%3Dmc%5E2');
  * // {pkg: 'math', equation: 'E=mc^2'}
  * ```
  *
  * @param {string} input
  * @returns {object}
  */
-export function parseCookies(input) {
+export function parseCookieString(input) {
   if (typeof input !== 'string')
     throw new Errorf(
-      'The first parameter of "parseCookies" should be a String, ' +
+      'The first parameter of `parseCookieString` must be a String, ' +
         'but %v was given.',
       input,
     );

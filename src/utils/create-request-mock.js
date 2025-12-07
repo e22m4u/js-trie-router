@@ -4,7 +4,7 @@ import {IncomingMessage} from 'http';
 import queryString from 'querystring';
 import {Errorf} from '@e22m4u/js-format';
 import {isReadableStream} from './is-readable-stream.js';
-import {createCookiesString} from './create-cookies-string.js';
+import {createCookieString} from './create-cookie-string.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 
 /**
@@ -291,7 +291,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
       obj['cookie'] += obj['cookie'] ? `; ${cookies}` : cookies;
     } else if (typeof cookies === 'object') {
       obj['cookie'] = obj['cookie'] ? obj['cookie'] : '';
-      const newCookies = createCookiesString(cookies);
+      const newCookies = createCookieString(cookies);
       obj['cookie'] += obj['cookie'] ? `; ${newCookies}` : newCookies;
     }
   }

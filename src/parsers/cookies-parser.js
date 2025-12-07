@@ -1,5 +1,5 @@
 import {DebuggableService} from '../debuggable-service.js';
-import {parseCookies, getRequestPathname} from '../utils/index.js';
+import {parseCookieString, getRequestPathname} from '../utils/index.js';
 
 /**
  * Cookies parser.
@@ -14,7 +14,7 @@ export class CookiesParser extends DebuggableService {
   parse(request) {
     const debug = this.getDebuggerFor(this.parse);
     const cookiesString = request.headers['cookie'] || '';
-    const cookies = parseCookies(cookiesString);
+    const cookies = parseCookieString(cookiesString);
     const cookiesKeys = Object.keys(cookies);
     if (cookiesKeys.length) {
       cookiesKeys.forEach(key => {

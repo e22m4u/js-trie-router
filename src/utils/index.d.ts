@@ -1,7 +1,6 @@
 export * from './clone-deep.js';
 export * from './is-promise.js';
 export * from './create-error.js';
-export * from './parse-cookies.js';
 export * from './to-camel-case.js';
 export * from './create-debugger.js';
 export * from './is-response-sent.js';
@@ -10,7 +9,8 @@ export * from './is-readable-stream.js';
 export * from './parse-content-type.js';
 export * from './is-writable-stream.js';
 export * from './fetch-request-body.js';
+export * from './parse-cookie-string.js';
 export * from './create-request-mock.js';
 export * from './create-response-mock.js';
-export * from './create-cookies-string.js';
 export * from './get-request-pathname.js';
+export * from './create-cookie-string.js';
