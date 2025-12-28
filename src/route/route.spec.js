@@ -95,12 +95,12 @@ describe('Route', function () {
         expect(route.path).to.be.eq(value);
       });
 
-      it('should set an empty string to the "path" property when the "path" option is not provided', function () {
+      it('should set the "path" property to "/" when the "path" option is not provided', function () {
         const route = new Route({
           method: HttpMethod.GET,
           handler: () => undefined,
         });
-        expect(route.path).to.be.eq('');
+        expect(route.path).to.be.eq('/');
       });
     });
 

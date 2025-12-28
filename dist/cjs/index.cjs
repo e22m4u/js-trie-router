@@ -1081,7 +1081,7 @@ var _Route = class _Route extends import_js_debug.Debuggable {
     });
     validateRouteDefinition(routeDef);
     this._method = routeDef.method.toUpperCase();
-    this._path = routeDef.path || "";
+    this._path = routeDef.path || "/";
     if (routeDef.meta !== void 0) {
       this._meta = cloneDeep(routeDef.meta);
     }
