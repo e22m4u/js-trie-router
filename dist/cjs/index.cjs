@@ -343,6 +343,9 @@ function parseCookieString(input) {
   }
   return input.split(";").filter((v) => v !== "").map((v) => v.split("=")).reduce((cookies, tuple) => {
     const key = decodeURIComponent(tuple[0]).trim();
+    if (key === "__proto__" || key === "constructor" || key === "prototype") {
+      return cookies;
+    }
     const value = tuple[1] !== void 0 ? decodeURIComponent(tuple[1]).trim() : "";
     cookies[key] = value;
     return cookies;

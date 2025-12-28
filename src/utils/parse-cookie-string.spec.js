@@ -39,4 +39,11 @@ describe('parseCookieString', function () {
     const result = parseCookieString('foo=bar; baz');
     expect(result).to.be.eql({foo: 'bar', baz: ''});
   });
+
+  it('should ignore prototype properties', function () {
+    const result = parseCookieString(
+      '__proto__=a; constructor=b; prototype=c; foo=bar',
+    );
+    expect(result).to.be.eql({foo: 'bar'});
+  });
 });

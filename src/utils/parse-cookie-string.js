@@ -26,6 +26,9 @@ export function parseCookieString(input) {
     .map(v => v.split('='))
     .reduce((cookies, tuple) => {
       const key = decodeURIComponent(tuple[0]).trim();
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+        return cookies;
+      }
       const value =
         tuple[1] !== undefined ? decodeURIComponent(tuple[1]).trim() : '';
       cookies[key] = value;
