@@ -1,4 +1,4 @@
-import {Errorf} from '@e22m4u/js-format';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from './debuggable-service.js';
 
 /**
@@ -30,7 +30,7 @@ export class RouterOptions extends DebuggableService {
    */
   setRequestBodyBytesLimit(input) {
     if (typeof input !== 'number' || input < 0) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The option "requestBodyBytesLimit" must be ' +
           'a positive Number or 0, but %v was given.',
         input,

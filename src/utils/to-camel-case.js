@@ -1,4 +1,4 @@
-import {Errorf} from '@e22m4u/js-format';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 
 /**
  * To camel case.
@@ -8,7 +8,7 @@ import {Errorf} from '@e22m4u/js-format';
  */
 export function toCamelCase(input) {
   if (typeof input !== 'string') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The first parameter of "toCamelCase" ' +
         'must be a String, but %v was given.',
       input,

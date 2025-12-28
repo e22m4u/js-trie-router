@@ -1,7 +1,7 @@
 import HttpErrors from 'http-errors';
 import {IncomingMessage} from 'http';
-import {Errorf} from '@e22m4u/js-format';
 import {createError} from './create-error.js';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 import {parseContentType} from './parse-content-type.js';
 
 /**
@@ -27,14 +27,14 @@ export const CHARACTER_ENCODING_LIST = [
  */
 export function fetchRequestBody(request, bodyBytesLimit = 0) {
   if (!(request instanceof IncomingMessage)) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The first parameter of "fetchRequestBody" must be ' +
         'an IncomingMessage instance, but %v was given.',
       request,
     );
   }
   if (typeof bodyBytesLimit !== 'number') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "bodyBytesLimit" of "fetchRequestBody" ' +
         'must be a number, but %v was given.',
       bodyBytesLimit,

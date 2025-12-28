@@ -1,9 +1,9 @@
 import {IncomingMessage} from 'http';
-import {Errorf} from '@e22m4u/js-format';
 import {isPromise} from '../utils/index.js';
 import {BodyParser} from './body-parser.js';
 import {QueryParser} from './query-parser.js';
 import {CookiesParser} from './cookies-parser.js';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
@@ -18,7 +18,7 @@ export class RequestParser extends DebuggableService {
    */
   parse(request) {
     if (!(request instanceof IncomingMessage)) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The first parameter of RequestParser.parse must be ' +
           'an instance of IncomingMessage, but %v was given.',
         request,

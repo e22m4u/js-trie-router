@@ -1,7 +1,7 @@
 import {Route} from './route.js';
-import {Errorf} from '@e22m4u/js-format';
 import {PathTrie} from '@e22m4u/js-path-trie';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from './debuggable-service.js';
 
 /**
@@ -34,7 +34,7 @@ export class RouteRegistry extends DebuggableService {
   defineRoute(routeDef) {
     const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef)) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The route definition must be an Object, but %v was given.',
         routeDef,
       );

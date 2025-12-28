@@ -2,7 +2,7 @@ import {Socket} from 'net';
 import {TLSSocket} from 'tls';
 import {IncomingMessage} from 'http';
 import queryString from 'querystring';
-import {Errorf} from '@e22m4u/js-format';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 import {isReadableStream} from './is-readable-stream.js';
 import {createCookieString} from './create-cookie-string.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
@@ -30,7 +30,7 @@ import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
  */
 export function createRequestMock(patch) {
   if ((patch != null && typeof patch !== 'object') || Array.isArray(patch)) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The first parameter of "createRequestMock" ' +
         'must be an Object, but %v was given.',
       patch,
@@ -38,28 +38,28 @@ export function createRequestMock(patch) {
   }
   patch = patch || {};
   if (patch.host != null && typeof patch.host !== 'string') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "host" of "createRequestMock" ' +
         'must be a String, but %v was given.',
       patch.host,
     );
   }
   if (patch.method != null && typeof patch.method !== 'string') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "method" of "createRequestMock" ' +
         'must be a String, but %v was given.',
       patch.method,
     );
   }
   if (patch.secure != null && typeof patch.secure !== 'boolean') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "secure" of "createRequestMock" ' +
         'must be a Boolean, but %v was given.',
       patch.secure,
     );
   }
   if (patch.path != null && typeof patch.path !== 'string') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "path" of "createRequestMock" ' +
         'must be a String, but %v was given.',
       patch.path,
@@ -71,7 +71,7 @@ export function createRequestMock(patch) {
       typeof patch.query !== 'string') ||
     Array.isArray(patch.query)
   ) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "query" of "createRequestMock" ' +
         'must be a String or Object, but %v was given.',
       patch.query,
@@ -83,7 +83,7 @@ export function createRequestMock(patch) {
       typeof patch.cookies !== 'object') ||
     Array.isArray(patch.cookies)
   ) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "cookies" of "createRequestMock" ' +
         'must be a String or Object, but %v was given.',
       patch.cookies,
@@ -93,14 +93,14 @@ export function createRequestMock(patch) {
     (patch.headers != null && typeof patch.headers !== 'object') ||
     Array.isArray(patch.headers)
   ) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "headers" of "createRequestMock" ' +
         'must be an Object, but %v was given.',
       patch.headers,
     );
   }
   if (patch.stream != null && !isReadableStream(patch.stream)) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "stream" of "createRequestMock" ' +
         'must be a Stream, but %v was given.',
       patch.stream,
@@ -108,14 +108,14 @@ export function createRequestMock(patch) {
   }
   if (patch.encoding != null) {
     if (typeof patch.encoding !== 'string') {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "encoding" of "createRequestMock" ' +
           'must be a String, but %v was given.',
         patch.encoding,
       );
     }
     if (!CHARACTER_ENCODING_LIST.includes(patch.encoding)) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'Character encoding %v is not supported.',
         patch.encoding,
       );
@@ -125,19 +125,19 @@ export function createRequestMock(patch) {
   // проверка на несовместимые опции
   if (patch.stream) {
     if (patch.secure != null) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The "createRequestMock" does not allow specifying the ' +
           '"stream" and "secure" options simultaneously.',
       );
     }
     if (patch.body != null) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The "createRequestMock" does not allow specifying the ' +
           '"stream" and "body" options simultaneously.',
       );
     }
     if (patch.encoding != null) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The "createRequestMock" does not allow specifying the ' +
           '"stream" and "encoding" options simultaneously.',
       );
@@ -172,7 +172,7 @@ export function createRequestMock(patch) {
  */
 function createRequestStream(secure, body, encoding) {
   if (encoding != null && typeof encoding !== 'string') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "encoding" of "createRequestStream" ' +
         'must be a String, but %v was given.',
       encoding,
@@ -212,7 +212,7 @@ function createRequestStream(secure, body, encoding) {
  */
 function createRequestUrl(path, query) {
   if (typeof path !== 'string') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "path" of "createRequestUrl" ' +
         'must be a String, but %v was given.',
       path,
@@ -222,7 +222,7 @@ function createRequestUrl(path, query) {
     (query != null && typeof query !== 'string' && typeof query !== 'object') ||
     Array.isArray(query)
   ) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "query" of "createRequestUrl" ' +
         'must be a String or Object, but %v was given.',
       query,
@@ -253,7 +253,7 @@ function createRequestUrl(path, query) {
  */
 function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (host != null && typeof host !== 'string') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "host" of "createRequestHeaders" ' +
         'a non-empty String, but %v was given.',
       host,
@@ -261,7 +261,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   }
   host = host || 'localhost';
   if (secure != null && typeof secure !== 'boolean') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "secure" of "createRequestHeaders" ' +
         'must be a String, but %v was given.',
       secure,
@@ -274,7 +274,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
       typeof cookies !== 'string') ||
     Array.isArray(cookies)
   ) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "cookies" of "createRequestHeaders" ' +
         'must be a String or Object, but %v was given.',
       cookies,
@@ -284,7 +284,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
     (headers != null && typeof headers !== 'object') ||
     Array.isArray(headers)
   ) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "headers" of "createRequestHeaders" ' +
         'must be an Object, but %v was given.',
       headers,
@@ -292,7 +292,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   }
   headers = headers || {};
   if (encoding != null && typeof encoding !== 'string') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The parameter "encoding" of "createRequestHeaders" ' +
         'must be a String, but %v was given.',
       encoding,

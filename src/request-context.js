@@ -1,5 +1,5 @@
 import {Route} from './route.js';
-import {Errorf} from '@e22m4u/js-format';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 import {ServiceContainer, isServiceContainer} from '@e22m4u/js-service';
 
 import {
@@ -176,7 +176,7 @@ export class RequestContext {
    */
   constructor(container, request, response, route) {
     if (!isServiceContainer(container)) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "container" of RequestContext.constructor ' +
           'must be an instance of ServiceContainer, but %v was given.',
         container,
@@ -189,7 +189,7 @@ export class RequestContext {
       Array.isArray(request) ||
       !isReadableStream(request)
     ) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "request" of RequestContext.constructor ' +
           'must be an instance of IncomingMessage, but %v was given.',
         request,
@@ -202,7 +202,7 @@ export class RequestContext {
       Array.isArray(response) ||
       !isWritableStream(response)
     ) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "response" of RequestContext.constructor ' +
           'must be an instance of ServerResponse, but %v was given.',
         response,
@@ -210,7 +210,7 @@ export class RequestContext {
     }
     this._response = response;
     if (!(route instanceof Route)) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "route" of RequestContext.constructor ' +
           'must be an instance of Route, but %v was given.',
         route,

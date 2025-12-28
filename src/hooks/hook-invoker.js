@@ -1,5 +1,5 @@
 import {Route} from '../route.js';
-import {Errorf} from '@e22m4u/js-format';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from '../debuggable-service.js';
 import {isPromise, isResponseSent} from '../utils/index.js';
 import {HookRegistry, RouterHookType} from './hook-registry.js';
@@ -19,7 +19,7 @@ export class HookInvoker extends DebuggableService {
    */
   invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
     if (!route || !(route instanceof Route)) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "route" of ' +
           'the HookInvoker.invokeAndContinueUntilValueReceived ' +
           'must be a Route instance, but %v was given.',
@@ -27,7 +27,7 @@ export class HookInvoker extends DebuggableService {
       );
     }
     if (!hookType || typeof hookType !== 'string') {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "hookType" of ' +
           'the HookInvoker.invokeAndContinueUntilValueReceived ' +
           'must be a non-empty String, but %v was given.',
@@ -35,7 +35,10 @@ export class HookInvoker extends DebuggableService {
       );
     }
     if (!Object.values(RouterHookType).includes(hookType)) {
-      throw new Errorf('The hook type %v is not supported.', hookType);
+      throw new InvalidArgumentError(
+        'The hook type %v is not supported.',
+        hookType,
+      );
     }
     if (
       !response ||
@@ -43,7 +46,7 @@ export class HookInvoker extends DebuggableService {
       Array.isArray(response) ||
       typeof response.headersSent !== 'boolean'
     ) {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "response" of ' +
           'the HookInvoker.invokeAndContinueUntilValueReceived ' +
           'must be a ServerResponse instance, but %v was given.',

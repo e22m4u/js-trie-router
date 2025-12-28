@@ -1,4 +1,4 @@
-import {Errorf} from '@e22m4u/js-format';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 
 /**
  * Is response sent.
@@ -13,7 +13,7 @@ export function isResponseSent(response) {
     Array.isArray(response) ||
     typeof response.headersSent !== 'boolean'
   ) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The first parameter of "isResponseSent" must be ' +
         'an instance of ServerResponse, but %v was given.',
       response,

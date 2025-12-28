@@ -1,4 +1,4 @@
-import {Errorf} from '@e22m4u/js-format';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 
 /**
  * Hook type.
@@ -34,13 +34,19 @@ export class HookRegistry {
    */
   addHook(type, hook) {
     if (!type || typeof type !== 'string') {
-      throw new Errorf('The hook type is required, but %v was given.', type);
+      throw new InvalidArgumentError(
+        'The hook type is required, but %v was given.',
+        type,
+      );
     }
     if (!Object.values(RouterHookType).includes(type)) {
-      throw new Errorf('The hook type %v is not supported.', type);
+      throw new InvalidArgumentError(
+        'The hook type %v is not supported.',
+        type,
+      );
     }
     if (!hook || typeof hook !== 'function') {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The hook %v must be a Function, but %v was given.',
         type,
         hook,
@@ -61,13 +67,19 @@ export class HookRegistry {
    */
   hasHook(type, hook) {
     if (!type || typeof type !== 'string') {
-      throw new Errorf('The hook type is required, but %v was given.', type);
+      throw new InvalidArgumentError(
+        'The hook type is required, but %v was given.',
+        type,
+      );
     }
     if (!Object.values(RouterHookType).includes(type)) {
-      throw new Errorf('The hook type %v is not supported.', type);
+      throw new InvalidArgumentError(
+        'The hook type %v is not supported.',
+        type,
+      );
     }
     if (!hook || typeof hook !== 'function') {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The hook %v must be a Function, but %v was given.',
         type,
         hook,
@@ -85,10 +97,16 @@ export class HookRegistry {
    */
   getHooks(type) {
     if (!type || typeof type !== 'string') {
-      throw new Errorf('The hook type is required, but %v was given.', type);
+      throw new InvalidArgumentError(
+        'The hook type is required, but %v was given.',
+        type,
+      );
     }
     if (!Object.values(RouterHookType).includes(type)) {
-      throw new Errorf('The hook type %v is not supported.', type);
+      throw new InvalidArgumentError(
+        'The hook type %v is not supported.',
+        type,
+      );
     }
     return this._hooks.get(type) || [];
   }

@@ -1,4 +1,4 @@
-import {Errorf} from '@e22m4u/js-format';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 
 /**
  * Parse content type.
@@ -12,7 +12,7 @@ import {Errorf} from '@e22m4u/js-format';
  */
 export function parseContentType(input) {
   if (typeof input !== 'string') {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The first parameter of `parseContentType` ' +
         'must be a String, but %v was given.',
       input,

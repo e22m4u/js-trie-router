@@ -1,6 +1,6 @@
 import HttpErrors from 'http-errors';
-import {Errorf} from '@e22m4u/js-format';
 import {RouterOptions} from '../router-options.js';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from '../debuggable-service.js';
 
 import {
@@ -46,14 +46,14 @@ export class BodyParser extends DebuggableService {
    */
   defineParser(mediaType, parser) {
     if (!mediaType || typeof mediaType !== 'string') {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "mediaType" of BodyParser.defineParser ' +
           'must be a non-empty String, but %v was given.',
         mediaType,
       );
     }
     if (!parser || typeof parser !== 'function') {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "parser" of BodyParser.defineParser ' +
           'must be a Function, but %v was given.',
         parser,
@@ -71,7 +71,7 @@ export class BodyParser extends DebuggableService {
    */
   hasParser(mediaType) {
     if (!mediaType || typeof mediaType !== 'string') {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "mediaType" of BodyParser.hasParser ' +
           'must be a non-empty String, but %v was given.',
         mediaType,
@@ -88,7 +88,7 @@ export class BodyParser extends DebuggableService {
    */
   deleteParser(mediaType) {
     if (!mediaType || typeof mediaType !== 'string') {
-      throw new Errorf(
+      throw new InvalidArgumentError(
         'The parameter "mediaType" of BodyParser.deleteParser ' +
           'must be a non-empty String, but %v was given.',
         mediaType,
@@ -96,7 +96,10 @@ export class BodyParser extends DebuggableService {
     }
     const parser = this._parsers[mediaType];
     if (!parser) {
-      throw new Errorf('The parser of %v is not found.', mediaType);
+      throw new InvalidArgumentError(
+        'The parser of %v is not found.',
+        mediaType,
+      );
     }
     delete this._parsers[mediaType];
     return this;

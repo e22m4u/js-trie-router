@@ -1,4 +1,4 @@
-import {Errorf} from '@e22m4u/js-format';
+import {InvalidArgumentError} from '@e22m4u/js-format';
 
 /**
  * Get request pathname.
@@ -13,7 +13,7 @@ export function getRequestPathname(request) {
     Array.isArray(request) ||
     typeof request.url !== 'string'
   ) {
-    throw new Errorf(
+    throw new InvalidArgumentError(
       'The first parameter of "getRequestPathname" must be ' +
         'an instance of IncomingMessage, but %v was given.',
       request,
