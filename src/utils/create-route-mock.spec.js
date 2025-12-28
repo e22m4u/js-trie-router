@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {HttpMethod, Route} from '../route.js';
+import {HttpMethod, Route} from '../route/index.js';
 import {createRouteMock} from './create-route-mock.js';
 
 describe('createRouteMock', function () {

@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
 import {HookInvoker} from './hook-invoker.js';
-import {Route, HttpMethod} from '../route.js';
+import {Route, HttpMethod} from '../route/index.js';
 import {createResponseMock} from '../utils/index.js';
 import {HookRegistry, RouterHookType} from './hook-registry.js';
 

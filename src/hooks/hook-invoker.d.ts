@@ -1,5 +1,5 @@
-import {Route} from '../route.js';
 import {ServerResponse} from 'http';
+import {Route} from '../route/index.js';
 import {ValueOrPromise} from '../types.js';
 import {RouterHookType} from './hook-registry.js';
 import {DebuggableService} from '../debuggable-service.js';

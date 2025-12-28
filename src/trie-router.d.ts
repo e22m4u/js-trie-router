@@ -1,6 +1,6 @@
-import {Route} from './route.js';
 import {RequestListener} from 'http';
-import {RouteDefinition} from './route.js';
+import {Route} from './route/index.js';
+import {RouteDefinition} from './route/index.js';
 import {DebuggableService} from './debuggable-service.js';
 
 import {

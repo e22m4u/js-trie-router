@@ -1,21 +1,17 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
 import {Route, HttpMethod} from './route.js';
-import {RouterHookType} from './hooks/index.js';
-import {RequestContext} from './request-context.js';
+import {RouterHookType} from '../hooks/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {createRequestMock, createResponseMock} from './utils/index.js';
+import {RequestContext} from '../request-context.js';
+import {createRequestMock, createResponseMock} from '../utils/index.js';
 
 describe('Route', function () {
   describe('constructor', function () {
-    it('requires the first parameter to be an Object', function () {
+    it('requires the "routeDef" parameter to be an Object', function () {
       const throwable = v => () => new Route(v);
       const error = v =>
-        format(
-          'The first parameter of Route.constructor ' +
-            'must be an Object, but %s was given.',
-          v,
-        );
+        format('Route definition must be an Object, but %s was given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -43,8 +39,7 @@ describe('Route', function () {
           });
         const error = v =>
           format(
-            'The option "method" of the Route must be ' +
-              'a non-empty String, but %s was given.',
+            'Option "method" must be a non-empty String, but %s was given.',
             v,
           );
         expect(throwable('')).to.throw(error('""'));
@@ -71,7 +66,7 @@ describe('Route', function () {
     });
 
     describe('the "path" option', function () {
-      it('requires the "path" option to be a non-empty String', function () {
+      it('requires the "path" option to be a String', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
@@ -79,11 +74,7 @@ describe('Route', function () {
             handler: () => undefined,
           });
         const error = v =>
-          format(
-            'The option "path" of the Route must be ' +
-              'a String, but %s was given.',
-            v,
-          );
+          format('Option "path" must be a String, but %s was given.', v);
         expect(throwable(10)).to.throw(error('10'));
         expect(throwable(0)).to.throw(error('0'));
         expect(throwable(true)).to.throw(error('true'));
@@ -118,20 +109,18 @@ describe('Route', function () {
             meta: v,
           });
         const error = v =>
-          format(
-            'The option "meta" of the Route must be ' +
-              'a plain Object, but %s was given.',
-            v,
-          );
+          format('Option "meta" must be an Object, but %s was given.', v);
+        expect(throwable('str')).to.throw(error('"str"'));
+        expect(throwable('')).to.throw(error('""'));
         expect(throwable(10)).to.throw(error('10'));
         expect(throwable(0)).to.throw(error('0'));
         expect(throwable(true)).to.throw(error('true'));
         expect(throwable(false)).to.throw(error('false'));
         expect(throwable([])).to.throw(error('Array'));
+        expect(throwable(null)).to.throw(error('null'));
         expect(throwable(() => undefined)).to.throw(error('Function'));
         throwable({foo: 'bar'})();
         throwable({})();
-        throwable(null)();
         throwable(undefined)();
       });
 
@@ -169,16 +158,6 @@ describe('Route', function () {
         });
         expect(route.meta).to.be.eql({});
       });
-
-      it('sets an empty object to the "meta" property if the "meta" option is null', function () {
-        const route = new Route({
-          method: 'post',
-          path: '/',
-          handler: () => undefined,
-          meta: null,
-        });
-        expect(route.meta).to.be.eql({});
-      });
     });
 
     describe('the "handler" option', function () {
@@ -190,11 +169,7 @@ describe('Route', function () {
             handler: v,
           });
         const error = v =>
-          format(
-            'The option "handler" of the Route must be ' +
-              'a Function, but %s was given.',
-            v,
-          );
+          format('Option "handler" must be a Function, but %s was given.', v);
         expect(throwable('str')).to.throw(error('"str"'));
         expect(throwable('')).to.throw(error('""'));
         expect(throwable(10)).to.throw(error('10'));

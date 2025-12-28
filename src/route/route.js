@@ -1,8 +1,8 @@
 import {Debuggable} from '@e22m4u/js-debug';
-import {InvalidArgumentError} from '@e22m4u/js-format';
-import {HookRegistry, RouterHookType} from './hooks/index.js';
-import {MODULE_DEBUG_NAMESPACE} from './debuggable-service.js';
-import {cloneDeep, getRequestPathname} from './utils/index.js';
+import {HookRegistry, RouterHookType} from '../hooks/index.js';
+import {MODULE_DEBUG_NAMESPACE} from '../debuggable-service.js';
+import {cloneDeep, getRequestPathname} from '../utils/index.js';
+import {validateRouteDefinition} from './validate-route-definition.js';
 
 /**
  * @typedef {import('./request-context.js').RequestContext} RequestContext
@@ -137,44 +137,10 @@ export class Route extends Debuggable {
       noEnvironmentNamespace: true,
       noInstantiationMessage: true,
     });
-    if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef)) {
-      throw new InvalidArgumentError(
-        'The first parameter of Route.constructor ' +
-          'must be an Object, but %v was given.',
-        routeDef,
-      );
-    }
-    if (!routeDef.method || typeof routeDef.method !== 'string') {
-      throw new InvalidArgumentError(
-        'The option "method" of the Route must be ' +
-          'a non-empty String, but %v was given.',
-        routeDef.method,
-      );
-    }
+    validateRouteDefinition(routeDef);
     this._method = routeDef.method.toUpperCase();
-    if (typeof routeDef.path !== 'string') {
-      throw new InvalidArgumentError(
-        'The option "path" of the Route must be ' +
-          'a String, but %v was given.',
-        routeDef.path,
-      );
-    }
     this._path = routeDef.path;
-    if (typeof routeDef.handler !== 'function') {
-      throw new InvalidArgumentError(
-        'The option "handler" of the Route must be ' +
-          'a Function, but %v was given.',
-        routeDef.handler,
-      );
-    }
-    if (routeDef.meta != null) {
-      if (typeof routeDef.meta !== 'object' || Array.isArray(routeDef.meta)) {
-        throw new InvalidArgumentError(
-          'The option "meta" of the Route must be ' +
-            'a plain Object, but %v was given.',
-          routeDef.meta,
-        );
-      }
+    if (routeDef.meta !== undefined) {
       this._meta = cloneDeep(routeDef.meta);
     }
     this._handler = routeDef.handler;

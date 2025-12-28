@@ -65,13 +65,13 @@ __export(index_exports, {
   parseContentType: () => parseContentType,
   parseCookieString: () => parseCookieString,
   parseJsonBody: () => parseJsonBody,
-  toCamelCase: () => toCamelCase
+  toCamelCase: () => toCamelCase,
+  validateRouteDefinition: () => validateRouteDefinition
 });
 module.exports = __toCommonJS(index_exports);
 
-// src/route.js
+// src/route/route.js
 var import_js_debug = require("@e22m4u/js-debug");
-var import_js_format12 = require("@e22m4u/js-format");
 
 // src/hooks/hook-invoker.js
 var import_js_format11 = require("@e22m4u/js-format");
@@ -910,7 +910,45 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
 __name(_HookInvoker, "HookInvoker");
 var HookInvoker = _HookInvoker;
 
-// src/route.js
+// src/route/validate-route-definition.js
+var import_js_format12 = require("@e22m4u/js-format");
+function validateRouteDefinition(routeDef) {
+  if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef)) {
+    throw new import_js_format12.InvalidArgumentError(
+      "Route definition must be an Object, but %v was given.",
+      routeDef
+    );
+  }
+  if (!routeDef.method || typeof routeDef.method !== "string") {
+    throw new import_js_format12.InvalidArgumentError(
+      'Option "method" must be a non-empty String, but %v was given.',
+      routeDef.method
+    );
+  }
+  if (typeof routeDef.path !== "string") {
+    throw new import_js_format12.InvalidArgumentError(
+      'Option "path" must be a String, but %v was given.',
+      routeDef.path
+    );
+  }
+  if (typeof routeDef.handler !== "function") {
+    throw new import_js_format12.InvalidArgumentError(
+      'Option "handler" must be a Function, but %v was given.',
+      routeDef.handler
+    );
+  }
+  if (routeDef.meta !== void 0) {
+    if (!routeDef.meta || typeof routeDef.meta !== "object" || Array.isArray(routeDef.meta)) {
+      throw new import_js_format12.InvalidArgumentError(
+        'Option "meta" must be an Object, but %v was given.',
+        routeDef.meta
+      );
+    }
+  }
+}
+__name(validateRouteDefinition, "validateRouteDefinition");
+
+// src/route/route.js
 var HttpMethod = {
   GET: "GET",
   POST: "POST",
@@ -1004,39 +1042,10 @@ var _Route = class _Route extends import_js_debug.Debuggable {
       noEnvironmentNamespace: true,
       noInstantiationMessage: true
     });
-    if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef)) {
-      throw new import_js_format12.InvalidArgumentError(
-        "The first parameter of Route.constructor must be an Object, but %v was given.",
-        routeDef
-      );
-    }
-    if (!routeDef.method || typeof routeDef.method !== "string") {
-      throw new import_js_format12.InvalidArgumentError(
-        'The option "method" of the Route must be a non-empty String, but %v was given.',
-        routeDef.method
-      );
-    }
+    validateRouteDefinition(routeDef);
     this._method = routeDef.method.toUpperCase();
-    if (typeof routeDef.path !== "string") {
-      throw new import_js_format12.InvalidArgumentError(
-        'The option "path" of the Route must be a String, but %v was given.',
-        routeDef.path
-      );
-    }
     this._path = routeDef.path;
-    if (typeof routeDef.handler !== "function") {
-      throw new import_js_format12.InvalidArgumentError(
-        'The option "handler" of the Route must be a Function, but %v was given.',
-        routeDef.handler
-      );
-    }
-    if (routeDef.meta != null) {
-      if (typeof routeDef.meta !== "object" || Array.isArray(routeDef.meta)) {
-        throw new import_js_format12.InvalidArgumentError(
-          'The option "meta" of the Route must be a plain Object, but %v was given.',
-          routeDef.meta
-        );
-      }
+    if (routeDef.meta !== void 0) {
       this._meta = cloneDeep(routeDef.meta);
     }
     this._handler = routeDef.handler;
@@ -1380,7 +1389,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
   /**
    * Define route.
    *
-   * @param {import('./route.js').RouteDefinition} routeDef
+   * @param {import('./route/index.js').RouteDefinition} routeDef
    * @returns {Route}
    */
   defineRoute(routeDef) {
@@ -1548,7 +1557,7 @@ var _RequestContext = class _RequestContext {
   /**
    * Route meta.
    *
-   * @type {import('./route.js').RouteMeta}
+   * @type {import('./route/index.js').RouteMeta}
    */
   get meta() {
     return this.route.meta;
@@ -1804,7 +1813,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * ```
    *
    * @param {import('./route-registry.js').RouteDefinition} routeDef
-   * @returns {import('./route.js').Route}
+   * @returns {import('./route/index.js').Route}
    */
   defineRoute(routeDef) {
     return this.getService(RouteRegistry).defineRoute(routeDef);
@@ -1994,5 +2003,6 @@ var TrieRouter = _TrieRouter;
   parseContentType,
   parseCookieString,
   parseJsonBody,
-  toCamelCase
+  toCamelCase,
+  validateRouteDefinition
 });

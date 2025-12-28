@@ -1,4 +1,4 @@
-import {Route} from './route.js';
+import {Route} from './route/index.js';
 import {PathTrie} from '@e22m4u/js-path-trie';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {InvalidArgumentError} from '@e22m4u/js-format';
@@ -28,7 +28,7 @@ export class RouteRegistry extends DebuggableService {
   /**
    * Define route.
    *
-   * @param {import('./route.js').RouteDefinition} routeDef
+   * @param {import('./route/index.js').RouteDefinition} routeDef
    * @returns {Route}
    */
   defineRoute(routeDef) {

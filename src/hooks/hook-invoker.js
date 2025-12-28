@@ -1,4 +1,4 @@
-import {Route} from '../route.js';
+import {Route} from '../route/index.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from '../debuggable-service.js';
 import {isPromise, isResponseSent} from '../utils/index.js';

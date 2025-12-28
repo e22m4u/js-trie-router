@@ -38,7 +38,7 @@ export class TrieRouter extends DebuggableService {
    * ```
    *
    * @param {import('./route-registry.js').RouteDefinition} routeDef
-   * @returns {import('./route.js').Route}
+   * @returns {import('./route/index.js').Route}
    */
   defineRoute(routeDef) {
     return this.getService(RouteRegistry).defineRoute(routeDef);

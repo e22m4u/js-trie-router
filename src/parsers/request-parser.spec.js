@@ -1,6 +1,6 @@
 import {expect} from 'chai';
-import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';
+import {HttpMethod} from '../route/index.js';
 import {RequestParser} from './request-parser.js';
 import {createRequestMock} from '../utils/index.js';
 

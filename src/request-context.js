@@ -1,4 +1,4 @@
-import {Route} from './route.js';
+import {Route} from './route/index.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {ServiceContainer, isServiceContainer} from '@e22m4u/js-service';
 
@@ -121,7 +121,7 @@ export class RequestContext {
   /**
    * Route meta.
    *
-   * @type {import('./route.js').RouteMeta}
+   * @type {import('./route/index.js').RouteMeta}
    */
   get meta() {
     return this.route.meta;

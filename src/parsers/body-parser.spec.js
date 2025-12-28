@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import HttpErrors from 'http-errors';
-import {HttpMethod} from '../route.js';
 import {format} from '@e22m4u/js-format';
+import {HttpMethod} from '../route/index.js';
 import {RouterOptions} from '../router-options.js';
 import {createRequestMock} from '../utils/index.js';
 

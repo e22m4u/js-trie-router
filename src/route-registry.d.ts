@@ -1,6 +1,6 @@
-import {Route} from './route.js';
 import {IncomingMessage} from 'http';
-import {RouteDefinition} from './route.js';
+import {Route} from './route/index.js';
+import {RouteDefinition} from './route/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {DebuggableService} from './debuggable-service.js';
 

@@ -1,5 +1,5 @@
-import {Route, HttpMethod} from '../route.js';
-import type {RouteHandler} from '../route.js';
+import {Route, HttpMethod} from '../route/index.js';
+import type {RouteHandler} from '../route/index.js';
 
 /**
  * Route mock options.

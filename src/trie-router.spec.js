@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {TrieRouter} from './trie-router.js';
-import {Route, HttpMethod} from './route.js';
+import {Route, HttpMethod} from './route/index.js';
 import {RequestContext} from './request-context.js';
 import {ServerResponse, IncomingMessage} from 'http';
 import {DataSender, ErrorSender} from './senders/index.js';

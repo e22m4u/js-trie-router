@@ -1,6 +1,6 @@
-import {ValueOrPromise} from './types.js';
-import {HookRegistry} from './hooks/index.js';
-import {RequestContext} from './request-context.js';
+import {ValueOrPromise} from '../types.js';
+import {HookRegistry} from '../hooks/index.js';
+import {RequestContext} from '../request-context.js';
 
 /**
  * Http method.
