@@ -48,7 +48,7 @@ export type RouteMeta = {
  */
 export type RouteDefinition = {
   method: string;
-  path: string;
+  path?: string;
   handler: RouteHandler;
   preHandler?: RoutePreHandler | RoutePreHandler[];
   postHandler?: RoutePostHandler | RoutePostHandler[];

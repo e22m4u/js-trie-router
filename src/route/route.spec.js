@@ -8,7 +8,7 @@ import {createRequestMock, createResponseMock} from '../utils/index.js';
 
 describe('Route', function () {
   describe('constructor', function () {
-    it('requires the "routeDef" parameter to be an Object', function () {
+    it('should require the "routeDef" parameter to be an Object', function () {
       const throwable = v => () => new Route(v);
       const error = v =>
         format('Route definition must be an Object, but %s was given.', v);
@@ -24,17 +24,15 @@ describe('Route', function () {
       expect(throwable(() => undefined)).to.throw(error('Function'));
       throwable({
         method: HttpMethod.GET,
-        path: '/',
         handler: () => undefined,
       })();
     });
 
     describe('the "method" option', function () {
-      it('requires the "method" option to be a non-empty String', function () {
+      it('should require the "method" option to be a non-empty String', function () {
         const throwable = v => () =>
           new Route({
             method: v,
-            path: '/',
             handler: () => undefined,
           });
         const error = v =>
@@ -55,10 +53,9 @@ describe('Route', function () {
         throwable(HttpMethod.GET)();
       });
 
-      it('sets the "method" option in upper case to the "method" property', function () {
+      it('should set the "method" option to the "method" property in upper case', function () {
         const route = new Route({
           method: 'post',
-          path: '/',
           handler: () => undefined,
         });
         expect(route.method).to.be.eq('POST');
@@ -66,7 +63,7 @@ describe('Route', function () {
     });
 
     describe('the "path" option', function () {
-      it('requires the "path" option to be a String', function () {
+      it('should require the "path" option to be a String', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
@@ -82,13 +79,13 @@ describe('Route', function () {
         expect(throwable(null)).to.throw(error('null'));
         expect(throwable({})).to.throw(error('Object'));
         expect(throwable([])).to.throw(error('Array'));
-        expect(throwable(undefined)).to.throw(error('undefined'));
         expect(throwable(() => undefined)).to.throw(error('Function'));
         throwable('str')();
         throwable('')();
+        throwable(undefined)();
       });
 
-      it('sets the "path" option to the "path" property', function () {
+      it('should set the "path" option to the "path" property', function () {
         const value = '/myPath';
         const route = new Route({
           method: HttpMethod.GET,
@@ -97,14 +94,203 @@ describe('Route', function () {
         });
         expect(route.path).to.be.eq(value);
       });
+
+      it('should set an empty string to the "path" property when the "path" option is not provided', function () {
+        const route = new Route({
+          method: HttpMethod.GET,
+          handler: () => undefined,
+        });
+        expect(route.path).to.be.eq('');
+      });
     });
 
-    describe('the "meta" option', function () {
-      it('requires the "meta" option to be a plain Object', function () {
+    describe('the "handler" option', function () {
+      it('should require the "handler" option to be a Function', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
-            path: 'path',
+            handler: v,
+          });
+        const error = v =>
+          format('Option "handler" must be a Function, but %s was given.', v);
+        expect(throwable('str')).to.throw(error('"str"'));
+        expect(throwable('')).to.throw(error('""'));
+        expect(throwable(10)).to.throw(error('10'));
+        expect(throwable(0)).to.throw(error('0'));
+        expect(throwable(true)).to.throw(error('true'));
+        expect(throwable(false)).to.throw(error('false'));
+        expect(throwable(null)).to.throw(error('null'));
+        expect(throwable({})).to.throw(error('Object'));
+        expect(throwable([])).to.throw(error('Array'));
+        expect(throwable(undefined)).to.throw(error('undefined'));
+        throwable(() => undefined)();
+      });
+
+      it('should set the "handler" option to the "handler" property', function () {
+        const value = () => undefined;
+        const route = new Route({
+          method: HttpMethod.GET,
+          handler: value,
+        });
+        expect(route.handler).to.be.eq(value);
+      });
+    });
+
+    describe('the "preHandler" option', function () {
+      it('should require the "preHandler" option to be a Function or an Array of Function', function () {
+        const throwable = v => () =>
+          new Route({
+            method: HttpMethod.GET,
+            preHandler: v,
+            handler: () => undefined,
+          });
+        const error = v =>
+          format(
+            'Option "preHandler" must be a Function ' +
+              'or an Array, but %s was given.',
+            v,
+          );
+        expect(throwable('str')).to.throw(error('"str"'));
+        expect(throwable('')).to.throw(error('""'));
+        expect(throwable(10)).to.throw(error('10'));
+        expect(throwable(0)).to.throw(error('0'));
+        expect(throwable(true)).to.throw(error('true'));
+        expect(throwable(false)).to.throw(error('false'));
+        expect(throwable({})).to.throw(error('Object'));
+        expect(throwable(null)).to.throw(error('null'));
+        throwable([])();
+        throwable(() => undefined)();
+        throwable(undefined)();
+      });
+
+      it('should require an array of the "preHandler" option to contain a Function', function () {
+        const throwable = v => () =>
+          new Route({
+            method: HttpMethod.GET,
+            preHandler: [v],
+            handler: () => undefined,
+          });
+        const error = v =>
+          format('Route pre-handler must be a Function, but %s was given.', v);
+        expect(throwable('str')).to.throw(error('"str"'));
+        expect(throwable('')).to.throw(error('""'));
+        expect(throwable(10)).to.throw(error('10'));
+        expect(throwable(0)).to.throw(error('0'));
+        expect(throwable(true)).to.throw(error('true'));
+        expect(throwable(false)).to.throw(error('false'));
+        expect(throwable({})).to.throw(error('Object'));
+        expect(throwable([])).to.throw(error('Array'));
+        expect(throwable(null)).to.throw(error('null'));
+        expect(throwable(undefined)).to.throw(error('undefined'));
+        throwable(() => undefined)();
+      });
+
+      it('should add a Function to "preHandler" hooks', function () {
+        const value = () => undefined;
+        const route = new Route({
+          method: HttpMethod.GET,
+          preHandler: value,
+          handler: () => undefined,
+        });
+        expect(route.hookRegistry.hasHook(RouterHookType.PRE_HANDLER, value)).to
+          .be.true;
+      });
+
+      it('should add a Function Array to "preHandler" hooks', function () {
+        const value = [() => undefined, () => undefined];
+        const route = new Route({
+          method: HttpMethod.GET,
+          preHandler: value,
+          handler: () => undefined,
+        });
+        expect(route.hookRegistry.hasHook(RouterHookType.PRE_HANDLER, value[0]))
+          .to.be.true;
+        expect(route.hookRegistry.hasHook(RouterHookType.PRE_HANDLER, value[1]))
+          .to.be.true;
+      });
+    });
+
+    describe('the "postHandler" option', function () {
+      it('should require the "postHandler" option to be a Function or an Array of Function', function () {
+        const throwable = v => () =>
+          new Route({
+            method: HttpMethod.GET,
+            postHandler: v,
+            handler: () => undefined,
+          });
+        const error = v =>
+          format(
+            'Option "postHandler" must be a Function ' +
+              'or an Array, but %s was given.',
+            v,
+          );
+        expect(throwable('str')).to.throw(error('"str"'));
+        expect(throwable('')).to.throw(error('""'));
+        expect(throwable(10)).to.throw(error('10'));
+        expect(throwable(0)).to.throw(error('0'));
+        expect(throwable(true)).to.throw(error('true'));
+        expect(throwable(false)).to.throw(error('false'));
+        expect(throwable({})).to.throw(error('Object'));
+        expect(throwable(null)).to.throw(error('null'));
+        throwable([])();
+        throwable(() => undefined)();
+        throwable(undefined)();
+      });
+
+      it('should require an array of the "postHandler" option to contain a Function', function () {
+        const throwable = v => () =>
+          new Route({
+            method: HttpMethod.GET,
+            postHandler: [v],
+            handler: () => undefined,
+          });
+        const error = v =>
+          format('Route post-handler must be a Function, but %s was given.', v);
+        expect(throwable('str')).to.throw(error('"str"'));
+        expect(throwable('')).to.throw(error('""'));
+        expect(throwable(10)).to.throw(error('10'));
+        expect(throwable(0)).to.throw(error('0'));
+        expect(throwable(true)).to.throw(error('true'));
+        expect(throwable(false)).to.throw(error('false'));
+        expect(throwable({})).to.throw(error('Object'));
+        expect(throwable([])).to.throw(error('Array'));
+        expect(throwable(null)).to.throw(error('null'));
+        expect(throwable(undefined)).to.throw(error('undefined'));
+        throwable(() => undefined)();
+      });
+
+      it('should add a Function to "postHandler" hooks', function () {
+        const value = () => undefined;
+        const route = new Route({
+          method: HttpMethod.GET,
+          handler: () => undefined,
+          postHandler: value,
+        });
+        expect(route.hookRegistry.hasHook(RouterHookType.POST_HANDLER, value))
+          .to.be.true;
+      });
+
+      it('should add a Function Array to "postHandler" hooks', function () {
+        const value = [() => undefined, () => undefined];
+        const route = new Route({
+          method: HttpMethod.GET,
+          handler: () => undefined,
+          postHandler: value,
+        });
+        expect(
+          route.hookRegistry.hasHook(RouterHookType.POST_HANDLER, value[0]),
+        ).to.be.true;
+        expect(
+          route.hookRegistry.hasHook(RouterHookType.POST_HANDLER, value[1]),
+        ).to.be.true;
+      });
+    });
+
+    describe('the "meta" option', function () {
+      it('should require the "meta" option to be a plain Object', function () {
+        const throwable = v => () =>
+          new Route({
+            method: HttpMethod.GET,
             handler: () => undefined,
             meta: v,
           });
@@ -124,11 +310,10 @@ describe('Route', function () {
         throwable(undefined)();
       });
 
-      it('sets the "meta" option to the "meta" property as a deep copy', function () {
+      it('should set the "meta" option to the "meta" property as a deep copy', function () {
         const metaData = {foo: {bar: {baz: 'qux'}}};
         const route = new Route({
           method: 'post',
-          path: '/',
           handler: () => undefined,
           meta: metaData,
         });
@@ -140,212 +325,29 @@ describe('Route', function () {
         expect(route.meta.foo.bar).to.be.eql(metaData.foo.bar);
       });
 
-      it('sets an empty object to the "meta" property if the "meta" option is not provided', function () {
+      it('should set an empty object to the "meta" property if the "meta" option is not provided', function () {
         const route = new Route({
           method: 'post',
-          path: '/',
           handler: () => undefined,
         });
         expect(route.meta).to.be.eql({});
       });
 
-      it('sets an empty object to the "meta" property if the "meta" option is undefined', function () {
+      it('should set an empty object to the "meta" property if the "meta" option is undefined', function () {
         const route = new Route({
           method: 'post',
-          path: '/',
           handler: () => undefined,
           meta: undefined,
         });
         expect(route.meta).to.be.eql({});
       });
     });
-
-    describe('the "handler" option', function () {
-      it('requires the "handler" option to be a non-empty String', function () {
-        const throwable = v => () =>
-          new Route({
-            method: HttpMethod.GET,
-            path: '/',
-            handler: v,
-          });
-        const error = v =>
-          format('Option "handler" must be a Function, but %s was given.', v);
-        expect(throwable('str')).to.throw(error('"str"'));
-        expect(throwable('')).to.throw(error('""'));
-        expect(throwable(10)).to.throw(error('10'));
-        expect(throwable(0)).to.throw(error('0'));
-        expect(throwable(true)).to.throw(error('true'));
-        expect(throwable(false)).to.throw(error('false'));
-        expect(throwable(null)).to.throw(error('null'));
-        expect(throwable({})).to.throw(error('Object'));
-        expect(throwable([])).to.throw(error('Array'));
-        expect(throwable(undefined)).to.throw(error('undefined'));
-        throwable(() => undefined)();
-      });
-
-      it('sets the "handler" option to the "handler" property', function () {
-        const value = () => undefined;
-        const route = new Route({
-          method: HttpMethod.GET,
-          path: '/',
-          handler: value,
-        });
-        expect(route.handler).to.be.eq(value);
-      });
-    });
-
-    describe('the "preHandler" option', function () {
-      it('requires the "preHandler" option to be a Function or an Array of Function', function () {
-        const throwable1 = v => () =>
-          new Route({
-            method: HttpMethod.GET,
-            path: '/',
-            preHandler: v,
-            handler: () => undefined,
-          });
-        const error = v =>
-          format(
-            'The hook "preHandler" must be a Function, but %s was given.',
-            v,
-          );
-        expect(throwable1('str')).to.throw(error('"str"'));
-        expect(throwable1('')).to.throw(error('""'));
-        expect(throwable1(10)).to.throw(error('10'));
-        expect(throwable1(0)).to.throw(error('0'));
-        expect(throwable1(true)).to.throw(error('true'));
-        expect(throwable1(false)).to.throw(error('false'));
-        expect(throwable1({})).to.throw(error('Object'));
-        throwable1([])();
-        throwable1(() => undefined)();
-        throwable1(null)();
-        throwable1(undefined)();
-        const throwable2 = v => () =>
-          new Route({
-            method: HttpMethod.GET,
-            path: '/',
-            preHandler: [v],
-            handler: () => undefined,
-          });
-        expect(throwable2('str')).to.throw(error('"str"'));
-        expect(throwable2('')).to.throw(error('""'));
-        expect(throwable2(10)).to.throw(error('10'));
-        expect(throwable2(0)).to.throw(error('0'));
-        expect(throwable2(true)).to.throw(error('true'));
-        expect(throwable2(false)).to.throw(error('false'));
-        expect(throwable2({})).to.throw(error('Object'));
-        expect(throwable2(null)).to.throw(error('null'));
-        expect(throwable2([])).to.throw(error('Array'));
-        expect(throwable2(undefined)).to.throw(error('undefined'));
-        throwable2(() => undefined)();
-      });
-
-      it('adds a Function to "preHandler" hooks', function () {
-        const value = () => undefined;
-        const route = new Route({
-          method: HttpMethod.GET,
-          path: '/',
-          preHandler: value,
-          handler: () => undefined,
-        });
-        expect(route.hookRegistry.hasHook(RouterHookType.PRE_HANDLER, value)).to
-          .be.true;
-      });
-
-      it('adds a Function Array to "preHandler" hooks', function () {
-        const value = [() => undefined, () => undefined];
-        const route = new Route({
-          method: HttpMethod.GET,
-          path: '/',
-          preHandler: value,
-          handler: () => undefined,
-        });
-        expect(route.hookRegistry.hasHook(RouterHookType.PRE_HANDLER, value[0]))
-          .to.be.true;
-        expect(route.hookRegistry.hasHook(RouterHookType.PRE_HANDLER, value[1]))
-          .to.be.true;
-      });
-    });
-
-    describe('the "postHandler" option', function () {
-      it('requires the "postHandler" option to be a Function or an Array of Function', function () {
-        const throwable1 = v => () =>
-          new Route({
-            method: HttpMethod.GET,
-            path: '/',
-            handler: () => undefined,
-            postHandler: v,
-          });
-        const error = v =>
-          format(
-            'The hook "postHandler" must be a Function, but %s was given.',
-            v,
-          );
-        expect(throwable1('str')).to.throw(error('"str"'));
-        expect(throwable1('')).to.throw(error('""'));
-        expect(throwable1(10)).to.throw(error('10'));
-        expect(throwable1(0)).to.throw(error('0'));
-        expect(throwable1(true)).to.throw(error('true'));
-        expect(throwable1(false)).to.throw(error('false'));
-        expect(throwable1({})).to.throw(error('Object'));
-        throwable1([])();
-        throwable1(() => undefined)();
-        throwable1(null)();
-        throwable1(undefined)();
-        const throwable2 = v => () =>
-          new Route({
-            method: HttpMethod.GET,
-            path: '/',
-            handler: () => undefined,
-            postHandler: [v],
-          });
-        expect(throwable2('str')).to.throw(error('"str"'));
-        expect(throwable2('')).to.throw(error('""'));
-        expect(throwable2(10)).to.throw(error('10'));
-        expect(throwable2(0)).to.throw(error('0'));
-        expect(throwable2(true)).to.throw(error('true'));
-        expect(throwable2(false)).to.throw(error('false'));
-        expect(throwable2({})).to.throw(error('Object'));
-        expect(throwable2(null)).to.throw(error('null'));
-        expect(throwable2([])).to.throw(error('Array'));
-        expect(throwable2(undefined)).to.throw(error('undefined'));
-        throwable2(() => undefined)();
-      });
-
-      it('adds a Function to "postHandler" hooks', function () {
-        const value = () => undefined;
-        const route = new Route({
-          method: HttpMethod.GET,
-          path: '/',
-          handler: () => undefined,
-          postHandler: value,
-        });
-        expect(route.hookRegistry.hasHook(RouterHookType.POST_HANDLER, value))
-          .to.be.true;
-      });
-
-      it('adds a Function Array to "postHandler" hooks', function () {
-        const value = [() => undefined, () => undefined];
-        const route = new Route({
-          method: HttpMethod.GET,
-          path: '/',
-          handler: () => undefined,
-          postHandler: value,
-        });
-        expect(
-          route.hookRegistry.hasHook(RouterHookType.POST_HANDLER, value[0]),
-        ).to.be.true;
-        expect(
-          route.hookRegistry.hasHook(RouterHookType.POST_HANDLER, value[1]),
-        ).to.be.true;
-      });
-    });
   });
 
   describe('handle', function () {
-    it('invokes the handler with the given RequestContext and return its result', function () {
+    it('should invoke the handler with the given RequestContext and return its result', function () {
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
         handler(ctx) {
           expect(ctx).to.be.instanceof(RequestContext);
           return 'OK';

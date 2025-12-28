@@ -11,7 +11,7 @@ import {validateRouteDefinition} from './validate-route-definition.js';
  * @typedef {(ctx: RequestContext, data: *) => *} RoutePostHandler
  * @typedef {{
  *   method: string,
- *   path: string,
+ *   path?: string,
  *   handler: RouteHandler,
  *   preHandler?: RoutePreHandler|(RoutePreHandler[]),
  *   postHandler?: RoutePostHandler|(RoutePostHandler[]),
@@ -139,12 +139,12 @@ export class Route extends Debuggable {
     });
     validateRouteDefinition(routeDef);
     this._method = routeDef.method.toUpperCase();
-    this._path = routeDef.path;
+    this._path = routeDef.path || '';
     if (routeDef.meta !== undefined) {
       this._meta = cloneDeep(routeDef.meta);
     }
     this._handler = routeDef.handler;
-    if (routeDef.preHandler != null) {
+    if (routeDef.preHandler !== undefined) {
       const preHandlerHooks = Array.isArray(routeDef.preHandler)
         ? routeDef.preHandler
         : [routeDef.preHandler];
@@ -152,7 +152,7 @@ export class Route extends Debuggable {
         this._hookRegistry.addHook(RouterHookType.PRE_HANDLER, hook);
       });
     }
-    if (routeDef.postHandler != null) {
+    if (routeDef.postHandler !== undefined) {
       const postHandlerHooks = Array.isArray(routeDef.postHandler)
         ? routeDef.postHandler
         : [routeDef.postHandler];

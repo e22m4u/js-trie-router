@@ -925,7 +925,7 @@ function validateRouteDefinition(routeDef) {
       routeDef.method
     );
   }
-  if (typeof routeDef.path !== "string") {
+  if (routeDef.path !== void 0 && typeof routeDef.path !== "string") {
     throw new import_js_format12.InvalidArgumentError(
       'Option "path" must be a String, but %v was given.',
       routeDef.path
@@ -936,6 +936,40 @@ function validateRouteDefinition(routeDef) {
       'Option "handler" must be a Function, but %v was given.',
       routeDef.handler
     );
+  }
+  if (routeDef.preHandler !== void 0) {
+    if (Array.isArray(routeDef.preHandler)) {
+      routeDef.preHandler.forEach((preHandler) => {
+        if (typeof preHandler !== "function") {
+          throw new import_js_format12.InvalidArgumentError(
+            "Route pre-handler must be a Function, but %v was given.",
+            preHandler
+          );
+        }
+      });
+    } else if (typeof routeDef.preHandler !== "function") {
+      throw new import_js_format12.InvalidArgumentError(
+        'Option "preHandler" must be a Function or an Array, but %v was given.',
+        routeDef.preHandler
+      );
+    }
+  }
+  if (routeDef.postHandler !== void 0) {
+    if (Array.isArray(routeDef.postHandler)) {
+      routeDef.postHandler.forEach((postHandler) => {
+        if (typeof postHandler !== "function") {
+          throw new import_js_format12.InvalidArgumentError(
+            "Route post-handler must be a Function, but %v was given.",
+            postHandler
+          );
+        }
+      });
+    } else if (typeof routeDef.postHandler !== "function") {
+      throw new import_js_format12.InvalidArgumentError(
+        'Option "postHandler" must be a Function or an Array, but %v was given.',
+        routeDef.postHandler
+      );
+    }
   }
   if (routeDef.meta !== void 0) {
     if (!routeDef.meta || typeof routeDef.meta !== "object" || Array.isArray(routeDef.meta)) {
@@ -1044,18 +1078,18 @@ var _Route = class _Route extends import_js_debug.Debuggable {
     });
     validateRouteDefinition(routeDef);
     this._method = routeDef.method.toUpperCase();
-    this._path = routeDef.path;
+    this._path = routeDef.path || "";
     if (routeDef.meta !== void 0) {
       this._meta = cloneDeep(routeDef.meta);
     }
     this._handler = routeDef.handler;
-    if (routeDef.preHandler != null) {
+    if (routeDef.preHandler !== void 0) {
       const preHandlerHooks = Array.isArray(routeDef.preHandler) ? routeDef.preHandler : [routeDef.preHandler];
       preHandlerHooks.forEach((hook) => {
         this._hookRegistry.addHook(RouterHookType.PRE_HANDLER, hook);
       });
     }
-    if (routeDef.postHandler != null) {
+    if (routeDef.postHandler !== void 0) {
       const postHandlerHooks = Array.isArray(routeDef.postHandler) ? routeDef.postHandler : [routeDef.postHandler];
       postHandlerHooks.forEach((hook) => {
         this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
