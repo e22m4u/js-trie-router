@@ -1,10 +1,11 @@
 import {expect} from 'chai';
+import {ROOT_PATH} from './constants.js';
 import {TrieRouter} from './trie-router.js';
+import {Route, HttpMethod} from './route/index.js';
 import {RequestContext} from './request-context.js';
 import {ServerResponse, IncomingMessage} from 'http';
 import {DataSender, ErrorSender} from './senders/index.js';
 import {HookRegistry, RouterHookType} from './hooks/index.js';
-import {Route, HttpMethod, ROOT_PATH} from './route/index.js';
 import {createRequestMock, createResponseMock} from './utils/index.js';
 
 describe('TrieRouter', function () {

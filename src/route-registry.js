@@ -1,5 +1,6 @@
+import {Route} from './route/index.js';
+import {ROOT_PATH} from './constants.js';
 import {PathTrie} from '@e22m4u/js-path-trie';
-import {ROOT_PATH, Route} from './route/index.js';
 import {getRequestPathname} from './utils/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {InvalidArgumentError} from '@e22m4u/js-format';

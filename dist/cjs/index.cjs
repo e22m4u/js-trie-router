@@ -71,6 +71,9 @@ __export(index_exports, {
 });
 module.exports = __toCommonJS(index_exports);
 
+// src/constants.js
+var ROOT_PATH = "/";
+
 // src/route/route.js
 var import_js_debug = require("@e22m4u/js-debug");
 
@@ -994,7 +997,6 @@ var HttpMethod = {
   PATCH: "PATCH",
   DELETE: "DELETE"
 };
-var ROOT_PATH = "/";
 var _Route = class _Route extends import_js_debug.Debuggable {
   /**
    * Method.

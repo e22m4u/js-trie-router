@@ -3,7 +3,7 @@ import {Stream} from 'stream';
 import {TLSSocket} from 'tls';
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
-import {ROOT_PATH} from '../route/index.js';
+import {ROOT_PATH} from '../constants.js';
 import {createRequestMock} from './create-request-mock.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 

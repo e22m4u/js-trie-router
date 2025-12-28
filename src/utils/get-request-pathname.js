@@ -1,4 +1,4 @@
-import {ROOT_PATH} from '../route/index.js';
+import {ROOT_PATH} from '../constants.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 
 /**

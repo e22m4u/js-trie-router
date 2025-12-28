@@ -1,6 +1,7 @@
 import {expect} from 'chai';
+import {HttpMethod} from './route.js';
 import {format} from '@e22m4u/js-format';
-import {HttpMethod, ROOT_PATH} from './route.js';
+import {ROOT_PATH} from '../constants.js';
 import {validateRouteDefinition} from './validate-route-definition.js';
 
 describe('validateRouteDefinition', function () {

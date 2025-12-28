@@ -39,13 +39,6 @@ export const HttpMethod = {
 };
 
 /**
- * Root path.
- *
- * @type {string}
- */
-export const ROOT_PATH = '/';
-
-/**
  * Route.
  */
 export class Route extends Debuggable {

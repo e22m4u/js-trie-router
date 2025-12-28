@@ -1,6 +1,7 @@
 import {expect} from 'chai';
+import {ROOT_PATH} from '../constants.js';
+import {HttpMethod, Route} from '../route/index.js';
 import {createRouteMock} from './create-route-mock.js';
-import {HttpMethod, ROOT_PATH, Route} from '../route/index.js';
 
 describe('createRouteMock', function () {
   it('returns an instance of Route with default options', function () {

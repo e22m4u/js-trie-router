@@ -2,7 +2,7 @@ import {Socket} from 'net';
 import {TLSSocket} from 'tls';
 import {IncomingMessage} from 'http';
 import queryString from 'querystring';
-import {ROOT_PATH} from '../route/index.js';
+import {ROOT_PATH} from '../constants.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {isReadableStream} from './is-readable-stream.js';
 import {createCookieString} from './create-cookie-string.js';

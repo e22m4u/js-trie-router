@@ -1,4 +1,5 @@
-import {Route, HttpMethod, ROOT_PATH} from '../route/index.js';
+import {ROOT_PATH} from '../constants.js';
+import {Route, HttpMethod} from '../route/index.js';
 
 /**
  * @typedef {object} RouteMockOptions

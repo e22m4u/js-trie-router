@@ -56,11 +56,6 @@ export type RouteDefinition = {
 };
 
 /**
- * Root path.
- */
-export declare const ROOT_PATH: '/';
-
-/**
  * Route.
  */
 export declare class Route {
