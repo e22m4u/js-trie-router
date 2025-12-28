@@ -5,8 +5,8 @@ import {ServiceContainer} from '@e22m4u/js-service';
 import {ServerResponse, IncomingMessage} from 'http';
 import {DebuggableService} from './debuggable-service.js';
 import {DataSender, ErrorSender} from './senders/index.js';
-import {isPromise, isResponseSent} from './utils/index.js';
 import {HookInvoker, HookRegistry, RouterHookType} from './hooks/index.js';
+import {isPromise, isResponseSent, getRequestPathname} from './utils/index.js';
 
 /**
  * Trie router.
@@ -74,7 +74,7 @@ export class TrieRouter extends DebuggableService {
    */
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
-    const requestPath = (request.url || '/').replace(/\?.*$/, '');
+    const requestPath = getRequestPathname(request);
     debug(
       'Preparing to handle an incoming request %s %v.',
       request.method,

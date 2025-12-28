@@ -1,13 +1,13 @@
 import {expect} from 'chai';
-import {HttpMethod, Route} from '../route/index.js';
 import {createRouteMock} from './create-route-mock.js';
+import {HttpMethod, ROOT_PATH, Route} from '../route/index.js';
 
 describe('createRouteMock', function () {
   it('returns an instance of Route with default options', function () {
     const res = createRouteMock();
     expect(res).to.be.instanceof(Route);
     expect(res.method).to.be.eq(HttpMethod.GET);
-    expect(res.path).to.be.eq('/');
+    expect(res.path).to.be.eq(ROOT_PATH);
     expect(res.handler()).to.be.eq('OK');
   });
 

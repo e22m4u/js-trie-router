@@ -1,3 +1,4 @@
+import {ROOT_PATH} from '../route/index.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 
 /**
@@ -19,5 +20,5 @@ export function getRequestPathname(request) {
       request,
     );
   }
-  return (request.url || '/').replace(/\?.*$/, '');
+  return (request.url || ROOT_PATH).replace(/\?.*$/, '');
 }

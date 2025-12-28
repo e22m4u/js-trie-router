@@ -1,10 +1,10 @@
 import {expect} from 'chai';
 import {TrieRouter} from './trie-router.js';
-import {Route, HttpMethod} from './route/index.js';
 import {RequestContext} from './request-context.js';
 import {ServerResponse, IncomingMessage} from 'http';
 import {DataSender, ErrorSender} from './senders/index.js';
 import {HookRegistry, RouterHookType} from './hooks/index.js';
+import {Route, HttpMethod, ROOT_PATH} from './route/index.js';
 import {createRequestMock, createResponseMock} from './utils/index.js';
 
 describe('TrieRouter', function () {
@@ -61,7 +61,7 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler: ({query}) => {
           expect(query).to.be.eql({p1: 'foo', p2: 'bar'});
           done();
@@ -76,7 +76,7 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler: ({cookies}) => {
           expect(cookies).to.be.eql({p1: 'foo', p2: 'bar'});
           done();
@@ -92,7 +92,7 @@ describe('TrieRouter', function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
         method: HttpMethod.POST,
-        path: '/',
+        path: ROOT_PATH,
         handler: ctx => {
           expect(ctx.body).to.be.eq(body);
           done();
@@ -108,7 +108,7 @@ describe('TrieRouter', function () {
       const data = {p1: 'foo', p2: 'bar'};
       router.defineRoute({
         method: HttpMethod.POST,
-        path: '/',
+        path: ROOT_PATH,
         handler: ({body}) => {
           expect(body).to.be.eql(data);
           done();
@@ -123,7 +123,7 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler: ({headers}) => {
           expect(headers).to.be.eql({
             host: 'localhost',
@@ -142,7 +142,7 @@ describe('TrieRouter', function () {
       const metaData = {foo: {bar: {baz: 'qux'}}};
       const currentRoute = router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         meta: metaData,
         handler: ({route}) => {
           expect(route).to.be.eq(currentRoute);
@@ -159,7 +159,7 @@ describe('TrieRouter', function () {
       const metaData = {role: 'admin'};
       router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         meta: metaData,
         handler: ({meta}) => {
           expect(meta).to.eql(metaData);
@@ -176,7 +176,7 @@ describe('TrieRouter', function () {
       const resBody = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler: () => resBody,
       });
       const req = createRequestMock();
@@ -196,7 +196,7 @@ describe('TrieRouter', function () {
       const error = new Error();
       router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler: () => {
           throw error;
         },
@@ -221,7 +221,7 @@ describe('TrieRouter', function () {
         const body = 'OK';
         router.defineRoute({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           preHandler: [
             () => {
               order.push('preHandler1');
@@ -249,7 +249,7 @@ describe('TrieRouter', function () {
         const body = 'OK';
         router.defineRoute({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           handler: () => {
             order.push('handler');
             return body;
@@ -277,7 +277,7 @@ describe('TrieRouter', function () {
         const body = 'OK';
         router.defineRoute({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           preHandler: [
             ctx => {
               order.push('preHandler1');
@@ -309,7 +309,7 @@ describe('TrieRouter', function () {
         let requestContext;
         router.defineRoute({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           handler: ctx => {
             order.push('handler');
             expect(ctx).to.be.instanceof(RequestContext);
@@ -343,7 +343,7 @@ describe('TrieRouter', function () {
         const body = 'OK';
         router.defineRoute({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           preHandler: [
             () => {
               order.push('preHandler1');
@@ -373,7 +373,7 @@ describe('TrieRouter', function () {
         const body = 'OK';
         router.defineRoute({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           handler: () => {
             order.push('handler');
             return body;
@@ -405,7 +405,7 @@ describe('TrieRouter', function () {
         const postHandlerBody = 'baz';
         router.defineRoute({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           preHandler() {
             order.push('preHandler');
             return preHandlerBody;
@@ -436,7 +436,7 @@ describe('TrieRouter', function () {
         const postHandlerBody = 'bar';
         router.defineRoute({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           preHandler() {
             order.push('preHandler');
           },
@@ -464,7 +464,7 @@ describe('TrieRouter', function () {
         const body = 'OK';
         router.defineRoute({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           preHandler() {
             order.push('preHandler');
           },
@@ -491,7 +491,7 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler(ctx) {
           const res = ctx.container.getRegistered(RequestContext);
           expect(res).to.be.eq(ctx);
@@ -510,7 +510,7 @@ describe('TrieRouter', function () {
       const res = createResponseMock();
       router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler(ctx) {
           const result = ctx.container.getRegistered(IncomingMessage);
           expect(result).to.be.eq(req);
@@ -526,7 +526,7 @@ describe('TrieRouter', function () {
       const res = createResponseMock();
       router.defineRoute({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler(ctx) {
           const result = ctx.container.getRegistered(ServerResponse);
           expect(result).to.be.eq(res);
@@ -540,7 +540,7 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.POST,
-        path: '/',
+        path: ROOT_PATH,
         handler() {},
       });
       const req = createRequestMock({
@@ -563,8 +563,8 @@ describe('TrieRouter', function () {
       let handlerCalled = false;
       const router = new TrieRouter();
       router.defineRoute({
-        method: 'GET',
-        path: '/',
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
         preHandler(ctx) {
           return new Promise(resolve => {
             setTimeout(() => {
@@ -579,7 +579,7 @@ describe('TrieRouter', function () {
           return 'Response from main handler';
         },
       });
-      const req = createRequestMock({method: 'GET', path: '/'});
+      const req = createRequestMock({method: HttpMethod.GET, path: ROOT_PATH});
       const res = createResponseMock();
       await router._handleRequest(req, res);
       const responseBody = await res.getBody();

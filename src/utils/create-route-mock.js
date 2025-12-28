@@ -1,4 +1,4 @@
-import {Route, HttpMethod} from '../route/index.js';
+import {Route, HttpMethod, ROOT_PATH} from '../route/index.js';
 
 /**
  * @typedef {object} RouteMockOptions
@@ -16,7 +16,7 @@ import {Route, HttpMethod} from '../route/index.js';
 export function createRouteMock(options = {}) {
   return new Route({
     method: options.method || HttpMethod.GET,
-    path: options.path || '/',
+    path: options.path || ROOT_PATH,
     handler: options.handler || (() => 'OK'),
   });
 }

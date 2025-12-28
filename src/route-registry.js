@@ -1,5 +1,6 @@
-import {Route} from './route/index.js';
 import {PathTrie} from '@e22m4u/js-path-trie';
+import {ROOT_PATH, Route} from './route/index.js';
+import {getRequestPathname} from './utils/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from './debuggable-service.js';
@@ -58,7 +59,7 @@ export class RouteRegistry extends DebuggableService {
    */
   matchRouteByRequest(request) {
     const debug = this.getDebuggerFor(this.matchRouteByRequest);
-    const requestPath = (request.url || '/').replace(/\?.*$/, '');
+    const requestPath = getRequestPathname(request);
     debug(
       'Matching routes with the request %s %v.',
       request.method.toUpperCase(),
@@ -67,7 +68,7 @@ export class RouteRegistry extends DebuggableService {
     const rawTriePath = `${request.method.toUpperCase()}/${requestPath}`;
     // маршрут формируется с удалением дубликатов косой черты
     // "OPTIONS//api/users/login" => "OPTIONS/api/users/login"
-    const triePath = rawTriePath.replace(/\/+/g, '/');
+    const triePath = rawTriePath.replace(/\/+/g, ROOT_PATH);
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;

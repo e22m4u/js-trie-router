@@ -186,7 +186,7 @@ __name(isResponseSent, "isResponseSent");
 function createRouteMock(options = {}) {
   return new Route({
     method: options.method || HttpMethod.GET,
-    path: options.path || "/",
+    path: options.path || ROOT_PATH,
     handler: options.handler || (() => "OK")
   });
 }
@@ -474,7 +474,7 @@ function createRequestMock(patch) {
     }
   }
   const request = patch.stream || createRequestStream(patch.secure, patch.body, patch.encoding);
-  request.url = createRequestUrl(patch.path || "/", patch.query);
+  request.url = createRequestUrl(patch.path || ROOT_PATH, patch.query);
   request.headers = createRequestHeaders(
     patch.host,
     patch.secure,
@@ -526,7 +526,7 @@ function createRequestUrl(path, query) {
       query
     );
   }
-  let url = ("/" + path).replace("//", "/");
+  let url = (ROOT_PATH + path).replace("//", "/");
   if (typeof query === "object") {
     const qs = import_querystring.default.stringify(query);
     if (qs) {
@@ -728,7 +728,7 @@ function getRequestPathname(request) {
       request
     );
   }
-  return (request.url || "/").replace(/\?.*$/, "");
+  return (request.url || ROOT_PATH).replace(/\?.*$/, "");
 }
 __name(getRequestPathname, "getRequestPathname");
 
@@ -1457,14 +1457,14 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
    */
   matchRouteByRequest(request) {
     const debug = this.getDebuggerFor(this.matchRouteByRequest);
-    const requestPath = (request.url || "/").replace(/\?.*$/, "");
+    const requestPath = getRequestPathname(request);
     debug(
       "Matching routes with the request %s %v.",
       request.method.toUpperCase(),
       requestPath
     );
     const rawTriePath = `${request.method.toUpperCase()}/${requestPath}`;
-    const triePath = rawTriePath.replace(/\/+/g, "/");
+    const triePath = rawTriePath.replace(/\/+/g, ROOT_PATH);
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;
@@ -1886,7 +1886,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    */
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
-    const requestPath = (request.url || "/").replace(/\?.*$/, "");
+    const requestPath = getRequestPathname(request);
     debug(
       "Preparing to handle an incoming request %s %v.",
       request.method,

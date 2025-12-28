@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
 import {HookInvoker} from './hook-invoker.js';
-import {Route, HttpMethod} from '../route/index.js';
 import {createResponseMock} from '../utils/index.js';
+import {Route, HttpMethod, ROOT_PATH} from '../route/index.js';
 import {HookRegistry, RouterHookType} from './hook-registry.js';
 
 describe('HookInvoker', function () {
@@ -36,7 +36,7 @@ describe('HookInvoker', function () {
       throwable(
         new Route({
           method: HttpMethod.GET,
-          path: '/',
+          path: ROOT_PATH,
           handler: () => undefined,
         }),
       )();
@@ -46,7 +46,7 @@ describe('HookInvoker', function () {
       const s = new HookInvoker();
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler: () => undefined,
       });
       const res = createResponseMock();
@@ -75,7 +75,7 @@ describe('HookInvoker', function () {
       const s = new HookInvoker();
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler: () => undefined,
       });
       const res = createResponseMock();
@@ -91,7 +91,7 @@ describe('HookInvoker', function () {
       const s = new HookInvoker();
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         handler: () => undefined,
       });
       const throwable = v => () =>
@@ -131,7 +131,7 @@ describe('HookInvoker', function () {
       });
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           () => {
             order.push('routeHook1');
@@ -171,7 +171,7 @@ describe('HookInvoker', function () {
       });
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           () => {
             order.push('routeHook1');
@@ -203,7 +203,7 @@ describe('HookInvoker', function () {
       });
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           () => {
             order.push('routeHook1');
@@ -241,7 +241,7 @@ describe('HookInvoker', function () {
       });
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           () => {
             throw new Error('Should not be called');
@@ -273,7 +273,7 @@ describe('HookInvoker', function () {
       });
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           () => {
             order.push('routeHook1');
@@ -305,7 +305,7 @@ describe('HookInvoker', function () {
       });
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           () => {
             order.push('routeHook1');
@@ -351,7 +351,7 @@ describe('HookInvoker', function () {
       });
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           () => {
             order.push('routeHook1');
@@ -395,7 +395,7 @@ describe('HookInvoker', function () {
       );
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           () => {
             order.push('routeHook1');
@@ -432,7 +432,7 @@ describe('HookInvoker', function () {
       });
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           () => {
             order.push('routeHook1');
@@ -473,7 +473,7 @@ describe('HookInvoker', function () {
       });
       const route = new Route({
         method: HttpMethod.GET,
-        path: '/',
+        path: ROOT_PATH,
         preHandler: [
           async () => {
             order.push('routeHook1');
