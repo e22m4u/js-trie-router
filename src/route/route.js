@@ -11,7 +11,7 @@ import {validateRouteDefinition} from './validate-route-definition.js';
  * @typedef {(ctx: RequestContext, data: *) => *} RoutePostHandler
  * @typedef {{
  *   method: string,
- *   path?: string,
+ *   path: string,
  *   handler: RouteHandler,
  *   preHandler?: RoutePreHandler|(RoutePreHandler[]),
  *   postHandler?: RoutePostHandler|(RoutePostHandler[]),
@@ -37,6 +37,13 @@ export const HttpMethod = {
   PATCH: 'PATCH',
   DELETE: 'DELETE',
 };
+
+/**
+ * Root path.
+ *
+ * @type {string}
+ */
+export const ROOT_PATH = '/';
 
 /**
  * Route.
@@ -139,7 +146,7 @@ export class Route extends Debuggable {
     });
     validateRouteDefinition(routeDef);
     this._method = routeDef.method.toUpperCase();
-    this._path = routeDef.path || '/';
+    this._path = routeDef.path;
     if (routeDef.meta !== undefined) {
       this._meta = cloneDeep(routeDef.meta);
     }

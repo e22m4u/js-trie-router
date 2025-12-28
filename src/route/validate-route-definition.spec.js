@@ -1,6 +1,6 @@
 import {expect} from 'chai';
-import {HttpMethod} from './route.js';
 import {format} from '@e22m4u/js-format';
+import {HttpMethod, ROOT_PATH} from './route.js';
 import {validateRouteDefinition} from './validate-route-definition.js';
 
 describe('validateRouteDefinition', function () {
@@ -20,6 +20,7 @@ describe('validateRouteDefinition', function () {
     expect(throwable(() => undefined)).to.throw(error('Function'));
     throwable({
       method: HttpMethod.GET,
+      path: ROOT_PATH,
       handler: () => undefined,
     })();
   });
@@ -28,6 +29,7 @@ describe('validateRouteDefinition', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: v,
+        path: ROOT_PATH,
         handler: () => undefined,
       });
     const error = v =>
@@ -56,24 +58,25 @@ describe('validateRouteDefinition', function () {
         handler: () => undefined,
       });
     const error = v =>
-      format('Option "path" must be a String, but %s was given.', v);
+      format('Option "path" must be a non-empty String, but %s was given.', v);
+    expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
     expect(throwable(false)).to.throw(error('false'));
-    expect(throwable(null)).to.throw(error('null'));
     expect(throwable({})).to.throw(error('Object'));
     expect(throwable([])).to.throw(error('Array'));
+    expect(throwable(undefined)).to.throw(error('undefined'));
+    expect(throwable(null)).to.throw(error('null'));
     expect(throwable(() => undefined)).to.throw(error('Function'));
     throwable('str')();
-    throwable('')();
-    throwable(undefined)();
   });
 
   it('should require the "handler" option to be a Function', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
+        path: ROOT_PATH,
         handler: v,
       });
     const error = v =>
@@ -95,6 +98,7 @@ describe('validateRouteDefinition', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
+        path: ROOT_PATH,
         preHandler: v,
         handler: () => undefined,
       });
@@ -121,6 +125,7 @@ describe('validateRouteDefinition', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
+        path: ROOT_PATH,
         preHandler: [v],
         handler: () => undefined,
       });
@@ -143,6 +148,7 @@ describe('validateRouteDefinition', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
+        path: ROOT_PATH,
         postHandler: v,
         handler: () => undefined,
       });
@@ -169,6 +175,7 @@ describe('validateRouteDefinition', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
+        path: ROOT_PATH,
         postHandler: [v],
         handler: () => undefined,
       });
@@ -191,6 +198,7 @@ describe('validateRouteDefinition', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
+        path: ROOT_PATH,
         handler: () => undefined,
         meta: v,
       });

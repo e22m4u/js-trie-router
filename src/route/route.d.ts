@@ -48,12 +48,17 @@ export type RouteMeta = {
  */
 export type RouteDefinition = {
   method: string;
-  path?: string;
+  path: string;
   handler: RouteHandler;
   preHandler?: RoutePreHandler | RoutePreHandler[];
   postHandler?: RoutePostHandler | RoutePostHandler[];
   meta?: RouteMeta;
 };
+
+/**
+ * Root path.
+ */
+export declare const ROOT_PATH: '/';
 
 /**
  * Route.

@@ -42,6 +42,7 @@ __export(index_exports, {
   HttpMethod: () => HttpMethod,
   METHODS_WITH_BODY: () => METHODS_WITH_BODY,
   QueryParser: () => QueryParser,
+  ROOT_PATH: () => ROOT_PATH,
   RequestContext: () => RequestContext,
   RequestParser: () => RequestParser,
   Route: () => Route,
@@ -928,9 +929,9 @@ function validateRouteDefinition(routeDef) {
       routeDef.method
     );
   }
-  if (routeDef.path !== void 0 && typeof routeDef.path !== "string") {
+  if (!routeDef.path || typeof routeDef.path !== "string") {
     throw new import_js_format12.InvalidArgumentError(
-      'Option "path" must be a String, but %v was given.',
+      'Option "path" must be a non-empty String, but %v was given.',
       routeDef.path
     );
   }
@@ -993,6 +994,7 @@ var HttpMethod = {
   PATCH: "PATCH",
   DELETE: "DELETE"
 };
+var ROOT_PATH = "/";
 var _Route = class _Route extends import_js_debug.Debuggable {
   /**
    * Method.
@@ -1081,7 +1083,7 @@ var _Route = class _Route extends import_js_debug.Debuggable {
     });
     validateRouteDefinition(routeDef);
     this._method = routeDef.method.toUpperCase();
-    this._path = routeDef.path || "/";
+    this._path = routeDef.path;
     if (routeDef.meta !== void 0) {
       this._meta = cloneDeep(routeDef.meta);
     }
@@ -2017,6 +2019,7 @@ var TrieRouter = _TrieRouter;
   HttpMethod,
   METHODS_WITH_BODY,
   QueryParser,
+  ROOT_PATH,
   RequestContext,
   RequestParser,
   Route,

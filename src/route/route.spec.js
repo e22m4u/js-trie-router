@@ -1,9 +1,9 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
-import {Route, HttpMethod} from './route.js';
 import {RouterHookType} from '../hooks/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {RequestContext} from '../request-context.js';
+import {Route, HttpMethod, ROOT_PATH} from './route.js';
 import {createRequestMock, createResponseMock} from '../utils/index.js';
 
 describe('Route', function () {
@@ -24,6 +24,7 @@ describe('Route', function () {
       expect(throwable(() => undefined)).to.throw(error('Function'));
       throwable({
         method: HttpMethod.GET,
+        path: ROOT_PATH,
         handler: () => undefined,
       })();
     });
@@ -33,6 +34,7 @@ describe('Route', function () {
         const throwable = v => () =>
           new Route({
             method: v,
+            path: ROOT_PATH,
             handler: () => undefined,
           });
         const error = v =>
@@ -56,6 +58,7 @@ describe('Route', function () {
       it('should set the "method" option to the "method" property in upper case', function () {
         const route = new Route({
           method: 'post',
+          path: ROOT_PATH,
           handler: () => undefined,
         });
         expect(route.method).to.be.eq('POST');
@@ -63,7 +66,7 @@ describe('Route', function () {
     });
 
     describe('the "path" option', function () {
-      it('should require the "path" option to be a String', function () {
+      it('should require the "path" option to be a non-empty String', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
@@ -71,18 +74,21 @@ describe('Route', function () {
             handler: () => undefined,
           });
         const error = v =>
-          format('Option "path" must be a String, but %s was given.', v);
+          format(
+            'Option "path" must be a non-empty String, but %s was given.',
+            v,
+          );
+        expect(throwable('')).to.throw(error('""'));
         expect(throwable(10)).to.throw(error('10'));
         expect(throwable(0)).to.throw(error('0'));
         expect(throwable(true)).to.throw(error('true'));
         expect(throwable(false)).to.throw(error('false'));
-        expect(throwable(null)).to.throw(error('null'));
         expect(throwable({})).to.throw(error('Object'));
         expect(throwable([])).to.throw(error('Array'));
+        expect(throwable(undefined)).to.throw(error('undefined'));
+        expect(throwable(null)).to.throw(error('null'));
         expect(throwable(() => undefined)).to.throw(error('Function'));
         throwable('str')();
-        throwable('')();
-        throwable(undefined)();
       });
 
       it('should set the "path" option to the "path" property', function () {
@@ -94,14 +100,6 @@ describe('Route', function () {
         });
         expect(route.path).to.be.eq(value);
       });
-
-      it('should set the "path" property to "/" when the "path" option is not provided', function () {
-        const route = new Route({
-          method: HttpMethod.GET,
-          handler: () => undefined,
-        });
-        expect(route.path).to.be.eq('/');
-      });
     });
 
     describe('the "handler" option', function () {
@@ -109,6 +107,7 @@ describe('Route', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
+            path: ROOT_PATH,
             handler: v,
           });
         const error = v =>
@@ -130,6 +129,7 @@ describe('Route', function () {
         const value = () => undefined;
         const route = new Route({
           method: HttpMethod.GET,
+          path: ROOT_PATH,
           handler: value,
         });
         expect(route.handler).to.be.eq(value);
@@ -141,6 +141,7 @@ describe('Route', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
+            path: ROOT_PATH,
             preHandler: v,
             handler: () => undefined,
           });
@@ -167,6 +168,7 @@ describe('Route', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
+            path: ROOT_PATH,
             preHandler: [v],
             handler: () => undefined,
           });
@@ -189,6 +191,7 @@ describe('Route', function () {
         const value = () => undefined;
         const route = new Route({
           method: HttpMethod.GET,
+          path: ROOT_PATH,
           preHandler: value,
           handler: () => undefined,
         });
@@ -200,6 +203,7 @@ describe('Route', function () {
         const value = [() => undefined, () => undefined];
         const route = new Route({
           method: HttpMethod.GET,
+          path: ROOT_PATH,
           preHandler: value,
           handler: () => undefined,
         });
@@ -215,6 +219,7 @@ describe('Route', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
+            path: ROOT_PATH,
             postHandler: v,
             handler: () => undefined,
           });
@@ -241,6 +246,7 @@ describe('Route', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
+            path: ROOT_PATH,
             postHandler: [v],
             handler: () => undefined,
           });
@@ -263,6 +269,7 @@ describe('Route', function () {
         const value = () => undefined;
         const route = new Route({
           method: HttpMethod.GET,
+          path: ROOT_PATH,
           handler: () => undefined,
           postHandler: value,
         });
@@ -274,6 +281,7 @@ describe('Route', function () {
         const value = [() => undefined, () => undefined];
         const route = new Route({
           method: HttpMethod.GET,
+          path: ROOT_PATH,
           handler: () => undefined,
           postHandler: value,
         });
@@ -291,6 +299,7 @@ describe('Route', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
+            path: ROOT_PATH,
             handler: () => undefined,
             meta: v,
           });
@@ -314,6 +323,7 @@ describe('Route', function () {
         const metaData = {foo: {bar: {baz: 'qux'}}};
         const route = new Route({
           method: 'post',
+          path: ROOT_PATH,
           handler: () => undefined,
           meta: metaData,
         });
@@ -328,6 +338,7 @@ describe('Route', function () {
       it('should set an empty object to the "meta" property if the "meta" option is not provided', function () {
         const route = new Route({
           method: 'post',
+          path: ROOT_PATH,
           handler: () => undefined,
         });
         expect(route.meta).to.be.eql({});
@@ -336,6 +347,7 @@ describe('Route', function () {
       it('should set an empty object to the "meta" property if the "meta" option is undefined', function () {
         const route = new Route({
           method: 'post',
+          path: ROOT_PATH,
           handler: () => undefined,
           meta: undefined,
         });
@@ -348,6 +360,7 @@ describe('Route', function () {
     it('should invoke the handler with the given RequestContext and return its result', function () {
       const route = new Route({
         method: HttpMethod.GET,
+        path: ROOT_PATH,
         handler(ctx) {
           expect(ctx).to.be.instanceof(RequestContext);
           return 'OK';
