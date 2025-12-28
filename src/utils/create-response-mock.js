@@ -64,11 +64,12 @@ function patchHeaders(response) {
   Object.defineProperty(response, 'setHeader', {
     configurable: true,
     value: function (name, value) {
-      if (this.headersSent)
+      if (this.headersSent) {
         throw new Error(
           'Error [ERR_HTTP_HEADERS_SENT]: ' +
             'Cannot set headers after they are sent to the client',
         );
+      }
       const key = name.toLowerCase();
       this._headers[key] = String(value);
       return this;

@@ -45,18 +45,20 @@ export class BodyParser extends DebuggableService {
    * @returns {this}
    */
   defineParser(mediaType, parser) {
-    if (!mediaType || typeof mediaType !== 'string')
+    if (!mediaType || typeof mediaType !== 'string') {
       throw new Errorf(
         'The parameter "mediaType" of BodyParser.defineParser ' +
           'must be a non-empty String, but %v was given.',
         mediaType,
       );
-    if (!parser || typeof parser !== 'function')
+    }
+    if (!parser || typeof parser !== 'function') {
       throw new Errorf(
         'The parameter "parser" of BodyParser.defineParser ' +
           'must be a Function, but %v was given.',
         parser,
       );
+    }
     this._parsers[mediaType] = parser;
     return this;
   }
@@ -68,12 +70,13 @@ export class BodyParser extends DebuggableService {
    * @returns {boolean}
    */
   hasParser(mediaType) {
-    if (!mediaType || typeof mediaType !== 'string')
+    if (!mediaType || typeof mediaType !== 'string') {
       throw new Errorf(
         'The parameter "mediaType" of BodyParser.hasParser ' +
           'must be a non-empty String, but %v was given.',
         mediaType,
       );
+    }
     return Boolean(this._parsers[mediaType]);
   }
 
@@ -84,14 +87,17 @@ export class BodyParser extends DebuggableService {
    * @returns {this}
    */
   deleteParser(mediaType) {
-    if (!mediaType || typeof mediaType !== 'string')
+    if (!mediaType || typeof mediaType !== 'string') {
       throw new Errorf(
         'The parameter "mediaType" of BodyParser.deleteParser ' +
           'must be a non-empty String, but %v was given.',
         mediaType,
       );
+    }
     const parser = this._parsers[mediaType];
-    if (!parser) throw new Errorf('The parser of %v is not found.', mediaType);
+    if (!parser) {
+      throw new Errorf('The parser of %v is not found.', mediaType);
+    }
     delete this._parsers[mediaType];
     return this;
   }
@@ -122,11 +128,12 @@ export class BodyParser extends DebuggableService {
       return;
     }
     const {mediaType} = parseContentType(contentType);
-    if (!mediaType)
+    if (!mediaType) {
       throw createError(
         HttpErrors.BadRequest,
         'Unable to parse the "content-type" header.',
       );
+    }
     const parser = this._parsers[mediaType];
     if (!parser) {
       if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
@@ -141,7 +148,9 @@ export class BodyParser extends DebuggableService {
     }
     const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
     return fetchRequestBody(request, bodyBytesLimit).then(rawBody => {
-      if (rawBody != null) return parser(rawBody);
+      if (rawBody != null) {
+        return parser(rawBody);
+      }
       return rawBody;
     });
   }
@@ -154,7 +163,9 @@ export class BodyParser extends DebuggableService {
  * @returns {*|undefined}
  */
 export function parseJsonBody(input) {
-  if (typeof input !== 'string') return undefined;
+  if (typeof input !== 'string') {
+    return undefined;
+  }
   try {
     return JSON.parse(input);
   } catch (error) {

@@ -5,6 +5,8 @@
  * @returns {boolean}
  */
 export function isReadableStream(value) {
-  if (!value || typeof value !== 'object') return false;
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
   return typeof value.pipe === 'function';
 }

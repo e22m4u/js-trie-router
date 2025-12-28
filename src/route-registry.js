@@ -33,11 +33,12 @@ export class RouteRegistry extends DebuggableService {
    */
   defineRoute(routeDef) {
     const debug = this.getDebuggerFor(this.defineRoute);
-    if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef))
+    if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef)) {
       throw new Errorf(
         'The route definition must be an Object, but %v was given.',
         routeDef,
       );
+    }
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;
     this._trie.add(triePath, route);

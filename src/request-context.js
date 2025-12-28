@@ -159,7 +159,9 @@ export class RequestContext {
    * @returns {string}
    */
   get pathname() {
-    if (this._pathname != null) return this._pathname;
+    if (this._pathname != null) {
+      return this._pathname;
+    }
     this._pathname = getRequestPathname(this.request);
     return this._pathname;
   }
@@ -173,12 +175,13 @@ export class RequestContext {
    * @param {Route} route
    */
   constructor(container, request, response, route) {
-    if (!isServiceContainer(container))
+    if (!isServiceContainer(container)) {
       throw new Errorf(
         'The parameter "container" of RequestContext.constructor ' +
           'must be an instance of ServiceContainer, but %v was given.',
         container,
       );
+    }
     this._container = container;
     if (
       !request ||

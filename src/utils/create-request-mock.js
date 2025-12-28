@@ -37,30 +37,34 @@ export function createRequestMock(patch) {
     );
   }
   patch = patch || {};
-  if (patch.host != null && typeof patch.host !== 'string')
+  if (patch.host != null && typeof patch.host !== 'string') {
     throw new Errorf(
       'The parameter "host" of "createRequestMock" ' +
         'must be a String, but %v was given.',
       patch.host,
     );
-  if (patch.method != null && typeof patch.method !== 'string')
+  }
+  if (patch.method != null && typeof patch.method !== 'string') {
     throw new Errorf(
       'The parameter "method" of "createRequestMock" ' +
         'must be a String, but %v was given.',
       patch.method,
     );
-  if (patch.secure != null && typeof patch.secure !== 'boolean')
+  }
+  if (patch.secure != null && typeof patch.secure !== 'boolean') {
     throw new Errorf(
       'The parameter "secure" of "createRequestMock" ' +
         'must be a Boolean, but %v was given.',
       patch.secure,
     );
-  if (patch.path != null && typeof patch.path !== 'string')
+  }
+  if (patch.path != null && typeof patch.path !== 'string') {
     throw new Errorf(
       'The parameter "path" of "createRequestMock" ' +
         'must be a String, but %v was given.',
       patch.path,
     );
+  }
   if (
     (patch.query != null &&
       typeof patch.query !== 'object' &&
@@ -95,43 +99,49 @@ export function createRequestMock(patch) {
       patch.headers,
     );
   }
-  if (patch.stream != null && !isReadableStream(patch.stream))
+  if (patch.stream != null && !isReadableStream(patch.stream)) {
     throw new Errorf(
       'The parameter "stream" of "createRequestMock" ' +
         'must be a Stream, but %v was given.',
       patch.stream,
     );
+  }
   if (patch.encoding != null) {
-    if (typeof patch.encoding !== 'string')
+    if (typeof patch.encoding !== 'string') {
       throw new Errorf(
         'The parameter "encoding" of "createRequestMock" ' +
           'must be a String, but %v was given.',
         patch.encoding,
       );
-    if (!CHARACTER_ENCODING_LIST.includes(patch.encoding))
+    }
+    if (!CHARACTER_ENCODING_LIST.includes(patch.encoding)) {
       throw new Errorf(
         'Character encoding %v is not supported.',
         patch.encoding,
       );
+    }
   }
   // если передан поток, выполняется
   // проверка на несовместимые опции
   if (patch.stream) {
-    if (patch.secure != null)
+    if (patch.secure != null) {
       throw new Errorf(
         'The "createRequestMock" does not allow specifying the ' +
           '"stream" and "secure" options simultaneously.',
       );
-    if (patch.body != null)
+    }
+    if (patch.body != null) {
       throw new Errorf(
         'The "createRequestMock" does not allow specifying the ' +
           '"stream" and "body" options simultaneously.',
       );
-    if (patch.encoding != null)
+    }
+    if (patch.encoding != null) {
       throw new Errorf(
         'The "createRequestMock" does not allow specifying the ' +
           '"stream" and "encoding" options simultaneously.',
       );
+    }
   }
   // если передан поток, он будет использован
   // в качестве объекта запроса, в противном
@@ -161,17 +171,20 @@ export function createRequestMock(patch) {
  * @returns {import('http').IncomingMessage}
  */
 function createRequestStream(secure, body, encoding) {
-  if (encoding != null && typeof encoding !== 'string')
+  if (encoding != null && typeof encoding !== 'string') {
     throw new Errorf(
       'The parameter "encoding" of "createRequestStream" ' +
         'must be a String, but %v was given.',
       encoding,
     );
+  }
   encoding = encoding || 'utf-8';
   // для безопасного подключения
   // использует обертка TLSSocket
   let socket = new Socket();
-  if (secure) socket = new TLSSocket(socket);
+  if (secure) {
+    socket = new TLSSocket(socket);
+  }
   const request = new IncomingMessage(socket);
   // тело запроса должно являться
   // строкой или бинарными данными
@@ -198,12 +211,13 @@ function createRequestStream(secure, body, encoding) {
  * @returns {string}
  */
 function createRequestUrl(path, query) {
-  if (typeof path !== 'string')
+  if (typeof path !== 'string') {
     throw new Errorf(
       'The parameter "path" of "createRequestUrl" ' +
         'must be a String, but %v was given.',
       path,
     );
+  }
   if (
     (query != null && typeof query !== 'string' && typeof query !== 'object') ||
     Array.isArray(query)
@@ -217,7 +231,9 @@ function createRequestUrl(path, query) {
   let url = ('/' + path).replace('//', '/');
   if (typeof query === 'object') {
     const qs = queryString.stringify(query);
-    if (qs) url += `?${qs}`;
+    if (qs) {
+      url += `?${qs}`;
+    }
   } else if (typeof query === 'string') {
     url += `?${query.replace(/^\?/, '')}`;
   }
@@ -236,19 +252,21 @@ function createRequestUrl(path, query) {
  * @returns {object}
  */
 function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
-  if (host != null && typeof host !== 'string')
+  if (host != null && typeof host !== 'string') {
     throw new Errorf(
       'The parameter "host" of "createRequestHeaders" ' +
         'a non-empty String, but %v was given.',
       host,
     );
+  }
   host = host || 'localhost';
-  if (secure != null && typeof secure !== 'boolean')
+  if (secure != null && typeof secure !== 'boolean') {
     throw new Errorf(
       'The parameter "secure" of "createRequestHeaders" ' +
         'must be a String, but %v was given.',
       secure,
     );
+  }
   secure = Boolean(secure);
   if (
     (cookies != null &&
@@ -273,16 +291,19 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
     );
   }
   headers = headers || {};
-  if (encoding != null && typeof encoding !== 'string')
+  if (encoding != null && typeof encoding !== 'string') {
     throw new Errorf(
       'The parameter "encoding" of "createRequestHeaders" ' +
         'must be a String, but %v was given.',
       encoding,
     );
+  }
   encoding = encoding || 'utf-8';
   const obj = {...headers};
   obj['host'] = host;
-  if (secure) obj['x-forwarded-proto'] = 'https';
+  if (secure) {
+    obj['x-forwarded-proto'] = 'https';
+  }
   // формирование заголовка Cookie
   // из строки или объекта
   if (cookies != null) {

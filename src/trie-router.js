@@ -134,14 +134,18 @@ export class TrieRouter extends DebuggableService {
           response,
           context,
         );
-        if (isPromise(data)) data = await data;
+        if (isPromise(data)) {
+          data = await data;
+        }
         // если ответ не бы отправлен внутри "preHandler" хуков,
         // и сами "preHandler" хуки не вернули значения, то вызывается
         // основной обработчик маршрута, результат которого передается
         // в хуки "postHandler"
         if (!isResponseSent(response) && data == null) {
           data = route.handle(context);
-          if (isPromise(data)) data = await data;
+          if (isPromise(data)) {
+            data = await data;
+          }
           // вызываются хуки "postHandler", результат которых
           // также может быть использован в качестве ответа
           let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
@@ -151,9 +155,12 @@ export class TrieRouter extends DebuggableService {
             context,
             data,
           );
-          if (isPromise(postHandlerData))
+          if (isPromise(postHandlerData)) {
             postHandlerData = await postHandlerData;
-          if (postHandlerData != null) data = postHandlerData;
+          }
+          if (postHandlerData != null) {
+            data = postHandlerData;
+          }
         }
       } catch (error) {
         this.getService(ErrorSender).send(request, response, error);

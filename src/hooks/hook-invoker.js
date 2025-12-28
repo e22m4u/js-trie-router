@@ -18,22 +18,25 @@ export class HookInvoker extends DebuggableService {
    * @returns {Promise<*>|*}
    */
   invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
-    if (!route || !(route instanceof Route))
+    if (!route || !(route instanceof Route)) {
       throw new Errorf(
         'The parameter "route" of ' +
           'the HookInvoker.invokeAndContinueUntilValueReceived ' +
           'must be a Route instance, but %v was given.',
         route,
       );
-    if (!hookType || typeof hookType !== 'string')
+    }
+    if (!hookType || typeof hookType !== 'string') {
       throw new Errorf(
         'The parameter "hookType" of ' +
           'the HookInvoker.invokeAndContinueUntilValueReceived ' +
           'must be a non-empty String, but %v was given.',
         hookType,
       );
-    if (!Object.values(RouterHookType).includes(hookType))
+    }
+    if (!Object.values(RouterHookType).includes(hookType)) {
       throw new Errorf('The hook type %v is not supported.', hookType);
+    }
     if (
       !response ||
       typeof response !== 'object' ||

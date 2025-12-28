@@ -29,12 +29,13 @@ export class RouterOptions extends DebuggableService {
    * @returns {RouterOptions}
    */
   setRequestBodyBytesLimit(input) {
-    if (typeof input !== 'number' || input < 0)
+    if (typeof input !== 'number' || input < 0) {
       throw new Errorf(
         'The option "requestBodyBytesLimit" must be ' +
           'a positive Number or 0, but %v was given.',
         input,
       );
+    }
     this._requestBodyBytesLimit = input;
     return this;
   }

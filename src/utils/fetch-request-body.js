@@ -26,18 +26,20 @@ export const CHARACTER_ENCODING_LIST = [
  * @returns {Promise<string|undefined>}
  */
 export function fetchRequestBody(request, bodyBytesLimit = 0) {
-  if (!(request instanceof IncomingMessage))
+  if (!(request instanceof IncomingMessage)) {
     throw new Errorf(
       'The first parameter of "fetchRequestBody" must be ' +
         'an IncomingMessage instance, but %v was given.',
       request,
     );
-  if (typeof bodyBytesLimit !== 'number')
+  }
+  if (typeof bodyBytesLimit !== 'number') {
     throw new Errorf(
       'The parameter "bodyBytesLimit" of "fetchRequestBody" ' +
         'must be a number, but %v was given.',
       bodyBytesLimit,
     );
+  }
   return new Promise((resolve, reject) => {
     // сравнение внутреннего ограничения
     // размера тела запроса с заголовком
@@ -46,13 +48,14 @@ export function fetchRequestBody(request, bodyBytesLimit = 0) {
       request.headers['content-length'] || '0',
       10,
     );
-    if (bodyBytesLimit && contentLength && contentLength > bodyBytesLimit)
+    if (bodyBytesLimit && contentLength && contentLength > bodyBytesLimit) {
       throw createError(
         HttpErrors.PayloadTooLarge,
         'Request body limit is %s bytes, but %s bytes given.',
         bodyBytesLimit,
         contentLength,
       );
+    }
     // определение кодировки
     // по заголовку "content-type"
     let encoding = 'utf-8';
@@ -61,12 +64,13 @@ export function fetchRequestBody(request, bodyBytesLimit = 0) {
       const parsedContentType = parseContentType(contentType);
       if (parsedContentType && parsedContentType.charset) {
         encoding = parsedContentType.charset.toLowerCase();
-        if (!CHARACTER_ENCODING_LIST.includes(encoding))
+        if (!CHARACTER_ENCODING_LIST.includes(encoding)) {
           throw createError(
             HttpErrors.UnsupportedMediaType,
             'Request encoding %v is not supported.',
             encoding,
           );
+        }
       }
     }
     // подготовка массива загружаемых байтов

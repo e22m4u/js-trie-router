@@ -137,39 +137,44 @@ export class Route extends Debuggable {
       noEnvironmentNamespace: true,
       noInstantiationMessage: true,
     });
-    if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef))
+    if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef)) {
       throw new Errorf(
         'The first parameter of Route.constructor ' +
           'must be an Object, but %v was given.',
         routeDef,
       );
-    if (!routeDef.method || typeof routeDef.method !== 'string')
+    }
+    if (!routeDef.method || typeof routeDef.method !== 'string') {
       throw new Errorf(
         'The option "method" of the Route must be ' +
           'a non-empty String, but %v was given.',
         routeDef.method,
       );
+    }
     this._method = routeDef.method.toUpperCase();
-    if (typeof routeDef.path !== 'string')
+    if (typeof routeDef.path !== 'string') {
       throw new Errorf(
         'The option "path" of the Route must be ' +
           'a String, but %v was given.',
         routeDef.path,
       );
+    }
     this._path = routeDef.path;
-    if (typeof routeDef.handler !== 'function')
+    if (typeof routeDef.handler !== 'function') {
       throw new Errorf(
         'The option "handler" of the Route must be ' +
           'a Function, but %v was given.',
         routeDef.handler,
       );
+    }
     if (routeDef.meta != null) {
-      if (typeof routeDef.meta !== 'object' || Array.isArray(routeDef.meta))
+      if (typeof routeDef.meta !== 'object' || Array.isArray(routeDef.meta)) {
         throw new Errorf(
           'The option "meta" of the Route must be ' +
             'a plain Object, but %v was given.',
           routeDef.meta,
         );
+      }
       this._meta = cloneDeep(routeDef.meta);
     }
     this._handler = routeDef.handler;

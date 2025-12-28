@@ -40,7 +40,9 @@ export class ErrorSender extends DebuggableService {
       body.error.message = getStatusMessage(statusCode);
     }
     EXPOSED_ERROR_PROPERTIES.forEach(name => {
-      if (name in safeError) body.error[name] = safeError[name];
+      if (name in safeError) {
+        body.error[name] = safeError[name];
+      }
     });
     const requestData = {
       url: request.url,

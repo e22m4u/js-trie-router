@@ -9,19 +9,23 @@ import {format, Errorf} from '@e22m4u/js-format';
  * @returns {object}
  */
 export function createError(errorCtor, message, ...args) {
-  if (typeof errorCtor !== 'function')
+  if (typeof errorCtor !== 'function') {
     throw new Errorf(
       'The first parameter of "createError" must be ' +
         'a constructor, but %v was given.',
       errorCtor,
     );
-  if (message != null && typeof message !== 'string')
+  }
+  if (message != null && typeof message !== 'string') {
     throw new Errorf(
       'The second parameter of "createError" must be ' +
         'a String, but %v was given.',
       message,
     );
-  if (message == null) return new errorCtor();
+  }
+  if (message == null) {
+    return new errorCtor();
+  }
   const interpolatedMessage = format(message, ...args);
   return new errorCtor(interpolatedMessage);
 }

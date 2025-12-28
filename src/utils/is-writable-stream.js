@@ -6,6 +6,8 @@
  * @returns {boolean}
  */
 export function isWritableStream(value) {
-  if (!value || typeof value !== 'object') return false;
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
   return typeof value.end === 'function';
 }
