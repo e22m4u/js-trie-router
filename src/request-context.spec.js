@@ -11,7 +11,7 @@ import {
 
 describe('RequestContext', function () {
   describe('constructor', function () {
-    it('requires the parameter "container" to be the ServiceContainer', function () {
+    it('requires the parameter "container" to be a ServiceContainer instance', function () {
       const req = createRequestMock();
       const res = createResponseMock();
       const route = createRouteMock();
@@ -35,7 +35,7 @@ describe('RequestContext', function () {
       throwable(new ServiceContainer())();
     });
 
-    it('requires the parameter "request" to be the ServiceContainer', function () {
+    it('requires the parameter "request" to be an IncomingMessage instance', function () {
       const res = createResponseMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();
@@ -59,7 +59,7 @@ describe('RequestContext', function () {
       throwable(createRequestMock())();
     });
 
-    it('requires the parameter "response" to be the ServiceContainer', function () {
+    it('requires the parameter "response" to be a ServerResponse instance', function () {
       const req = createRequestMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();
@@ -83,7 +83,7 @@ describe('RequestContext', function () {
       throwable(createResponseMock())();
     });
 
-    it('requires the parameter "route" to be the Route', function () {
+    it('requires the parameter "route" to be a Route instance', function () {
       const req = createRequestMock();
       const res = createResponseMock();
       const cont = new ServiceContainer();
