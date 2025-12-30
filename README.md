@@ -24,6 +24,7 @@ HTTP маршрутизатор для Node.js на основе
   - [Глобальные хуки](#глобальные-хуки)
   - [Метаданные маршрута](#метаданные-маршрута)
   - [Состояние запроса](#состояние-запроса)
+  - [Ветвление маршрутов](#ветвление-маршрутов)
 - [Отладка](#отладка)
 - [Тестирование](#тестирование)
 - [Лицензия](#лицензия)
@@ -336,6 +337,76 @@ router.defineRoute({
     return `Hello, ${user.name}!`;
   },
 });
+```
+
+### Ветвление маршрутов
+
+Механизм ветвления позволяет группировать маршруты по общему префиксу пути.
+Созданная ветка предоставляет методы для объявления маршрутов и создания
+вложенных веток. Параметры ветки объединяются с параметрами родителя.
+Пути объединяются, массивы хуков объединяются, а объект метаданных
+подвергается глубокому слиянию.
+
+```js
+const router = new TrieRouter();
+
+// создание ветки для api
+const apiBranch = router.createBranch({
+  path: '/api',
+  // опционально:
+  //   preHandler: ...
+  //   postHandler: ...
+  //   meta: ...
+});
+
+// маршрут будет доступен по адресу /api/users
+apiBranch.defineRoute({
+  method: HttpMethod.GET,
+  path: '/users',
+  handler: () => 'Users list',
+});
+```
+
+Ветки позволяют задавать общие хуки и метаданные для группы маршрутов.
+Это удобно для реализации проверок авторизации или логирования в рамках
+определенного раздела приложения.
+
+```js
+const adminBranch = router.createBranch({
+  path: '/admin',
+  meta: {access: 'admin'}, // общие метаданные
+  preHandler: (ctx) => {
+    // проверка прав доступа для всей ветки
+  },
+});
+
+adminBranch.defineRoute({
+  method: HttpMethod.GET,
+  path: '/dashboard',
+  handler: (ctx) => {
+    // маршрут наследует префикс /admin и метаданные
+    console.log(ctx.meta); // {access: 'admin'}
+    return 'Dashboard';
+  },
+});
+
+// GET /admin/dashboard
+```
+
+Допускается создание вложенных веток любой глубины.
+
+```js
+    
+const apiBranch = router.createBranch({path: '/api'});
+const v1Branch = apiBranch.createBranch({path: '/v1'});
+
+v1Branch.defineRoute({
+  method: HttpMethod.GET,
+  path: '/status',
+  handler: () => 'API v1 working',
+});
+
+// GET /api/v1/status
 ```
 
 ## Отладка

@@ -3,7 +3,6 @@ import {Stream} from 'stream';
 import {TLSSocket} from 'tls';
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
-import {ROOT_PATH} from '../constants.js';
 import {createRequestMock} from './create-request-mock.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 
@@ -272,7 +271,7 @@ describe('createRequestMock', function () {
 
   it('uses the default path "/" without a query string', function () {
     const req = createRequestMock();
-    expect(req.url).to.be.eq(ROOT_PATH);
+    expect(req.url).to.be.eq('/');
   });
 
   it('uses by default only the "host" header', function () {
@@ -380,7 +379,7 @@ describe('createRequestMock', function () {
 
   it('the parameter "host" does not affect the url', async function () {
     const req = createRequestMock({host: 'myHost'});
-    expect(req.url).to.be.eq(ROOT_PATH);
+    expect(req.url).to.be.eq('/');
     expect(req.headers['host']).to.be.eq('myHost');
   });
 

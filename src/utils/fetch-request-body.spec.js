@@ -25,13 +25,13 @@ describe('fetchRequestBody', function () {
     throwable(createRequestMock())();
   });
 
-  it('requires the parameter "bodyBytesLimit" to be an IncomingMessage instance', function () {
+  it('requires the parameter "bodyBytesLimit" to be a Number', function () {
     const req = createRequestMock();
     const throwable = v => () => fetchRequestBody(req, v);
     const error = v =>
       format(
         'The parameter "bodyBytesLimit" of "fetchRequestBody" ' +
-          'must be a number, but %s was given.',
+          'must be a Number, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));

@@ -7,6 +7,7 @@ import {DebuggableService} from './debuggable-service.js';
 import {DataSender, ErrorSender} from './senders/index.js';
 import {HookInvoker, HookRegistry, RouterHookType} from './hooks/index.js';
 import {isPromise, isResponseSent, getRequestPathname} from './utils/index.js';
+import {RouterBranch} from './branch/router-branch.js';
 
 /**
  * Trie router.
@@ -42,6 +43,29 @@ export class TrieRouter extends DebuggableService {
    */
   defineRoute(routeDef) {
     return this.getService(RouteRegistry).defineRoute(routeDef);
+  }
+
+  /**
+   * Create branch.
+   *
+   * Example:
+   * ```js
+   * const router = new TrieRouter();
+   * const apiBranch = router.createBranch({path: 'api'});
+   *
+   * // GET /api/hello
+   * apiBranch.defineRoute({
+   *   method: HttpMethod.GET,
+   *   path: '/hello',
+   *   handler: () => 'Hello World!',
+   * });
+   * ```
+   *
+   * @param {import('./branch/index.js').RouterBranchDefinition} branchDef
+   * @returns {import('./branch/index.js').RouterBranchDefinition}
+   */
+  createBranch(branchDef) {
+    return new RouterBranch(this, branchDef);
   }
 
   /**

@@ -1,5 +1,4 @@
 import {expect} from 'chai';
-import {ROOT_PATH} from '../constants.js';
 import {HttpMethod, Route} from '../route/index.js';
 import {createRouteMock} from './create-route-mock.js';
 
@@ -8,7 +7,7 @@ describe('createRouteMock', function () {
     const res = createRouteMock();
     expect(res).to.be.instanceof(Route);
     expect(res.method).to.be.eq(HttpMethod.GET);
-    expect(res.path).to.be.eq(ROOT_PATH);
+    expect(res.path).to.be.eq('/');
     expect(res.handler()).to.be.eq('OK');
   });
 

@@ -3,7 +3,7 @@ import {format} from '@e22m4u/js-format';
 import {parseCookieString} from './parse-cookie-string.js';
 
 describe('parseCookieString', function () {
-  it('should require the first parameter to be an IncomingMessage instance', function () {
+  it('should require the first parameter to be a String', function () {
     const throwable = v => () => parseCookieString(v);
     const error = v =>
       format(

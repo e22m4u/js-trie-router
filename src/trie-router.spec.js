@@ -4,13 +4,14 @@ import {TrieRouter} from './trie-router.js';
 import {Route, HttpMethod} from './route/index.js';
 import {RequestContext} from './request-context.js';
 import {ServerResponse, IncomingMessage} from 'http';
+import {RouterBranch} from './branch/router-branch.js';
 import {DataSender, ErrorSender} from './senders/index.js';
 import {HookRegistry, RouterHookType} from './hooks/index.js';
 import {createRequestMock, createResponseMock} from './utils/index.js';
 
 describe('TrieRouter', function () {
   describe('defineRoute', function () {
-    it('returns the Route instance', function () {
+    it('should return a Route instance', function () {
       const router = new TrieRouter();
       const path = '/path';
       const handler = () => 'ok';
@@ -22,13 +23,28 @@ describe('TrieRouter', function () {
     });
   });
 
+  describe('createBranch', function () {
+    it('should return a RouterBranch instance', function () {
+      const router = new TrieRouter();
+      const res = router.createBranch({path: ROOT_PATH});
+      expect(res).to.be.instanceOf(RouterBranch);
+    });
+
+    it('should pass the "path" option to a router branch', function () {
+      const router = new TrieRouter();
+      const branchDef = {path: 'foo'};
+      const res = router.createBranch(branchDef);
+      expect(res.getDefinition().path).to.be.eq(branchDef.path);
+    });
+  });
+
   describe('requestListener', function () {
     it('should be a function', function () {
       const router = new TrieRouter();
       expect(typeof router.requestListener).to.be.eq('function');
     });
 
-    it('provides the request context to the route handler', function (done) {
+    it('should provide the request context to the route handler', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -43,7 +59,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('provides path parameters to the request context', function (done) {
+    it('should provide path parameters to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -58,7 +74,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('provides query parameters to the request context', function (done) {
+    it('should provide query parameters to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -73,7 +89,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('provides parsed cookies to the request context', function (done) {
+    it('should provide parsed cookies to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -88,7 +104,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('provides the plain text body to the request context', function (done) {
+    it('should provide the plain text body to the request context', function (done) {
       const router = new TrieRouter();
       const body = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
@@ -104,7 +120,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('provides the parsed JSON body to the request context', function (done) {
+    it('should provide the parsed JSON body to the request context', function (done) {
       const router = new TrieRouter();
       const data = {p1: 'foo', p2: 'bar'};
       router.defineRoute({
@@ -120,7 +136,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('provides request headers to the request context', function (done) {
+    it('should provide request headers to the request context', function (done) {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.GET,
@@ -138,7 +154,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('provides the route to the request context', function (done) {
+    it('should provide the route to the request context', function (done) {
       const router = new TrieRouter();
       const metaData = {foo: {bar: {baz: 'qux'}}};
       const currentRoute = router.defineRoute({
@@ -155,7 +171,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('provides access to route meta via the request context', function (done) {
+    it('should provide access to route meta via the request context', function (done) {
       const router = new TrieRouter();
       const metaData = {role: 'admin'};
       router.defineRoute({
@@ -172,7 +188,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('uses the DataSender to send the server response', function (done) {
+    it('should use the DataSender to send the server response', function (done) {
       const router = new TrieRouter();
       const resBody = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
@@ -192,7 +208,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('uses the ErrorSender to send the server response', function (done) {
+    it('should use the ErrorSender to send the server response', function (done) {
       const router = new TrieRouter();
       const error = new Error();
       router.defineRoute({
@@ -216,7 +232,7 @@ describe('TrieRouter', function () {
     });
 
     describe('hooks', function () {
-      it('invokes entire "preHandler" hooks before the route handler', async function () {
+      it('should invoke entire "preHandler" hooks before the route handler', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -244,7 +260,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('invokes entire "preHandler" hooks after the route handler', async function () {
+      it('should invoke entire "preHandler" hooks after the route handler', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -272,7 +288,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
-      it('provides the request context to the "preHandler" hooks', async function () {
+      it('should provide the request context to the "preHandler" hooks', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -303,7 +319,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('provides the request context and return value from the route handler to the "postHandler" hooks', async function () {
+      it('should provide the request context and return value from the route handler to the "postHandler" hooks', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -338,7 +354,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
-      it('invokes the route handler if entire "preHandler" hooks returns undefined or null', async function () {
+      it('should invoke the route handler if entire "preHandler" hooks returns undefined or null', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -368,7 +384,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('sends a returns value from the route handler if entire "postHandler" hooks returns undefined or null', async function () {
+      it('should send a returns value from the route handler if entire "postHandler" hooks returns undefined or null', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -398,7 +414,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
-      it('sends a return value from the "preHandler" hook in the first priority', async function () {
+      it('should send a return value from the "preHandler" hook in the first priority', async function () {
         const router = new TrieRouter();
         const order = [];
         const preHandlerBody = 'foo';
@@ -430,7 +446,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler']);
       });
 
-      it('sends a return value from the "postHandler" hook in the second priority', async function () {
+      it('should send a return value from the "postHandler" hook in the second priority', async function () {
         const router = new TrieRouter();
         const order = [];
         const handlerBody = 'foo';
@@ -459,7 +475,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler', 'handler', 'postHandler']);
       });
 
-      it('sends a return value from the root handler in the third priority', async function () {
+      it('should send a return value from the root handler in the third priority', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -590,7 +606,7 @@ describe('TrieRouter', function () {
   });
 
   describe('addHook', function () {
-    it('adds the given hook to the HookRegistry and returns itself', function () {
+    it('should add the given hook to the HookRegistry and returns itself', function () {
       const router = new TrieRouter();
       const reg = router.getService(HookRegistry);
       const type = RouterHookType.PRE_HANDLER;
@@ -603,7 +619,7 @@ describe('TrieRouter', function () {
   });
 
   describe('addPreHandler', function () {
-    it('adds the given pre-handler hook to the HookRegistry and returns itself', function () {
+    it('should add the given pre-handler hook to the HookRegistry and returns itself', function () {
       const router = new TrieRouter();
       const reg = router.getService(HookRegistry);
       const hook = () => undefined;
@@ -615,7 +631,7 @@ describe('TrieRouter', function () {
   });
 
   describe('addPostHandler', function () {
-    it('adds the given post-handler hook to the HookRegistry and returns itself', function () {
+    it('should add the given post-handler hook to the HookRegistry and returns itself', function () {
       const router = new TrieRouter();
       const reg = router.getService(HookRegistry);
       const hook = () => undefined;

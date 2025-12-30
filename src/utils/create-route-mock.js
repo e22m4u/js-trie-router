@@ -1,4 +1,3 @@
-import {ROOT_PATH} from '../constants.js';
 import {Route, HttpMethod} from '../route/index.js';
 
 /**
@@ -17,7 +16,7 @@ import {Route, HttpMethod} from '../route/index.js';
 export function createRouteMock(options = {}) {
   return new Route({
     method: options.method || HttpMethod.GET,
-    path: options.path || ROOT_PATH,
+    path: options.path || '/',
     handler: options.handler || (() => 'OK'),
   });
 }

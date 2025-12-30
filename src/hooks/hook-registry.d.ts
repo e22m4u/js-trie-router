@@ -17,6 +17,11 @@ export type RouterHookType =
   (typeof RouterHookType)[keyof typeof RouterHookType];
 
 /**
+ * Router hook types.
+ */
+export const ROUTER_HOOK_TYPES: RouterHookType[];
+
+/**
  * Router hook.
  */
 export type RouterHook = Callable;

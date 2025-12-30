@@ -14,6 +14,13 @@ export const RouterHookType = {
 };
 
 /**
+ * Router hook types.
+ *
+ * @type {string[]}
+ */
+export const ROUTER_HOOK_TYPES = Object.values(RouterHookType);
+
+/**
  * Hook registry.
  */
 export class HookRegistry {

@@ -36,7 +36,7 @@ export function fetchRequestBody(request, bodyBytesLimit = 0) {
   if (typeof bodyBytesLimit !== 'number') {
     throw new InvalidArgumentError(
       'The parameter "bodyBytesLimit" of "fetchRequestBody" ' +
-        'must be a number, but %v was given.',
+        'must be a Number, but %v was given.',
       bodyBytesLimit,
     );
   }
@@ -82,13 +82,20 @@ export function fetchRequestBody(request, bodyBytesLimit = 0) {
     const onData = chunk => {
       receivedLength += chunk.length;
       if (bodyBytesLimit && receivedLength > bodyBytesLimit) {
-        request.removeAllListeners();
+        cleanupListeners();
         const error = createError(
           HttpErrors.PayloadTooLarge,
           'Request body limit is %v bytes, but %v bytes given.',
           bodyBytesLimit,
           receivedLength,
         );
+        // после удаления слушателей поток продолжает быть
+        // в состоянии resume (flowing mode), данные будут
+        // считываться в никуда, и чтобы сэкономить трафик
+        // и ресурсы сервера при превышении лимита,
+        // выполняется уничтожение потока запроса
+        request.unpipe();
+        request.destroy();
         reject(error);
         return;
       }
@@ -98,7 +105,7 @@ export function fetchRequestBody(request, bodyBytesLimit = 0) {
     // обработчики событий, и сравнить полученный объем
     // данных с заявленным в заголовке "content-length"
     const onEnd = () => {
-      request.removeAllListeners();
+      cleanupListeners();
       if (contentLength && contentLength !== receivedLength) {
         const error = createError(
           HttpErrors.BadRequest,
@@ -119,8 +126,17 @@ export function fetchRequestBody(request, bodyBytesLimit = 0) {
     // и отклоняется ожидающий Promise
     // ошибкой с кодом 400
     const onError = error => {
-      request.removeAllListeners();
+      cleanupListeners();
       reject(HttpErrors(400, error));
+    };
+    // запрос может иметь слушателей, установленных самим Node.js
+    // сервером или другими инструментами, которые подписались
+    // на close, aborted или error, потому нельзя использовать
+    // метод removeAllListeners
+    const cleanupListeners = () => {
+      request.removeListener('data', onData);
+      request.removeListener('end', onEnd);
+      request.removeListener('error', onError);
     };
     // добавление обработчиков прослушивающих
     // события входящего запроса и возобновление

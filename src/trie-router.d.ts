@@ -2,6 +2,7 @@ import {RequestListener} from 'http';
 import {Route} from './route/index.js';
 import {RouteDefinition} from './route/index.js';
 import {DebuggableService} from './debuggable-service.js';
+import {RouterBranch, RouterBranchDefinition} from './branch/index.js';
 
 import {
   RouterHook,
@@ -42,6 +43,26 @@ export declare class TrieRouter extends DebuggableService {
    * @param routeDef
    */
   defineRoute(routeDef: RouteDefinition): Route;
+
+  /**
+   * Create branch.
+   *
+   * Example:
+   * ```js
+   * const router = new TrieRouter();
+   * const apiBranch = router.createBranch({path: 'api'});
+   *
+   * // GET /api/hello
+   * apiBranch.defineRoute({
+   *   method: HttpMethod.GET,
+   *   path: '/hello',
+   *   handler: () => 'Hello World!',
+   * });
+   * ```
+   *
+   * @param branchDef
+   */
+  createBranch(branchDef: RouterBranchDefinition): RouterBranch;
 
   /**
    * Request listener.

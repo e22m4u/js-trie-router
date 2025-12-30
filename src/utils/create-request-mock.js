@@ -2,7 +2,6 @@ import {Socket} from 'net';
 import {TLSSocket} from 'tls';
 import {IncomingMessage} from 'http';
 import queryString from 'querystring';
-import {ROOT_PATH} from '../constants.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {isReadableStream} from './is-readable-stream.js';
 import {createCookieString} from './create-cookie-string.js';
@@ -150,7 +149,7 @@ export function createRequestMock(patch) {
   const request =
     patch.stream ||
     createRequestStream(patch.secure, patch.body, patch.encoding);
-  request.url = createRequestUrl(patch.path || ROOT_PATH, patch.query);
+  request.url = createRequestUrl(patch.path || '/', patch.query);
   request.headers = createRequestHeaders(
     patch.host,
     patch.secure,
@@ -229,7 +228,7 @@ function createRequestUrl(path, query) {
       query,
     );
   }
-  let url = (ROOT_PATH + path).replace('//', '/');
+  let url = ('/' + path).replace('//', '/');
   if (typeof query === 'object') {
     const qs = queryString.stringify(query);
     if (qs) {
