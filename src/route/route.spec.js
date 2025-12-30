@@ -30,6 +30,17 @@ describe('Route', function () {
       })();
     });
 
+    it('should set a given definition to the "definition" property', function () {
+      const definition = {
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
+        handler: () => undefined,
+        meta: {foo: 'bar'},
+      };
+      const route = new Route(definition);
+      expect(route.definition).to.be.eql(definition);
+    });
+
     describe('the "method" option', function () {
       it('should require the "method" option to be a non-empty String', function () {
         const throwable = v => () =>

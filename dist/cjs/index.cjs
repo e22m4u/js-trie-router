@@ -1045,63 +1045,50 @@ var HttpMethod = {
 };
 var _Route = class _Route extends import_js_debug.Debuggable {
   /**
-   * Method.
+   * Route definition.
    *
-   * @type {string}
-   * @private
+   * @type {RouteDefinition}
    */
-  _method;
+  _definition;
+  /**
+   * Getter of the route definition.
+   *
+   * @returns {RouteDefinition}
+   */
+  get definition() {
+    return this._definition;
+  }
   /**
    * Getter of the method.
    *
    * @returns {string}
    */
   get method() {
-    return this._method;
+    return this._definition.method;
   }
-  /**
-   * Path template.
-   *
-   * @type {string}
-   * @private
-   */
-  _path;
   /**
    * Getter of the path.
    *
    * @returns {string}
    */
   get path() {
-    return this._path;
+    return this._definition.path;
   }
-  /**
-   * Meta.
-   *
-   * @type {object}
-   */
-  _meta = {};
   /**
    * Getter of the meta.
    *
    * @returns {object}
    */
   get meta() {
-    return this._meta;
+    return this._definition.meta;
   }
-  /**
-   * Handler.
-   *
-   * @type {RouteHandler}
-   * @private
-   */
-  _handler;
   /**
    * Getter of the handler.
    *
    * @returns {*}
    */
   get handler() {
-    return this._handler;
+    return this._definition.handler;
   }
   /**
    * Hook registry.
@@ -1130,25 +1117,22 @@ var _Route = class _Route extends import_js_debug.Debuggable {
       noInstantiationMessage: true
     });
     validateRouteDefinition(routeDef);
-    this._method = routeDef.method.toUpperCase();
-    this._path = routeDef.path;
-    if (routeDef.meta !== void 0) {
-      this._meta = cloneDeep(routeDef.meta);
-    }
-    this._handler = routeDef.handler;
+    this._definition = cloneDeep(routeDef);
+    this._definition.method = this._definition.method.toUpperCase();
+    this._definition.meta = this._definition.meta || {};
     if (routeDef.preHandler !== void 0) {
-      const preHandlerHooks = Array.isArray(routeDef.preHandler) ? routeDef.preHandler : [routeDef.preHandler];
+      const preHandlerHooks = [routeDef.preHandler].flat().filter(Boolean);
       preHandlerHooks.forEach((hook) => {
         this._hookRegistry.addHook(RouterHookType.PRE_HANDLER, hook);
       });
     }
     if (routeDef.postHandler !== void 0) {
-      const postHandlerHooks = Array.isArray(routeDef.postHandler) ? routeDef.postHandler : [routeDef.postHandler];
+      const postHandlerHooks = [routeDef.postHandler].flat().filter(Boolean);
       postHandlerHooks.forEach((hook) => {
         this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
       });
     }
-    this.ctorDebug("A new route %s %v was created.", this._method, this._path);
+    this.ctorDebug("A new route %s %v was created.", this.method, this.path);
   }
   /**
    * Handle request.
@@ -1161,10 +1145,10 @@ var _Route = class _Route extends import_js_debug.Debuggable {
     const requestPath = getRequestPathname(context.request);
     debug(
       "Invoking the Route handler for the request %s %v.",
-      this.method.toUpperCase(),
+      this.method,
       requestPath
     );
-    return this._handler(context);
+    return this.handler(context);
   }
 };
 __name(_Route, "Route");

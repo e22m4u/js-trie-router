@@ -43,12 +43,20 @@ export const HttpMethod = {
  */
 export class Route extends Debuggable {
   /**
-   * Method.
+   * Route definition.
    *
-   * @type {string}
-   * @private
+   * @type {RouteDefinition}
    */
-  _method;
+  _definition;
+
+  /**
+   * Getter of the route definition.
+   *
+   * @returns {RouteDefinition}
+   */
+  get definition() {
+    return this._definition;
+  }
 
   /**
    * Getter of the method.
@@ -56,16 +64,8 @@ export class Route extends Debuggable {
    * @returns {string}
    */
   get method() {
-    return this._method;
+    return this._definition.method;
   }
-
-  /**
-   * Path template.
-   *
-   * @type {string}
-   * @private
-   */
-  _path;
 
   /**
    * Getter of the path.
@@ -73,15 +73,8 @@ export class Route extends Debuggable {
    * @returns {string}
    */
   get path() {
-    return this._path;
+    return this._definition.path;
   }
-
-  /**
-   * Meta.
-   *
-   * @type {object}
-   */
-  _meta = {};
 
   /**
    * Getter of the meta.
@@ -89,16 +82,8 @@ export class Route extends Debuggable {
    * @returns {object}
    */
   get meta() {
-    return this._meta;
+    return this._definition.meta;
   }
-
-  /**
-   * Handler.
-   *
-   * @type {RouteHandler}
-   * @private
-   */
-  _handler;
 
   /**
    * Getter of the handler.
@@ -106,7 +91,7 @@ export class Route extends Debuggable {
    * @returns {*}
    */
   get handler() {
-    return this._handler;
+    return this._definition.handler;
   }
 
   /**
@@ -138,29 +123,28 @@ export class Route extends Debuggable {
       noInstantiationMessage: true,
     });
     validateRouteDefinition(routeDef);
-    this._method = routeDef.method.toUpperCase();
-    this._path = routeDef.path;
-    if (routeDef.meta !== undefined) {
-      this._meta = cloneDeep(routeDef.meta);
-    }
-    this._handler = routeDef.handler;
+    // установка копии определения
+    // в свойство экземпляра
+    this._definition = cloneDeep(routeDef);
+    // нормализация метода и метаданных
+    // выполняется в конструкторе единожды
+    this._definition.method = this._definition.method.toUpperCase();
+    this._definition.meta = this._definition.meta || {};
+    // регистрация хуков маршрута
+    // в экземпляре реестра
     if (routeDef.preHandler !== undefined) {
-      const preHandlerHooks = Array.isArray(routeDef.preHandler)
-        ? routeDef.preHandler
-        : [routeDef.preHandler];
+      const preHandlerHooks = [routeDef.preHandler].flat().filter(Boolean);
       preHandlerHooks.forEach(hook => {
         this._hookRegistry.addHook(RouterHookType.PRE_HANDLER, hook);
       });
     }
     if (routeDef.postHandler !== undefined) {
-      const postHandlerHooks = Array.isArray(routeDef.postHandler)
-        ? routeDef.postHandler
-        : [routeDef.postHandler];
+      const postHandlerHooks = [routeDef.postHandler].flat().filter(Boolean);
       postHandlerHooks.forEach(hook => {
         this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
       });
     }
-    this.ctorDebug('A new route %s %v was created.', this._method, this._path);
+    this.ctorDebug('A new route %s %v was created.', this.method, this.path);
   }
 
   /**
@@ -174,9 +158,9 @@ export class Route extends Debuggable {
     const requestPath = getRequestPathname(context.request);
     debug(
       'Invoking the Route handler for the request %s %v.',
-      this.method.toUpperCase(),
+      this.method,
       requestPath,
     );
-    return this._handler(context);
+    return this.handler(context);
   }
 }

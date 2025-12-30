@@ -60,6 +60,11 @@ export type RouteDefinition = {
  */
 export declare class Route {
   /**
+   * Route definition.
+   */
+  get definition(): RouteDefinition;
+
+  /**
    * Method.
    */
   get method(): string;
