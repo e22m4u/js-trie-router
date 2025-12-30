@@ -16,33 +16,28 @@ describe('RouterBranch', function () {
       const router = new TrieRouter();
       const parent = router.createBranch({path: 'foo'});
       const S = new RouterBranch(router, {path: 'bar'}, parent);
-      expect(S.getDefinition().path).to.be.eq('/foo/bar');
+      expect(S.definition.path).to.be.eq('/foo/bar');
     });
-  });
 
-  describe('getRouter', function () {
-    it('should return the router instance that was provided to the constructor', function () {
+    it('should set a given router to the "router" property', function () {
       const router = new TrieRouter();
       const S = new RouterBranch(router, {path: ROOT_PATH});
-      expect(S.getRouter()).to.be.eq(router);
+      expect(S.router).to.be.eq(router);
     });
-  });
 
-  describe('getDefinition', function () {
-    it('should return the branch definition that was provided to the constructor', function () {
+    it('should set a given definition to the "definition" property as a copy', function () {
       const router = new TrieRouter();
       const branchDef = {path: ROOT_PATH};
       const S = new RouterBranch(router, branchDef);
-      expect(S.getDefinition()).to.be.eql(branchDef);
+      expect(S.definition).to.be.eql(branchDef);
+      expect(S.definition).to.be.not.eq(branchDef);
     });
-  });
 
-  describe('getParentBranch', function () {
-    it('should return the parent branch that was provided to the constructor', function () {
+    it('should set a parent branch to the "parentBranch" property', function () {
       const router = new TrieRouter();
       const parent = router.createBranch({path: ROOT_PATH});
       const S = new RouterBranch(router, {path: ROOT_PATH}, parent);
-      expect(S.getParentBranch()).to.be.eq(parent);
+      expect(S.parentBranch).to.be.eq(parent);
     });
   });
 
@@ -82,7 +77,7 @@ describe('RouterBranch', function () {
       const router = new TrieRouter();
       const S = new RouterBranch(router, {path: 'foo'});
       const res = S.createBranch({path: 'bar'});
-      expect(res.getDefinition().path).to.be.eq('/foo/bar');
+      expect(res.definition.path).to.be.eq('/foo/bar');
     });
   });
 });

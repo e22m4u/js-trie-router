@@ -46,14 +46,14 @@ export type RouteMeta = {
 /**
  * Route definition.
  */
-export type RouteDefinition = {
+export interface RouteDefinition {
   method: string;
   path: string;
   handler: RouteHandler;
   preHandler?: RoutePreHandler | RoutePreHandler[];
   postHandler?: RoutePostHandler | RoutePostHandler[];
   meta?: RouteMeta;
-};
+}
 
 /**
  * Route.

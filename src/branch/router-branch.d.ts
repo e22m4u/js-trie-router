@@ -13,12 +13,12 @@ import {
 /**
  * Router branch definition.
  */
-export type RouterBranchDefinition = {
+export interface RouterBranchDefinition {
   path: string;
   preHandler?: RoutePreHandler | RoutePreHandler[];
   postHandler?: RoutePostHandler | RoutePostHandler[];
   meta?: RouteMeta;
-};
+}
 
 /**
  * Router branch.
@@ -27,28 +27,26 @@ export declare class RouterBranch extends DebuggableService {
   /**
    * Get router.
    */
-  getRouter(): TrieRouter;
-
-  /**
-   * Get parent branch.
-   */
-  getParentBranch(): RouterBranch | undefined;
+  get router(): TrieRouter;
 
   /**
    * Get definition.
    */
-  getDefinition(): RouterBranchDefinition;
+  get definition(): RouterBranchDefinition;
+
+  /**
+   * Get parent branch.
+   */
+  get parentBranch(): RouterBranch | undefined;
 
   /**
    * Constructor.
    *
-   * @param container
    * @param router
    * @param branchDef
    * @param parentBranch
    */
   constructor(
-    container: ServiceContainer,
     router: TrieRouter,
     branchDef: RouterBranchDefinition,
     parentBranch?: RouterBranch,

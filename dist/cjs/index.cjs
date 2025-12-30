@@ -1968,7 +1968,7 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
    *
    * @type {TrieRouter}
    */
-  getRouter() {
+  get router() {
     return this._router;
   }
   /**
@@ -1982,8 +1982,8 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
    *
    * @type {RouterBranchDefinition}
    */
-  getDefinition() {
-    return { ...this._definition };
+  get definition() {
+    return this._definition;
   }
   /**
    * Parent branch.
@@ -1996,7 +1996,7 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
    *
    * @returns {RouterBranch|undefined}
    */
-  getParentBranch() {
+  get parentBranch() {
     return this._parentBranch;
   }
   /**
@@ -2023,13 +2023,14 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
     }
     this._parentBranch = parentBranch;
     if (parentBranch) {
-      this._definition = mergeRouterBranchDefinitions(
-        parentBranch.getDefinition(),
+      const mergedDef = mergeRouterBranchDefinitions(
+        parentBranch.definition,
         branchDef
       );
+      this._definition = cloneDeep(mergedDef);
     } else {
       validateRouterBranchDefinition(branchDef);
-      this._definition = branchDef;
+      this._definition = cloneDeep(branchDef);
     }
     this.ctorDebug("Branch %v created.", normalizePath(branchDef.path, true));
     this.ctorDebug("Branch path was %v.", this._definition.path);

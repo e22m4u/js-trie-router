@@ -1,4 +1,5 @@
 import {Route} from '../route/index.js';
+import {cloneDeep} from '../utils/index.js';
 import {TrieRouter} from '../trie-router.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {normalizePath} from '../utils/normalize-path.js';
@@ -35,7 +36,7 @@ export class RouterBranch extends DebuggableService {
    *
    * @type {TrieRouter}
    */
-  getRouter() {
+  get router() {
     return this._router;
   }
 
@@ -51,8 +52,8 @@ export class RouterBranch extends DebuggableService {
    *
    * @type {RouterBranchDefinition}
    */
-  getDefinition() {
-    return {...this._definition};
+  get definition() {
+    return this._definition;
   }
 
   /**
@@ -67,7 +68,7 @@ export class RouterBranch extends DebuggableService {
    *
    * @returns {RouterBranch|undefined}
    */
-  getParentBranch() {
+  get parentBranch() {
     return this._parentBranch;
   }
 
@@ -96,13 +97,14 @@ export class RouterBranch extends DebuggableService {
     }
     this._parentBranch = parentBranch;
     if (parentBranch) {
-      this._definition = mergeRouterBranchDefinitions(
-        parentBranch.getDefinition(),
+      const mergedDef = mergeRouterBranchDefinitions(
+        parentBranch.definition,
         branchDef,
       );
+      this._definition = cloneDeep(mergedDef);
     } else {
       validateRouterBranchDefinition(branchDef);
-      this._definition = branchDef;
+      this._definition = cloneDeep(branchDef);
     }
     this.ctorDebug('Branch %v created.', normalizePath(branchDef.path, true));
     this.ctorDebug('Branch path was %v.', this._definition.path);
