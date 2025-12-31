@@ -433,7 +433,7 @@ router.defineRoute({
     const user = findUserById(id); // логика поиска пользователя
     if (!user) {
       // выброс ошибки 404 Not Found
-      // маршрутизатор поймает ошибку и отправит JSON-ответ
+      // маршрутизатор перехватит ее и отправит JSON-ответ
       throw new HttpErrors.NotFound('Пользователь не найден');
     }
     if (!hasAccess(ctx.state.currentUser, user)) {
