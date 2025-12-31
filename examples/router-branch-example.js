@@ -3,12 +3,17 @@ import {TrieRouter, HttpMethod} from '../src/index.js';
 
 const router = new TrieRouter();
 
-// регистрация маршрута для разбора
-// передаваемых параметров пути
-router.defineRoute({
+// создание ветки маршрутизатора с адресом "api",
+// указанный путь будет использован как префикс
+// для маршрутов данной ветки
+const apiBranch = router.createBranch({path: 'api'});
+
+// определение маршрута в рамках ветки "api",
+// маршрут будет доступен по адресу "/api/status"
+apiBranch.defineRoute({
   method: HttpMethod.GET,
-  path: '/parseParams/:p1/:p2',
-  handler: ({params}) => params,
+  path: '/status',
+  handler: () => 'API is working',
 });
 
 // создание экземпляра HTTP сервера
@@ -26,6 +31,6 @@ server.listen(port, host, function () {
   console.log(
     cyan,
     'Open in browser:',
-    `http://${host}:${port}/parseParams/foo/bar`,
+    `http://${host}:${port}/api/status`,
   );
 });

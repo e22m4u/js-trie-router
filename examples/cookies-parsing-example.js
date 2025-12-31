@@ -1,6 +1,5 @@
 import http from 'http';
-import {TrieRouter} from '../src/index.js';
-import {HttpMethod} from '../src/route.js';
+import {TrieRouter, HttpMethod} from '../src/index.js';
 
 const router = new TrieRouter();
 
