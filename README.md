@@ -420,8 +420,7 @@ v1Branch.defineRoute({
 Для более гибкого управления HTTP-статусами рекомендуется использовать
 библиотеку [http-errors](https://www.npmjs.com/package/http-errors).
 Стандартный обработчик ошибок спроектирован для работы с данной библиотекой
-и автоматически извлекает `statusCode`, `message` и другие полезные свойства
-ошибки.
+и автоматически извлекает `statusCode`, `message` и другие свойства ошибки.
 
 ```js
 import HttpErrors from 'http-errors';
@@ -439,6 +438,7 @@ router.defineRoute({
     }
     if (!hasAccess(ctx.state.currentUser, user)) {
       // ошибка 403 Forbidden с дополнительными данными
+      // свойства "code" и "details" будут добавлены к ответу
       const error = new HttpErrors.Forbidden('Доступ запрещен');
       error.code = 'ACCESS_DENIED';
       error.details = {reason: 'Недостаточно прав'};
