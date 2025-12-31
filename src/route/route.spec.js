@@ -2,9 +2,9 @@ import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
 import {ROOT_PATH} from '../constants.js';
 import {Route, HttpMethod} from './route.js';
-import {RouterHookType} from '../hooks/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {RequestContext} from '../request-context.js';
+import {HookRegistry, RouterHookType} from '../hooks/index.js';
 import {createRequestMock, createResponseMock} from '../utils/index.js';
 
 describe('Route', function () {
@@ -28,17 +28,6 @@ describe('Route', function () {
         path: ROOT_PATH,
         handler: () => undefined,
       })();
-    });
-
-    it('should set a given definition to the "definition" property', function () {
-      const definition = {
-        method: HttpMethod.GET,
-        path: ROOT_PATH,
-        handler: () => undefined,
-        meta: {foo: 'bar'},
-      };
-      const route = new Route(definition);
-      expect(route.definition).to.be.eql(definition);
     });
 
     describe('the "method" option', function () {
@@ -207,8 +196,9 @@ describe('Route', function () {
           preHandler: value,
           handler: () => undefined,
         });
-        expect(route.hookRegistry.hasHook(RouterHookType.PRE_HANDLER, value)).to
-          .be.true;
+        const hookReg = route.getHookRegistry();
+        const res = hookReg.hasHook(RouterHookType.PRE_HANDLER, value);
+        expect(res).to.be.true;
       });
 
       it('should add a Function Array to "preHandler" hooks', function () {
@@ -219,10 +209,11 @@ describe('Route', function () {
           preHandler: value,
           handler: () => undefined,
         });
-        expect(route.hookRegistry.hasHook(RouterHookType.PRE_HANDLER, value[0]))
-          .to.be.true;
-        expect(route.hookRegistry.hasHook(RouterHookType.PRE_HANDLER, value[1]))
-          .to.be.true;
+        const hookReg = route.getHookRegistry();
+        const res1 = hookReg.hasHook(RouterHookType.PRE_HANDLER, value[0]);
+        const res2 = hookReg.hasHook(RouterHookType.PRE_HANDLER, value[1]);
+        expect(res1).to.be.true;
+        expect(res2).to.be.true;
       });
     });
 
@@ -285,8 +276,9 @@ describe('Route', function () {
           handler: () => undefined,
           postHandler: value,
         });
-        expect(route.hookRegistry.hasHook(RouterHookType.POST_HANDLER, value))
-          .to.be.true;
+        const hookReg = route.getHookRegistry();
+        const res = hookReg.hasHook(RouterHookType.POST_HANDLER, value);
+        expect(res).to.be.true;
       });
 
       it('should add a Function Array to "postHandler" hooks', function () {
@@ -297,12 +289,11 @@ describe('Route', function () {
           handler: () => undefined,
           postHandler: value,
         });
-        expect(
-          route.hookRegistry.hasHook(RouterHookType.POST_HANDLER, value[0]),
-        ).to.be.true;
-        expect(
-          route.hookRegistry.hasHook(RouterHookType.POST_HANDLER, value[1]),
-        ).to.be.true;
+        const hookReg = route.getHookRegistry();
+        const res1 = hookReg.hasHook(RouterHookType.POST_HANDLER, value[0]);
+        const res2 = hookReg.hasHook(RouterHookType.POST_HANDLER, value[1]);
+        expect(res1).to.be.true;
+        expect(res2).to.be.true;
       });
     });
 
@@ -365,6 +356,33 @@ describe('Route', function () {
         });
         expect(route.meta).to.be.eql({});
       });
+    });
+  });
+
+  describe('getDefinition', function () {
+    it('should return a route definition that was provided to the constructor', function () {
+      const definition = {
+        method: HttpMethod.GET,
+        path: '/myPath',
+        handler: () => undefined,
+        meta: {foo: 'bar'},
+      };
+      const route = new Route(definition);
+      expect(route.getDefinition()).to.be.eql(definition);
+    });
+  });
+
+  describe('getHookRegistry', function () {
+    it('should return a hook registry of the current instance', function () {
+      const route = new Route({
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
+        handler: () => undefined,
+      });
+      const res1 = route.getHookRegistry();
+      const res2 = route.getHookRegistry();
+      expect(res1).to.be.instanceOf(HookRegistry);
+      expect(res2).to.be.eq(res1);
     });
   });
 

@@ -60,9 +60,14 @@ export interface RouteDefinition {
  */
 export declare class Route {
   /**
-   * Route definition.
+   * Get definition.
    */
-  get definition(): RouteDefinition;
+  getDefinition(): RouteDefinition;
+
+  /**
+   * Get hook registry.
+   */
+  getHookRegistry(): HookRegistry;
 
   /**
    * Method.
@@ -83,11 +88,6 @@ export declare class Route {
    * Handler.
    */
   get handler(): RouteHandler;
-
-  /**
-   * Hook registry.
-   */
-  get hookRegistry(): HookRegistry;
 
   /**
    * Constructor.

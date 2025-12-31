@@ -923,7 +923,7 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
     }
     const hooks = [
       ...this.getService(HookRegistry).getHooks(hookType),
-      ...route.hookRegistry.getHooks(hookType)
+      ...route.getHookRegistry().getHooks(hookType)
     ];
     let result = void 0;
     for (let i = 0; i < hooks.length; i++) {
@@ -1045,18 +1045,32 @@ var HttpMethod = {
 };
 var _Route = class _Route extends import_js_debug.Debuggable {
   /**
-   * Route definition.
+   * Definition.
    *
    * @type {RouteDefinition}
    */
   _definition;
   /**
-   * Getter of the route definition.
+   * Get definition.
    *
    * @returns {RouteDefinition}
    */
-  get definition() {
+  getDefinition() {
     return this._definition;
+  }
+  /**
+   * Hook registry.
+   *
+   * @type {HookRegistry}
+   */
+  _hookRegistry = new HookRegistry();
+  /**
+   * Get hook registry.
+   *
+   * @returns {HookRegistry}
+   */
+  getHookRegistry() {
+    return this._hookRegistry;
   }
   /**
    * Getter of the method.
@@ -1089,21 +1103,6 @@ var _Route = class _Route extends import_js_debug.Debuggable {
    */
   get handler() {
     return this._definition.handler;
-  }
-  /**
-   * Hook registry.
-   *
-   * @type {HookRegistry}
-   * @private
-   */
-  _hookRegistry = new HookRegistry();
-  /**
-   * Getter of the hook registry.
-   *
-   * @returns {HookRegistry}
-   */
-  get hookRegistry() {
-    return this._hookRegistry;
   }
   /**
    * Constructor.

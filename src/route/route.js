@@ -43,19 +43,35 @@ export const HttpMethod = {
  */
 export class Route extends Debuggable {
   /**
-   * Route definition.
+   * Definition.
    *
    * @type {RouteDefinition}
    */
   _definition;
 
   /**
-   * Getter of the route definition.
+   * Get definition.
    *
    * @returns {RouteDefinition}
    */
-  get definition() {
+  getDefinition() {
     return this._definition;
+  }
+
+  /**
+   * Hook registry.
+   *
+   * @type {HookRegistry}
+   */
+  _hookRegistry = new HookRegistry();
+
+  /**
+   * Get hook registry.
+   *
+   * @returns {HookRegistry}
+   */
+  getHookRegistry() {
+    return this._hookRegistry;
   }
 
   /**
@@ -92,23 +108,6 @@ export class Route extends Debuggable {
    */
   get handler() {
     return this._definition.handler;
-  }
-
-  /**
-   * Hook registry.
-   *
-   * @type {HookRegistry}
-   * @private
-   */
-  _hookRegistry = new HookRegistry();
-
-  /**
-   * Getter of the hook registry.
-   *
-   * @returns {HookRegistry}
-   */
-  get hookRegistry() {
-    return this._hookRegistry;
   }
 
   /**

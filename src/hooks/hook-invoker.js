@@ -63,7 +63,7 @@ export class HookInvoker extends DebuggableService {
     // их в данной последовательности
     const hooks = [
       ...this.getService(HookRegistry).getHooks(hookType),
-      ...route.hookRegistry.getHooks(hookType),
+      ...route.getHookRegistry().getHooks(hookType),
     ];
     let result = undefined;
     // итерация по хукам выполняется по индексу,
