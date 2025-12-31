@@ -36,7 +36,7 @@ export class RouterBranch extends DebuggableService {
    *
    * @type {TrieRouter}
    */
-  get router() {
+  getRouter() {
     return this._router;
   }
 
@@ -52,7 +52,7 @@ export class RouterBranch extends DebuggableService {
    *
    * @type {RouterBranchDefinition}
    */
-  get definition() {
+  getDefinition() {
     return this._definition;
   }
 
@@ -64,11 +64,25 @@ export class RouterBranch extends DebuggableService {
   _parentBranch;
 
   /**
+   * Has parent branch.
+   *
+   * @returns {boolean}
+   */
+  hasParentBranch() {
+    return Boolean(this._parentBranch);
+  }
+
+  /**
    * Get parent branch.
    *
    * @returns {RouterBranch|undefined}
    */
-  get parentBranch() {
+  getParentBranch() {
+    if (!this._parentBranch) {
+      throw new InvalidArgumentError(
+        'Parent branch does not exist in the router branch.',
+      );
+    }
     return this._parentBranch;
   }
 
@@ -98,7 +112,7 @@ export class RouterBranch extends DebuggableService {
     this._parentBranch = parentBranch;
     if (parentBranch) {
       const mergedDef = mergeRouterBranchDefinitions(
-        parentBranch.definition,
+        parentBranch.getDefinition(),
         branchDef,
       );
       this._definition = cloneDeep(mergedDef);

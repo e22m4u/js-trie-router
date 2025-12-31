@@ -1,5 +1,4 @@
 import {TrieRouter} from '../trie-router.js';
-import {ServiceContainer} from '@e22m4u/js-service';
 import {DebuggableService} from '../debuggable-service.js';
 
 import {
@@ -27,17 +26,22 @@ export declare class RouterBranch extends DebuggableService {
   /**
    * Get router.
    */
-  get router(): TrieRouter;
+  getRouter(): TrieRouter;
 
   /**
    * Get definition.
    */
-  get definition(): RouterBranchDefinition;
+  getDefinition(): RouterBranchDefinition;
+
+  /**
+   * Has parent branch.
+   */
+  hasParentBranch(): boolean;
 
   /**
    * Get parent branch.
    */
-  get parentBranch(): RouterBranch | undefined;
+  getParentBranch(): RouterBranch;
 
   /**
    * Constructor.

@@ -16,28 +16,54 @@ describe('RouterBranch', function () {
       const router = new TrieRouter();
       const parent = router.createBranch({path: 'foo'});
       const S = new RouterBranch(router, {path: 'bar'}, parent);
-      expect(S.definition.path).to.be.eq('/foo/bar');
+      expect(S.getDefinition().path).to.be.eq('/foo/bar');
     });
+  });
 
-    it('should set a given router to the "router" property', function () {
+  describe('getRouter', function () {
+    it('should return the router instance that was provided to the constructor', function () {
       const router = new TrieRouter();
       const S = new RouterBranch(router, {path: ROOT_PATH});
-      expect(S.router).to.be.eq(router);
+      expect(S.getRouter()).to.be.eq(router);
     });
+  });
 
-    it('should set a given definition to the "definition" property as a copy', function () {
+  describe('getDefinition', function () {
+    it('should return the branch definition that was provided to the constructor', function () {
       const router = new TrieRouter();
       const branchDef = {path: ROOT_PATH};
       const S = new RouterBranch(router, branchDef);
-      expect(S.definition).to.be.eql(branchDef);
-      expect(S.definition).to.be.not.eq(branchDef);
+      expect(S.getDefinition()).to.be.eql(branchDef);
+      expect(S.getDefinition()).to.be.not.eq(branchDef);
     });
+  });
 
-    it('should set a parent branch to the "parentBranch" property', function () {
+  describe('hasParentBranch', function () {
+    it('should return true if a parent branch does exist', function () {
+      const router = new TrieRouter();
+      const parent = router.createBranch({path: ROOT_PATH});
+      const branch1 = new RouterBranch(router, {path: ROOT_PATH});
+      expect(branch1.hasParentBranch()).to.be.false;
+      const branch2 = new RouterBranch(router, {path: ROOT_PATH}, parent);
+      expect(branch2.hasParentBranch()).to.be.true;
+    });
+  });
+
+  describe('getParentBranch', function () {
+    it('should return a parent branch that was provided to the constructor', function () {
       const router = new TrieRouter();
       const parent = router.createBranch({path: ROOT_PATH});
       const S = new RouterBranch(router, {path: ROOT_PATH}, parent);
-      expect(S.parentBranch).to.be.eq(parent);
+      expect(S.getParentBranch()).to.be.eq(parent);
+    });
+
+    it('should throw an error if a parent branch does not exist', function () {
+      const router = new TrieRouter();
+      const S = new RouterBranch(router, {path: ROOT_PATH});
+      const throwable = () => S.getParentBranch();
+      expect(throwable).to.throw(
+        'Parent branch does not exist in the router branch.',
+      );
     });
   });
 
@@ -77,7 +103,7 @@ describe('RouterBranch', function () {
       const router = new TrieRouter();
       const S = new RouterBranch(router, {path: 'foo'});
       const res = S.createBranch({path: 'bar'});
-      expect(res.definition.path).to.be.eq('/foo/bar');
+      expect(res.getDefinition().path).to.be.eq('/foo/bar');
     });
   });
 });

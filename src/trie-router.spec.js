@@ -34,7 +34,7 @@ describe('TrieRouter', function () {
       const router = new TrieRouter();
       const branchDef = {path: 'foo'};
       const res = router.createBranch(branchDef);
-      expect(res.definition.path).to.be.eq(branchDef.path);
+      expect(res.getDefinition().path).to.be.eq(branchDef.path);
     });
   });
 
