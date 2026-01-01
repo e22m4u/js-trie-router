@@ -9,7 +9,11 @@ import {HookRegistry, RouterHookType} from './hook-registry.js';
  */
 export class HookInvoker extends DebuggableService {
   /**
-   * Invoke and continue until value received.
+   * Последовательно вызывает глобальные хуки и хуки маршрута указанного
+   * типа, пока один из них не вернет отличное от undefined и null значение
+   * или не отправит HTTP-ответ. Метод выполняет хуки в синхронном режиме
+   * для улучшения производительности. Если один из хуков возвращает Promise,
+   * выполнение оставшейся части цепочки переключается в асинхронный режим.
    *
    * @param {Route} route
    * @param {string} hookType
@@ -87,41 +91,13 @@ export class HookInvoker extends DebuggableService {
         // выполнение переключается в асинхронный режим, начиная
         // с индекса следующего хука
         if (isPromise(result)) {
-          return (async () => {
-            // ожидание Promise, который был получен
-            // на предыдущем шаге (в синхронном режиме)
-            let asyncResult = await result;
-            // если ответ уже отправлен,
-            // то возвращается ServerResponse
-            if (isResponseSent(response)) {
-              return response;
-            }
-            // если Promise разрешился значением отличным
-            // от undefined и null, то данное значение
-            // возвращается в качестве результата
-            if (asyncResult != null) {
-              return asyncResult;
-            }
-            // продолжение вызова хуков начиная
-            // со следующего индекса (асинхронно)
-            for (let j = i + 1; j < hooks.length; j++) {
-              // с этого момента все синхронные
-              // хуки выполняются как асинхронные
-              asyncResult = await hooks[j](...args);
-              // если ответ уже отправлен,
-              // то возвращается ServerResponse
-              if (isResponseSent(response)) {
-                return response;
-              }
-              // если хук вернул значение отличное
-              // от undefined и null, то данное значение
-              // возвращается в качестве результата
-              if (asyncResult != null) {
-                return asyncResult;
-              }
-            }
-            return;
-          })();
+          return this._continueHooksInvocationAsync(
+            hooks,
+            i + 1,
+            result,
+            response,
+            args,
+          );
         }
         // если синхронный хук вернул значение отличное
         // от undefined и null, то данное значение
@@ -131,6 +107,63 @@ export class HookInvoker extends DebuggableService {
     }
     // все хуки были синхронными
     // и не вернули значения
+    return;
+  }
+
+  /**
+   * Асинхронно продолжает выполнение цепочки хуков, начиная с указанного
+   * индекса. Данный метод вызывается, когда хук в основном синхронном цикле
+   * возвращает Promise. Метод ожидает разрешения начального Promise, а затем
+   * последовательно выполняет оставшиеся хуки в асинхронном режиме, следуя
+   * той же логике прерывания (при получении значения или отправке ответа),
+   * что и основной метод.
+   *
+   * @param {Function[]} hooks
+   * @param {number} startIndex
+   * @param {Promise} initialPromise
+   * @param {import('http').ServerResponse} response
+   * @param {*} args
+   * @returns {Promise<*>}
+   */
+  async _continueHooksInvocationAsync(
+    hooks,
+    startIndex,
+    initialPromise,
+    response,
+    args,
+  ) {
+    // ожидание Promise, который был получен
+    // на предыдущем шаге (в синхронном режиме)
+    let result = await initialPromise;
+    // если ответ уже отправлен,
+    // то возвращается ServerResponse
+    if (isResponseSent(response)) {
+      return response;
+    }
+    // если Promise разрешился значением отличным
+    // от undefined и null, то данное значение
+    // возвращается в качестве результата
+    if (result != null) {
+      return result;
+    }
+    // продолжение вызова хуков начиная
+    // со следующего индекса (асинхронно)
+    for (let i = startIndex; i < hooks.length; i++) {
+      // с этого момента все синхронные
+      // хуки выполняются как асинхронные
+      result = await hooks[i](...args);
+      // если ответ уже отправлен,
+      // то возвращается ServerResponse
+      if (isResponseSent(response)) {
+        return response;
+      }
+      // если хук вернул значение отличное
+      // от undefined и null, то данное значение
+      // возвращается в качестве результата
+      if (result != null) {
+        return result;
+      }
+    }
     return;
   }
 }

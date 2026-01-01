@@ -885,7 +885,11 @@ var HookRegistry = _HookRegistry;
 // src/hooks/hook-invoker.js
 var _HookInvoker = class _HookInvoker extends DebuggableService {
   /**
-   * Invoke and continue until value received.
+   * Последовательно вызывает глобальные хуки и хуки маршрута указанного
+   * типа, пока один из них не вернет отличное от undefined и null значение
+   * или не отправит HTTP-ответ. Метод выполняет хуки в синхронном режиме
+   * для улучшения производительности. Если один из хуков возвращает Promise,
+   * выполнение оставшейся части цепочки переключается в асинхронный режим.
    *
    * @param {Route} route
    * @param {string} hookType
@@ -934,26 +938,48 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
       }
       if (result != null) {
         if (isPromise(result)) {
-          return (async () => {
-            let asyncResult = await result;
-            if (isResponseSent(response)) {
-              return response;
-            }
-            if (asyncResult != null) {
-              return asyncResult;
-            }
-            for (let j = i + 1; j < hooks.length; j++) {
-              asyncResult = await hooks[j](...args);
-              if (isResponseSent(response)) {
-                return response;
-              }
-              if (asyncResult != null) {
-                return asyncResult;
-              }
-            }
-            return;
-          })();
+          return this._continueHooksInvocationAsync(
+            hooks,
+            i + 1,
+            result,
+            response,
+            args
+          );
         }
+        return result;
+      }
+    }
+    return;
+  }
+  /**
+   * Асинхронно продолжает выполнение цепочки хуков, начиная с указанного
+   * индекса. Данный метод вызывается, когда хук в основном синхронном цикле
+   * возвращает Promise. Метод ожидает разрешения начального Promise, а затем
+   * последовательно выполняет оставшиеся хуки в асинхронном режиме, следуя
+   * той же логике прерывания (при получении значения или отправке ответа),
+   * что и основной метод.
+   *
+   * @param {Function[]} hooks
+   * @param {number} startIndex
+   * @param {Promise} initialPromise
+   * @param {import('http').ServerResponse} response
+   * @param {*} args
+   * @returns {Promise<*>}
+   */
+  async _continueHooksInvocationAsync(hooks, startIndex, initialPromise, response, args) {
+    let result = await initialPromise;
+    if (isResponseSent(response)) {
+      return response;
+    }
+    if (result != null) {
+      return result;
+    }
+    for (let i = startIndex; i < hooks.length; i++) {
+      result = await hooks[i](...args);
+      if (isResponseSent(response)) {
+        return response;
+      }
+      if (result != null) {
         return result;
       }
     }
