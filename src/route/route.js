@@ -39,6 +39,11 @@ export const HttpMethod = {
 };
 
 /**
+ * Объект метаданных по умолчанию.
+ */
+const DEFAULT_META = Object.freeze({});
+
+/**
  * Route.
  */
 export class Route extends Debuggable {
@@ -98,7 +103,7 @@ export class Route extends Debuggable {
    * @returns {object}
    */
   get meta() {
-    return this._definition.meta;
+    return this._definition.meta || DEFAULT_META;
   }
 
   /**
@@ -125,10 +130,9 @@ export class Route extends Debuggable {
     // установка копии определения
     // в свойство экземпляра
     this._definition = cloneDeep(routeDef);
-    // нормализация метода и метаданных
+    // перевод метода в верхний регистр
     // выполняется в конструкторе единожды
     this._definition.method = this._definition.method.toUpperCase();
-    this._definition.meta = this._definition.meta || {};
     // регистрация хуков маршрута
     // в экземпляре реестра
     if (routeDef.preHandler !== undefined) {

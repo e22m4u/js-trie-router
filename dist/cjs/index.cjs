@@ -1069,6 +1069,7 @@ var HttpMethod = {
   PATCH: "PATCH",
   DELETE: "DELETE"
 };
+var DEFAULT_META = Object.freeze({});
 var _Route = class _Route extends import_js_debug.Debuggable {
   /**
    * Definition.
@@ -1120,7 +1121,7 @@ var _Route = class _Route extends import_js_debug.Debuggable {
    * @returns {object}
    */
   get meta() {
-    return this._definition.meta;
+    return this._definition.meta || DEFAULT_META;
   }
   /**
    * Getter of the handler.
@@ -1144,7 +1145,6 @@ var _Route = class _Route extends import_js_debug.Debuggable {
     validateRouteDefinition(routeDef);
     this._definition = cloneDeep(routeDef);
     this._definition.method = this._definition.method.toUpperCase();
-    this._definition.meta = this._definition.meta || {};
     if (routeDef.preHandler !== void 0) {
       const preHandlerHooks = [routeDef.preHandler].flat().filter(Boolean);
       preHandlerHooks.forEach((hook) => {

@@ -365,7 +365,6 @@ describe('Route', function () {
         method: HttpMethod.GET,
         path: '/myPath',
         handler: () => undefined,
-        meta: {foo: 'bar'},
       };
       const route = new Route(definition);
       expect(route.getDefinition()).to.be.eql(definition);
