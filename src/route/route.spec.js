@@ -138,7 +138,7 @@ describe('Route', function () {
     });
 
     describe('the "preHandler" option', function () {
-      it('should require the "preHandler" option to be a Function or an Array of Function', function () {
+      it('should require the "preHandler" option to be a Function or an Array', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
@@ -165,7 +165,7 @@ describe('Route', function () {
         throwable(undefined)();
       });
 
-      it('should require an array of the "preHandler" option to contain a Function', function () {
+      it('should require each element in the "preHandler" option to be a Function', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
@@ -188,7 +188,7 @@ describe('Route', function () {
         throwable(() => undefined)();
       });
 
-      it('should add a Function to "preHandler" hooks', function () {
+      it('should add a single Function from the "preHandler" option to the "preHandler" hooks', function () {
         const value = () => undefined;
         const route = new Route({
           method: HttpMethod.GET,
@@ -201,7 +201,7 @@ describe('Route', function () {
         expect(res).to.be.true;
       });
 
-      it('should add a Function Array to "preHandler" hooks', function () {
+      it('should add each Function from the "preHandler" option to the "preHandler" hooks', function () {
         const value = [() => undefined, () => undefined];
         const route = new Route({
           method: HttpMethod.GET,
@@ -218,7 +218,7 @@ describe('Route', function () {
     });
 
     describe('the "postHandler" option', function () {
-      it('should require the "postHandler" option to be a Function or an Array of Function', function () {
+      it('should require the "postHandler" option to be a Function or an Array', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
@@ -245,7 +245,7 @@ describe('Route', function () {
         throwable(undefined)();
       });
 
-      it('should require an array of the "postHandler" option to contain a Function', function () {
+      it('should require each element in the "postHandler" option to be a Function', function () {
         const throwable = v => () =>
           new Route({
             method: HttpMethod.GET,
@@ -268,7 +268,7 @@ describe('Route', function () {
         throwable(() => undefined)();
       });
 
-      it('should add a Function to "postHandler" hooks', function () {
+      it('should add a single Function from the "postHandler" option to the "postHandler" hooks', function () {
         const value = () => undefined;
         const route = new Route({
           method: HttpMethod.GET,
@@ -281,7 +281,7 @@ describe('Route', function () {
         expect(res).to.be.true;
       });
 
-      it('should add a Function Array to "postHandler" hooks', function () {
+      it('should add each Function from the "postHandler" option to the "postHandler" hooks', function () {
         const value = [() => undefined, () => undefined];
         const route = new Route({
           method: HttpMethod.GET,
@@ -322,7 +322,7 @@ describe('Route', function () {
         throwable(undefined)();
       });
 
-      it('should set the "meta" option to the "meta" property as a deep copy', function () {
+      it('should deeply copy the "meta" option to the "meta" property', function () {
         const metaData = {foo: {bar: {baz: 'qux'}}};
         const route = new Route({
           method: 'post',
@@ -338,7 +338,7 @@ describe('Route', function () {
         expect(route.meta.foo.bar).to.be.eql(metaData.foo.bar);
       });
 
-      it('should set an empty object to the "meta" property if the "meta" option is not provided', function () {
+      it('should set an empty object to the "meta" property if not provided', function () {
         const route = new Route({
           method: 'post',
           path: ROOT_PATH,
@@ -347,7 +347,7 @@ describe('Route', function () {
         expect(route.meta).to.be.eql({});
       });
 
-      it('should set an empty object to the "meta" property if the "meta" option is undefined', function () {
+      it('should set an empty object to the "meta" property if undefined is given', function () {
         const route = new Route({
           method: 'post',
           path: ROOT_PATH,
@@ -360,7 +360,7 @@ describe('Route', function () {
   });
 
   describe('getDefinition', function () {
-    it('should return a route definition that was provided to the constructor', function () {
+    it('should return the same HookRegistry instance on subsequent calls', function () {
       const definition = {
         method: HttpMethod.GET,
         path: '/myPath',
