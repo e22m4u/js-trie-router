@@ -605,32 +605,8 @@ describe('TrieRouter', function () {
     });
   });
 
-  describe('addHook', function () {
-    it('should add the given hook to the RouterHookRegistry and returns itself', function () {
-      const router = new TrieRouter();
-      const reg = router.getService(RouterHookRegistry);
-      const type = RouterHookType.PRE_HANDLER;
-      const hook = () => undefined;
-      expect(reg.hasHook(type, hook)).to.be.false;
-      const res = router.addHook(type, hook);
-      expect(res).to.be.eq(router);
-      expect(reg.hasHook(type, hook)).to.be.true;
-    });
-  });
-
-  describe('hasHook', function () {
-    it('should return true if a given function is registered with the hook type', function () {
-      const router = new TrieRouter();
-      const type = RouterHookType.PRE_HANDLER;
-      const hook = () => undefined;
-      expect(router.hasHook(type, hook)).to.be.false;
-      router.addHook(type, hook);
-      expect(router.hasHook(type, hook)).to.be.true;
-    });
-  });
-
   describe('addPreHandler', function () {
-    it('should add the given pre-handler hook to the RouterHookRegistry and returns itself', function () {
+    it('should register a given hook in the hook registry and return itself', function () {
       const router = new TrieRouter();
       const reg = router.getService(RouterHookRegistry);
       const hook = () => undefined;
@@ -641,8 +617,18 @@ describe('TrieRouter', function () {
     });
   });
 
+  describe('hasPreHandler', function () {
+    it('should return true if a given hook is registered', function () {
+      const router = new TrieRouter();
+      const hook = () => undefined;
+      expect(router.hasPreHandler(hook)).to.be.false;
+      router.addPreHandler(hook);
+      expect(router.hasPreHandler(hook)).to.be.true;
+    });
+  });
+
   describe('addPostHandler', function () {
-    it('should add the given post-handler hook to the RouterHookRegistry and returns itself', function () {
+    it('should register a given hook in the hook registry and return itself', function () {
       const router = new TrieRouter();
       const reg = router.getService(RouterHookRegistry);
       const hook = () => undefined;
@@ -650,6 +636,16 @@ describe('TrieRouter', function () {
       const res = router.addPostHandler(hook);
       expect(res).to.be.eq(router);
       expect(reg.hasHook(RouterHookType.POST_HANDLER, hook)).to.be.true;
+    });
+  });
+
+  describe('hasPostHandler', function () {
+    it('should return true if a given hook is registered', function () {
+      const router = new TrieRouter();
+      const hook = () => undefined;
+      expect(router.hasPostHandler(hook)).to.be.false;
+      router.addPostHandler(hook);
+      expect(router.hasPostHandler(hook)).to.be.true;
     });
   });
 });

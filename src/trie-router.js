@@ -205,53 +205,9 @@ export class TrieRouter extends DebuggableService {
   }
 
   /**
-   * Add hook.
-   *
-   * Example:
-   * ```
-   * import {TrieRouter} from '@e22m4u/js-trie-router';
-   * import {RouterHookType} from '@e22m4u/js-trie-router';
-   *
-   * // Router instance.
-   * const router = new TrieRouter();
-   *
-   * // Adds the "preHandler" hook for each route.
-   * router.addHook(
-   *   RouterHookType.PRE_HANDLER,
-   *   ctx => { ... },
-   * );
-   *
-   * // Adds the "postHandler" hook for each route.
-   * router.addHook(
-   *   RouterHookType.POST_HANDLER,
-   *   ctx => { ... },
-   * );
-   * ```
-   *
-   * @param {RouterHookType} type
-   * @param {Function} hook
-   * @returns {this}
-   */
-  addHook(type, hook) {
-    this.getService(RouterHookRegistry).addHook(type, hook);
-    return this;
-  }
-
-  /**
-   * Has hook.
-   *
-   * @param {RouterHookType} type
-   * @param {Function} hook
-   * @returns {boolean}
-   */
-  hasHook(type, hook) {
-    return this.getService(RouterHookRegistry).hasHook(type, hook);
-  }
-
-  /**
    * Add pre-handler hook.
    *
-   * @param {Function} hook
+   * @param {import('./hooks/index.js').PreHandlerHook} hook
    * @returns {this}
    */
   addPreHandler(hook) {
@@ -263,9 +219,22 @@ export class TrieRouter extends DebuggableService {
   }
 
   /**
+   * Has pre-handler hook.
+   *
+   * @param {import('./hooks/index.js').PreHandlerHook} hook
+   * @returns {boolean}
+   */
+  hasPreHandler(hook) {
+    return this.getService(RouterHookRegistry).hasHook(
+      RouterHookType.PRE_HANDLER,
+      hook,
+    );
+  }
+
+  /**
    * Add post-handler hook.
    *
-   * @param {Function} hook
+   * @param {import('./hooks/index.js').PostHandlerHook} hook
    * @returns {this}
    */
   addPostHandler(hook) {
@@ -274,5 +243,18 @@ export class TrieRouter extends DebuggableService {
       hook,
     );
     return this;
+  }
+
+  /**
+   * Has post-handler hook.
+   *
+   * @param {import('./hooks/index.js').PostHandlerHook} hook
+   * @returns {boolean}
+   */
+  hasPostHandler(hook) {
+    return this.getService(RouterHookRegistry).hasHook(
+      RouterHookType.POST_HANDLER,
+      hook,
+    );
   }
 }

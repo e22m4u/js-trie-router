@@ -2,14 +2,8 @@ import {RequestListener} from 'http';
 import {Route} from './route/index.js';
 import {RouteDefinition} from './route/index.js';
 import {DebuggableService} from './debuggable-service.js';
+import {PostHandlerHook, PreHandlerHook} from './hooks/index.js';
 import {RouterBranch, RouterBranchDefinition} from './branch/index.js';
-
-import {
-  RouterHook,
-  RouterHookType,
-  PostHandlerHook,
-  PreHandlerHook,
-} from './hooks/index.js';
 
 /**
  * Trie router.
@@ -83,41 +77,6 @@ export declare class TrieRouter extends DebuggableService {
   get requestListener(): RequestListener;
 
   /**
-   * Add hook.
-   *
-   * @param type
-   * @param hook
-   */
-  addHook(type: typeof RouterHookType.PRE_HANDLER, hook: PreHandlerHook): this;
-
-  /**
-   * Add hook.
-   *
-   * @param type
-   * @param hook
-   */
-  addHook(
-    type: typeof RouterHookType.POST_HANDLER,
-    hook: PostHandlerHook,
-  ): this;
-
-  /**
-   * Add hook.
-   *
-   * @param type
-   * @param hook
-   */
-  addHook(type: RouterHookType, hook: RouterHook): this;
-
-  /**
-   * Has hook.
-   *
-   * @param type
-   * @param hook
-   */
-  hasHook(type: RouterHookType, hook: RouterHook): boolean;
-
-  /**
    * Add pre-handler hook.
    *
    * @param hook
@@ -125,9 +84,23 @@ export declare class TrieRouter extends DebuggableService {
   addPreHandler(hook: PreHandlerHook): this;
 
   /**
+   * Has pre-handler hook.
+   *
+   * @param hook
+   */
+  hasPreHandler(hook: PreHandlerHook): boolean;
+
+  /**
    * Add post-handler hook.
    *
    * @param hook
    */
   addPostHandler(hook: PostHandlerHook): this;
+
+  /**
+   * Has post-handler hook.
+   *
+   * @param hook
+   */
+  hasPostHandler(hook: PostHandlerHook): boolean;
 }
