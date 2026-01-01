@@ -99,11 +99,15 @@ export class TrieRouter extends DebuggableService {
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = getRequestPathname(request);
-    debug('Handling incoming request %s %v.', request.method, requestPath);
+    debug('Handling an incoming request %s %v.', request.method, requestPath);
     const resolved =
       this.getService(RouteRegistry).matchRouteByRequest(request);
     if (!resolved) {
-      debug('No route found for %s %v.', request.method, requestPath);
+      debug(
+        'No route found for the request %s %v.',
+        request.method,
+        requestPath,
+      );
       this.getService(ErrorSender).send404(request, response);
     } else {
       const {route, params} = resolved;

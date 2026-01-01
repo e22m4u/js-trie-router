@@ -66,7 +66,7 @@ export class ErrorSender extends DebuggableService {
     response.setHeader('content-type', 'application/json; charset=utf-8');
     response.end(JSON.stringify(body, null, 2), 'utf-8');
     debug(
-      '%s error sent for %s %v request.',
+      '%s error has been sent for the request %s %v.',
       statusCode,
       request.method,
       getRequestPathname(request),
@@ -86,7 +86,7 @@ export class ErrorSender extends DebuggableService {
     response.setHeader('content-type', 'text/plain; charset=utf-8');
     response.end('404 Not Found', 'utf-8');
     debug(
-      '404 error sent for %s %v.',
+      '404 error has been sent for the request %s %v.',
       request.method,
       getRequestPathname(request),
     );

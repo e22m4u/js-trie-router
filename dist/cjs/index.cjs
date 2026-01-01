@@ -1167,7 +1167,7 @@ var _Route = class _Route extends import_js_debug.Debuggable {
         this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
       });
     }
-    this.ctorDebug("Route %s %v created.", this.method, this.path);
+    this.ctorDebug("Created a route %s %v.", this.method, this.path);
   }
   /**
    * Handle request.
@@ -1178,7 +1178,7 @@ var _Route = class _Route extends import_js_debug.Debuggable {
   handle(context) {
     const debug = this.getDebuggerFor(this.handle);
     const requestPath = getRequestPathname(context.request);
-    debug("Invoking route handler for %s %v.", this.method, requestPath);
+    debug("Invoking a route handler %s %v.", this.method, requestPath);
     return this.handler(context);
   }
 };
@@ -1310,9 +1310,14 @@ var _BodyParser = class _BodyParser extends DebuggableService {
    */
   parse(request) {
     const debug = this.getDebuggerFor(this.parse);
+    debug(
+      "Parsing the request %s %v.",
+      request.method.toUpperCase(),
+      getRequestPathname(request)
+    );
     if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
       debug(
-        "Body parsing skipped for %s method.",
+        "Skipping body parsing for the %s method.",
         request.method.toUpperCase()
       );
       return;
@@ -1322,7 +1327,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
       "$1"
     );
     if (!contentType) {
-      debug("Body parsing skipped because no content type provided.");
+      debug("Skipping body parsing because no content type is provided.");
       return;
     }
     const { mediaType } = parseContentType(contentType);
@@ -1335,7 +1340,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
     const parser = this._parsers[mediaType];
     if (!parser) {
       if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
-        debug("Body parsing skipped for media type %v.", mediaType);
+        debug("Skipping body parsing for the media type %v.", mediaType);
         return;
       }
       throw createError(
@@ -1345,14 +1350,14 @@ var _BodyParser = class _BodyParser extends DebuggableService {
       );
     }
     const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
-    debug("Fetching request body.");
-    debug("Body limit %v bytes.", bodyBytesLimit);
+    debug("Fetching a request body.");
+    debug("Body limit is %v bytes.", bodyBytesLimit);
     return fetchRequestBody(request, bodyBytesLimit).then((rawBody) => {
       if (rawBody != null) {
         debug("Read %v bytes.", Buffer.byteLength(rawBody, "utf8"));
         return parser(rawBody);
       }
-      debug("No request body content.");
+      debug("Request body has no content.");
       return rawBody;
     });
   }
@@ -1387,7 +1392,7 @@ var _QueryParser = class _QueryParser extends DebuggableService {
     const queryKeys = Object.keys(query);
     if (queryKeys.length) {
       queryKeys.forEach((key) => {
-        debug("Found query parameter %v with value %v.", key, query[key]);
+        debug("Found a query parameter %v with a value %v.", key, query[key]);
       });
     } else {
       debug(
@@ -1417,7 +1422,7 @@ var _CookiesParser = class _CookiesParser extends DebuggableService {
     const cookiesKeys = Object.keys(cookies);
     if (cookiesKeys.length) {
       cookiesKeys.forEach((key) => {
-        debug("Found cookie %v with value %v.", key, cookies[key]);
+        debug("Found a cookie %v with a value %v.", key, cookies[key]);
       });
     } else {
       debug(
@@ -1507,7 +1512,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;
     this._trie.add(triePath, route);
-    debug("Route %s %v registered.", route.method.toUpperCase(), route.path);
+    debug("Registered a route %s %v.", route.method.toUpperCase(), route.path);
     return route;
   }
   /**
@@ -1520,7 +1525,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     const debug = this.getDebuggerFor(this.matchRouteByRequest);
     const requestPath = getRequestPathname(request);
     debug(
-      "Matching routes for %s %v.",
+      "Matching routes for the request %s %v.",
       request.method.toUpperCase(),
       requestPath
     );
@@ -1529,12 +1534,12 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;
-      debug("Matched route %s %v.", route.method.toUpperCase(), route.path);
+      debug("Matched route is %s %v.", route.method.toUpperCase(), route.path);
       const paramNames = Object.keys(resolved.params);
       if (paramNames.length) {
         paramNames.forEach((name) => {
           debug(
-            "Found path parameter %v with value %v.",
+            "Found a path parameter %v with a value %v.",
             name,
             resolved.params[name]
           );
@@ -1545,7 +1550,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
       return { route, params: resolved.params };
     }
     debug(
-      "No matched route for %s %v.",
+      "No route found for the request %s %v.",
       request.method.toUpperCase(),
       requestPath
     );
@@ -1752,19 +1757,19 @@ var _DataSender = class _DataSender extends DebuggableService {
   send(response, data) {
     const debug = this.getDebuggerFor(this.send);
     if (data === response || response.headersSent) {
-      debug("Response skipped because headers already sent.");
+      debug("Skipping response because headers have already been sent.");
       return;
     }
     if (data == null) {
       response.statusCode = 204;
       response.end();
-      debug("Empty response sent.");
+      debug("Empty response has been sent.");
       return;
     }
     if (isReadableStream(data)) {
       response.setHeader("Content-Type", "application/octet-stream");
       data.pipe(response);
-      debug("Stream response sent.");
+      debug("Sending response with a Stream.");
       return;
     }
     let debugMsg;
@@ -1774,16 +1779,19 @@ var _DataSender = class _DataSender extends DebuggableService {
       case "number":
         if (Buffer.isBuffer(data)) {
           response.setHeader("content-type", "application/octet-stream");
-          debugMsg = "Buffer sent as binary data.";
+          debugMsg = "Buffer has been sent as binary data.";
         } else {
           response.setHeader("content-type", "application/json");
-          debugMsg = (0, import_js_format18.format)("%v sent as JSON.", toPascalCase(typeof data));
+          debugMsg = (0, import_js_format18.format)(
+            "%v has been sent as JSON.",
+            toPascalCase(typeof data)
+          );
           data = JSON.stringify(data);
         }
         break;
       default:
         response.setHeader("content-type", "text/plain");
-        debugMsg = "Response data sent as plain text.";
+        debugMsg = "Response data has been sent as plain text.";
         data = String(data);
         break;
     }
@@ -1851,7 +1859,7 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
     response.setHeader("content-type", "application/json; charset=utf-8");
     response.end(JSON.stringify(body, null, 2), "utf-8");
     debug(
-      "%s error sent for %s %v request.",
+      "%s error has been sent for the request %s %v.",
       statusCode,
       request.method,
       getRequestPathname(request)
@@ -1870,7 +1878,7 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
     response.setHeader("content-type", "text/plain; charset=utf-8");
     response.end("404 Not Found", "utf-8");
     debug(
-      "404 error sent for %s %v.",
+      "404 error has been sent for the request %s %v.",
       request.method,
       getRequestPathname(request)
     );
@@ -2068,8 +2076,8 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
       validateRouterBranchDefinition(branchDef);
       this._definition = cloneDeep(branchDef);
     }
-    this.ctorDebug("Branch %v created.", normalizePath(branchDef.path, true));
-    this.ctorDebug("Branch path set to %v.", this._definition.path);
+    this.ctorDebug("Created a branch %v.", normalizePath(branchDef.path, true));
+    this.ctorDebug("Branch path is %v.", this._definition.path);
   }
   /**
    * Define route.
@@ -2186,10 +2194,14 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = getRequestPathname(request);
-    debug("Handling incoming request %s %v.", request.method, requestPath);
+    debug("Handling an incoming request %s %v.", request.method, requestPath);
     const resolved = this.getService(RouteRegistry).matchRouteByRequest(request);
     if (!resolved) {
-      debug("No route found for %s %v.", request.method, requestPath);
+      debug(
+        "No route found for the request %s %v.",
+        request.method,
+        requestPath
+      );
       this.getService(ErrorSender).send404(request, response);
     } else {
       const { route, params } = resolved;

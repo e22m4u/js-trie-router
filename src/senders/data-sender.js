@@ -20,7 +20,7 @@ export class DataSender extends DebuggableService {
     // заголовки, то считаем, что контроллер
     // уже отправил ответ самостоятельно
     if (data === response || response.headersSent) {
-      debug('Response skipped because headers already sent.');
+      debug('Skipping response because headers have already been sent.');
       return;
     }
     // если ответ контроллера пуст, то отправляем
@@ -28,7 +28,7 @@ export class DataSender extends DebuggableService {
     if (data == null) {
       response.statusCode = 204;
       response.end();
-      debug('Empty response sent.');
+      debug('Empty response has been sent.');
       return;
     }
     // если ответ контроллера является стримом,
@@ -36,7 +36,7 @@ export class DataSender extends DebuggableService {
     if (isReadableStream(data)) {
       response.setHeader('Content-Type', 'application/octet-stream');
       data.pipe(response);
-      debug('Stream response sent.');
+      debug('Sending response with a Stream.');
       return;
     }
     // подготовка данных перед отправкой, и установка
@@ -50,16 +50,19 @@ export class DataSender extends DebuggableService {
           // тип Buffer отправляется
           // как бинарные данные
           response.setHeader('content-type', 'application/octet-stream');
-          debugMsg = 'Buffer sent as binary data.';
+          debugMsg = 'Buffer has been sent as binary data.';
         } else {
           response.setHeader('content-type', 'application/json');
-          debugMsg = format('%v sent as JSON.', toPascalCase(typeof data));
+          debugMsg = format(
+            '%v has been sent as JSON.',
+            toPascalCase(typeof data),
+          );
           data = JSON.stringify(data);
         }
         break;
       default:
         response.setHeader('content-type', 'text/plain');
-        debugMsg = 'Response data sent as plain text.';
+        debugMsg = 'Response data has been sent as plain text.';
         data = String(data);
         break;
     }

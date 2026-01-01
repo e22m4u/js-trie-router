@@ -18,7 +18,7 @@ export class CookiesParser extends DebuggableService {
     const cookiesKeys = Object.keys(cookies);
     if (cookiesKeys.length) {
       cookiesKeys.forEach(key => {
-        debug('Found cookie %v with value %v.', key, cookies[key]);
+        debug('Found a cookie %v with a value %v.', key, cookies[key]);
       });
     } else {
       debug(

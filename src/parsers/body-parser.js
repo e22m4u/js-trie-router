@@ -7,6 +7,7 @@ import {
   createError,
   parseContentType,
   fetchRequestBody,
+  getRequestPathname,
 } from '../utils/index.js';
 
 /**
@@ -113,9 +114,14 @@ export class BodyParser extends DebuggableService {
    */
   parse(request) {
     const debug = this.getDebuggerFor(this.parse);
+    debug(
+      'Parsing the request %s %v.',
+      request.method.toUpperCase(),
+      getRequestPathname(request),
+    );
     if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
       debug(
-        'Body parsing skipped for %s method.',
+        'Skipping body parsing for the %s method.',
         request.method.toUpperCase(),
       );
       return;
@@ -125,7 +131,7 @@ export class BodyParser extends DebuggableService {
       '$1',
     );
     if (!contentType) {
-      debug('Body parsing skipped because no content type provided.');
+      debug('Skipping body parsing because no content type is provided.');
       return;
     }
     const {mediaType} = parseContentType(contentType);
@@ -138,7 +144,7 @@ export class BodyParser extends DebuggableService {
     const parser = this._parsers[mediaType];
     if (!parser) {
       if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
-        debug('Body parsing skipped for media type %v.', mediaType);
+        debug('Skipping body parsing for the media type %v.', mediaType);
         return;
       }
       throw createError(
@@ -148,14 +154,14 @@ export class BodyParser extends DebuggableService {
       );
     }
     const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
-    debug('Fetching request body.');
-    debug('Body limit %v bytes.', bodyBytesLimit);
+    debug('Fetching a request body.');
+    debug('Body limit is %v bytes.', bodyBytesLimit);
     return fetchRequestBody(request, bodyBytesLimit).then(rawBody => {
       if (rawBody != null) {
         debug('Read %v bytes.', Buffer.byteLength(rawBody, 'utf8'));
         return parser(rawBody);
       }
-      debug('No request body content.');
+      debug('Request body has no content.');
       return rawBody;
     });
   }

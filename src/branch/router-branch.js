@@ -120,8 +120,8 @@ export class RouterBranch extends DebuggableService {
       validateRouterBranchDefinition(branchDef);
       this._definition = cloneDeep(branchDef);
     }
-    this.ctorDebug('Branch %v created.', normalizePath(branchDef.path, true));
-    this.ctorDebug('Branch path set to %v.', this._definition.path);
+    this.ctorDebug('Created a branch %v.', normalizePath(branchDef.path, true));
+    this.ctorDebug('Branch path is %v.', this._definition.path);
   }
 
   /**
