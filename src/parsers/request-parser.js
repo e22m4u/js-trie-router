@@ -55,7 +55,7 @@ export class RequestParser extends DebuggableService {
     } else {
       data.body = parsedBody;
     }
-    // что бы предотвратить модификацию
+    // чтобы предотвратить модификацию
     // заголовков, возвращаем их копию
     data.headers = Object.assign({}, request.headers);
     // если имеются асинхронные операции, то результат

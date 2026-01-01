@@ -99,20 +99,16 @@ export class TrieRouter extends DebuggableService {
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = getRequestPathname(request);
-    debug(
-      'Preparing to handle an incoming request %s %v.',
-      request.method,
-      requestPath,
-    );
+    debug('Handling incoming request %s %v.', request.method, requestPath);
     const resolved =
       this.getService(RouteRegistry).matchRouteByRequest(request);
     if (!resolved) {
-      debug('No route for the request %s %v.', request.method, requestPath);
+      debug('No route found for %s %v.', request.method, requestPath);
       this.getService(ErrorSender).send404(request, response);
     } else {
       const {route, params} = resolved;
       // создание дочернего сервис-контейнера для передачи
-      // в контекст запроса, что бы родительский контекст
+      // в контекст запроса, чтобы родительский контекст
       // нельзя было модифицировать
       const container = new ServiceContainer(this.container);
       const context = new RequestContext(container, request, response, route);
@@ -137,7 +133,7 @@ export class TrieRouter extends DebuggableService {
         // записывается в контекст передаваемый обработчику
         const reqDataOrPromise = this.getService(RequestParser).parse(request);
         // результат разбора может являться асинхронным, и вместо
-        // того, что бы разрывать поток выполнения, стоит проверить,
+        // того, чтобы разрывать поток выполнения, стоит проверить,
         // действительно ли необходимо использование оператора "await"
         if (isPromise(reqDataOrPromise)) {
           const reqData = await reqDataOrPromise;

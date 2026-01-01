@@ -115,7 +115,7 @@ export class BodyParser extends DebuggableService {
     const debug = this.getDebuggerFor(this.parse);
     if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
       debug(
-        'Body parsing was skipped for the %s request.',
+        'Body parsing skipped for %s method.',
         request.method.toUpperCase(),
       );
       return;
@@ -125,9 +125,7 @@ export class BodyParser extends DebuggableService {
       '$1',
     );
     if (!contentType) {
-      debug(
-        'Body parsing was skipped because the request had no content type.',
-      );
+      debug('Body parsing skipped because no content type provided.');
       return;
     }
     const {mediaType} = parseContentType(contentType);
@@ -140,7 +138,7 @@ export class BodyParser extends DebuggableService {
     const parser = this._parsers[mediaType];
     if (!parser) {
       if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
-        debug('Body parsing was skipped for %v.', mediaType);
+        debug('Body parsing skipped for media type %v.', mediaType);
         return;
       }
       throw createError(
@@ -150,10 +148,14 @@ export class BodyParser extends DebuggableService {
       );
     }
     const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
+    debug('Fetching request body.');
+    debug('Body limit %v bytes.', bodyBytesLimit);
     return fetchRequestBody(request, bodyBytesLimit).then(rawBody => {
       if (rawBody != null) {
+        debug('Read %v bytes.', Buffer.byteLength(rawBody, 'utf8'));
         return parser(rawBody);
       }
+      debug('No request body content.');
       return rawBody;
     });
   }

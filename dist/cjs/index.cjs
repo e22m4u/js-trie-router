@@ -70,6 +70,7 @@ __export(index_exports, {
   parseCookieString: () => parseCookieString,
   parseJsonBody: () => parseJsonBody,
   toCamelCase: () => toCamelCase,
+  toPascalCase: () => toPascalCase,
   validateRouteDefinition: () => validateRouteDefinition
 });
 module.exports = __toCommonJS(index_exports);
@@ -199,6 +200,15 @@ function toCamelCase(input) {
   return input.replace(/(^\w|[A-Z]|\b\w)/g, (c) => c.toUpperCase()).replace(/\W+/g, "").replace(/(^\w)/g, (c) => c.toLowerCase());
 }
 __name(toCamelCase, "toCamelCase");
+
+// src/utils/to-pascal-case.js
+function toPascalCase(input) {
+  if (!input) {
+    return "";
+  }
+  return input.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/([0-9])([a-zA-Z])/g, "$1 $2").replace(/[-_]+|[^\p{L}\p{N}]/gu, " ").toLowerCase().replace(new RegExp("(?:^|\\s)(\\p{L})", "gu"), (_, letter) => letter.toUpperCase()).replace(/\s+/g, "");
+}
+__name(toPascalCase, "toPascalCase");
 
 // src/utils/normalize-path.js
 function normalizePath(value, noStartingSlash = false) {
@@ -1157,7 +1167,7 @@ var _Route = class _Route extends import_js_debug.Debuggable {
         this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
       });
     }
-    this.ctorDebug("A new route %s %v was created.", this.method, this.path);
+    this.ctorDebug("Route %s %v created.", this.method, this.path);
   }
   /**
    * Handle request.
@@ -1168,11 +1178,7 @@ var _Route = class _Route extends import_js_debug.Debuggable {
   handle(context) {
     const debug = this.getDebuggerFor(this.handle);
     const requestPath = getRequestPathname(context.request);
-    debug(
-      "Invoking the Route handler for the request %s %v.",
-      this.method,
-      requestPath
-    );
+    debug("Invoking route handler for %s %v.", this.method, requestPath);
     return this.handler(context);
   }
 };
@@ -1306,7 +1312,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
     const debug = this.getDebuggerFor(this.parse);
     if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
       debug(
-        "Body parsing was skipped for the %s request.",
+        "Body parsing skipped for %s method.",
         request.method.toUpperCase()
       );
       return;
@@ -1316,9 +1322,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
       "$1"
     );
     if (!contentType) {
-      debug(
-        "Body parsing was skipped because the request had no content type."
-      );
+      debug("Body parsing skipped because no content type provided.");
       return;
     }
     const { mediaType } = parseContentType(contentType);
@@ -1331,7 +1335,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
     const parser = this._parsers[mediaType];
     if (!parser) {
       if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
-        debug("Body parsing was skipped for %v.", mediaType);
+        debug("Body parsing skipped for media type %v.", mediaType);
         return;
       }
       throw createError(
@@ -1341,10 +1345,14 @@ var _BodyParser = class _BodyParser extends DebuggableService {
       );
     }
     const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
+    debug("Fetching request body.");
+    debug("Body limit %v bytes.", bodyBytesLimit);
     return fetchRequestBody(request, bodyBytesLimit).then((rawBody) => {
       if (rawBody != null) {
+        debug("Read %v bytes.", Buffer.byteLength(rawBody, "utf8"));
         return parser(rawBody);
       }
+      debug("No request body content.");
       return rawBody;
     });
   }
@@ -1379,11 +1387,11 @@ var _QueryParser = class _QueryParser extends DebuggableService {
     const queryKeys = Object.keys(query);
     if (queryKeys.length) {
       queryKeys.forEach((key) => {
-        debug("The query parameter %v had the value %v.", key, query[key]);
+        debug("Found query parameter %v with value %v.", key, query[key]);
       });
     } else {
       debug(
-        "The request %s %v had no query parameters.",
+        "Request %s %v had no query parameters.",
         request.method,
         getRequestPathname(request)
       );
@@ -1409,11 +1417,11 @@ var _CookiesParser = class _CookiesParser extends DebuggableService {
     const cookiesKeys = Object.keys(cookies);
     if (cookiesKeys.length) {
       cookiesKeys.forEach((key) => {
-        debug("The cookie %v had the value %v.", key, cookies[key]);
+        debug("Found cookie %v with value %v.", key, cookies[key]);
       });
     } else {
       debug(
-        "The request %s %v had no cookies.",
+        "Request %s %v had no cookies.",
         request.method,
         getRequestPathname(request)
       );
@@ -1499,11 +1507,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;
     this._trie.add(triePath, route);
-    debug(
-      "The route %s %v was registered.",
-      route.method.toUpperCase(),
-      route.path
-    );
+    debug("Route %s %v registered.", route.method.toUpperCase(), route.path);
     return route;
   }
   /**
@@ -1516,7 +1520,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     const debug = this.getDebuggerFor(this.matchRouteByRequest);
     const requestPath = getRequestPathname(request);
     debug(
-      "Matching routes with the request %s %v.",
+      "Matching routes for %s %v.",
       request.method.toUpperCase(),
       requestPath
     );
@@ -1525,16 +1529,12 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;
-      debug(
-        "The route %s %v was matched.",
-        route.method.toUpperCase(),
-        route.path
-      );
+      debug("Matched route %s %v.", route.method.toUpperCase(), route.path);
       const paramNames = Object.keys(resolved.params);
       if (paramNames.length) {
         paramNames.forEach((name) => {
           debug(
-            "The path parameter %v had the value %v.",
+            "Found path parameter %v with value %v.",
             name,
             resolved.params[name]
           );
@@ -1545,7 +1545,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
       return { route, params: resolved.params };
     }
     debug(
-      "No matched route for the request %s %v.",
+      "No matched route for %s %v.",
       request.method.toUpperCase(),
       requestPath
     );
@@ -1752,21 +1752,19 @@ var _DataSender = class _DataSender extends DebuggableService {
   send(response, data) {
     const debug = this.getDebuggerFor(this.send);
     if (data === response || response.headersSent) {
-      debug(
-        "Response sending was skipped because its headers where sent already."
-      );
+      debug("Response skipped because headers already sent.");
       return;
     }
     if (data == null) {
       response.statusCode = 204;
       response.end();
-      debug("The empty response was sent.");
+      debug("Empty response sent.");
       return;
     }
     if (isReadableStream(data)) {
       response.setHeader("Content-Type", "application/octet-stream");
       data.pipe(response);
-      debug("The stream response was sent.");
+      debug("Stream response sent.");
       return;
     }
     let debugMsg;
@@ -1776,16 +1774,16 @@ var _DataSender = class _DataSender extends DebuggableService {
       case "number":
         if (Buffer.isBuffer(data)) {
           response.setHeader("content-type", "application/octet-stream");
-          debugMsg = "The Buffer was sent as binary data.";
+          debugMsg = "Buffer sent as binary data.";
         } else {
           response.setHeader("content-type", "application/json");
-          debugMsg = (0, import_js_format18.format)("The %v was sent as JSON.", typeof data);
+          debugMsg = (0, import_js_format18.format)("%v sent as JSON.", toPascalCase(typeof data));
           data = JSON.stringify(data);
         }
         break;
       default:
         response.setHeader("content-type", "text/plain");
-        debugMsg = "The response data was sent as plain text.";
+        debugMsg = "Response data sent as plain text.";
         data = String(data);
         break;
     }
@@ -1853,7 +1851,7 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
     response.setHeader("content-type", "application/json; charset=utf-8");
     response.end(JSON.stringify(body, null, 2), "utf-8");
     debug(
-      "The %s error was sent for the request %s %v.",
+      "%s error sent for %s %v request.",
       statusCode,
       request.method,
       getRequestPathname(request)
@@ -1872,7 +1870,7 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
     response.setHeader("content-type", "text/plain; charset=utf-8");
     response.end("404 Not Found", "utf-8");
     debug(
-      "The 404 error was sent for the request %s %v.",
+      "404 error sent for %s %v.",
       request.method,
       getRequestPathname(request)
     );
@@ -2071,7 +2069,7 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
       this._definition = cloneDeep(branchDef);
     }
     this.ctorDebug("Branch %v created.", normalizePath(branchDef.path, true));
-    this.ctorDebug("Branch path was %v.", this._definition.path);
+    this.ctorDebug("Branch path set to %v.", this._definition.path);
   }
   /**
    * Define route.
@@ -2188,14 +2186,10 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = getRequestPathname(request);
-    debug(
-      "Preparing to handle an incoming request %s %v.",
-      request.method,
-      requestPath
-    );
+    debug("Handling incoming request %s %v.", request.method, requestPath);
     const resolved = this.getService(RouteRegistry).matchRouteByRequest(request);
     if (!resolved) {
-      debug("No route for the request %s %v.", request.method, requestPath);
+      debug("No route found for %s %v.", request.method, requestPath);
       this.getService(ErrorSender).send404(request, response);
     } else {
       const { route, params } = resolved;
@@ -2348,5 +2342,6 @@ var TrieRouter = _TrieRouter;
   parseCookieString,
   parseJsonBody,
   toCamelCase,
+  toPascalCase,
   validateRouteDefinition
 });

@@ -18,11 +18,11 @@ export class CookiesParser extends DebuggableService {
     const cookiesKeys = Object.keys(cookies);
     if (cookiesKeys.length) {
       cookiesKeys.forEach(key => {
-        debug('The cookie %v had the value %v.', key, cookies[key]);
+        debug('Found cookie %v with value %v.', key, cookies[key]);
       });
     } else {
       debug(
-        'The request %s %v had no cookies.',
+        'Request %s %v had no cookies.',
         request.method,
         getRequestPathname(request),
       );

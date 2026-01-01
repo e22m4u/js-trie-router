@@ -147,7 +147,7 @@ export class Route extends Debuggable {
         this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
       });
     }
-    this.ctorDebug('A new route %s %v was created.', this.method, this.path);
+    this.ctorDebug('Route %s %v created.', this.method, this.path);
   }
 
   /**
@@ -159,11 +159,7 @@ export class Route extends Debuggable {
   handle(context) {
     const debug = this.getDebuggerFor(this.handle);
     const requestPath = getRequestPathname(context.request);
-    debug(
-      'Invoking the Route handler for the request %s %v.',
-      this.method,
-      requestPath,
-    );
+    debug('Invoking route handler for %s %v.', this.method, requestPath);
     return this.handler(context);
   }
 }

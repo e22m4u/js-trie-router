@@ -43,11 +43,7 @@ export class RouteRegistry extends DebuggableService {
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;
     this._trie.add(triePath, route);
-    debug(
-      'The route %s %v was registered.',
-      route.method.toUpperCase(),
-      route.path,
-    );
+    debug('Route %s %v registered.', route.method.toUpperCase(), route.path);
     return route;
   }
 
@@ -61,7 +57,7 @@ export class RouteRegistry extends DebuggableService {
     const debug = this.getDebuggerFor(this.matchRouteByRequest);
     const requestPath = getRequestPathname(request);
     debug(
-      'Matching routes with the request %s %v.',
+      'Matching routes for %s %v.',
       request.method.toUpperCase(),
       requestPath,
     );
@@ -72,16 +68,12 @@ export class RouteRegistry extends DebuggableService {
     const resolved = this._trie.match(triePath);
     if (resolved) {
       const route = resolved.value;
-      debug(
-        'The route %s %v was matched.',
-        route.method.toUpperCase(),
-        route.path,
-      );
+      debug('Matched route %s %v.', route.method.toUpperCase(), route.path);
       const paramNames = Object.keys(resolved.params);
       if (paramNames.length) {
         paramNames.forEach(name => {
           debug(
-            'The path parameter %v had the value %v.',
+            'Found path parameter %v with value %v.',
             name,
             resolved.params[name],
           );
@@ -92,7 +84,7 @@ export class RouteRegistry extends DebuggableService {
       return {route, params: resolved.params};
     }
     debug(
-      'No matched route for the request %s %v.',
+      'No matched route for %s %v.',
       request.method.toUpperCase(),
       requestPath,
     );

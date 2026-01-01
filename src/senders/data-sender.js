@@ -1,6 +1,6 @@
 import {format} from '@e22m4u/js-format';
-import {isReadableStream} from '../utils/index.js';
 import {DebuggableService} from '../debuggable-service.js';
+import {isReadableStream, toPascalCase} from '../utils/index.js';
 
 /**
  * Data sender.
@@ -20,10 +20,7 @@ export class DataSender extends DebuggableService {
     // заголовки, то считаем, что контроллер
     // уже отправил ответ самостоятельно
     if (data === response || response.headersSent) {
-      debug(
-        'Response sending was skipped because ' +
-          'its headers where sent already.',
-      );
+      debug('Response skipped because headers already sent.');
       return;
     }
     // если ответ контроллера пуст, то отправляем
@@ -31,7 +28,7 @@ export class DataSender extends DebuggableService {
     if (data == null) {
       response.statusCode = 204;
       response.end();
-      debug('The empty response was sent.');
+      debug('Empty response sent.');
       return;
     }
     // если ответ контроллера является стримом,
@@ -39,7 +36,7 @@ export class DataSender extends DebuggableService {
     if (isReadableStream(data)) {
       response.setHeader('Content-Type', 'application/octet-stream');
       data.pipe(response);
-      debug('The stream response was sent.');
+      debug('Stream response sent.');
       return;
     }
     // подготовка данных перед отправкой, и установка
@@ -53,16 +50,16 @@ export class DataSender extends DebuggableService {
           // тип Buffer отправляется
           // как бинарные данные
           response.setHeader('content-type', 'application/octet-stream');
-          debugMsg = 'The Buffer was sent as binary data.';
+          debugMsg = 'Buffer sent as binary data.';
         } else {
           response.setHeader('content-type', 'application/json');
-          debugMsg = format('The %v was sent as JSON.', typeof data);
+          debugMsg = format('%v sent as JSON.', toPascalCase(typeof data));
           data = JSON.stringify(data);
         }
         break;
       default:
         response.setHeader('content-type', 'text/plain');
-        debugMsg = 'The response data was sent as plain text.';
+        debugMsg = 'Response data sent as plain text.';
         data = String(data);
         break;
     }

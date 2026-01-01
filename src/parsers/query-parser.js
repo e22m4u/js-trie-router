@@ -19,11 +19,11 @@ export class QueryParser extends DebuggableService {
     const queryKeys = Object.keys(query);
     if (queryKeys.length) {
       queryKeys.forEach(key => {
-        debug('The query parameter %v had the value %v.', key, query[key]);
+        debug('Found query parameter %v with value %v.', key, query[key]);
       });
     } else {
       debug(
-        'The request %s %v had no query parameters.',
+        'Request %s %v had no query parameters.',
         request.method,
         getRequestPathname(request),
       );
