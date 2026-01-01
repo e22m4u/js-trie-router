@@ -4,7 +4,7 @@ import {ROOT_PATH} from '../constants.js';
 import {Route, HttpMethod} from './route.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {RequestContext} from '../request-context.js';
-import {HookRegistry, RouterHookType} from '../hooks/index.js';
+import {RouterHookRegistry, RouterHookType} from '../hooks/index.js';
 import {createRequestMock, createResponseMock} from '../utils/index.js';
 
 describe('Route', function () {
@@ -333,7 +333,7 @@ describe('Route', function () {
       });
       const res1 = route.getHookRegistry();
       const res2 = route.getHookRegistry();
-      expect(res1).to.be.instanceOf(HookRegistry);
+      expect(res1).to.be.instanceOf(RouterHookRegistry);
       expect(res2).to.be.eq(res1);
     });
   });

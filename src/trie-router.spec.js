@@ -6,7 +6,7 @@ import {RequestContext} from './request-context.js';
 import {ServerResponse, IncomingMessage} from 'http';
 import {RouterBranch} from './branch/router-branch.js';
 import {DataSender, ErrorSender} from './senders/index.js';
-import {HookRegistry, RouterHookType} from './hooks/index.js';
+import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
 import {createRequestMock, createResponseMock} from './utils/index.js';
 
 describe('TrieRouter', function () {
@@ -606,9 +606,9 @@ describe('TrieRouter', function () {
   });
 
   describe('addHook', function () {
-    it('should add the given hook to the HookRegistry and returns itself', function () {
+    it('should add the given hook to the RouterHookRegistry and returns itself', function () {
       const router = new TrieRouter();
-      const reg = router.getService(HookRegistry);
+      const reg = router.getService(RouterHookRegistry);
       const type = RouterHookType.PRE_HANDLER;
       const hook = () => undefined;
       expect(reg.hasHook(type, hook)).to.be.false;
@@ -619,9 +619,9 @@ describe('TrieRouter', function () {
   });
 
   describe('addPreHandler', function () {
-    it('should add the given pre-handler hook to the HookRegistry and returns itself', function () {
+    it('should add the given pre-handler hook to the RouterHookRegistry and returns itself', function () {
       const router = new TrieRouter();
-      const reg = router.getService(HookRegistry);
+      const reg = router.getService(RouterHookRegistry);
       const hook = () => undefined;
       expect(reg.hasHook(RouterHookType.PRE_HANDLER, hook)).to.be.false;
       const res = router.addPreHandler(hook);
@@ -631,9 +631,9 @@ describe('TrieRouter', function () {
   });
 
   describe('addPostHandler', function () {
-    it('should add the given post-handler hook to the HookRegistry and returns itself', function () {
+    it('should add the given post-handler hook to the RouterHookRegistry and returns itself', function () {
       const router = new TrieRouter();
-      const reg = router.getService(HookRegistry);
+      const reg = router.getService(RouterHookRegistry);
       const hook = () => undefined;
       expect(reg.hasHook(RouterHookType.POST_HANDLER, hook)).to.be.false;
       const res = router.addPostHandler(hook);

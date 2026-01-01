@@ -3,7 +3,7 @@ import {RequestContext} from '../request-context.js';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
- * Hook type.
+ * Router hook type.
  */
 export declare const RouterHookType: {
   PRE_HANDLER: 'preHandler';
@@ -11,7 +11,7 @@ export declare const RouterHookType: {
 };
 
 /**
- * Type of RouterHookType.
+ * Router hook type.
  */
 export type RouterHookType =
   (typeof RouterHookType)[keyof typeof RouterHookType];
@@ -37,9 +37,9 @@ export type PreHandlerHook = (ctx: RequestContext) => unknown;
 export type PostHandlerHook = (ctx: RequestContext, data: unknown) => unknown;
 
 /**
- * Hook registry.
+ * Router hook registry.
  */
-export declare class HookRegistry extends DebuggableService {
+export declare class RouterHookRegistry extends DebuggableService {
   /**
    * Add hook.
    *

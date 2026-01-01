@@ -21,9 +21,9 @@ export const RouterHookType = {
 export const ROUTER_HOOK_TYPES = Object.values(RouterHookType);
 
 /**
- * Hook registry.
+ * Router hook registry.
  */
-export class HookRegistry {
+export class RouterHookRegistry {
   /**
    * Hooks.
    *
@@ -42,19 +42,16 @@ export class HookRegistry {
   addHook(type, hook) {
     if (!type || typeof type !== 'string') {
       throw new InvalidArgumentError(
-        'The hook type is required, but %v was given.',
+        'Hook type is required, but %v was given.',
         type,
       );
     }
     if (!Object.values(RouterHookType).includes(type)) {
-      throw new InvalidArgumentError(
-        'The hook type %v is not supported.',
-        type,
-      );
+      throw new InvalidArgumentError('Hook type %v is not supported.', type);
     }
     if (!hook || typeof hook !== 'function') {
       throw new InvalidArgumentError(
-        'The hook %v must be a Function, but %v was given.',
+        'Router hook %v must be a Function, but %v was given.',
         type,
         hook,
       );
@@ -75,19 +72,16 @@ export class HookRegistry {
   hasHook(type, hook) {
     if (!type || typeof type !== 'string') {
       throw new InvalidArgumentError(
-        'The hook type is required, but %v was given.',
+        'Hook type is required, but %v was given.',
         type,
       );
     }
     if (!Object.values(RouterHookType).includes(type)) {
-      throw new InvalidArgumentError(
-        'The hook type %v is not supported.',
-        type,
-      );
+      throw new InvalidArgumentError('Hook type %v is not supported.', type);
     }
     if (!hook || typeof hook !== 'function') {
       throw new InvalidArgumentError(
-        'The hook %v must be a Function, but %v was given.',
+        'Router hook %v must be a Function, but %v was given.',
         type,
         hook,
       );
@@ -105,15 +99,12 @@ export class HookRegistry {
   getHooks(type) {
     if (!type || typeof type !== 'string') {
       throw new InvalidArgumentError(
-        'The hook type is required, but %v was given.',
+        'Hook type is required, but %v was given.',
         type,
       );
     }
     if (!Object.values(RouterHookType).includes(type)) {
-      throw new InvalidArgumentError(
-        'The hook type %v is not supported.',
-        type,
-      );
+      throw new InvalidArgumentError('Hook type %v is not supported.', type);
     }
     return this._hooks.get(type) || [];
   }

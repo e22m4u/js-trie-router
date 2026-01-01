@@ -37,8 +37,6 @@ __export(index_exports, {
   DataSender: () => DataSender,
   EXPOSED_ERROR_PROPERTIES: () => EXPOSED_ERROR_PROPERTIES,
   ErrorSender: () => ErrorSender,
-  HookInvoker: () => HookInvoker,
-  HookRegistry: () => HookRegistry,
   HttpMethod: () => HttpMethod,
   METHODS_WITH_BODY: () => METHODS_WITH_BODY,
   QueryParser: () => QueryParser,
@@ -48,6 +46,8 @@ __export(index_exports, {
   RequestParser: () => RequestParser,
   Route: () => Route,
   RouteRegistry: () => RouteRegistry,
+  RouterHookInvoker: () => RouterHookInvoker,
+  RouterHookRegistry: () => RouterHookRegistry,
   RouterHookType: () => RouterHookType,
   RouterOptions: () => RouterOptions,
   TrieRouter: () => TrieRouter,
@@ -80,9 +80,6 @@ var ROOT_PATH = "/";
 
 // src/route/route.js
 var import_js_debug = require("@e22m4u/js-debug");
-
-// src/hooks/hook-invoker.js
-var import_js_format11 = require("@e22m4u/js-format");
 
 // src/debuggable-service.js
 var import_js_service = require("@e22m4u/js-service");
@@ -790,14 +787,17 @@ function getRequestPathname(request) {
 }
 __name(getRequestPathname, "getRequestPathname");
 
-// src/hooks/hook-registry.js
+// src/hooks/router-hook-invoker.js
+var import_js_format11 = require("@e22m4u/js-format");
+
+// src/hooks/router-hook-registry.js
 var import_js_format10 = require("@e22m4u/js-format");
 var RouterHookType = {
   PRE_HANDLER: "preHandler",
   POST_HANDLER: "postHandler"
 };
 var ROUTER_HOOK_TYPES = Object.values(RouterHookType);
-var _HookRegistry = class _HookRegistry {
+var _RouterHookRegistry = class _RouterHookRegistry {
   /**
    * Hooks.
    *
@@ -815,19 +815,16 @@ var _HookRegistry = class _HookRegistry {
   addHook(type, hook) {
     if (!type || typeof type !== "string") {
       throw new import_js_format10.InvalidArgumentError(
-        "The hook type is required, but %v was given.",
+        "Hook type is required, but %v was given.",
         type
       );
     }
     if (!Object.values(RouterHookType).includes(type)) {
-      throw new import_js_format10.InvalidArgumentError(
-        "The hook type %v is not supported.",
-        type
-      );
+      throw new import_js_format10.InvalidArgumentError("Hook type %v is not supported.", type);
     }
     if (!hook || typeof hook !== "function") {
       throw new import_js_format10.InvalidArgumentError(
-        "The hook %v must be a Function, but %v was given.",
+        "Router hook %v must be a Function, but %v was given.",
         type,
         hook
       );
@@ -847,19 +844,16 @@ var _HookRegistry = class _HookRegistry {
   hasHook(type, hook) {
     if (!type || typeof type !== "string") {
       throw new import_js_format10.InvalidArgumentError(
-        "The hook type is required, but %v was given.",
+        "Hook type is required, but %v was given.",
         type
       );
     }
     if (!Object.values(RouterHookType).includes(type)) {
-      throw new import_js_format10.InvalidArgumentError(
-        "The hook type %v is not supported.",
-        type
-      );
+      throw new import_js_format10.InvalidArgumentError("Hook type %v is not supported.", type);
     }
     if (!hook || typeof hook !== "function") {
       throw new import_js_format10.InvalidArgumentError(
-        "The hook %v must be a Function, but %v was given.",
+        "Router hook %v must be a Function, but %v was given.",
         type,
         hook
       );
@@ -876,24 +870,21 @@ var _HookRegistry = class _HookRegistry {
   getHooks(type) {
     if (!type || typeof type !== "string") {
       throw new import_js_format10.InvalidArgumentError(
-        "The hook type is required, but %v was given.",
+        "Hook type is required, but %v was given.",
         type
       );
     }
     if (!Object.values(RouterHookType).includes(type)) {
-      throw new import_js_format10.InvalidArgumentError(
-        "The hook type %v is not supported.",
-        type
-      );
+      throw new import_js_format10.InvalidArgumentError("Hook type %v is not supported.", type);
     }
     return this._hooks.get(type) || [];
   }
 };
-__name(_HookRegistry, "HookRegistry");
-var HookRegistry = _HookRegistry;
+__name(_RouterHookRegistry, "RouterHookRegistry");
+var RouterHookRegistry = _RouterHookRegistry;
 
-// src/hooks/hook-invoker.js
-var _HookInvoker = class _HookInvoker extends DebuggableService {
+// src/hooks/router-hook-invoker.js
+var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
   /**
    * Последовательно вызывает глобальные хуки и хуки маршрута указанного
    * типа, пока один из них не вернет отличное от undefined и null значение
@@ -910,25 +901,25 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
   invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
     if (!route || !(route instanceof Route)) {
       throw new import_js_format11.InvalidArgumentError(
-        'The parameter "route" of the HookInvoker.invokeAndContinueUntilValueReceived must be a Route instance, but %v was given.',
+        'Parameter "route" must be a Route instance, but %v was given.',
         route
       );
     }
     if (!hookType || typeof hookType !== "string") {
       throw new import_js_format11.InvalidArgumentError(
-        'The parameter "hookType" of the HookInvoker.invokeAndContinueUntilValueReceived must be a non-empty String, but %v was given.',
+        'Parameter "hookType" must be a non-empty String, but %v was given.',
         hookType
       );
     }
     if (!Object.values(RouterHookType).includes(hookType)) {
       throw new import_js_format11.InvalidArgumentError(
-        "The hook type %v is not supported.",
+        "Hook type %v is not supported.",
         hookType
       );
     }
     if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
       throw new import_js_format11.InvalidArgumentError(
-        'The parameter "response" of the HookInvoker.invokeAndContinueUntilValueReceived must be a ServerResponse instance, but %v was given.',
+        'Parameter "response" must be a ServerResponse instance, but %v was given.',
         response
       );
     }
@@ -936,7 +927,7 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
       return response;
     }
     const hooks = [
-      ...this.getService(HookRegistry).getHooks(hookType),
+      ...this.getService(RouterHookRegistry).getHooks(hookType),
       ...route.getHookRegistry().getHooks(hookType)
     ];
     let result = void 0;
@@ -996,8 +987,8 @@ var _HookInvoker = class _HookInvoker extends DebuggableService {
     return;
   }
 };
-__name(_HookInvoker, "HookInvoker");
-var HookInvoker = _HookInvoker;
+__name(_RouterHookInvoker, "RouterHookInvoker");
+var RouterHookInvoker = _RouterHookInvoker;
 
 // src/route/validate-route-definition.js
 var import_js_format12 = require("@e22m4u/js-format");
@@ -1098,13 +1089,13 @@ var _Route = class _Route extends import_js_debug.Debuggable {
   /**
    * Hook registry.
    *
-   * @type {HookRegistry}
+   * @type {RouterHookRegistry}
    */
-  _hookRegistry = new HookRegistry();
+  _hookRegistry = new RouterHookRegistry();
   /**
    * Get hook registry.
    *
-   * @returns {HookRegistry}
+   * @returns {RouterHookRegistry}
    */
   getHookRegistry() {
     return this._hookRegistry;
@@ -1744,8 +1735,230 @@ var RequestContext = _RequestContext;
 var import_js_service4 = require("@e22m4u/js-service");
 var import_http4 = require("http");
 
-// src/senders/data-sender.js
+// src/branch/router-branch.js
+var import_js_format19 = require("@e22m4u/js-format");
+
+// src/branch/validate-router-branch-definition.js
 var import_js_format18 = require("@e22m4u/js-format");
+function validateRouterBranchDefinition(branchDef) {
+  if (!branchDef || typeof branchDef !== "object" || Array.isArray(branchDef)) {
+    throw new import_js_format18.InvalidArgumentError(
+      "Branch definition must be an Object, but %v was given.",
+      branchDef
+    );
+  }
+  if (branchDef.method !== void 0) {
+    throw new import_js_format18.InvalidArgumentError(
+      'Option "method" is not supported for the router branch, but %v was given.',
+      branchDef.method
+    );
+  }
+  if (!branchDef.path || typeof branchDef.path !== "string") {
+    throw new import_js_format18.InvalidArgumentError(
+      'Option "path" must be a non-empty String, but %v was given.',
+      branchDef.path
+    );
+  }
+  if (branchDef.handler !== void 0) {
+    throw new import_js_format18.InvalidArgumentError(
+      'Option "handler" is not supported for the router branch, but %v was given.',
+      branchDef.handler
+    );
+  }
+  if (branchDef.preHandler !== void 0) {
+    if (Array.isArray(branchDef.preHandler)) {
+      branchDef.preHandler.forEach((preHandler) => {
+        if (typeof preHandler !== "function") {
+          throw new import_js_format18.InvalidArgumentError(
+            "Route pre-handler must be a Function, but %v was given.",
+            preHandler
+          );
+        }
+      });
+    } else if (typeof branchDef.preHandler !== "function") {
+      throw new import_js_format18.InvalidArgumentError(
+        'Option "preHandler" must be a Function or an Array, but %v was given.',
+        branchDef.preHandler
+      );
+    }
+  }
+  if (branchDef.postHandler !== void 0) {
+    if (Array.isArray(branchDef.postHandler)) {
+      branchDef.postHandler.forEach((postHandler) => {
+        if (typeof postHandler !== "function") {
+          throw new import_js_format18.InvalidArgumentError(
+            "Route post-handler must be a Function, but %v was given.",
+            postHandler
+          );
+        }
+      });
+    } else if (typeof branchDef.postHandler !== "function") {
+      throw new import_js_format18.InvalidArgumentError(
+        'Option "postHandler" must be a Function or an Array, but %v was given.',
+        branchDef.postHandler
+      );
+    }
+  }
+  if (branchDef.meta !== void 0) {
+    if (!branchDef.meta || typeof branchDef.meta !== "object" || Array.isArray(branchDef.meta)) {
+      throw new import_js_format18.InvalidArgumentError(
+        'Option "meta" must be an Object, but %v was given.',
+        branchDef.meta
+      );
+    }
+  }
+}
+__name(validateRouterBranchDefinition, "validateRouterBranchDefinition");
+
+// src/branch/merge-router-branch-definitions.js
+function mergeRouterBranchDefinitions(firstDef, secondDef) {
+  validateRouterBranchDefinition(firstDef);
+  validateRouterBranchDefinition(secondDef);
+  const mergedDef = {};
+  const path = (firstDef.path || "") + "/" + (secondDef.path || "");
+  mergedDef.path = normalizePath(path);
+  if (firstDef.preHandler || secondDef.preHandler) {
+    mergedDef.preHandler = [firstDef.preHandler, secondDef.preHandler].flat().filter(Boolean);
+  }
+  if (firstDef.postHandler || secondDef.postHandler) {
+    mergedDef.postHandler = [firstDef.postHandler, secondDef.postHandler].flat().filter(Boolean);
+  }
+  if (firstDef.meta && !secondDef.meta) {
+    mergedDef.meta = firstDef.meta;
+  } else if (!firstDef.meta && secondDef.meta) {
+    mergedDef.meta = secondDef.meta;
+  } else if (firstDef.meta && secondDef.meta) {
+    mergedDef.meta = mergeDeep(firstDef.meta, secondDef.meta);
+  }
+  return { ...firstDef, ...secondDef, ...mergedDef };
+}
+__name(mergeRouterBranchDefinitions, "mergeRouterBranchDefinitions");
+
+// src/branch/router-branch.js
+var _RouterBranch = class _RouterBranch extends DebuggableService {
+  /**
+   * Router.
+   *
+   * @type {TrieRouter}
+   */
+  _router;
+  /**
+   * Get router.
+   *
+   * @type {TrieRouter}
+   */
+  getRouter() {
+    return this._router;
+  }
+  /**
+   * Branch definition.
+   *
+   * @type {RouterBranchDefinition}
+   */
+  _definition;
+  /**
+   * Get branch definition.
+   *
+   * @type {RouterBranchDefinition}
+   */
+  getDefinition() {
+    return this._definition;
+  }
+  /**
+   * Parent branch.
+   *
+   * @type {RouterBranch|undefined}
+   */
+  _parentBranch;
+  /**
+   * Has parent branch.
+   *
+   * @returns {boolean}
+   */
+  hasParentBranch() {
+    return Boolean(this._parentBranch);
+  }
+  /**
+   * Get parent branch.
+   *
+   * @returns {RouterBranch|undefined}
+   */
+  getParentBranch() {
+    if (!this._parentBranch) {
+      throw new import_js_format19.InvalidArgumentError(
+        "Parent branch does not exist in the router branch."
+      );
+    }
+    return this._parentBranch;
+  }
+  /**
+   * Constructor.
+   *
+   * @param {TrieRouter} router
+   * @param {RouterBranchDefinition} branchDef
+   * @param {RouterBranch} [parentBranch]
+   */
+  constructor(router, branchDef, parentBranch) {
+    super(router.container);
+    if (!(router instanceof TrieRouter)) {
+      throw new import_js_format19.InvalidArgumentError(
+        'Parameter "router" must be a TrieRouter instance, but %v was given.',
+        router
+      );
+    }
+    this._router = router;
+    if (parentBranch !== void 0 && !(parentBranch instanceof _RouterBranch)) {
+      throw new import_js_format19.InvalidArgumentError(
+        'Parameter "parentBranch" must be a RouterBranch instance, but %v was given.',
+        parentBranch
+      );
+    }
+    this._parentBranch = parentBranch;
+    if (parentBranch) {
+      const mergedDef = mergeRouterBranchDefinitions(
+        parentBranch.getDefinition(),
+        branchDef
+      );
+      this._definition = cloneDeep(mergedDef);
+    } else {
+      validateRouterBranchDefinition(branchDef);
+      this._definition = cloneDeep(branchDef);
+    }
+    this.ctorDebug("Created a branch %v.", normalizePath(branchDef.path, true));
+    this.ctorDebug("Branch path is %v.", this._definition.path);
+  }
+  /**
+   * Define route.
+   *
+   * @param {import('../route/index.js').RouteDefinition} routeDef
+   * @returns {Route}
+   */
+  defineRoute(routeDef) {
+    validateRouteDefinition(routeDef);
+    const { method, handler, ...routeDefAsBranchDef } = routeDef;
+    const mergedDef = mergeRouterBranchDefinitions(
+      this._definition,
+      routeDefAsBranchDef
+    );
+    mergedDef.method = method;
+    mergedDef.handler = handler;
+    return this._router.defineRoute(mergedDef);
+  }
+  /**
+   * Create branch.
+   *
+   * @param {RouterBranch} branchDef
+   * @returns {RouterBranch}
+   */
+  createBranch(branchDef) {
+    return new _RouterBranch(this._router, branchDef, this);
+  }
+};
+__name(_RouterBranch, "RouterBranch");
+var RouterBranch = _RouterBranch;
+
+// src/senders/data-sender.js
+var import_js_format20 = require("@e22m4u/js-format");
 var _DataSender = class _DataSender extends DebuggableService {
   /**
    * Send.
@@ -1782,7 +1995,7 @@ var _DataSender = class _DataSender extends DebuggableService {
           debugMsg = "Buffer has been sent as binary data.";
         } else {
           response.setHeader("content-type", "application/json");
-          debugMsg = (0, import_js_format18.format)(
+          debugMsg = (0, import_js_format20.format)(
             "%v has been sent as JSON.",
             toPascalCase(typeof data)
           );
@@ -1886,228 +2099,6 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
 };
 __name(_ErrorSender, "ErrorSender");
 var ErrorSender = _ErrorSender;
-
-// src/branch/router-branch.js
-var import_js_format20 = require("@e22m4u/js-format");
-
-// src/branch/validate-router-branch-definition.js
-var import_js_format19 = require("@e22m4u/js-format");
-function validateRouterBranchDefinition(branchDef) {
-  if (!branchDef || typeof branchDef !== "object" || Array.isArray(branchDef)) {
-    throw new import_js_format19.InvalidArgumentError(
-      "Branch definition must be an Object, but %v was given.",
-      branchDef
-    );
-  }
-  if (branchDef.method !== void 0) {
-    throw new import_js_format19.InvalidArgumentError(
-      'Option "method" is not supported for the router branch, but %v was given.',
-      branchDef.method
-    );
-  }
-  if (!branchDef.path || typeof branchDef.path !== "string") {
-    throw new import_js_format19.InvalidArgumentError(
-      'Option "path" must be a non-empty String, but %v was given.',
-      branchDef.path
-    );
-  }
-  if (branchDef.handler !== void 0) {
-    throw new import_js_format19.InvalidArgumentError(
-      'Option "handler" is not supported for the router branch, but %v was given.',
-      branchDef.handler
-    );
-  }
-  if (branchDef.preHandler !== void 0) {
-    if (Array.isArray(branchDef.preHandler)) {
-      branchDef.preHandler.forEach((preHandler) => {
-        if (typeof preHandler !== "function") {
-          throw new import_js_format19.InvalidArgumentError(
-            "Route pre-handler must be a Function, but %v was given.",
-            preHandler
-          );
-        }
-      });
-    } else if (typeof branchDef.preHandler !== "function") {
-      throw new import_js_format19.InvalidArgumentError(
-        'Option "preHandler" must be a Function or an Array, but %v was given.',
-        branchDef.preHandler
-      );
-    }
-  }
-  if (branchDef.postHandler !== void 0) {
-    if (Array.isArray(branchDef.postHandler)) {
-      branchDef.postHandler.forEach((postHandler) => {
-        if (typeof postHandler !== "function") {
-          throw new import_js_format19.InvalidArgumentError(
-            "Route post-handler must be a Function, but %v was given.",
-            postHandler
-          );
-        }
-      });
-    } else if (typeof branchDef.postHandler !== "function") {
-      throw new import_js_format19.InvalidArgumentError(
-        'Option "postHandler" must be a Function or an Array, but %v was given.',
-        branchDef.postHandler
-      );
-    }
-  }
-  if (branchDef.meta !== void 0) {
-    if (!branchDef.meta || typeof branchDef.meta !== "object" || Array.isArray(branchDef.meta)) {
-      throw new import_js_format19.InvalidArgumentError(
-        'Option "meta" must be an Object, but %v was given.',
-        branchDef.meta
-      );
-    }
-  }
-}
-__name(validateRouterBranchDefinition, "validateRouterBranchDefinition");
-
-// src/branch/merge-router-branch-definitions.js
-function mergeRouterBranchDefinitions(firstDef, secondDef) {
-  validateRouterBranchDefinition(firstDef);
-  validateRouterBranchDefinition(secondDef);
-  const mergedDef = {};
-  const path = (firstDef.path || "") + "/" + (secondDef.path || "");
-  mergedDef.path = normalizePath(path);
-  if (firstDef.preHandler || secondDef.preHandler) {
-    mergedDef.preHandler = [firstDef.preHandler, secondDef.preHandler].flat().filter(Boolean);
-  }
-  if (firstDef.postHandler || secondDef.postHandler) {
-    mergedDef.postHandler = [firstDef.postHandler, secondDef.postHandler].flat().filter(Boolean);
-  }
-  if (firstDef.meta && !secondDef.meta) {
-    mergedDef.meta = firstDef.meta;
-  } else if (!firstDef.meta && secondDef.meta) {
-    mergedDef.meta = secondDef.meta;
-  } else if (firstDef.meta && secondDef.meta) {
-    mergedDef.meta = mergeDeep(firstDef.meta, secondDef.meta);
-  }
-  return { ...firstDef, ...secondDef, ...mergedDef };
-}
-__name(mergeRouterBranchDefinitions, "mergeRouterBranchDefinitions");
-
-// src/branch/router-branch.js
-var _RouterBranch = class _RouterBranch extends DebuggableService {
-  /**
-   * Router.
-   *
-   * @type {TrieRouter}
-   */
-  _router;
-  /**
-   * Get router.
-   *
-   * @type {TrieRouter}
-   */
-  getRouter() {
-    return this._router;
-  }
-  /**
-   * Branch definition.
-   *
-   * @type {RouterBranchDefinition}
-   */
-  _definition;
-  /**
-   * Get branch definition.
-   *
-   * @type {RouterBranchDefinition}
-   */
-  getDefinition() {
-    return this._definition;
-  }
-  /**
-   * Parent branch.
-   *
-   * @type {RouterBranch|undefined}
-   */
-  _parentBranch;
-  /**
-   * Has parent branch.
-   *
-   * @returns {boolean}
-   */
-  hasParentBranch() {
-    return Boolean(this._parentBranch);
-  }
-  /**
-   * Get parent branch.
-   *
-   * @returns {RouterBranch|undefined}
-   */
-  getParentBranch() {
-    if (!this._parentBranch) {
-      throw new import_js_format20.InvalidArgumentError(
-        "Parent branch does not exist in the router branch."
-      );
-    }
-    return this._parentBranch;
-  }
-  /**
-   * Constructor.
-   *
-   * @param {TrieRouter} router
-   * @param {RouterBranchDefinition} branchDef
-   * @param {RouterBranch} [parentBranch]
-   */
-  constructor(router, branchDef, parentBranch) {
-    super(router.container);
-    if (!(router instanceof TrieRouter)) {
-      throw new import_js_format20.InvalidArgumentError(
-        'Parameter "router" must be a TrieRouter instance, but %v was given.',
-        router
-      );
-    }
-    this._router = router;
-    if (parentBranch !== void 0 && !(parentBranch instanceof _RouterBranch)) {
-      throw new import_js_format20.InvalidArgumentError(
-        'Parameter "parentBranch" must be a RouterBranch instance, but %v was given.',
-        parentBranch
-      );
-    }
-    this._parentBranch = parentBranch;
-    if (parentBranch) {
-      const mergedDef = mergeRouterBranchDefinitions(
-        parentBranch.getDefinition(),
-        branchDef
-      );
-      this._definition = cloneDeep(mergedDef);
-    } else {
-      validateRouterBranchDefinition(branchDef);
-      this._definition = cloneDeep(branchDef);
-    }
-    this.ctorDebug("Created a branch %v.", normalizePath(branchDef.path, true));
-    this.ctorDebug("Branch path is %v.", this._definition.path);
-  }
-  /**
-   * Define route.
-   *
-   * @param {import('../route/index.js').RouteDefinition} routeDef
-   * @returns {Route}
-   */
-  defineRoute(routeDef) {
-    validateRouteDefinition(routeDef);
-    const { method, handler, ...routeDefAsBranchDef } = routeDef;
-    const mergedDef = mergeRouterBranchDefinitions(
-      this._definition,
-      routeDefAsBranchDef
-    );
-    mergedDef.method = method;
-    mergedDef.handler = handler;
-    return this._router.defineRoute(mergedDef);
-  }
-  /**
-   * Create branch.
-   *
-   * @param {RouterBranch} branchDef
-   * @returns {RouterBranch}
-   */
-  createBranch(branchDef) {
-    return new _RouterBranch(this._router, branchDef, this);
-  }
-};
-__name(_RouterBranch, "RouterBranch");
-var RouterBranch = _RouterBranch;
 
 // src/trie-router.js
 var _TrieRouter = class _TrieRouter extends DebuggableService {
@@ -2220,7 +2211,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
         } else {
           Object.assign(context, reqDataOrPromise);
         }
-        const hookInvoker = this.getService(HookInvoker);
+        const hookInvoker = this.getService(RouterHookInvoker);
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
           RouterHookType.PRE_HANDLER,
@@ -2287,7 +2278,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * @returns {this}
    */
   addHook(type, hook) {
-    this.getService(HookRegistry).addHook(type, hook);
+    this.getService(RouterHookRegistry).addHook(type, hook);
     return this;
   }
   /**
@@ -2297,7 +2288,10 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * @returns {this}
    */
   addPreHandler(hook) {
-    this.getService(HookRegistry).addHook(RouterHookType.PRE_HANDLER, hook);
+    this.getService(RouterHookRegistry).addHook(
+      RouterHookType.PRE_HANDLER,
+      hook
+    );
     return this;
   }
   /**
@@ -2307,7 +2301,10 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * @returns {this}
    */
   addPostHandler(hook) {
-    this.getService(HookRegistry).addHook(RouterHookType.POST_HANDLER, hook);
+    this.getService(RouterHookRegistry).addHook(
+      RouterHookType.POST_HANDLER,
+      hook
+    );
     return this;
   }
 };
@@ -2321,8 +2318,6 @@ var TrieRouter = _TrieRouter;
   DataSender,
   EXPOSED_ERROR_PROPERTIES,
   ErrorSender,
-  HookInvoker,
-  HookRegistry,
   HttpMethod,
   METHODS_WITH_BODY,
   QueryParser,
@@ -2332,6 +2327,8 @@ var TrieRouter = _TrieRouter;
   RequestParser,
   Route,
   RouteRegistry,
+  RouterHookInvoker,
+  RouterHookRegistry,
   RouterHookType,
   RouterOptions,
   TrieRouter,

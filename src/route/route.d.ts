@@ -1,6 +1,6 @@
 import {ValueOrPromise} from '../types.js';
-import {HookRegistry} from '../hooks/index.js';
 import {RequestContext} from '../request-context.js';
+import {RouterHookRegistry} from '../hooks/index.js';
 
 /**
  * Http method.
@@ -67,7 +67,7 @@ export declare class Route {
   /**
    * Get hook registry.
    */
-  getHookRegistry(): HookRegistry;
+  getHookRegistry(): RouterHookRegistry;
 
   /**
    * Method.

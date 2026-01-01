@@ -1,2 +1,2 @@
-export * from './hook-invoker.js';
-export * from './hook-registry.js';
+export * from './router-hook-invoker.js';
+export * from './router-hook-registry.js';

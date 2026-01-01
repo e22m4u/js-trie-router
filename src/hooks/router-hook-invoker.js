@@ -2,12 +2,12 @@ import {Route} from '../route/index.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from '../debuggable-service.js';
 import {isPromise, isResponseSent} from '../utils/index.js';
-import {HookRegistry, RouterHookType} from './hook-registry.js';
+import {RouterHookRegistry, RouterHookType} from './router-hook-registry.js';
 
 /**
- * Hook invoker.
+ * Router hook invoker.
  */
-export class HookInvoker extends DebuggableService {
+export class RouterHookInvoker extends DebuggableService {
   /**
    * Последовательно вызывает глобальные хуки и хуки маршрута указанного
    * типа, пока один из них не вернет отличное от undefined и null значение
@@ -24,23 +24,19 @@ export class HookInvoker extends DebuggableService {
   invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
     if (!route || !(route instanceof Route)) {
       throw new InvalidArgumentError(
-        'The parameter "route" of ' +
-          'the HookInvoker.invokeAndContinueUntilValueReceived ' +
-          'must be a Route instance, but %v was given.',
+        'Parameter "route" must be a Route instance, but %v was given.',
         route,
       );
     }
     if (!hookType || typeof hookType !== 'string') {
       throw new InvalidArgumentError(
-        'The parameter "hookType" of ' +
-          'the HookInvoker.invokeAndContinueUntilValueReceived ' +
-          'must be a non-empty String, but %v was given.',
+        'Parameter "hookType" must be a non-empty String, but %v was given.',
         hookType,
       );
     }
     if (!Object.values(RouterHookType).includes(hookType)) {
       throw new InvalidArgumentError(
-        'The hook type %v is not supported.',
+        'Hook type %v is not supported.',
         hookType,
       );
     }
@@ -51,9 +47,8 @@ export class HookInvoker extends DebuggableService {
       typeof response.headersSent !== 'boolean'
     ) {
       throw new InvalidArgumentError(
-        'The parameter "response" of ' +
-          'the HookInvoker.invokeAndContinueUntilValueReceived ' +
-          'must be a ServerResponse instance, but %v was given.',
+        'Parameter "response" must be a ServerResponse instance, ' +
+          'but %v was given.',
         response,
       );
     }
@@ -66,7 +61,7 @@ export class HookInvoker extends DebuggableService {
     // после глобальных, то объединяем
     // их в данной последовательности
     const hooks = [
-      ...this.getService(HookRegistry).getHooks(hookType),
+      ...this.getService(RouterHookRegistry).getHooks(hookType),
       ...route.getHookRegistry().getHooks(hookType),
     ];
     let result = undefined;

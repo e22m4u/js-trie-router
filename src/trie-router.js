@@ -3,11 +3,16 @@ import {RouteRegistry} from './route-registry.js';
 import {RequestContext} from './request-context.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {ServerResponse, IncomingMessage} from 'http';
+import {RouterBranch} from './branch/router-branch.js';
 import {DebuggableService} from './debuggable-service.js';
 import {DataSender, ErrorSender} from './senders/index.js';
-import {HookInvoker, HookRegistry, RouterHookType} from './hooks/index.js';
 import {isPromise, isResponseSent, getRequestPathname} from './utils/index.js';
-import {RouterBranch} from './branch/router-branch.js';
+
+import {
+  RouterHookType,
+  RouterHookInvoker,
+  RouterHookRegistry,
+} from './hooks/index.js';
 
 /**
  * Trie router.
@@ -148,7 +153,7 @@ export class TrieRouter extends DebuggableService {
         // получение данных от обработчика, который находится
         // в найденном маршруте, и отправка результата в качестве
         // ответа сервера
-        const hookInvoker = this.getService(HookInvoker);
+        const hookInvoker = this.getService(RouterHookInvoker);
         // если результатом вызова хуков "preHandler" является
         // значение (или Promise) отличное от "undefined" и "null",
         // то такое значение используется в качестве ответа
@@ -228,7 +233,7 @@ export class TrieRouter extends DebuggableService {
    * @returns {this}
    */
   addHook(type, hook) {
-    this.getService(HookRegistry).addHook(type, hook);
+    this.getService(RouterHookRegistry).addHook(type, hook);
     return this;
   }
 
@@ -239,7 +244,10 @@ export class TrieRouter extends DebuggableService {
    * @returns {this}
    */
   addPreHandler(hook) {
-    this.getService(HookRegistry).addHook(RouterHookType.PRE_HANDLER, hook);
+    this.getService(RouterHookRegistry).addHook(
+      RouterHookType.PRE_HANDLER,
+      hook,
+    );
     return this;
   }
 
@@ -250,7 +258,10 @@ export class TrieRouter extends DebuggableService {
    * @returns {this}
    */
   addPostHandler(hook) {
-    this.getService(HookRegistry).addHook(RouterHookType.POST_HANDLER, hook);
+    this.getService(RouterHookRegistry).addHook(
+      RouterHookType.POST_HANDLER,
+      hook,
+    );
     return this;
   }
 }

@@ -1,14 +1,13 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
-import {HookRegistry, RouterHookType} from './hook-registry.js';
+import {RouterHookRegistry, RouterHookType} from './router-hook-registry.js';
 
-describe('HookRegistry', function () {
+describe('RouterHookRegistry', function () {
   describe('addHook', function () {
     it('requires the parameter "type" to be a non-empty String', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const throwable = v => () => s.addHook(v, () => undefined);
-      const error = v =>
-        format('The hook type is required, but %s was given.', v);
+      const error = v => format('Hook type is required, but %s was given.', v);
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
       expect(throwable(0)).to.throw(error('0'));
@@ -23,11 +22,11 @@ describe('HookRegistry', function () {
     });
 
     it('requires the parameter "hook" to be a Function', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const throwable = v => () => s.addHook(RouterHookType.PRE_HANDLER, v);
       const error = v =>
         format(
-          'The hook "preHandler" must be a Function, but %s was given.',
+          'Router hook "preHandler" must be a Function, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -44,15 +43,15 @@ describe('HookRegistry', function () {
     });
 
     it('requires the parameter "type" to be a supported hook', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const hook = () => undefined;
       Object.values(RouterHookType).forEach(type => s.addHook(type, hook));
       const throwable = () => s.addHook('unknown', hook);
-      expect(throwable).to.throw('The hook type "unknown" is not supported.');
+      expect(throwable).to.throw('Hook type "unknown" is not supported.');
     });
 
     it('sets the given function to the map array by the hook type', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const type = RouterHookType.PRE_HANDLER;
       const hook = () => undefined;
       s.addHook(type, hook);
@@ -60,7 +59,7 @@ describe('HookRegistry', function () {
     });
 
     it('returns this', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const hook = () => undefined;
       const type = RouterHookType.PRE_HANDLER;
       const res = s.addHook(type, hook);
@@ -70,10 +69,9 @@ describe('HookRegistry', function () {
 
   describe('hasHook', function () {
     it('requires the parameter "type" to be a non-empty String', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const throwable = v => () => s.hasHook(v, () => undefined);
-      const error = v =>
-        format('The hook type is required, but %s was given.', v);
+      const error = v => format('Hook type is required, but %s was given.', v);
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
       expect(throwable(0)).to.throw(error('0'));
@@ -88,11 +86,11 @@ describe('HookRegistry', function () {
     });
 
     it('requires the parameter "hook" to be a Function', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const throwable = v => () => s.hasHook(RouterHookType.PRE_HANDLER, v);
       const error = v =>
         format(
-          'The hook "preHandler" must be a Function, but %s was given.',
+          'Router hook "preHandler" must be a Function, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -109,15 +107,15 @@ describe('HookRegistry', function () {
     });
 
     it('requires the parameter "type" to be a supported hook', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const hook = () => undefined;
       Object.values(RouterHookType).forEach(type => s.hasHook(type, hook));
       const throwable = () => s.hasHook('unknown', hook);
-      expect(throwable).to.throw('The hook type "unknown" is not supported.');
+      expect(throwable).to.throw('Hook type "unknown" is not supported.');
     });
 
     it('returns true if the given hook is set or false', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const type = RouterHookType.PRE_HANDLER;
       const hook = () => undefined;
       expect(s.hasHook(type, hook)).to.be.false;
@@ -128,10 +126,9 @@ describe('HookRegistry', function () {
 
   describe('getHooks', function () {
     it('requires the parameter "type" to be a non-empty String', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const throwable = v => () => s.getHooks(v);
-      const error = v =>
-        format('The hook type is required, but %s was given.', v);
+      const error = v => format('Hook type is required, but %s was given.', v);
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
       expect(throwable(0)).to.throw(error('0'));
@@ -146,14 +143,14 @@ describe('HookRegistry', function () {
     });
 
     it('requires the parameter "type" to be a supported hook', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       Object.values(RouterHookType).forEach(type => s.getHooks(type));
       const throwable = () => s.getHooks('unknown');
-      expect(throwable).to.throw('The hook type "unknown" is not supported.');
+      expect(throwable).to.throw('Hook type "unknown" is not supported.');
     });
 
     it('returns existing hooks', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const hook = () => undefined;
       const type = RouterHookType.PRE_HANDLER;
       const res1 = s.getHooks(type);
@@ -165,7 +162,7 @@ describe('HookRegistry', function () {
     });
 
     it('returns an empty array if no hook exists', function () {
-      const s = new HookRegistry();
+      const s = new RouterHookRegistry();
       const res = s.getHooks(RouterHookType.PRE_HANDLER);
       expect(res).to.be.eql([]);
     });

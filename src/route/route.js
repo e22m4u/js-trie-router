@@ -1,7 +1,7 @@
 import {Debuggable} from '@e22m4u/js-debug';
-import {HookRegistry, RouterHookType} from '../hooks/index.js';
 import {MODULE_DEBUG_NAMESPACE} from '../debuggable-service.js';
 import {cloneDeep, getRequestPathname} from '../utils/index.js';
+import {RouterHookRegistry, RouterHookType} from '../hooks/index.js';
 import {validateRouteDefinition} from './validate-route-definition.js';
 
 /**
@@ -66,14 +66,14 @@ export class Route extends Debuggable {
   /**
    * Hook registry.
    *
-   * @type {HookRegistry}
+   * @type {RouterHookRegistry}
    */
-  _hookRegistry = new HookRegistry();
+  _hookRegistry = new RouterHookRegistry();
 
   /**
    * Get hook registry.
    *
-   * @returns {HookRegistry}
+   * @returns {RouterHookRegistry}
    */
   getHookRegistry() {
     return this._hookRegistry;
