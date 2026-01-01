@@ -110,6 +110,14 @@ export declare class TrieRouter extends DebuggableService {
   addHook(type: RouterHookType, hook: RouterHook): this;
 
   /**
+   * Has hook.
+   *
+   * @param type
+   * @param hook
+   */
+  hasHook(type: RouterHookType, hook: RouterHook): boolean;
+
+  /**
    * Add pre-handler hook.
    *
    * @param hook

@@ -618,6 +618,17 @@ describe('TrieRouter', function () {
     });
   });
 
+  describe('hasHook', function () {
+    it('should return true if a given function is registered with the hook type', function () {
+      const router = new TrieRouter();
+      const type = RouterHookType.PRE_HANDLER;
+      const hook = () => undefined;
+      expect(router.hasHook(type, hook)).to.be.false;
+      router.addHook(type, hook);
+      expect(router.hasHook(type, hook)).to.be.true;
+    });
+  });
+
   describe('addPreHandler', function () {
     it('should add the given pre-handler hook to the RouterHookRegistry and returns itself', function () {
       const router = new TrieRouter();

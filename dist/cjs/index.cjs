@@ -2273,13 +2273,23 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * );
    * ```
    *
-   * @param {string} type
+   * @param {RouterHookType} type
    * @param {Function} hook
    * @returns {this}
    */
   addHook(type, hook) {
     this.getService(RouterHookRegistry).addHook(type, hook);
     return this;
+  }
+  /**
+   * Has hook.
+   *
+   * @param {RouterHookType} type
+   * @param {Function} hook
+   * @returns {boolean}
+   */
+  hasHook(type, hook) {
+    return this.getService(RouterHookRegistry).hasHook(type, hook);
   }
   /**
    * Add pre-handler hook.
