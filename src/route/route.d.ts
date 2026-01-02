@@ -39,9 +39,9 @@ export type RoutePostHandler<T = unknown, U = unknown> = (
 /**
  * Route meta.
  */
-export type RouteMeta = {
+export interface RouteMeta {
   [key: string]: unknown;
-};
+}
 
 /**
  * Route definition.
