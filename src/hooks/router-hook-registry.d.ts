@@ -1,4 +1,5 @@
 import {Callable} from '../types.js';
+import {RouteDefinition} from '../route/index.js';
 import {RequestContext} from '../request-context.js';
 import {DebuggableService} from '../debuggable-service.js';
 
@@ -8,6 +9,7 @@ import {DebuggableService} from '../debuggable-service.js';
 export declare const RouterHookType: {
   PRE_HANDLER: 'preHandler';
   POST_HANDLER: 'postHandler';
+  ON_DEFINE_ROUTE: 'onDefineRoute';
 };
 
 /**
@@ -37,28 +39,16 @@ export type PreHandlerHook = (ctx: RequestContext) => unknown;
 export type PostHandlerHook = (ctx: RequestContext, data: unknown) => unknown;
 
 /**
+ * On defined route hook.
+ */
+export type OnDefineRouteHook = (
+  routeDef: RouteDefinition,
+) => RouteDefinition | undefined;
+
+/**
  * Router hook registry.
  */
 export declare class RouterHookRegistry extends DebuggableService {
-  /**
-   * Add hook.
-   *
-   * @param type
-   * @param hook
-   */
-  addHook(type: typeof RouterHookType.PRE_HANDLER, hook: PreHandlerHook): this;
-
-  /**
-   * Add hook.
-   *
-   * @param type
-   * @param hook
-   */
-  addHook(
-    type: typeof RouterHookType.POST_HANDLER,
-    hook: PostHandlerHook,
-  ): this;
-
   /**
    * Add hook.
    *
@@ -74,20 +64,6 @@ export declare class RouterHookRegistry extends DebuggableService {
    * @param hook
    */
   hasHook(type: RouterHookType, hook: RouterHook): boolean;
-
-  /**
-   * Get hooks.
-   *
-   * @param type
-   */
-  getHooks(type: typeof RouterHookType.PRE_HANDLER): PreHandlerHook[];
-
-  /**
-   * Get hooks.
-   *
-   * @param type
-   */
-  getHooks(type: typeof RouterHookType.POST_HANDLER): PostHandlerHook[];
 
   /**
    * Get hooks.

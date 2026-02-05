@@ -5,23 +5,23 @@ import {RouterOptions} from './router-options.js';
 describe('RouterOptions', function () {
   describe('requestBodyBytesLimit', function () {
     it('returns the default value', function () {
-      const s = new RouterOptions();
-      expect(s.requestBodyBytesLimit).to.be.eq(512000);
+      const S = new RouterOptions();
+      expect(S.requestBodyBytesLimit).to.be.eq(512000);
     });
 
     it('returns a value of the property "_requestBodyBytesLimit"', function () {
-      const s = new RouterOptions();
-      s._requestBodyBytesLimit = 1;
-      expect(s.requestBodyBytesLimit).to.be.eq(1);
-      s._requestBodyBytesLimit = 2;
-      expect(s.requestBodyBytesLimit).to.be.eq(2);
+      const S = new RouterOptions();
+      S._requestBodyBytesLimit = 1;
+      expect(S.requestBodyBytesLimit).to.be.eq(1);
+      S._requestBodyBytesLimit = 2;
+      expect(S.requestBodyBytesLimit).to.be.eq(2);
     });
   });
 
   describe('setRequestBodyBytesLimit', function () {
     it('requires the first parameter to be a positive Number or 0', function () {
-      const s = new RouterOptions();
-      const throwable = v => () => s.setRequestBodyBytesLimit(v);
+      const S = new RouterOptions();
+      const throwable = v => () => S.setRequestBodyBytesLimit(v);
       const error = v =>
         format(
           'The option "requestBodyBytesLimit" must be ' +
@@ -42,10 +42,10 @@ describe('RouterOptions', function () {
     });
 
     it('sets the given value to the property "_requestBodyBytesLimit"', function () {
-      const s = new RouterOptions();
-      expect(s._requestBodyBytesLimit).to.be.eq(512000);
-      s.setRequestBodyBytesLimit(0);
-      expect(s._requestBodyBytesLimit).to.be.eq(0);
+      const S = new RouterOptions();
+      expect(S._requestBodyBytesLimit).to.be.eq(512000);
+      S.setRequestBodyBytesLimit(0);
+      expect(S._requestBodyBytesLimit).to.be.eq(0);
     });
   });
 });

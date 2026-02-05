@@ -15,8 +15,8 @@ describe('DataSender', function () {
         throw new Error('Should not be called');
       };
       res.pipe(writable);
-      const s = new DataSender();
-      const result = s.send(res, res);
+      const S = new DataSender();
+      const result = S.send(res, res);
       expect(result).to.be.undefined;
       setTimeout(() => done(), 5);
     });
@@ -32,8 +32,8 @@ describe('DataSender', function () {
         throw new Error('Should not be called');
       };
       res.pipe(writable);
-      const s = new DataSender();
-      const result = s.send(res, 'data');
+      const S = new DataSender();
+      const result = S.send(res, 'data');
       expect(result).to.be.undefined;
       setTimeout(() => done(), 5);
     });
@@ -46,8 +46,8 @@ describe('DataSender', function () {
         expect(res.statusCode).to.be.eq(204);
         done();
       });
-      const s = new DataSender();
-      const result = s.send(res, undefined);
+      const S = new DataSender();
+      const result = S.send(res, undefined);
       expect(result).to.be.undefined;
     });
 
@@ -73,8 +73,8 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const s = new DataSender();
-      s.send(res, stream);
+      const S = new DataSender();
+      S.send(res, stream);
     });
 
     it('sends the given Buffer as binary data', function (done) {
@@ -95,8 +95,8 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const s = new DataSender();
-      s.send(res, data);
+      const S = new DataSender();
+      S.send(res, data);
     });
 
     it('sends the given string as plain text', function (done) {
@@ -117,8 +117,8 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const s = new DataSender();
-      s.send(res, data);
+      const S = new DataSender();
+      S.send(res, data);
     });
 
     it('sends the given object as JSON', function (done) {
@@ -140,8 +140,8 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const s = new DataSender();
-      s.send(res, data);
+      const S = new DataSender();
+      S.send(res, data);
     });
 
     it('sends the given boolean as JSON', function (done) {
@@ -163,8 +163,8 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const s = new DataSender();
-      s.send(res, data);
+      const S = new DataSender();
+      S.send(res, data);
     });
 
     it('sends the given number as JSON', function (done) {
@@ -186,8 +186,8 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const s = new DataSender();
-      s.send(res, data);
+      const S = new DataSender();
+      S.send(res, data);
     });
   });
 });

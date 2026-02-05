@@ -27,8 +27,8 @@ describe('ErrorSender', function () {
         done();
       };
       res.pipe(writable);
-      const s = new ErrorSender();
-      s.send(req, res, error);
+      const S = new ErrorSender();
+      S.send(req, res, error);
     });
 
     it('exposes only specified properties of the given error', function (done) {
@@ -59,8 +59,8 @@ describe('ErrorSender', function () {
         done();
       };
       res.pipe(writable);
-      const s = new ErrorSender();
-      s.send(req, res, error);
+      const S = new ErrorSender();
+      S.send(req, res, error);
     });
   });
 
@@ -84,8 +84,8 @@ describe('ErrorSender', function () {
         done();
       };
       res.pipe(writable);
-      const s = new ErrorSender();
-      s.send404(req, res);
+      const S = new ErrorSender();
+      S.send404(req, res);
     });
   });
 });

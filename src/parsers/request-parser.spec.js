@@ -7,8 +7,8 @@ import {createRequestMock} from '../utils/index.js';
 describe('RequestParser', function () {
   describe('parse', function () {
     it('requires the first parameter to be an instance of IncomingMessage', function () {
-      const s = new RequestParser();
-      const throwable = v => () => s.parse(v);
+      const S = new RequestParser();
+      const throwable = v => () => S.parse(v);
       const error = v =>
         format(
           'The first parameter of RequestParser.parse must be ' +
@@ -30,9 +30,9 @@ describe('RequestParser', function () {
     });
 
     it('returns the result object if no request body', function () {
-      const s = new RequestParser();
+      const S = new RequestParser();
       const req = createRequestMock();
-      const res = s.parse(req);
+      const res = S.parse(req);
       expect(res).to.be.eql({
         query: {},
         cookies: {},
@@ -42,14 +42,14 @@ describe('RequestParser', function () {
     });
 
     it('returns a Promise of the result object in case of the body parsing', async function () {
-      const s = new RequestParser();
+      const S = new RequestParser();
       const body = 'Lorem Ipsum is simply dummy text.';
       const req = createRequestMock({
         method: HttpMethod.POST,
         headers: {'content-type': 'text/plain'},
         body,
       });
-      const promise = s.parse(req);
+      const promise = S.parse(req);
       expect(promise).to.be.instanceof(Promise);
       const res = await promise;
       expect(res).to.be.eql({
@@ -65,9 +65,9 @@ describe('RequestParser', function () {
     });
 
     it('returns the result object with the parsed query', function () {
-      const s = new RequestParser();
+      const S = new RequestParser();
       const req = createRequestMock({path: '/path?p1=foo&p2=bar'});
-      const res = s.parse(req);
+      const res = S.parse(req);
       expect(res).to.be.eql({
         query: {p1: 'foo', p2: 'bar'},
         cookies: {},
@@ -77,9 +77,9 @@ describe('RequestParser', function () {
     });
 
     it('returns the result object with the parsed cookies', function () {
-      const s = new RequestParser();
+      const S = new RequestParser();
       const req = createRequestMock({headers: {cookie: 'p1=foo; p2=bar;'}});
-      const res = s.parse(req);
+      const res = S.parse(req);
       expect(res).to.be.eql({
         query: {},
         cookies: {p1: 'foo', p2: 'bar'},
@@ -92,14 +92,14 @@ describe('RequestParser', function () {
     });
 
     it('returns the result object with the parsed body of the media type "text/plain"', async function () {
-      const s = new RequestParser();
+      const S = new RequestParser();
       const body = 'Lorem Ipsum is simply dummy text.';
       const req = createRequestMock({
         method: HttpMethod.POST,
         headers: {'content-type': 'text/plain'},
         body,
       });
-      const res = await s.parse(req);
+      const res = await S.parse(req);
       expect(res).to.be.eql({
         query: {},
         cookies: {},
@@ -113,7 +113,7 @@ describe('RequestParser', function () {
     });
 
     it('returns the result object with the parsed body of the media type "application/json"', async function () {
-      const s = new RequestParser();
+      const S = new RequestParser();
       const body = {foo: 'bar', baz: 'qux'};
       const json = JSON.stringify(body);
       const req = createRequestMock({
@@ -121,7 +121,7 @@ describe('RequestParser', function () {
         headers: {'content-type': 'application/json'},
         body,
       });
-      const res = await s.parse(req);
+      const res = await S.parse(req);
       expect(res).to.be.eql({
         query: {},
         cookies: {},

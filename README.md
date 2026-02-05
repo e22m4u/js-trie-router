@@ -256,15 +256,27 @@ router.defineRoute({
 
 - `preHandler` выполняется перед вызовом обработчика каждого маршрута;
 - `postHandler` выполняется после вызова обработчика каждого маршрута;
+- `onDefineRoute` выполняется в момент регистрации маршрута;
 
 Добавить глобальные хуки можно методами экземпляра `TrieRouter`.
 
 ```js
-router.addPreHandler((ctx) => {
+import {RouterHookType} form '@e22m4u/js-trie-router';
+
+router.addHook(RouterHookType.PRE_HANDLER, (ctx) => {
   // перед обработчиком маршрута
 });
-router.addPostHandler((ctx, data) => {
+
+router.addHook(RouterHookType.POST_HANDLER, (ctx, data) => {
   // после обработчика маршрута
+});
+
+router.addHook(RouterHookType.ON_DEFINE_ROUTE, (routeDef) => {
+  // позволяет модифицировать определение
+  // маршрута в момент регистрации
+  routeDef.method = HttpMethod.POST;
+  routeDef.path = '/myPath';
+  routeDef.handler = () => 'OK';
 });
 ```
 
@@ -285,14 +297,19 @@ router.addPostHandler((ctx, data) => {
 
 ```js
 import http from 'http';
-import {TrieRouter, HttpMethod} from '@e22m4u/js-trie-router';
+
+import {
+  TrieRouter,
+  HttpMethod,
+  RouterHookType,
+} from '@e22m4u/js-trie-router';
 
 const server = new http.Server();
 const router = new TrieRouter();
 
 // глобальный pre-handler хук, который срабатывает
 // перед основным обработчиком каждого маршрута
-router.addPreHandler((ctx) => {
+router.addHook(RouterHookType.PRE_HANDLER, (ctx) => {
   // доступ к метаданным текущего маршрута
   console.log(ctx.meta); // {foo: 'bar'}
 });
@@ -319,12 +336,17 @@ server.listen(3000, 'localhost');
 
 ```js
 import http from 'http';
-import {TrieRouter, HttpMethod} from '@e22m4u/js-trie-router';
+
+import {
+  TrieRouter,
+  HttpMethod,
+  RouterHookType,
+} from '@e22m4u/js-trie-router';
 
 const router = new TrieRouter();
 
 // глобальный хук авторизации
-router.addPreHandler((ctx) => {
+router.addHook(RouterHookType.PRE_HANDLER, (ctx) => {
   // логика получения пользователя (например, из заголовков)
   const user = {id: 1, name: 'John', role: 'admin'};
   // сохранение данных в state

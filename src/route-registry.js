@@ -2,6 +2,7 @@ import {Route} from './route/index.js';
 import {PathTrie} from '@e22m4u/js-path-trie';
 import {getRequestPathname} from './utils/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from './debuggable-service.js';
 
@@ -39,6 +40,40 @@ export class RouteRegistry extends DebuggableService {
         'The route definition must be an Object, but %v was given.',
         routeDef,
       );
+    }
+    // если определены хуки определения маршрута,
+    // то выполняется их последовательный вызов
+    const hookRegistry = this.getService(RouterHookRegistry);
+    const onDefineRouteHooks = hookRegistry.getHooks(
+      RouterHookType.ON_DEFINE_ROUTE,
+    );
+    if (onDefineRouteHooks.length) {
+      debug('Invoking %v "onDefineRoute" hook(s).', onDefineRouteHooks.length);
+      for (const hook of onDefineRouteHooks) {
+        const hookResult = hook({...routeDef});
+        // если возвращаемое значение хука не является
+        // объектом и undefined, то выбрасывается ошибка
+        if (
+          hookResult !== undefined &&
+          !(
+            hookResult !== null &&
+            typeof hookResult === 'object' &&
+            !Array.isArray(hookResult)
+          )
+        ) {
+          throw new InvalidArgumentError(
+            'Hook "onDefineRoute" must return an Object or undefined, ' +
+              'but %v was given.',
+            hookResult,
+          );
+        }
+        // если хук вернул значение, отличное от undefined,
+        // то значение используется в качестве определения
+        if (hookResult !== undefined) {
+          routeDef = hookResult;
+        }
+      }
+      debug('Hooks invoked.');
     }
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;

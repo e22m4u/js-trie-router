@@ -794,7 +794,8 @@ var import_js_format11 = require("@e22m4u/js-format");
 var import_js_format10 = require("@e22m4u/js-format");
 var RouterHookType = {
   PRE_HANDLER: "preHandler",
-  POST_HANDLER: "postHandler"
+  POST_HANDLER: "postHandler",
+  ON_DEFINE_ROUTE: "onDefineRoute"
 };
 var ROUTER_HOOK_TYPES = Object.values(RouterHookType);
 var _RouterHookRegistry = class _RouterHookRegistry {
@@ -1499,6 +1500,26 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
         "The route definition must be an Object, but %v was given.",
         routeDef
       );
+    }
+    const hookRegistry = this.getService(RouterHookRegistry);
+    const onDefineRouteHooks = hookRegistry.getHooks(
+      RouterHookType.ON_DEFINE_ROUTE
+    );
+    if (onDefineRouteHooks.length) {
+      debug('Invoking %v "onDefineRoute" hook(s).', onDefineRouteHooks.length);
+      for (const hook of onDefineRouteHooks) {
+        const hookResult = hook({ ...routeDef });
+        if (hookResult !== void 0 && !(hookResult !== null && typeof hookResult === "object" && !Array.isArray(hookResult))) {
+          throw new import_js_format16.InvalidArgumentError(
+            'Hook "onDefineRoute" must return an Object or undefined, but %v was given.',
+            hookResult
+          );
+        }
+        if (hookResult !== void 0) {
+          routeDef = hookResult;
+        }
+      }
+      debug("Hooks invoked.");
     }
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;
@@ -2250,54 +2271,25 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
     }
   }
   /**
-   * Add pre-handler hook.
+   * Add hook.
    *
-   * @param {import('./hooks/index.js').PreHandlerHook} hook
+   * @param {import('./hooks/index.js').RouterHookType} type
+   * @param {import('./hooks/index.js').RouterHook} hook
    * @returns {this}
    */
-  addPreHandler(hook) {
-    this.getService(RouterHookRegistry).addHook(
-      RouterHookType.PRE_HANDLER,
-      hook
-    );
+  addHook(type, hook) {
+    this.getService(RouterHookRegistry).addHook(type, hook);
     return this;
   }
   /**
-   * Has pre-handler hook.
+   * Has hook.
    *
-   * @param {import('./hooks/index.js').PreHandlerHook} hook
+   * @param {import('./hooks/index.js').RouterHookType} type
+   * @param {import('./hooks/index.js').RouterHook} hook
    * @returns {boolean}
    */
-  hasPreHandler(hook) {
-    return this.getService(RouterHookRegistry).hasHook(
-      RouterHookType.PRE_HANDLER,
-      hook
-    );
-  }
-  /**
-   * Add post-handler hook.
-   *
-   * @param {import('./hooks/index.js').PostHandlerHook} hook
-   * @returns {this}
-   */
-  addPostHandler(hook) {
-    this.getService(RouterHookRegistry).addHook(
-      RouterHookType.POST_HANDLER,
-      hook
-    );
-    return this;
-  }
-  /**
-   * Has post-handler hook.
-   *
-   * @param {import('./hooks/index.js').PostHandlerHook} hook
-   * @returns {boolean}
-   */
-  hasPostHandler(hook) {
-    return this.getService(RouterHookRegistry).hasHook(
-      RouterHookType.POST_HANDLER,
-      hook
-    );
+  hasHook(type, hook) {
+    return this.getService(RouterHookRegistry).hasHook(type, hook);
   }
 };
 __name(_TrieRouter, "TrieRouter");

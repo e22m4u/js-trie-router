@@ -9,10 +9,10 @@ import {RouterHookRegistry, RouterHookType} from './router-hook-registry.js';
 describe('RouterHookInvoker', function () {
   describe('invokeAndContinueUntilValueReceived', function () {
     it('requires the parameter "route" to be a Route instance', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const res = createResponseMock();
       const throwable = v => () =>
-        s.invokeAndContinueUntilValueReceived(
+        S.invokeAndContinueUntilValueReceived(
           v,
           RouterHookType.PRE_HANDLER,
           res,
@@ -42,7 +42,7 @@ describe('RouterHookInvoker', function () {
     });
 
     it('requires the parameter "hookType" to be a non-empty String', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const route = new Route({
         method: HttpMethod.GET,
         path: ROOT_PATH,
@@ -50,7 +50,7 @@ describe('RouterHookInvoker', function () {
       });
       const res = createResponseMock();
       const throwable = v => () =>
-        s.invokeAndContinueUntilValueReceived(route, v, res);
+        S.invokeAndContinueUntilValueReceived(route, v, res);
       const error = v =>
         format(
           'Parameter "hookType" must be a non-empty String, but %s was given.',
@@ -69,7 +69,7 @@ describe('RouterHookInvoker', function () {
     });
 
     it('requires the parameter "hookType" to be a supported hook', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const route = new Route({
         method: HttpMethod.GET,
         path: ROOT_PATH,
@@ -77,22 +77,22 @@ describe('RouterHookInvoker', function () {
       });
       const res = createResponseMock();
       Object.values(RouterHookType).forEach(type =>
-        s.invokeAndContinueUntilValueReceived(route, type, res),
+        S.invokeAndContinueUntilValueReceived(route, type, res),
       );
       const throwable = () =>
-        s.invokeAndContinueUntilValueReceived(route, 'unknown', res);
+        S.invokeAndContinueUntilValueReceived(route, 'unknown', res);
       expect(throwable).to.throw('Hook type "unknown" is not supported.');
     });
 
     it('requires the parameter "response" to be an instance of ServerResponse', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const route = new Route({
         method: HttpMethod.GET,
         path: ROOT_PATH,
         handler: () => undefined,
       });
       const throwable = v => () =>
-        s.invokeAndContinueUntilValueReceived(
+        S.invokeAndContinueUntilValueReceived(
           route,
           RouterHookType.PRE_HANDLER,
           v,
@@ -117,15 +117,15 @@ describe('RouterHookInvoker', function () {
     });
 
     it('invokes global hooks in priority', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const order = [];
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook1');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook2');
@@ -144,7 +144,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      s.invokeAndContinueUntilValueReceived(
+      S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         createResponseMock(),
@@ -158,23 +158,23 @@ describe('RouterHookInvoker', function () {
     });
 
     it('stops global hooks invocation if any of them returns a value', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const order = [];
       const ret = 'OK';
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook1');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook2');
           return ret;
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook3');
@@ -193,7 +193,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      const result = s.invokeAndContinueUntilValueReceived(
+      const result = S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         createResponseMock(),
@@ -203,16 +203,16 @@ describe('RouterHookInvoker', function () {
     });
 
     it('stops route hooks invocation if any of them returns a value', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const order = [];
       const ret = 'OK';
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook1');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook2');
@@ -235,7 +235,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      const result = s.invokeAndContinueUntilValueReceived(
+      const result = S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         createResponseMock(),
@@ -250,10 +250,10 @@ describe('RouterHookInvoker', function () {
     });
 
     it('returns the given response and should not call hooks if the response is already sent', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const res = createResponseMock();
       res._headersSent = true;
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           throw new Error('Should not be called');
@@ -269,7 +269,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      const result = s.invokeAndContinueUntilValueReceived(
+      const result = S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         res,
@@ -278,23 +278,23 @@ describe('RouterHookInvoker', function () {
     });
 
     it('stops global hooks invocation and returns the given response if it is already sent', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const order = [];
       const res = createResponseMock();
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook1');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook2');
           res._headersSent = true;
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook3');
@@ -313,7 +313,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      const result = s.invokeAndContinueUntilValueReceived(
+      const result = S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         res,
@@ -323,16 +323,16 @@ describe('RouterHookInvoker', function () {
     });
 
     it('stops route hooks invocation and returns the given response if it is already sent', function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const order = [];
       const res = createResponseMock();
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook1');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook2');
@@ -355,7 +355,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      const result = s.invokeAndContinueUntilValueReceived(
+      const result = S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         res,
@@ -370,21 +370,21 @@ describe('RouterHookInvoker', function () {
     });
 
     it('returns a Promise if any global hook is asynchronous', async function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const order = [];
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook1');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         async () => {
           order.push('globalHook2');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook3');
@@ -403,7 +403,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      const promise = s.invokeAndContinueUntilValueReceived(
+      const promise = S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         createResponseMock(),
@@ -420,15 +420,15 @@ describe('RouterHookInvoker', function () {
     });
 
     it('returns a Promise if entire global hooks are asynchronous', async function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const order = [];
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         async () => {
           order.push('globalHook1');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         async () => {
           order.push('globalHook2');
@@ -447,7 +447,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      const promise = s.invokeAndContinueUntilValueReceived(
+      const promise = S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         createResponseMock(),
@@ -463,15 +463,15 @@ describe('RouterHookInvoker', function () {
     });
 
     it('returns a Promise if any route hook is asynchronous', async function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const order = [];
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook1');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook2');
@@ -493,7 +493,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      const promise = s.invokeAndContinueUntilValueReceived(
+      const promise = S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         createResponseMock(),
@@ -510,15 +510,15 @@ describe('RouterHookInvoker', function () {
     });
 
     it('returns a Promise if entire route hooks are asynchronous', async function () {
-      const s = new RouterHookInvoker();
+      const S = new RouterHookInvoker();
       const order = [];
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook1');
         },
       );
-      s.getService(RouterHookRegistry).addHook(
+      S.getService(RouterHookRegistry).addHook(
         RouterHookType.PRE_HANDLER,
         () => {
           order.push('globalHook2');
@@ -537,7 +537,7 @@ describe('RouterHookInvoker', function () {
         ],
         handler: () => undefined,
       });
-      const promise = s.invokeAndContinueUntilValueReceived(
+      const promise = S.invokeAndContinueUntilValueReceived(
         route,
         RouterHookType.PRE_HANDLER,
         createResponseMock(),

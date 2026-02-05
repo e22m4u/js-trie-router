@@ -3,12 +3,13 @@ import {format} from '@e22m4u/js-format';
 import {RouteRegistry} from './route-registry.js';
 import {Route, HttpMethod} from './route/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
 
 describe('RouteRegistry', function () {
   describe('defineRoute', function () {
     it('requires the first parameter to be an Object', function () {
-      const s = new RouteRegistry();
-      const throwable = v => () => s.defineRoute(v);
+      const S = new RouteRegistry();
+      const throwable = v => () => S.defineRoute(v);
       const error = v =>
         format('The route definition must be an Object, but %s was given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
@@ -29,39 +30,116 @@ describe('RouteRegistry', function () {
     });
 
     it('returns a new route with the given "method", "path" and "handler"', function () {
-      const s = new RouteRegistry();
+      const S = new RouteRegistry();
       const method = HttpMethod.PATCH;
       const path = '/myPath';
       const handler = () => undefined;
-      const route = s.defineRoute({method, path, handler});
+      const route = S.defineRoute({method, path, handler});
       expect(route.method).to.be.eq(method);
       expect(route.path).to.be.eq(path);
       expect(route.handler).to.be.eq(handler);
     });
 
     it('adds a new route to the Trie', function () {
-      const s = new RouteRegistry();
+      const S = new RouteRegistry();
       const method = HttpMethod.PATCH;
       const path = '/myPath';
       const handler = () => undefined;
-      const route = s.defineRoute({method, path, handler});
+      const route = S.defineRoute({method, path, handler});
       const triePath = `${method}/${path}`;
-      const res = s._trie.match(triePath);
+      const res = S._trie.match(triePath);
       expect(typeof res).to.be.eq('object');
       expect(res.value).to.be.eq(route);
+    });
+
+    it('should invoke "onDefineRoute" hooks in correct order', function () {
+      const routeDef = {
+        method: HttpMethod.GET,
+        path: '/myPath',
+        handler: () => undefined,
+      };
+      const order = [];
+      const onDefineRouteHook1 = (...args) => {
+        order.push(1);
+        expect(args).to.be.eql([routeDef]);
+      };
+      const onDefineRouteHook2 = (...args) => {
+        order.push(2);
+        expect(args).to.be.eql([routeDef]);
+      };
+      const S = new RouteRegistry();
+      const hooksRegistry = S.getService(RouterHookRegistry);
+      hooksRegistry.addHook(RouterHookType.ON_DEFINE_ROUTE, onDefineRouteHook1);
+      hooksRegistry.addHook(RouterHookType.ON_DEFINE_ROUTE, onDefineRouteHook2);
+      S.defineRoute(routeDef);
+      expect(order).to.be.eql([1, 2]);
+    });
+
+    it('should allow override the route definition by "onDefineRoute" hooks', function () {
+      const routeDef = {
+        method: HttpMethod.GET,
+        path: '/myPath',
+        handler: () => undefined,
+      };
+      const order = [];
+      const onDefineRouteHook1 = def => {
+        order.push(1);
+        return {...def, path: def.path + '/1'};
+      };
+      const onDefineRouteHook2 = def => {
+        order.push(2);
+        return {...def, path: def.path + '/2'};
+      };
+      const S = new RouteRegistry();
+      const hooksRegistry = S.getService(RouterHookRegistry);
+      hooksRegistry.addHook(RouterHookType.ON_DEFINE_ROUTE, onDefineRouteHook1);
+      hooksRegistry.addHook(RouterHookType.ON_DEFINE_ROUTE, onDefineRouteHook2);
+      const route = S.defineRoute(routeDef);
+      expect(route.path).to.be.eql('/myPath/1/2');
+      expect(order).to.be.eql([1, 2]);
+    });
+
+    it('should require the "onDefineRoute" hook return an Object or undefined', function () {
+      const routeDef = {
+        method: HttpMethod.GET,
+        path: '/myPath',
+        handler: () => undefined,
+      };
+      const throwable = v => () => {
+        const S = new RouteRegistry();
+        const hooksRegistry = S.getService(RouterHookRegistry);
+        hooksRegistry.addHook(RouterHookType.ON_DEFINE_ROUTE, () => v);
+        S.defineRoute(routeDef);
+      };
+      const error = s =>
+        format(
+          'Hook "onDefineRoute" must return an Object or undefined, ' +
+            'but %s was given.',
+          s,
+        );
+      expect(throwable('str')).to.throw(error('"str"'));
+      expect(throwable('')).to.throw(error('""'));
+      expect(throwable(true)).to.throw(error('true'));
+      expect(throwable(false)).to.throw(error('false'));
+      expect(throwable(10)).to.throw(error('10'));
+      expect(throwable(0)).to.throw(error('0'));
+      expect(throwable([])).to.throw(error('Array'));
+      expect(throwable(null)).to.throw(error('null'));
+      throwable(routeDef)();
+      throwable(undefined)();
     });
   });
 
   describe('matchRouteByRequest', function () {
     it('returns the route and parsed parameters', function () {
-      const s = new RouteRegistry(new ServiceContainer());
+      const S = new RouteRegistry(new ServiceContainer());
       const handler = () => undefined;
-      s.defineRoute({
+      S.defineRoute({
         method: HttpMethod.GET,
         path: '/foo/:p1/bar/:p2',
         handler,
       });
-      const res = s.matchRouteByRequest({
+      const res = S.matchRouteByRequest({
         url: '/foo/baz/bar/qux',
         method: HttpMethod.GET,
       });

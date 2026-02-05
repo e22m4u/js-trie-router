@@ -205,56 +205,25 @@ export class TrieRouter extends DebuggableService {
   }
 
   /**
-   * Add pre-handler hook.
+   * Add hook.
    *
-   * @param {import('./hooks/index.js').PreHandlerHook} hook
+   * @param {import('./hooks/index.js').RouterHookType} type
+   * @param {import('./hooks/index.js').RouterHook} hook
    * @returns {this}
    */
-  addPreHandler(hook) {
-    this.getService(RouterHookRegistry).addHook(
-      RouterHookType.PRE_HANDLER,
-      hook,
-    );
+  addHook(type, hook) {
+    this.getService(RouterHookRegistry).addHook(type, hook);
     return this;
   }
 
   /**
-   * Has pre-handler hook.
+   * Has hook.
    *
-   * @param {import('./hooks/index.js').PreHandlerHook} hook
+   * @param {import('./hooks/index.js').RouterHookType} type
+   * @param {import('./hooks/index.js').RouterHook} hook
    * @returns {boolean}
    */
-  hasPreHandler(hook) {
-    return this.getService(RouterHookRegistry).hasHook(
-      RouterHookType.PRE_HANDLER,
-      hook,
-    );
-  }
-
-  /**
-   * Add post-handler hook.
-   *
-   * @param {import('./hooks/index.js').PostHandlerHook} hook
-   * @returns {this}
-   */
-  addPostHandler(hook) {
-    this.getService(RouterHookRegistry).addHook(
-      RouterHookType.POST_HANDLER,
-      hook,
-    );
-    return this;
-  }
-
-  /**
-   * Has post-handler hook.
-   *
-   * @param {import('./hooks/index.js').PostHandlerHook} hook
-   * @returns {boolean}
-   */
-  hasPostHandler(hook) {
-    return this.getService(RouterHookRegistry).hasHook(
-      RouterHookType.POST_HANDLER,
-      hook,
-    );
+  hasHook(type, hook) {
+    return this.getService(RouterHookRegistry).hasHook(type, hook);
   }
 }

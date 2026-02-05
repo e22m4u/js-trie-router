@@ -605,47 +605,27 @@ describe('TrieRouter', function () {
     });
   });
 
-  describe('addPreHandler', function () {
-    it('should register a given hook in the hook registry and return itself', function () {
+  describe('addHook', function () {
+    it('should register the given hook', function () {
       const router = new TrieRouter();
       const reg = router.getService(RouterHookRegistry);
       const hook = () => undefined;
-      expect(reg.hasHook(RouterHookType.PRE_HANDLER, hook)).to.be.false;
-      const res = router.addPreHandler(hook);
+      const type = RouterHookType.PRE_HANDLER;
+      expect(reg.hasHook(type, hook)).to.be.false;
+      const res = router.addHook(type, hook);
       expect(res).to.be.eq(router);
-      expect(reg.hasHook(RouterHookType.PRE_HANDLER, hook)).to.be.true;
+      expect(reg.hasHook(type, hook)).to.be.true;
     });
   });
 
-  describe('hasPreHandler', function () {
-    it('should return true if a given hook is registered', function () {
+  describe('hasHook', function () {
+    it('should return true if the given hook is registered', function () {
       const router = new TrieRouter();
       const hook = () => undefined;
-      expect(router.hasPreHandler(hook)).to.be.false;
-      router.addPreHandler(hook);
-      expect(router.hasPreHandler(hook)).to.be.true;
-    });
-  });
-
-  describe('addPostHandler', function () {
-    it('should register a given hook in the hook registry and return itself', function () {
-      const router = new TrieRouter();
-      const reg = router.getService(RouterHookRegistry);
-      const hook = () => undefined;
-      expect(reg.hasHook(RouterHookType.POST_HANDLER, hook)).to.be.false;
-      const res = router.addPostHandler(hook);
-      expect(res).to.be.eq(router);
-      expect(reg.hasHook(RouterHookType.POST_HANDLER, hook)).to.be.true;
-    });
-  });
-
-  describe('hasPostHandler', function () {
-    it('should return true if a given hook is registered', function () {
-      const router = new TrieRouter();
-      const hook = () => undefined;
-      expect(router.hasPostHandler(hook)).to.be.false;
-      router.addPostHandler(hook);
-      expect(router.hasPostHandler(hook)).to.be.true;
+      const type = RouterHookType.PRE_HANDLER;
+      expect(router.hasHook(type, hook)).to.be.false;
+      router.addHook(type, hook);
+      expect(router.hasHook(type, hook)).to.be.true;
     });
   });
 });
