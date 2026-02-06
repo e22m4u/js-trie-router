@@ -1,5 +1,6 @@
 import {Callable} from '../types.js';
 import {RouteDefinition} from '../route/index.js';
+import {ServiceContainer} from '@e22m4u/js-service';
 import {RequestContext} from '../request-context.js';
 import {DebuggableService} from '../debuggable-service.js';
 
@@ -43,6 +44,7 @@ export type PostHandlerHook = (ctx: RequestContext, data: unknown) => unknown;
  */
 export type OnDefineRouteHook = (
   routeDef: RouteDefinition,
+  container: ServiceContainer,
 ) => RouteDefinition | undefined;
 
 /**

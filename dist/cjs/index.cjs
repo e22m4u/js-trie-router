@@ -1508,7 +1508,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     if (onDefineRouteHooks.length) {
       debug('Invoking %v "onDefineRoute" hook(s).', onDefineRouteHooks.length);
       for (const hook of onDefineRouteHooks) {
-        const hookResult = hook({ ...routeDef });
+        const hookResult = hook({ ...routeDef }, this.container);
         if (hookResult !== void 0 && !(hookResult !== null && typeof hookResult === "object" && !Array.isArray(hookResult))) {
           throw new import_js_format16.InvalidArgumentError(
             'Hook "onDefineRoute" must return an Object or undefined, but %v was given.',

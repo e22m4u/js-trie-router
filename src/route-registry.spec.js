@@ -52,7 +52,8 @@ describe('RouteRegistry', function () {
       expect(res.value).to.be.eq(route);
     });
 
-    it('should invoke "onDefineRoute" hooks in correct order', function () {
+    it('should invoke "onDefineRoute" hooks with arguments and correct order', function () {
+      const S = new RouteRegistry();
       const routeDef = {
         method: HttpMethod.GET,
         path: '/myPath',
@@ -61,13 +62,14 @@ describe('RouteRegistry', function () {
       const order = [];
       const onDefineRouteHook1 = (...args) => {
         order.push(1);
-        expect(args).to.be.eql([routeDef]);
+        expect(args[0]).to.be.eql(routeDef);
+        expect(args[1]).to.be.eq(S.container);
       };
       const onDefineRouteHook2 = (...args) => {
         order.push(2);
-        expect(args).to.be.eql([routeDef]);
+        expect(args[0]).to.be.eql(routeDef);
+        expect(args[1]).to.be.eq(S.container);
       };
-      const S = new RouteRegistry();
       const hooksRegistry = S.getService(RouterHookRegistry);
       hooksRegistry.addHook(RouterHookType.ON_DEFINE_ROUTE, onDefineRouteHook1);
       hooksRegistry.addHook(RouterHookType.ON_DEFINE_ROUTE, onDefineRouteHook2);
@@ -76,6 +78,7 @@ describe('RouteRegistry', function () {
     });
 
     it('should allow override the route definition by "onDefineRoute" hooks', function () {
+      const S = new RouteRegistry();
       const routeDef = {
         method: HttpMethod.GET,
         path: '/myPath',
@@ -90,7 +93,6 @@ describe('RouteRegistry', function () {
         order.push(2);
         return {...def, path: def.path + '/2'};
       };
-      const S = new RouteRegistry();
       const hooksRegistry = S.getService(RouterHookRegistry);
       hooksRegistry.addHook(RouterHookType.ON_DEFINE_ROUTE, onDefineRouteHook1);
       hooksRegistry.addHook(RouterHookType.ON_DEFINE_ROUTE, onDefineRouteHook2);

@@ -50,7 +50,7 @@ export class RouteRegistry extends DebuggableService {
     if (onDefineRouteHooks.length) {
       debug('Invoking %v "onDefineRoute" hook(s).', onDefineRouteHooks.length);
       for (const hook of onDefineRouteHooks) {
-        const hookResult = hook({...routeDef});
+        const hookResult = hook({...routeDef}, this.container);
         // если возвращаемое значение хука не является
         // объектом и undefined, то выбрасывается ошибка
         if (
