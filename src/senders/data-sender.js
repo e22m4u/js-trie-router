@@ -15,15 +15,14 @@ export class DataSender extends DebuggableService {
    */
   send(response, data) {
     const debug = this.getDebuggerFor(this.send);
-    // если ответ контроллера является объектом
-    // ServerResponse, или имеются отправленные
-    // заголовки, то считаем, что контроллер
-    // уже отправил ответ самостоятельно
+    // если ответ контроллера является объектом ServerResponse,
+    // или имеются отправленные заголовки, то предполагается,
+    // что контроллер уже отправил ответ самостоятельно
     if (data === response || response.headersSent) {
       debug('Skipping response because headers have already been sent.');
       return;
     }
-    // если ответ контроллера пуст, то отправляем
+    // если ответ контроллера пуст, то отправляется
     // статус 204 "No Content"
     if (data == null) {
       response.statusCode = 204;
@@ -32,9 +31,13 @@ export class DataSender extends DebuggableService {
       return;
     }
     // если ответ контроллера является стримом,
-    // то отправляем его как бинарные данные
+    // то поток отправляет бинарные данные
     if (isReadableStream(data)) {
-      response.setHeader('Content-Type', 'application/octet-stream');
+      // если заголовок "content-type" не определен ранее,
+      // то устанавливается заголовок потоковых данных
+      if (!response.getHeader('content-type')) {
+        response.setHeader('content-type', 'application/octet-stream');
+      }
       data.pipe(response);
       debug('Sending response with a Stream.');
       return;
@@ -43,16 +46,25 @@ export class DataSender extends DebuggableService {
     // нужного заголовка в зависимости от их типа
     let debugMsg;
     switch (typeof data) {
-      case 'object':
-      case 'boolean':
       case 'number':
+      case 'boolean':
+      case 'object':
+        // для бинарных данных предусмотрен специальный "content-type",
+        // который устанавливается автоматически, если не был определен
+        // ранее (к примеру, в обработчике маршрута)
         if (Buffer.isBuffer(data)) {
-          // тип Buffer отправляется
-          // как бинарные данные
-          response.setHeader('content-type', 'application/octet-stream');
+          if (!response.getHeader('content-type')) {
+            response.setHeader('content-type', 'application/octet-stream');
+          }
           debugMsg = 'Buffer has been sent as binary data.';
-        } else {
-          response.setHeader('content-type', 'application/json');
+        }
+        // объекты, массивы, числа и логические значения
+        // отправляются в виде JSON строки, с соответствующим
+        // заголовком "content-type" (если не был определен)
+        else {
+          if (!response.getHeader('content-type')) {
+            response.setHeader('content-type', 'application/json');
+          }
           debugMsg = format(
             '%v has been sent as JSON.',
             toPascalCase(typeof data),
@@ -61,7 +73,9 @@ export class DataSender extends DebuggableService {
         }
         break;
       default:
-        response.setHeader('content-type', 'text/plain');
+        if (!response.getHeader('content-type')) {
+          response.setHeader('content-type', 'text/plain');
+        }
         debugMsg = 'Response data has been sent as plain text.';
         data = String(data);
         break;

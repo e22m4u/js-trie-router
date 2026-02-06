@@ -2001,21 +2001,27 @@ var _DataSender = class _DataSender extends DebuggableService {
       return;
     }
     if (isReadableStream(data)) {
-      response.setHeader("Content-Type", "application/octet-stream");
+      if (!response.getHeader("content-type")) {
+        response.setHeader("content-type", "application/octet-stream");
+      }
       data.pipe(response);
       debug("Sending response with a Stream.");
       return;
     }
     let debugMsg;
     switch (typeof data) {
-      case "object":
-      case "boolean":
       case "number":
+      case "boolean":
+      case "object":
         if (Buffer.isBuffer(data)) {
-          response.setHeader("content-type", "application/octet-stream");
+          if (!response.getHeader("content-type")) {
+            response.setHeader("content-type", "application/octet-stream");
+          }
           debugMsg = "Buffer has been sent as binary data.";
         } else {
-          response.setHeader("content-type", "application/json");
+          if (!response.getHeader("content-type")) {
+            response.setHeader("content-type", "application/json");
+          }
           debugMsg = (0, import_js_format20.format)(
             "%v has been sent as JSON.",
             toPascalCase(typeof data)
@@ -2024,7 +2030,9 @@ var _DataSender = class _DataSender extends DebuggableService {
         }
         break;
       default:
-        response.setHeader("content-type", "text/plain");
+        if (!response.getHeader("content-type")) {
+          response.setHeader("content-type", "text/plain");
+        }
         debugMsg = "Response data has been sent as plain text.";
         data = String(data);
         break;
