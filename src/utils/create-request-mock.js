@@ -13,7 +13,7 @@ import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
  *   method?: string;
  *   secure?: boolean;
  *   path?: string;
- *   query?: object;
+ *   query?: string | object;
  *   cookies?: object;
  *   headers?: object;
  *   body?: string;
