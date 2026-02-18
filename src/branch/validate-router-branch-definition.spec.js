@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
-import {validateRouterBranchDefinition} from './validate-router-branch-definition.js';
 import {ROOT_PATH} from '../constants.js';
+import {validateRouterBranchDefinition} from './validate-router-branch-definition.js';
 
 describe('validateRouterBranchDefinition', function () {
   it('should require the "routeDef" parameter to be an Object', function () {
@@ -33,11 +33,10 @@ describe('validateRouterBranchDefinition', function () {
     );
   });
 
-  it('should require the "path" option to be a non-empty String', function () {
+  it('should require the "path" option to be a String', function () {
     const throwable = v => () => validateRouterBranchDefinition({path: v});
     const error = v =>
-      format('Option "path" must be a non-empty String, but %s was given.', v);
-    expect(throwable('')).to.throw(error('""'));
+      format('Option "path" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -47,7 +46,17 @@ describe('validateRouterBranchDefinition', function () {
     expect(throwable(undefined)).to.throw(error('undefined'));
     expect(throwable(null)).to.throw(error('null'));
     expect(throwable(() => undefined)).to.throw(error('Function'));
-    throwable('str')();
+    throwable('/path')();
+  });
+
+  it('should require the "path" option to start with a forward slash', function () {
+    const throwable = v => () => validateRouterBranchDefinition({path: v});
+    const error = s =>
+      format('Option "path" must start with "/", but %s was given.', s);
+    expect(throwable('path')).to.throw(error('"path"'));
+    expect(throwable('')).to.throw(error('""'));
+    throwable('/path')();
+    throwable('/')();
   });
 
   it('should throw an error if the "handler" option is provided', function () {
@@ -62,7 +71,7 @@ describe('validateRouterBranchDefinition', function () {
     );
   });
 
-  it('should require the "preHandler" option to be a Function or an Array of Function', function () {
+  it('should require the "preHandler" option to be a Function or an Array', function () {
     const throwable = v => () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,
@@ -108,7 +117,7 @@ describe('validateRouterBranchDefinition', function () {
     throwable(() => undefined)();
   });
 
-  it('should require the "postHandler" option to be a Function or an Array of Function', function () {
+  it('should require the "postHandler" option to be a Function or an Array', function () {
     const throwable = v => () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,

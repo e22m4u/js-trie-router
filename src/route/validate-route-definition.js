@@ -18,9 +18,15 @@ export function validateRouteDefinition(routeDef) {
       routeDef.method,
     );
   }
-  if (!routeDef.path || typeof routeDef.path !== 'string') {
+  if (typeof routeDef.path !== 'string') {
     throw new InvalidArgumentError(
-      'Option "path" must be a non-empty String, but %v was given.',
+      'Option "path" must be a String, but %v was given.',
+      routeDef.path,
+    );
+  }
+  if (!routeDef.path.startsWith('/')) {
+    throw new InvalidArgumentError(
+      'Option "path" must start with "/", but %v was given.',
       routeDef.path,
     );
   }

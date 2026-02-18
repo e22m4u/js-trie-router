@@ -25,7 +25,7 @@ export class TrieRouter extends DebuggableService {
    * ```
    * const router = new TrieRouter();
    * router.defineRoute({
-   *   method: HttpMethod.GET,        // Request method.
+   *   method: HttpMethod.GET,         // Request method.
    *   path: '/',                      // Path template.
    *   handler: ctx => 'Hello world!', // Request handler.
    * });

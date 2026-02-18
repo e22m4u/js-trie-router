@@ -19,17 +19,23 @@ export function validateRouterBranchDefinition(branchDef) {
       branchDef.method,
     );
   }
-  if (!branchDef.path || typeof branchDef.path !== 'string') {
-    throw new InvalidArgumentError(
-      'Option "path" must be a non-empty String, but %v was given.',
-      branchDef.path,
-    );
-  }
   if (branchDef.handler !== undefined) {
     throw new InvalidArgumentError(
       'Option "handler" is not supported for the router branch, ' +
         'but %v was given.',
       branchDef.handler,
+    );
+  }
+  if (typeof branchDef.path !== 'string') {
+    throw new InvalidArgumentError(
+      'Option "path" must be a String, but %v was given.',
+      branchDef.path,
+    );
+  }
+  if (!branchDef.path.startsWith('/')) {
+    throw new InvalidArgumentError(
+      'Option "path" must start with "/", but %v was given.',
+      branchDef.path,
     );
   }
   if (branchDef.preHandler !== undefined) {

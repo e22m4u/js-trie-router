@@ -65,7 +65,6 @@ __export(index_exports, {
   isResponseSent: () => isResponseSent,
   isWritableStream: () => isWritableStream,
   mergeDeep: () => mergeDeep,
-  normalizePath: () => normalizePath,
   parseContentType: () => parseContentType,
   parseCookieString: () => parseCookieString,
   parseJsonBody: () => parseJsonBody,
@@ -206,16 +205,6 @@ function toPascalCase(input) {
   return input.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/([0-9])([a-zA-Z])/g, "$1 $2").replace(/[-_]+|[^\p{L}\p{N}]/gu, " ").toLowerCase().replace(new RegExp("(?:^|\\s)(\\p{L})", "gu"), (_, letter) => letter.toUpperCase()).replace(/\s+/g, "");
 }
 __name(toPascalCase, "toPascalCase");
-
-// src/utils/normalize-path.js
-function normalizePath(value, noStartingSlash = false) {
-  if (typeof value !== "string") {
-    return "/";
-  }
-  const res = value.trim().replace(/\/+/g, "/").replace(/(^\/|\/$)/g, "");
-  return noStartingSlash ? res : "/" + res;
-}
-__name(normalizePath, "normalizePath");
 
 // src/utils/is-response-sent.js
 var import_js_format3 = require("@e22m4u/js-format");
@@ -1006,9 +995,15 @@ function validateRouteDefinition(routeDef) {
       routeDef.method
     );
   }
-  if (!routeDef.path || typeof routeDef.path !== "string") {
+  if (typeof routeDef.path !== "string") {
     throw new import_js_format12.InvalidArgumentError(
-      'Option "path" must be a non-empty String, but %v was given.',
+      'Option "path" must be a String, but %v was given.',
+      routeDef.path
+    );
+  }
+  if (!routeDef.path.startsWith("/")) {
+    throw new import_js_format12.InvalidArgumentError(
+      'Option "path" must start with "/", but %v was given.',
       routeDef.path
     );
   }
@@ -1774,16 +1769,22 @@ function validateRouterBranchDefinition(branchDef) {
       branchDef.method
     );
   }
-  if (!branchDef.path || typeof branchDef.path !== "string") {
-    throw new import_js_format18.InvalidArgumentError(
-      'Option "path" must be a non-empty String, but %v was given.',
-      branchDef.path
-    );
-  }
   if (branchDef.handler !== void 0) {
     throw new import_js_format18.InvalidArgumentError(
       'Option "handler" is not supported for the router branch, but %v was given.',
       branchDef.handler
+    );
+  }
+  if (typeof branchDef.path !== "string") {
+    throw new import_js_format18.InvalidArgumentError(
+      'Option "path" must be a String, but %v was given.',
+      branchDef.path
+    );
+  }
+  if (!branchDef.path.startsWith("/")) {
+    throw new import_js_format18.InvalidArgumentError(
+      'Option "path" must start with "/", but %v was given.',
+      branchDef.path
     );
   }
   if (branchDef.preHandler !== void 0) {
@@ -1836,8 +1837,11 @@ function mergeRouterBranchDefinitions(firstDef, secondDef) {
   validateRouterBranchDefinition(firstDef);
   validateRouterBranchDefinition(secondDef);
   const mergedDef = {};
-  const path = (firstDef.path || "") + "/" + (secondDef.path || "");
-  mergedDef.path = normalizePath(path);
+  let fullPath = "/" + (firstDef.path || "");
+  if (secondDef.path && secondDef.path !== "/") {
+    fullPath += "/" + secondDef.path;
+  }
+  mergedDef.path = fullPath.replace(/\/+/g, "/");
   if (firstDef.preHandler || secondDef.preHandler) {
     mergedDef.preHandler = [firstDef.preHandler, secondDef.preHandler].flat().filter(Boolean);
   }
@@ -1945,7 +1949,7 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
       validateRouterBranchDefinition(branchDef);
       this._definition = cloneDeep(branchDef);
     }
-    this.ctorDebug("Created a branch %v.", normalizePath(branchDef.path, true));
+    this.ctorDebug("Created a branch %v.", branchDef.path);
     this.ctorDebug("Branch path is %v.", this._definition.path);
   }
   /**
@@ -2138,7 +2142,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * ```
    * const router = new TrieRouter();
    * router.defineRoute({
-   *   method: HttpMethod.GET,        // Request method.
+   *   method: HttpMethod.GET,         // Request method.
    *   path: '/',                      // Path template.
    *   handler: ctx => 'Hello world!', // Request handler.
    * });
@@ -2338,7 +2342,6 @@ var TrieRouter = _TrieRouter;
   isResponseSent,
   isWritableStream,
   mergeDeep,
-  normalizePath,
   parseContentType,
   parseCookieString,
   parseJsonBody,

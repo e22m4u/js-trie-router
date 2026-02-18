@@ -32,7 +32,7 @@ describe('TrieRouter', function () {
 
     it('should pass the "path" option to a router branch', function () {
       const router = new TrieRouter();
-      const branchDef = {path: 'foo'};
+      const branchDef = {path: '/foo'};
       const res = router.createBranch(branchDef);
       expect(res.getDefinition().path).to.be.eq(branchDef.path);
     });

@@ -63,11 +63,7 @@ describe('Route', function () {
           handler: () => 'Ok',
         });
       const error = v =>
-        format(
-          'Option "path" must be a non-empty String, but %s was given.',
-          v,
-        );
-      expect(throwable('')).to.throw(error('""'));
+        format('Option "path" must be a String, but %s was given.', v);
       expect(throwable(10)).to.throw(error('10'));
       expect(throwable(0)).to.throw(error('0'));
       expect(throwable(true)).to.throw(error('true'));
@@ -77,7 +73,22 @@ describe('Route', function () {
       expect(throwable(undefined)).to.throw(error('undefined'));
       expect(throwable(null)).to.throw(error('null'));
       expect(throwable(() => undefined)).to.throw(error('Function'));
-      throwable('str')();
+      throwable('/path')();
+    });
+
+    it('should require the "path" option to start with a forward slash', function () {
+      const throwable = v => () =>
+        new Route({
+          method: HttpMethod.GET,
+          path: v,
+          handler: () => 'Ok',
+        });
+      const error = s =>
+        format('Option "path" must start with "/", but %s was given.', s);
+      expect(throwable('path')).to.throw(error('"path"'));
+      expect(throwable('')).to.throw(error('""'));
+      throwable('/path')();
+      throwable('/')();
     });
 
     it('should require the "handler" option to be a Function', function () {
@@ -351,7 +362,7 @@ describe('Route', function () {
 
   describe('path', function () {
     it('should return a value of the "path" option', function () {
-      const value = 'myPath';
+      const value = '/myPath';
       const route = new Route({
         method: HttpMethod.GET,
         path: value,

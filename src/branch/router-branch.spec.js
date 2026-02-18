@@ -14,8 +14,8 @@ describe('RouterBranch', function () {
 
     it('should merge a parent definition with a given definition', function () {
       const router = new TrieRouter();
-      const parent = router.createBranch({path: 'foo'});
-      const S = new RouterBranch(router, {path: 'bar'}, parent);
+      const parent = router.createBranch({path: '/foo'});
+      const S = new RouterBranch(router, {path: '/bar'}, parent);
       expect(S.getDefinition().path).to.be.eq('/foo/bar');
     });
   });
@@ -70,10 +70,10 @@ describe('RouterBranch', function () {
   describe('defineRoute', function () {
     it('should return a Route instance', function () {
       const router = new TrieRouter();
-      const S = new RouterBranch(router, {path: 'foo'});
+      const S = new RouterBranch(router, {path: '/foo'});
       const res = S.defineRoute({
         method: HttpMethod.GET,
-        path: 'bar',
+        path: '/bar',
         handler: () => undefined,
       });
       expect(res).to.be.instanceOf(Route);
@@ -81,10 +81,10 @@ describe('RouterBranch', function () {
 
     it('should combine a branch path with a route path', function () {
       const router = new TrieRouter();
-      const S = new RouterBranch(router, {path: 'foo'});
+      const S = new RouterBranch(router, {path: '/foo'});
       const res = S.defineRoute({
         method: HttpMethod.GET,
-        path: 'bar',
+        path: '/bar',
         handler: () => undefined,
       });
       expect(res.path).to.be.eq('/foo/bar');
@@ -94,15 +94,15 @@ describe('RouterBranch', function () {
   describe('createBranch', function () {
     it('should return a RouterBranch instance', function () {
       const router = new TrieRouter();
-      const S = new RouterBranch(router, {path: 'foo'});
-      const res = S.createBranch({path: 'bar'});
+      const S = new RouterBranch(router, {path: '/foo'});
+      const res = S.createBranch({path: '/bar'});
       expect(res).to.be.instanceOf(RouterBranch);
     });
 
     it('should combine a current path with a new path', function () {
       const router = new TrieRouter();
-      const S = new RouterBranch(router, {path: 'foo'});
-      const res = S.createBranch({path: 'bar'});
+      const S = new RouterBranch(router, {path: '/foo'});
+      const res = S.createBranch({path: '/bar'});
       expect(res.getDefinition().path).to.be.eq('/foo/bar');
     });
   });

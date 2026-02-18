@@ -3,7 +3,7 @@ import {ROOT_PATH} from '../constants.js';
 import {mergeRouterBranchDefinitions} from './merge-router-branch-definitions.js';
 
 describe('mergeRouterBranchDefinitions', function () {
-  it('should validate the "firstDef" parameter', function () {
+  it('should require the "firstDef" parameter to be an Object', function () {
     const throwable = () =>
       mergeRouterBranchDefinitions(123, {path: ROOT_PATH});
     expect(throwable).to.throw(
@@ -11,7 +11,7 @@ describe('mergeRouterBranchDefinitions', function () {
     );
   });
 
-  it('should validate the "secondDef" parameter', function () {
+  it('should require the "secondDef" parameter to be an Object', function () {
     const throwable = () =>
       mergeRouterBranchDefinitions({path: ROOT_PATH}, 123);
     expect(throwable).to.throw(
@@ -20,11 +20,25 @@ describe('mergeRouterBranchDefinitions', function () {
   });
 
   it('should concatenate the "path" option with the correct order', function () {
-    const res = mergeRouterBranchDefinitions({path: 'foo'}, {path: 'bar'});
+    const res = mergeRouterBranchDefinitions({path: '/foo'}, {path: '/bar'});
     expect(res).to.be.eql({path: '/foo/bar'});
   });
 
-  it('should not duplicate slashes in the "path" option', function () {
+  it('should keep a trailing slash from the first definition', function () {
+    const res1 = mergeRouterBranchDefinitions({path: '/foo/'}, {path: '/'});
+    expect(res1).to.be.eql({path: '/foo/'});
+    const res2 = mergeRouterBranchDefinitions({path: '/foo/'}, {path: '/bar'});
+    expect(res2).to.be.eql({path: '/foo/bar'});
+  });
+
+  it('should keep a trailing slash from the second definition', function () {
+    const res1 = mergeRouterBranchDefinitions({path: '/'}, {path: '/foo/'});
+    expect(res1).to.be.eql({path: '/foo/'});
+    const res2 = mergeRouterBranchDefinitions({path: '/foo'}, {path: '/bar/'});
+    expect(res2).to.be.eql({path: '/foo/bar/'});
+  });
+
+  it('should not duplicate slashes from the "path" option', function () {
     const res = mergeRouterBranchDefinitions({path: '/'}, {path: '/'});
     expect(res).to.be.eql({path: '/'});
   });

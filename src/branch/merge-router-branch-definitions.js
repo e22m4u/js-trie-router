@@ -1,4 +1,4 @@
-import {mergeDeep, normalizePath} from '../utils/index.js';
+import {mergeDeep} from '../utils/index.js';
 import {validateRouterBranchDefinition} from './validate-router-branch-definition.js';
 
 /**
@@ -13,8 +13,11 @@ export function mergeRouterBranchDefinitions(firstDef, secondDef) {
   validateRouterBranchDefinition(secondDef);
   const mergedDef = {};
   // path
-  const path = (firstDef.path || '') + '/' + (secondDef.path || '');
-  mergedDef.path = normalizePath(path);
+  let fullPath = '/' + (firstDef.path || '');
+  if (secondDef.path && secondDef.path !== '/') {
+    fullPath += '/' + secondDef.path;
+  }
+  mergedDef.path = fullPath.replace(/\/+/g, '/');
   // pre-handler
   if (firstDef.preHandler || secondDef.preHandler) {
     mergedDef.preHandler = [firstDef.preHandler, secondDef.preHandler]

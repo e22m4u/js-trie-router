@@ -17,8 +17,8 @@ describe('createRouteMock', function () {
   });
 
   it('sets the "path" option', function () {
-    const res = createRouteMock({path: 'test'});
-    expect(res.path).to.be.eq('test');
+    const res = createRouteMock({path: '/test'});
+    expect(res.path).to.be.eq('/test');
   });
 
   it('sets the "handler" option', function () {

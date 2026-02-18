@@ -2,7 +2,6 @@ import {Route} from '../route/index.js';
 import {cloneDeep} from '../utils/index.js';
 import {TrieRouter} from '../trie-router.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
-import {normalizePath} from '../utils/normalize-path.js';
 import {DebuggableService} from '../debuggable-service.js';
 import {validateRouteDefinition} from '../route/validate-route-definition.js';
 import {mergeRouterBranchDefinitions} from './merge-router-branch-definitions.js';
@@ -120,7 +119,7 @@ export class RouterBranch extends DebuggableService {
       validateRouterBranchDefinition(branchDef);
       this._definition = cloneDeep(branchDef);
     }
-    this.ctorDebug('Created a branch %v.', normalizePath(branchDef.path, true));
+    this.ctorDebug('Created a branch %v.', branchDef.path);
     this.ctorDebug('Branch path is %v.', this._definition.path);
   }
 
