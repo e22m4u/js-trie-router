@@ -576,7 +576,74 @@ describe('TrieRouter', function () {
       });
     });
 
-    it('should ignore the route handler if the hook "preHandler" sends the response asynchronously', async function () {
+    it('should skip the route handler when the hook "preHandler" returns a non-nullish value', async function () {
+      let handlerCalled = false;
+      const router = new TrieRouter();
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
+        preHandler() {
+          return 'Response from preHandler';
+        },
+        handler() {
+          handlerCalled = true;
+          return 'Response from the route handler';
+        },
+      });
+      const req = createRequestMock({method: HttpMethod.GET, path: ROOT_PATH});
+      const res = createResponseMock();
+      await router._handleRequest(req, res);
+      const responseBody = await res.getBody();
+      expect(responseBody).to.equal('Response from preHandler');
+      expect(handlerCalled).to.be.false;
+    });
+
+    it('should skip the route handler when the hook "preHandler" resolves to a non-nullish value', async function () {
+      let handlerCalled = false;
+      const router = new TrieRouter();
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
+        preHandler() {
+          return Promise.resolve('Response from preHandler');
+        },
+        handler() {
+          handlerCalled = true;
+          return 'Response from the route handler';
+        },
+      });
+      const req = createRequestMock({method: HttpMethod.GET, path: ROOT_PATH});
+      const res = createResponseMock();
+      await router._handleRequest(req, res);
+      const responseBody = await res.getBody();
+      expect(responseBody).to.equal('Response from preHandler');
+      expect(handlerCalled).to.be.false;
+    });
+
+    it('should skip the route handler when the hook "preHandler" sends the response manually', async function () {
+      let handlerCalled = false;
+      const router = new TrieRouter();
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
+        preHandler(ctx) {
+          ctx.response.setHeader('Content-Type', 'text/plain');
+          ctx.response.end('Response from preHandler');
+        },
+        handler() {
+          handlerCalled = true;
+          return 'Response from the route handler';
+        },
+      });
+      const req = createRequestMock({method: HttpMethod.GET, path: ROOT_PATH});
+      const res = createResponseMock();
+      await router._handleRequest(req, res);
+      const responseBody = await res.getBody();
+      expect(responseBody).to.equal('Response from preHandler');
+      expect(handlerCalled).to.be.false;
+    });
+
+    it('should skip the route handler when the hook "preHandler" sends the response manually within a Promise', async function () {
       let handlerCalled = false;
       const router = new TrieRouter();
       router.defineRoute({
