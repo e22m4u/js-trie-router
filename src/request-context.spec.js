@@ -11,14 +11,14 @@ import {
 
 describe('RequestContext', function () {
   describe('constructor', function () {
-    it('requires the parameter "container" to be a ServiceContainer instance', function () {
+    it('should require the parameter "container" to be a ServiceContainer instance', function () {
       const req = createRequestMock();
       const res = createResponseMock();
       const route = createRouteMock();
       const throwable = v => () => new RequestContext(v, req, res, route);
       const error = v =>
         format(
-          'The parameter "container" of RequestContext.constructor ' +
+          'Parameter "container" of RequestContext.constructor ' +
             'must be an instance of ServiceContainer, but %s was given.',
           v,
         );
@@ -35,14 +35,14 @@ describe('RequestContext', function () {
       throwable(new ServiceContainer())();
     });
 
-    it('requires the parameter "request" to be an IncomingMessage instance', function () {
+    it('should require the parameter "request" to be an IncomingMessage instance', function () {
       const res = createResponseMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();
       const throwable = v => () => new RequestContext(cont, v, res, route);
       const error = v =>
         format(
-          'The parameter "request" of RequestContext.constructor ' +
+          'Parameter "request" of RequestContext.constructor ' +
             'must be an instance of IncomingMessage, but %s was given.',
           v,
         );
@@ -59,14 +59,14 @@ describe('RequestContext', function () {
       throwable(createRequestMock())();
     });
 
-    it('requires the parameter "response" to be a ServerResponse instance', function () {
+    it('should require the parameter "response" to be a ServerResponse instance', function () {
       const req = createRequestMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();
       const throwable = v => () => new RequestContext(cont, req, v, route);
       const error = v =>
         format(
-          'The parameter "response" of RequestContext.constructor ' +
+          'Parameter "response" of RequestContext.constructor ' +
             'must be an instance of ServerResponse, but %s was given.',
           v,
         );
@@ -83,14 +83,14 @@ describe('RequestContext', function () {
       throwable(createResponseMock())();
     });
 
-    it('requires the parameter "route" to be a Route instance', function () {
+    it('should require the parameter "route" to be a Route instance', function () {
       const req = createRequestMock();
       const res = createResponseMock();
       const cont = new ServiceContainer();
       const throwable = v => () => new RequestContext(cont, req, res, v);
       const error = v =>
         format(
-          'The parameter "route" of RequestContext.constructor ' +
+          'Parameter "route" of RequestContext.constructor ' +
             'must be an instance of Route, but %s was given.',
           v,
         );
@@ -107,7 +107,7 @@ describe('RequestContext', function () {
       throwable(createRouteMock())();
     });
 
-    it('sets properties from given arguments', function () {
+    it('should set properties from provided arguments', function () {
       const req = createRequestMock();
       const res = createResponseMock();
       const route = createRouteMock();
@@ -120,7 +120,7 @@ describe('RequestContext', function () {
   });
 
   describe('method', function () {
-    it('returns the method name in upper case', function () {
+    it('should return the method name in upper case', function () {
       const req = createRequestMock({method: 'post'});
       const res = createResponseMock();
       const route = createRouteMock();
@@ -131,7 +131,7 @@ describe('RequestContext', function () {
   });
 
   describe('path', function () {
-    it('returns the request pathname with the query string', function () {
+    it('should return the request pathname with the query string', function () {
       const req = createRequestMock({path: '/pathname?foo=bar'});
       const res = createResponseMock();
       const route = createRouteMock();
@@ -143,7 +143,7 @@ describe('RequestContext', function () {
   });
 
   describe('pathname', function () {
-    it('returns the request pathname without the query string', function () {
+    it('should return the request pathname without the query string', function () {
       const req = createRequestMock({path: '/pathname?foo=bar'});
       const res = createResponseMock();
       const route = createRouteMock();
@@ -153,7 +153,7 @@ describe('RequestContext', function () {
       expect(ctx.pathname).to.be.eq('/pathname');
     });
 
-    it('sets the cache to the "_pathname" property and uses is for next accesses', function () {
+    it('should set the cache to the property "_pathname" and use it for the next access', function () {
       const req = createRequestMock({path: '/pathname'});
       const res = createResponseMock();
       const route = createRouteMock();
@@ -168,7 +168,7 @@ describe('RequestContext', function () {
   });
 
   describe('state', function () {
-    it('has an empty object by default', function () {
+    it('should has an empty object by default', function () {
       const req = createRequestMock({path: '/pathname'});
       const res = createResponseMock();
       const route = createRouteMock();

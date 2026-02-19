@@ -1203,7 +1203,7 @@ var _RouterOptions = class _RouterOptions extends DebuggableService {
   setRequestBodyBytesLimit(input) {
     if (typeof input !== "number" || input < 0) {
       throw new import_js_format13.InvalidArgumentError(
-        'The option "requestBodyBytesLimit" must be a positive Number or 0, but %v was given.',
+        'Option "requestBodyBytesLimit" must be a positive Number or 0, but %v was given.',
         input
       );
     }
@@ -1492,7 +1492,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef)) {
       throw new import_js_format16.InvalidArgumentError(
-        "The route definition must be an Object, but %v was given.",
+        "Route definition must be an Object, but %v was given.",
         routeDef
       );
     }
@@ -1716,28 +1716,28 @@ var _RequestContext = class _RequestContext {
   constructor(container, request, response, route) {
     if (!(0, import_js_service3.isServiceContainer)(container)) {
       throw new import_js_format17.InvalidArgumentError(
-        'The parameter "container" of RequestContext.constructor must be an instance of ServiceContainer, but %v was given.',
+        'Parameter "container" of RequestContext.constructor must be an instance of ServiceContainer, but %v was given.',
         container
       );
     }
     this._container = container;
     if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
       throw new import_js_format17.InvalidArgumentError(
-        'The parameter "request" of RequestContext.constructor must be an instance of IncomingMessage, but %v was given.',
+        'Parameter "request" of RequestContext.constructor must be an instance of IncomingMessage, but %v was given.',
         request
       );
     }
     this._request = request;
     if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
       throw new import_js_format17.InvalidArgumentError(
-        'The parameter "response" of RequestContext.constructor must be an instance of ServerResponse, but %v was given.',
+        'Parameter "response" of RequestContext.constructor must be an instance of ServerResponse, but %v was given.',
         response
       );
     }
     this._response = response;
     if (!(route instanceof Route)) {
       throw new import_js_format17.InvalidArgumentError(
-        'The parameter "route" of RequestContext.constructor must be an instance of Route, but %v was given.',
+        'Parameter "route" of RequestContext.constructor must be an instance of Route, but %v was given.',
         route
       );
     }

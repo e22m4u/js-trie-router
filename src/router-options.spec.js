@@ -19,13 +19,13 @@ describe('RouterOptions', function () {
   });
 
   describe('setRequestBodyBytesLimit', function () {
-    it('requires the first parameter to be a positive Number or 0', function () {
+    it('requires the parameter "input" to be a positive Number or 0', function () {
       const S = new RouterOptions();
       const throwable = v => () => S.setRequestBodyBytesLimit(v);
       const error = v =>
         format(
-          'The option "requestBodyBytesLimit" must be ' +
-            'a positive Number or 0, but %s was given.',
+          'Option "requestBodyBytesLimit" must be a positive Number or 0, ' +
+            'but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));

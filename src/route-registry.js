@@ -1,10 +1,10 @@
 import {Route} from './route/index.js';
 import {PathTrie} from '@e22m4u/js-path-trie';
-import {getRequestPathname} from './utils/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
+import {getRequestPathname} from './utils/index.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from './debuggable-service.js';
+import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
 
 /**
  * @typedef {{
@@ -37,7 +37,7 @@ export class RouteRegistry extends DebuggableService {
     const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef)) {
       throw new InvalidArgumentError(
-        'The route definition must be an Object, but %v was given.',
+        'Route definition must be an Object, but %v was given.',
         routeDef,
       );
     }
