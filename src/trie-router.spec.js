@@ -30,7 +30,7 @@ describe('TrieRouter', function () {
       expect(res).to.be.instanceOf(RouterBranch);
     });
 
-    it('should pass the "path" option to a router branch', function () {
+    it('should pass the option "path" to the router branch', function () {
       const router = new TrieRouter();
       const branchDef = {path: '/foo'};
       const res = router.createBranch(branchDef);
@@ -171,7 +171,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('should provide access to route meta via the request context', function (done) {
+    it('should provide the route meta to the request context', function (done) {
       const router = new TrieRouter();
       const metaData = {role: 'admin'};
       router.defineRoute({
@@ -232,7 +232,7 @@ describe('TrieRouter', function () {
     });
 
     describe('hooks', function () {
-      it('should invoke entire "preHandler" hooks before the route handler', async function () {
+      it('should invoke "preHandler" hooks before the route handler', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -260,7 +260,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('should invoke entire "preHandler" hooks after the route handler', async function () {
+      it('should invoke "postHandler" hooks after the route handler', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -288,7 +288,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
-      it('should provide the request context to the "preHandler" hooks', async function () {
+      it('should provide the request context to "preHandler" hooks', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -319,7 +319,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('should provide the request context and return value from the route handler to the "postHandler" hooks', async function () {
+      it('should provide the request context and a return value from the route handler to "postHandler" hooks', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -354,7 +354,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
-      it('should invoke the route handler if entire "preHandler" hooks returns undefined or null', async function () {
+      it('should invoke the route handler when all "preHandler" hooks return nullish values', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -384,7 +384,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('should send a returns value from the route handler if entire "postHandler" hooks returns undefined or null', async function () {
+      it('should send a return value form the route handler when all "postHandler" hooks return nullish values', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -414,7 +414,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
-      it('should send a return value from the "preHandler" hook in the first priority', async function () {
+      it('should send a return value from the hook "preHandler" in the first priority', async function () {
         const router = new TrieRouter();
         const order = [];
         const preHandlerBody = 'foo';
@@ -446,7 +446,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler']);
       });
 
-      it('should send a return value from the "postHandler" hook in the second priority', async function () {
+      it('should send a return value from the hook "postHandler" in the second priority', async function () {
         const router = new TrieRouter();
         const order = [];
         const handlerBody = 'foo';
@@ -475,7 +475,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler', 'handler', 'postHandler']);
       });
 
-      it('should send a return value from the root handler in the third priority', async function () {
+      it('should send a return value from the route handler in the third priority', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -553,7 +553,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('should send parsing error response instead of throwing error', async function () {
+    it('should send an error response for invalid JSON body instead of throwing', async function () {
       const router = new TrieRouter();
       router.defineRoute({
         method: HttpMethod.POST,
@@ -576,7 +576,7 @@ describe('TrieRouter', function () {
       });
     });
 
-    it('should not invoke the main handler if a preHandler sends the response asynchronously', async function () {
+    it('should ignore the route handler if the hook "preHandler" sends the response asynchronously', async function () {
       let handlerCalled = false;
       const router = new TrieRouter();
       router.defineRoute({
@@ -593,7 +593,7 @@ describe('TrieRouter', function () {
         },
         handler() {
           handlerCalled = true;
-          return 'Response from main handler';
+          return 'Response from the route handler';
         },
       });
       const req = createRequestMock({method: HttpMethod.GET, path: ROOT_PATH});
@@ -606,7 +606,7 @@ describe('TrieRouter', function () {
   });
 
   describe('addHook', function () {
-    it('should register the given hook', function () {
+    it('should register the provided hook', function () {
       const router = new TrieRouter();
       const reg = router.getService(RouterHookRegistry);
       const hook = () => undefined;
@@ -619,7 +619,7 @@ describe('TrieRouter', function () {
   });
 
   describe('hasHook', function () {
-    it('should return true if the given hook is registered', function () {
+    it('should return true if the provided hook is registered', function () {
       const router = new TrieRouter();
       const hook = () => undefined;
       const type = RouterHookType.PRE_HANDLER;
