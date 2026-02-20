@@ -37,7 +37,7 @@ export class RouteRegistry extends DebuggableService {
     const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef)) {
       throw new InvalidArgumentError(
-        'The route definition must be an Object, but %v was given.',
+        'Route definition must be an Object, but %v was given.',
         routeDef,
       );
     }
@@ -62,7 +62,7 @@ export class RouteRegistry extends DebuggableService {
           )
         ) {
           throw new InvalidArgumentError(
-            'The hook "onDefineRoute" must return an Object or undefined, ' +
+            'Hook "onDefineRoute" must return an Object or undefined, ' +
               'but %v was given.',
             hookResult,
           );

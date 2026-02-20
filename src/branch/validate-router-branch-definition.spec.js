@@ -7,7 +7,7 @@ describe('validateRouterBranchDefinition', function () {
   it('should require the parameter "routeDef" to be an Object', function () {
     const throwable = v => () => validateRouterBranchDefinition(v);
     const error = v =>
-      format('The branch definition must be an Object, but %s was given.', v);
+      format('Branch definition must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -28,7 +28,7 @@ describe('validateRouterBranchDefinition', function () {
         method: 123,
       });
     expect(throwable).to.throw(
-      'The option "method" is not supported for the router branch, ' +
+      'Option "method" is not supported for the router branch, ' +
         'but 123 was given.',
     );
   });
@@ -36,7 +36,7 @@ describe('validateRouterBranchDefinition', function () {
   it('should require the option "path" to be a String', function () {
     const throwable = v => () => validateRouterBranchDefinition({path: v});
     const error = v =>
-      format('The option "path" must be a String, but %s was given.', v);
+      format('Option "path" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -52,7 +52,7 @@ describe('validateRouterBranchDefinition', function () {
   it('should require the option "path" to start with a forward slash', function () {
     const throwable = v => () => validateRouterBranchDefinition({path: v});
     const error = s =>
-      format('The option "path" must start with "/", but %s was given.', s);
+      format('Option "path" must start with "/", but %s was given.', s);
     expect(throwable('path')).to.throw(error('"path"'));
     expect(throwable('')).to.throw(error('""'));
     throwable('/path')();
@@ -66,7 +66,7 @@ describe('validateRouterBranchDefinition', function () {
         handler: 123,
       });
     expect(throwable).to.throw(
-      'The option "handler" is not supported for the router branch, ' +
+      'Option "handler" is not supported for the router branch, ' +
         'but 123 was given.',
     );
   });
@@ -79,8 +79,8 @@ describe('validateRouterBranchDefinition', function () {
       });
     const error = v =>
       format(
-        'The option "preHandler" must be a Function ' +
-          'or an Array, but %s was given.',
+        'Option "preHandler" must be a Function or an Array, ' +
+          'but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -103,7 +103,7 @@ describe('validateRouterBranchDefinition', function () {
         preHandler: [v],
       });
     const error = v =>
-      format('The hook "preHandler" must be a Function, but %s was given.', v);
+      format('Hook "preHandler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -125,8 +125,8 @@ describe('validateRouterBranchDefinition', function () {
       });
     const error = v =>
       format(
-        'The option "postHandler" must be a Function ' +
-          'or an Array, but %s was given.',
+        'Option "postHandler" must be a Function or an Array, ' +
+          'but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -149,7 +149,7 @@ describe('validateRouterBranchDefinition', function () {
         postHandler: [v],
       });
     const error = v =>
-      format('The hook "postHandler" must be a Function, but %s was given.', v);
+      format('Hook "postHandler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -170,7 +170,7 @@ describe('validateRouterBranchDefinition', function () {
         meta: v,
       });
     const error = v =>
-      format('The option "meta" must be an Object, but %s was given.', v);
+      format('Option "meta" must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));

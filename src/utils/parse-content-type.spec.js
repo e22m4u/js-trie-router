@@ -6,7 +6,7 @@ describe('parseContentType', function () {
   it('should require the parameter "input" to be a String', function () {
     const throwable = v => () => parseContentType(v);
     const error = s =>
-      format('The parameter "input" must be a String, but %s was given.', s);
+      format('Parameter "input" must be a String, but %s was given.', s);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));

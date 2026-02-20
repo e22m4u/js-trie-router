@@ -79,7 +79,7 @@ export class RouterBranch extends DebuggableService {
   getParentBranch() {
     if (!this._parentBranch) {
       throw new InvalidArgumentError(
-        'The parent branch does not exist in the router branch.',
+        'Parent branch does not exist in the router branch.',
       );
     }
     return this._parentBranch;
@@ -95,7 +95,7 @@ export class RouterBranch extends DebuggableService {
   constructor(router, branchDef, parentBranch) {
     if (!(router instanceof TrieRouter)) {
       throw new InvalidArgumentError(
-        'The parameter "router" must be an instance of TrieRouter, ' +
+        'Parameter "router" must be an instance of TrieRouter, ' +
           'but %v was given.',
         router,
       );
@@ -104,7 +104,7 @@ export class RouterBranch extends DebuggableService {
     this._router = router;
     if (parentBranch !== undefined && !(parentBranch instanceof RouterBranch)) {
       throw new InvalidArgumentError(
-        'The parameter "parentBranch" must be an instance of RouterBranch, ' +
+        'Parameter "parentBranch" must be an instance of RouterBranch, ' +
           'but %v was given.',
         parentBranch,
       );

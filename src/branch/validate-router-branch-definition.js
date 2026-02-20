@@ -8,33 +8,33 @@ import {InvalidArgumentError} from '@e22m4u/js-format';
 export function validateRouterBranchDefinition(branchDef) {
   if (!branchDef || typeof branchDef !== 'object' || Array.isArray(branchDef)) {
     throw new InvalidArgumentError(
-      'The branch definition must be an Object, but %v was given.',
+      'Branch definition must be an Object, but %v was given.',
       branchDef,
     );
   }
   if (branchDef.method !== undefined) {
     throw new InvalidArgumentError(
-      'The option "method" is not supported for the router branch, ' +
+      'Option "method" is not supported for the router branch, ' +
         'but %v was given.',
       branchDef.method,
     );
   }
   if (branchDef.handler !== undefined) {
     throw new InvalidArgumentError(
-      'The option "handler" is not supported for the router branch, ' +
+      'Option "handler" is not supported for the router branch, ' +
         'but %v was given.',
       branchDef.handler,
     );
   }
   if (typeof branchDef.path !== 'string') {
     throw new InvalidArgumentError(
-      'The option "path" must be a String, but %v was given.',
+      'Option "path" must be a String, but %v was given.',
       branchDef.path,
     );
   }
   if (!branchDef.path.startsWith('/')) {
     throw new InvalidArgumentError(
-      'The option "path" must start with "/", but %v was given.',
+      'Option "path" must start with "/", but %v was given.',
       branchDef.path,
     );
   }
@@ -43,14 +43,14 @@ export function validateRouterBranchDefinition(branchDef) {
       branchDef.preHandler.forEach(preHandler => {
         if (typeof preHandler !== 'function') {
           throw new InvalidArgumentError(
-            'The hook "preHandler" must be a Function, but %v was given.',
+            'Hook "preHandler" must be a Function, but %v was given.',
             preHandler,
           );
         }
       });
     } else if (typeof branchDef.preHandler !== 'function') {
       throw new InvalidArgumentError(
-        'The option "preHandler" must be a Function or an Array, but %v was given.',
+        'Option "preHandler" must be a Function or an Array, but %v was given.',
         branchDef.preHandler,
       );
     }
@@ -60,14 +60,14 @@ export function validateRouterBranchDefinition(branchDef) {
       branchDef.postHandler.forEach(postHandler => {
         if (typeof postHandler !== 'function') {
           throw new InvalidArgumentError(
-            'The hook "postHandler" must be a Function, but %v was given.',
+            'Hook "postHandler" must be a Function, but %v was given.',
             postHandler,
           );
         }
       });
     } else if (typeof branchDef.postHandler !== 'function') {
       throw new InvalidArgumentError(
-        'The option "postHandler" must be a Function or an Array, ' +
+        'Option "postHandler" must be a Function or an Array, ' +
           'but %v was given.',
         branchDef.postHandler,
       );
@@ -80,7 +80,7 @@ export function validateRouterBranchDefinition(branchDef) {
       Array.isArray(branchDef.meta)
     ) {
       throw new InvalidArgumentError(
-        'The option "meta" must be an Object, but %v was given.',
+        'Option "meta" must be an Object, but %v was given.',
         branchDef.meta,
       );
     }

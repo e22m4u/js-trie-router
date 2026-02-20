@@ -8,7 +8,7 @@ describe('fetchRequestBody', function () {
     const throwable = v => () => fetchRequestBody(v);
     const error = v =>
       format(
-        'The parameter "request" must be an instance of IncomingMessage, ' +
+        'Parameter "request" must be an instance of IncomingMessage, ' +
           'but %s was given.',
         v,
       );
@@ -30,7 +30,7 @@ describe('fetchRequestBody', function () {
     const throwable = v => () => fetchRequestBody(req, v);
     const error = v =>
       format(
-        'The parameter "bodyBytesLimit" must be a Number, but %s was given.',
+        'Parameter "bodyBytesLimit" must be a Number, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -68,7 +68,7 @@ describe('fetchRequestBody', function () {
       });
       const promise = fetchRequestBody(req);
       await expect(promise).to.be.rejectedWith(
-        'The request encoding "unknown" is not supported.',
+        'Request encoding "unknown" is not supported.',
       );
     });
 

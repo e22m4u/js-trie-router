@@ -11,7 +11,7 @@ describe('RouteRegistry', function () {
       const S = new RouteRegistry();
       const throwable = v => () => S.defineRoute(v);
       const error = v =>
-        format('The route definition must be an Object, but %s was given.', v);
+        format('Route definition must be an Object, but %s was given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -115,7 +115,7 @@ describe('RouteRegistry', function () {
       };
       const error = s =>
         format(
-          'The hook "onDefineRoute" must return an Object or undefined, ' +
+          'Hook "onDefineRoute" must return an Object or undefined, ' +
             'but %s was given.',
           s,
         );

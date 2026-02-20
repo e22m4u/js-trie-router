@@ -8,7 +8,7 @@ describe('validateRouteDefinition', function () {
   it('should require the parameter "routeDef" to be an Object', function () {
     const throwable = v => () => validateRouteDefinition(v);
     const error = v =>
-      format('The route definition must be an Object, but %s was given.', v);
+      format('Route definition must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -35,7 +35,7 @@ describe('validateRouteDefinition', function () {
       });
     const error = v =>
       format(
-        'The option "method" must be a non-empty String, but %s was given.',
+        'Option "method" must be a non-empty String, but %s was given.',
         v,
       );
     expect(throwable('')).to.throw(error('""'));
@@ -59,7 +59,7 @@ describe('validateRouteDefinition', function () {
         handler: () => undefined,
       });
     const error = v =>
-      format('The option "path" must be a String, but %s was given.', v);
+      format('Option "path" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -80,7 +80,7 @@ describe('validateRouteDefinition', function () {
         handler: () => undefined,
       });
     const error = s =>
-      format('The option "path" must start with "/", but %s was given.', s);
+      format('Option "path" must start with "/", but %s was given.', s);
     expect(throwable('path')).to.throw(error('"path"'));
     expect(throwable('')).to.throw(error('""'));
     throwable('/path')();
@@ -95,7 +95,7 @@ describe('validateRouteDefinition', function () {
         handler: v,
       });
     const error = v =>
-      format('The option "handler" must be a Function, but %s was given.', v);
+      format('Option "handler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -119,7 +119,7 @@ describe('validateRouteDefinition', function () {
       });
     const error = v =>
       format(
-        'The option "preHandler" must be a Function or an Array, ' +
+        'Option "preHandler" must be a Function or an Array, ' +
           'but %s was given.',
         v,
       );
@@ -145,7 +145,7 @@ describe('validateRouteDefinition', function () {
         handler: () => undefined,
       });
     const error = v =>
-      format('The hook "preHandler" must be a Function, but %s was given.', v);
+      format('Hook "preHandler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -169,7 +169,7 @@ describe('validateRouteDefinition', function () {
       });
     const error = v =>
       format(
-        'The option "postHandler" must be a Function or an Array, ' +
+        'Option "postHandler" must be a Function or an Array, ' +
           'but %s was given.',
         v,
       );
@@ -195,7 +195,7 @@ describe('validateRouteDefinition', function () {
         handler: () => undefined,
       });
     const error = v =>
-      format('The hook "postHandler" must be a Function, but %s was given.', v);
+      format('Hook "postHandler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -218,7 +218,7 @@ describe('validateRouteDefinition', function () {
         meta: v,
       });
     const error = v =>
-      format('The option "meta" must be an Object, but %s was given.', v);
+      format('Option "meta" must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));

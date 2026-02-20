@@ -6,7 +6,7 @@ describe('createCookieString', function () {
   it('should require the parameter "data" to be an object', function () {
     const throwable = v => () => createCookieString(v);
     const error = v =>
-      format('The cookie data must be an Object, but %s was given.', v);
+      format('Cookie data must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));

@@ -19,7 +19,7 @@ describe('RouterHookInvoker', function () {
         );
       const error = v =>
         format(
-          'The parameter "route" must be an instance of Route, ' +
+          'Parameter "route" must be an instance of Route, ' +
             'but %s was given.',
           v,
         );
@@ -54,7 +54,7 @@ describe('RouterHookInvoker', function () {
         S.invokeAndContinueUntilValueReceived(route, v, res);
       const error = v =>
         format(
-          'The parameter "hookType" must be a non-empty String, ' +
+          'Parameter "hookType" must be a non-empty String, ' +
             'but %s was given.',
           v,
         );
@@ -83,7 +83,7 @@ describe('RouterHookInvoker', function () {
       );
       const throwable = () =>
         S.invokeAndContinueUntilValueReceived(route, 'unknown', res);
-      expect(throwable).to.throw('The hook type "unknown" is not supported.');
+      expect(throwable).to.throw('Hook type "unknown" is not supported.');
     });
 
     it('should require the parameter "response" to be an instance of ServerResponse', function () {
@@ -101,7 +101,7 @@ describe('RouterHookInvoker', function () {
         );
       const error = v =>
         format(
-          'The parameter "response" must be an instance of ServerResponse, ' +
+          'Parameter "response" must be an instance of ServerResponse, ' +
             'but %s was given.',
           v,
         );

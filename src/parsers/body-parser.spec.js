@@ -18,7 +18,7 @@ describe('BodyParser', function () {
       const throwable = v => () => S.defineParser(v, () => undefined);
       const error = v =>
         format(
-          'The parameter "mediaType" must be a non-empty String, ' +
+          'Parameter "mediaType" must be a non-empty String, ' +
             'but %s was given.',
           v,
         );
@@ -39,10 +39,7 @@ describe('BodyParser', function () {
       const S = new BodyParser();
       const throwable = v => () => S.defineParser('str', v);
       const error = v =>
-        format(
-          'The parameter "parser" must be a Function, but %s was given.',
-          v,
-        );
+        format('Parameter "parser" must be a Function, but %s was given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -84,7 +81,7 @@ describe('BodyParser', function () {
       const throwable = v => () => S.hasParser(v);
       const error = v =>
         format(
-          'The parameter "mediaType" must be a non-empty String, ' +
+          'Parameter "mediaType" must be a non-empty String, ' +
             'but %s was given.',
           v,
         );
@@ -111,13 +108,54 @@ describe('BodyParser', function () {
     });
   });
 
+  describe('getParser', function () {
+    it('should require the parameter "mediaType" to be a non-empty String', function () {
+      const S = new BodyParser();
+      S.defineParser('media/type', v => v);
+      const throwable = v => () => S.getParser(v);
+      const error = v =>
+        format(
+          'Parameter "mediaType" must be a non-empty String, ' +
+            'but %s was given.',
+          v,
+        );
+      expect(throwable('')).to.throw(error('""'));
+      expect(throwable(10)).to.throw(error('10'));
+      expect(throwable(0)).to.throw(error('0'));
+      expect(throwable(true)).to.throw(error('true'));
+      expect(throwable(false)).to.throw(error('false'));
+      expect(throwable(null)).to.throw(error('null'));
+      expect(throwable({})).to.throw(error('Object'));
+      expect(throwable([])).to.throw(error('Array'));
+      expect(throwable(undefined)).to.throw(error('undefined'));
+      expect(throwable(() => undefined)).to.throw(error('Function'));
+      throwable('media/type')();
+    });
+
+    it('should throw an error when the media type is not registered', function () {
+      const S = new BodyParser();
+      const throwable = () => S.getParser('media/unknown');
+      expect(throwable).to.throw(
+        'Media type "media/unknown" does not have a parser.',
+      );
+    });
+
+    it('should return an existing parser for the media type', function () {
+      const S = new BodyParser();
+      const mediaType = 'media/type';
+      const parser = v => v;
+      S.defineParser(mediaType, parser);
+      expect(S.getParser(mediaType)).to.be.eq(parser);
+    });
+  });
+
   describe('removeParser', function () {
     it('should require the parameter "mediaType" to be a non-empty String', function () {
       const S = new BodyParser();
       const throwable = v => () => S.removeParser(v);
       const error = v =>
         format(
-          'The parameter "mediaType" must be a non-empty String, ' +
+          'Parameter "mediaType" must be a non-empty String, ' +
             'but %s was given.',
           v,
         );
@@ -132,6 +170,12 @@ describe('BodyParser', function () {
       expect(throwable(undefined)).to.throw(error('undefined'));
       expect(throwable(() => undefined)).to.throw(error('Function'));
       throwable('text/plain')();
+    });
+
+    it('should not throw an error when the parser is not registered', function () {
+      const S = new BodyParser();
+      const mediaType = 'media/type';
+      S.removeParser(mediaType);
     });
 
     it('should remove a parser function by the media type', function () {

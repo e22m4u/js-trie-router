@@ -7,7 +7,7 @@ describe('isResponseSent', function () {
     const throwable = v => () => isResponseSent(v);
     const error = v =>
       format(
-        'The parameter "response" must be an instance of ServerResponse, ' +
+        'Parameter "response" must be an instance of ServerResponse, ' +
           'but %s was given.',
         v,
       );

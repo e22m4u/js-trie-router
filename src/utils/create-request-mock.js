@@ -34,32 +34,32 @@ export function createRequestMock(options) {
     Array.isArray(options)
   ) {
     throw new InvalidArgumentError(
-      'The parameter "options" must be an Object, but %v was given.',
+      'Parameter "options" must be an Object, but %v was given.',
       options,
     );
   }
   options = options || {};
   if (options.host != null && typeof options.host !== 'string') {
     throw new InvalidArgumentError(
-      'The option "host" must be a String, but %v was given.',
+      'Option "host" must be a String, but %v was given.',
       options.host,
     );
   }
   if (options.method != null && typeof options.method !== 'string') {
     throw new InvalidArgumentError(
-      'The option "method" must be a String, but %v was given.',
+      'Option "method" must be a String, but %v was given.',
       options.method,
     );
   }
   if (options.secure != null && typeof options.secure !== 'boolean') {
     throw new InvalidArgumentError(
-      'The option "secure" must be a Boolean, but %v was given.',
+      'Option "secure" must be a Boolean, but %v was given.',
       options.secure,
     );
   }
   if (options.path != null && typeof options.path !== 'string') {
     throw new InvalidArgumentError(
-      'The option "path" must be a String, but %v was given.',
+      'Option "path" must be a String, but %v was given.',
       options.path,
     );
   }
@@ -70,7 +70,7 @@ export function createRequestMock(options) {
     Array.isArray(options.query)
   ) {
     throw new InvalidArgumentError(
-      'The option "query" must be a String or Object, but %v was given.',
+      'Option "query" must be a String or Object, but %v was given.',
       options.query,
     );
   }
@@ -81,7 +81,7 @@ export function createRequestMock(options) {
     Array.isArray(options.cookies)
   ) {
     throw new InvalidArgumentError(
-      'The option "cookies" must be a String or Object, but %v was given.',
+      'Option "cookies" must be a String or Object, but %v was given.',
       options.cookies,
     );
   }
@@ -90,20 +90,20 @@ export function createRequestMock(options) {
     Array.isArray(options.headers)
   ) {
     throw new InvalidArgumentError(
-      'The option "headers" must be an Object, but %v was given.',
+      'Option "headers" must be an Object, but %v was given.',
       options.headers,
     );
   }
   if (options.stream != null && !isReadableStream(options.stream)) {
     throw new InvalidArgumentError(
-      'The option "stream" must be a Stream, but %v was given.',
+      'Option "stream" must be a Stream, but %v was given.',
       options.stream,
     );
   }
   if (options.encoding != null) {
     if (typeof options.encoding !== 'string') {
       throw new InvalidArgumentError(
-        'The option "encoding" must be a String, but %v was given.',
+        'Option "encoding" must be a String, but %v was given.',
         options.encoding,
       );
     }
@@ -163,7 +163,7 @@ export function createRequestMock(options) {
 function createRequestStream(secure, body, encoding) {
   if (encoding != null && typeof encoding !== 'string') {
     throw new InvalidArgumentError(
-      'The parameter "encoding" must be a String, but %v was given.',
+      'Parameter "encoding" must be a String, but %v was given.',
       encoding,
     );
   }
@@ -202,7 +202,7 @@ function createRequestStream(secure, body, encoding) {
 function createRequestUrl(path, query) {
   if (typeof path !== 'string') {
     throw new InvalidArgumentError(
-      'The parameter "path" must be a String, but %v was given.',
+      'Parameter "path" must be a String, but %v was given.',
       path,
     );
   }
@@ -211,7 +211,7 @@ function createRequestUrl(path, query) {
     Array.isArray(query)
   ) {
     throw new InvalidArgumentError(
-      'The parameter "query" must be a String or Object, but %v was given.',
+      'Parameter "query" must be a String or Object, but %v was given.',
       query,
     );
   }
@@ -241,14 +241,14 @@ function createRequestUrl(path, query) {
 function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (host != null && typeof host !== 'string') {
     throw new InvalidArgumentError(
-      'The parameter "host" must be a non-empty String, but %v was given.',
+      'Parameter "host" must be a non-empty String, but %v was given.',
       host,
     );
   }
   host = host || 'localhost';
   if (secure != null && typeof secure !== 'boolean') {
     throw new InvalidArgumentError(
-      'The parameter "secure" must be a String, but %v was given.',
+      'Parameter "secure" must be a String, but %v was given.',
       secure,
     );
   }
@@ -260,7 +260,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
     Array.isArray(cookies)
   ) {
     throw new InvalidArgumentError(
-      'The parameter "cookies" must be a String or an Object, ' +
+      'Parameter "cookies" must be a String or an Object, ' +
         'but %v was given.',
       cookies,
     );
@@ -270,14 +270,14 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
     Array.isArray(headers)
   ) {
     throw new InvalidArgumentError(
-      'The parameter "headers" must be an Object, but %v was given.',
+      'Parameter "headers" must be an Object, but %v was given.',
       headers,
     );
   }
   headers = headers || {};
   if (encoding != null && typeof encoding !== 'string') {
     throw new InvalidArgumentError(
-      'The parameter "encoding" must be a String, but %v was given.',
+      'Parameter "encoding" must be a String, but %v was given.',
       encoding,
     );
   }

@@ -9,7 +9,7 @@ import {InvalidArgumentError} from '@e22m4u/js-format';
 export function toCamelCase(input) {
   if (typeof input !== 'string') {
     throw new InvalidArgumentError(
-      'The parameter "input" must be a String, but %v was given.',
+      'Parameter "input" must be a String, but %v was given.',
       input,
     );
   }

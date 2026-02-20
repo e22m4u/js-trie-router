@@ -11,7 +11,7 @@ describe('RequestParser', function () {
       const throwable = v => () => S.parse(v);
       const error = v =>
         format(
-          'The parameter "request" must be an instance of IncomingMessage, ' +
+          'Parameter "request" must be an instance of IncomingMessage, ' +
             'but %s was given.',
           v,
         );

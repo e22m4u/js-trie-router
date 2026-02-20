@@ -11,7 +11,7 @@ describe('RouterBranch', function () {
       const throwable = v => () => new RouterBranch(v, {path: '/branch'});
       const error = s =>
         format(
-          'The parameter "router" must be an instance of TrieRouter, ' +
+          'Parameter "router" must be an instance of TrieRouter, ' +
             'but %s was given.',
           s,
         );
@@ -32,7 +32,7 @@ describe('RouterBranch', function () {
       const router = new TrieRouter();
       const throwable = v => () => new RouterBranch(router, v);
       const error = s =>
-        format('The branch definition must be an Object, but %s was given.', s);
+        format('Branch definition must be an Object, but %s was given.', s);
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -51,7 +51,7 @@ describe('RouterBranch', function () {
         new RouterBranch(router, {path: '/branch'}, v);
       const error = s =>
         format(
-          'The parameter "parentBranch" must be an instance of RouterBranch, ' +
+          'Parameter "parentBranch" must be an instance of RouterBranch, ' +
             'but %s was given.',
           s,
         );
@@ -124,7 +124,7 @@ describe('RouterBranch', function () {
       const S = new RouterBranch(router, {path: ROOT_PATH});
       const throwable = () => S.getParentBranch();
       expect(throwable).to.throw(
-        'The parent branch does not exist in the router branch.',
+        'Parent branch does not exist in the router branch.',
       );
     });
   });

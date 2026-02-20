@@ -10,7 +10,7 @@ describe('createRequestMock', function () {
   it('should require the option "options" to be an Object', function () {
     const throwable = v => () => createRequestMock(v);
     const error = v =>
-      format('The parameter "options" must be an Object, but %s was given.', v);
+      format('Parameter "options" must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -26,7 +26,7 @@ describe('createRequestMock', function () {
   it('should require the option "host" to be a String', function () {
     const throwable = v => () => createRequestMock({host: v});
     const error = v =>
-      format('The option "host" must be a String, but %s was given.', v);
+      format('Option "host" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -42,7 +42,7 @@ describe('createRequestMock', function () {
   it('should require the option "method" to be a String', function () {
     const throwable = v => () => createRequestMock({method: v});
     const error = v =>
-      format('The option "method" must be a String, but %s was given.', v);
+      format('Option "method" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -58,7 +58,7 @@ describe('createRequestMock', function () {
   it('should require the option "secure" to be a Boolean', function () {
     const throwable = v => () => createRequestMock({secure: v});
     const error = v =>
-      format('The option "secure" must be a Boolean, but %s was given.', v);
+      format('Option "secure" must be a Boolean, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -74,7 +74,7 @@ describe('createRequestMock', function () {
   it('should require the option "path" to be a String', function () {
     const throwable = v => () => createRequestMock({path: v});
     const error = v =>
-      format('The option "path" must be a String, but %s was given.', v);
+      format('Option "path" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -90,10 +90,7 @@ describe('createRequestMock', function () {
   it('should require the option "query" to be a String or Object', function () {
     const throwable = v => () => createRequestMock({query: v});
     const error = v =>
-      format(
-        'The option "query" must be a String or Object, but %s was given.',
-        v,
-      );
+      format('Option "query" must be a String or Object, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -111,7 +108,7 @@ describe('createRequestMock', function () {
     const throwable = v => () => createRequestMock({cookies: v});
     const error = v =>
       format(
-        'The option "cookies" must be a String or Object, but %s was given.',
+        'Option "cookies" must be a String or Object, but %s was given.',
         v,
       );
     expect(throwable(10)).to.throw(error('10'));
@@ -130,7 +127,7 @@ describe('createRequestMock', function () {
   it('should require the option "headers" to be an Object', function () {
     const throwable = v => () => createRequestMock({headers: v});
     const error = v =>
-      format('The option "headers" must be an Object, but %s was given.', v);
+      format('Option "headers" must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -147,7 +144,7 @@ describe('createRequestMock', function () {
   it('should require the option "stream" to be a Stream', function () {
     const throwable = v => () => createRequestMock({stream: v});
     const error = v =>
-      format('The option "stream" must be a Stream, but %s was given.', v);
+      format('Option "stream" must be a Stream, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -164,7 +161,7 @@ describe('createRequestMock', function () {
   it('should require the option "encoding" to be a String', function () {
     const throwable = v => () => createRequestMock({encoding: v});
     const error = v =>
-      format('The option "encoding" must be a String, but %s was given.', v);
+      format('Option "encoding" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));

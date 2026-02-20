@@ -166,13 +166,13 @@ var import_js_format = require("@e22m4u/js-format");
 function createError(errorCtor, message, ...args) {
   if (typeof errorCtor !== "function") {
     throw new import_js_format.InvalidArgumentError(
-      'The parameter "errorCtor" must be a Function, but %v was given.',
+      'Parameter "errorCtor" must be a Function, but %v was given.',
       errorCtor
     );
   }
   if (message != null && typeof message !== "string") {
     throw new import_js_format.InvalidArgumentError(
-      'The parameter "message" must be a String, but %v was given.',
+      'Parameter "message" must be a String, but %v was given.',
       message
     );
   }
@@ -189,7 +189,7 @@ var import_js_format2 = require("@e22m4u/js-format");
 function toCamelCase(input) {
   if (typeof input !== "string") {
     throw new import_js_format2.InvalidArgumentError(
-      'The parameter "input" must be a String, but %v was given.',
+      'Parameter "input" must be a String, but %v was given.',
       input
     );
   }
@@ -211,7 +211,7 @@ var import_js_format3 = require("@e22m4u/js-format");
 function isResponseSent(response) {
   if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
     throw new import_js_format3.InvalidArgumentError(
-      'The parameter "response" must be an instance of ServerResponse, but %v was given.',
+      'Parameter "response" must be an instance of ServerResponse, but %v was given.',
       response
     );
   }
@@ -243,7 +243,7 @@ var import_js_format4 = require("@e22m4u/js-format");
 function parseContentType(input) {
   if (typeof input !== "string") {
     throw new import_js_format4.InvalidArgumentError(
-      'The parameter "input" must be a String, but %v was given.',
+      'Parameter "input" must be a String, but %v was given.',
       input
     );
   }
@@ -289,13 +289,13 @@ var CHARACTER_ENCODING_LIST = [
 function fetchRequestBody(request, bodyBytesLimit = 0) {
   if (!(request instanceof import_http.IncomingMessage)) {
     throw new import_js_format5.InvalidArgumentError(
-      'The parameter "request" must be an instance of IncomingMessage, but %v was given.',
+      'Parameter "request" must be an instance of IncomingMessage, but %v was given.',
       request
     );
   }
   if (typeof bodyBytesLimit !== "number") {
     throw new import_js_format5.InvalidArgumentError(
-      'The parameter "bodyBytesLimit" must be a Number, but %v was given.',
+      'Parameter "bodyBytesLimit" must be a Number, but %v was given.',
       bodyBytesLimit
     );
   }
@@ -321,7 +321,7 @@ function fetchRequestBody(request, bodyBytesLimit = 0) {
         if (!CHARACTER_ENCODING_LIST.includes(encoding)) {
           throw createError(
             import_http_errors.default.UnsupportedMediaType,
-            "The request encoding %v is not supported.",
+            "Request encoding %v is not supported.",
             encoding
           );
         }
@@ -382,7 +382,7 @@ var import_js_format6 = require("@e22m4u/js-format");
 function parseCookieString(input) {
   if (typeof input !== "string") {
     throw new import_js_format6.InvalidArgumentError(
-      'The parameter "input" must be a String, but %v was given.',
+      'Parameter "input" must be a String, but %v was given.',
       input
     );
   }
@@ -410,7 +410,7 @@ var import_js_format7 = require("@e22m4u/js-format");
 function createCookieString(data) {
   if (!data || typeof data !== "object" || Array.isArray(data)) {
     throw new import_js_format7.InvalidArgumentError(
-      "The cookie data must be an Object, but %v was given.",
+      "Cookie data must be an Object, but %v was given.",
       data
     );
   }
@@ -433,63 +433,63 @@ __name(createCookieString, "createCookieString");
 function createRequestMock(options) {
   if (options != null && typeof options !== "object" || Array.isArray(options)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "options" must be an Object, but %v was given.',
+      'Parameter "options" must be an Object, but %v was given.',
       options
     );
   }
   options = options || {};
   if (options.host != null && typeof options.host !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The option "host" must be a String, but %v was given.',
+      'Option "host" must be a String, but %v was given.',
       options.host
     );
   }
   if (options.method != null && typeof options.method !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The option "method" must be a String, but %v was given.',
+      'Option "method" must be a String, but %v was given.',
       options.method
     );
   }
   if (options.secure != null && typeof options.secure !== "boolean") {
     throw new import_js_format8.InvalidArgumentError(
-      'The option "secure" must be a Boolean, but %v was given.',
+      'Option "secure" must be a Boolean, but %v was given.',
       options.secure
     );
   }
   if (options.path != null && typeof options.path !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The option "path" must be a String, but %v was given.',
+      'Option "path" must be a String, but %v was given.',
       options.path
     );
   }
   if (options.query != null && typeof options.query !== "object" && typeof options.query !== "string" || Array.isArray(options.query)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The option "query" must be a String or Object, but %v was given.',
+      'Option "query" must be a String or Object, but %v was given.',
       options.query
     );
   }
   if (options.cookies != null && typeof options.cookies !== "string" && typeof options.cookies !== "object" || Array.isArray(options.cookies)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The option "cookies" must be a String or Object, but %v was given.',
+      'Option "cookies" must be a String or Object, but %v was given.',
       options.cookies
     );
   }
   if (options.headers != null && typeof options.headers !== "object" || Array.isArray(options.headers)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The option "headers" must be an Object, but %v was given.',
+      'Option "headers" must be an Object, but %v was given.',
       options.headers
     );
   }
   if (options.stream != null && !isReadableStream(options.stream)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The option "stream" must be a Stream, but %v was given.',
+      'Option "stream" must be a Stream, but %v was given.',
       options.stream
     );
   }
   if (options.encoding != null) {
     if (typeof options.encoding !== "string") {
       throw new import_js_format8.InvalidArgumentError(
-        'The option "encoding" must be a String, but %v was given.',
+        'Option "encoding" must be a String, but %v was given.',
         options.encoding
       );
     }
@@ -534,7 +534,7 @@ __name(createRequestMock, "createRequestMock");
 function createRequestStream(secure, body, encoding) {
   if (encoding != null && typeof encoding !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "encoding" must be a String, but %v was given.',
+      'Parameter "encoding" must be a String, but %v was given.',
       encoding
     );
   }
@@ -560,13 +560,13 @@ __name(createRequestStream, "createRequestStream");
 function createRequestUrl(path, query) {
   if (typeof path !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "path" must be a String, but %v was given.',
+      'Parameter "path" must be a String, but %v was given.',
       path
     );
   }
   if (query != null && typeof query !== "string" && typeof query !== "object" || Array.isArray(query)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "query" must be a String or Object, but %v was given.',
+      'Parameter "query" must be a String or Object, but %v was given.',
       query
     );
   }
@@ -585,34 +585,34 @@ __name(createRequestUrl, "createRequestUrl");
 function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (host != null && typeof host !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "host" must be a non-empty String, but %v was given.',
+      'Parameter "host" must be a non-empty String, but %v was given.',
       host
     );
   }
   host = host || "localhost";
   if (secure != null && typeof secure !== "boolean") {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "secure" must be a String, but %v was given.',
+      'Parameter "secure" must be a String, but %v was given.',
       secure
     );
   }
   secure = Boolean(secure);
   if (cookies != null && typeof cookies !== "object" && typeof cookies !== "string" || Array.isArray(cookies)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "cookies" must be a String or an Object, but %v was given.',
+      'Parameter "cookies" must be a String or an Object, but %v was given.',
       cookies
     );
   }
   if (headers != null && typeof headers !== "object" || Array.isArray(headers)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "headers" must be an Object, but %v was given.',
+      'Parameter "headers" must be an Object, but %v was given.',
       headers
     );
   }
   headers = headers || {};
   if (encoding != null && typeof encoding !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "encoding" must be a String, but %v was given.',
+      'Parameter "encoding" must be a String, but %v was given.',
       encoding
     );
   }
@@ -768,7 +768,7 @@ var import_js_format9 = require("@e22m4u/js-format");
 function getRequestPathname(request) {
   if (!request || typeof request !== "object" || Array.isArray(request) || typeof request.url !== "string") {
     throw new import_js_format9.InvalidArgumentError(
-      'The parameter "request" must be an instance of IncomingMessage, but %v was given.',
+      'Parameter "request" must be an instance of IncomingMessage, but %v was given.',
       request
     );
   }
@@ -891,25 +891,25 @@ var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
   invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
     if (!route || !(route instanceof Route)) {
       throw new import_js_format11.InvalidArgumentError(
-        'The parameter "route" must be an instance of Route, but %v was given.',
+        'Parameter "route" must be an instance of Route, but %v was given.',
         route
       );
     }
     if (!hookType || typeof hookType !== "string") {
       throw new import_js_format11.InvalidArgumentError(
-        'The parameter "hookType" must be a non-empty String, but %v was given.',
+        'Parameter "hookType" must be a non-empty String, but %v was given.',
         hookType
       );
     }
     if (!Object.values(RouterHookType).includes(hookType)) {
       throw new import_js_format11.InvalidArgumentError(
-        "The hook type %v is not supported.",
+        "Hook type %v is not supported.",
         hookType
       );
     }
     if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
       throw new import_js_format11.InvalidArgumentError(
-        'The parameter "response" must be an instance of ServerResponse, but %v was given.',
+        'Parameter "response" must be an instance of ServerResponse, but %v was given.',
         response
       );
     }
@@ -985,31 +985,31 @@ var import_js_format12 = require("@e22m4u/js-format");
 function validateRouteDefinition(routeDef) {
   if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef)) {
     throw new import_js_format12.InvalidArgumentError(
-      "The route definition must be an Object, but %v was given.",
+      "Route definition must be an Object, but %v was given.",
       routeDef
     );
   }
   if (!routeDef.method || typeof routeDef.method !== "string") {
     throw new import_js_format12.InvalidArgumentError(
-      'The option "method" must be a non-empty String, but %v was given.',
+      'Option "method" must be a non-empty String, but %v was given.',
       routeDef.method
     );
   }
   if (typeof routeDef.path !== "string") {
     throw new import_js_format12.InvalidArgumentError(
-      'The option "path" must be a String, but %v was given.',
+      'Option "path" must be a String, but %v was given.',
       routeDef.path
     );
   }
   if (!routeDef.path.startsWith("/")) {
     throw new import_js_format12.InvalidArgumentError(
-      'The option "path" must start with "/", but %v was given.',
+      'Option "path" must start with "/", but %v was given.',
       routeDef.path
     );
   }
   if (typeof routeDef.handler !== "function") {
     throw new import_js_format12.InvalidArgumentError(
-      'The option "handler" must be a Function, but %v was given.',
+      'Option "handler" must be a Function, but %v was given.',
       routeDef.handler
     );
   }
@@ -1018,14 +1018,14 @@ function validateRouteDefinition(routeDef) {
       routeDef.preHandler.forEach((preHandler) => {
         if (typeof preHandler !== "function") {
           throw new import_js_format12.InvalidArgumentError(
-            'The hook "preHandler" must be a Function, but %v was given.',
+            'Hook "preHandler" must be a Function, but %v was given.',
             preHandler
           );
         }
       });
     } else if (typeof routeDef.preHandler !== "function") {
       throw new import_js_format12.InvalidArgumentError(
-        'The option "preHandler" must be a Function or an Array, but %v was given.',
+        'Option "preHandler" must be a Function or an Array, but %v was given.',
         routeDef.preHandler
       );
     }
@@ -1035,14 +1035,14 @@ function validateRouteDefinition(routeDef) {
       routeDef.postHandler.forEach((postHandler) => {
         if (typeof postHandler !== "function") {
           throw new import_js_format12.InvalidArgumentError(
-            'The hook "postHandler" must be a Function, but %v was given.',
+            'Hook "postHandler" must be a Function, but %v was given.',
             postHandler
           );
         }
       });
     } else if (typeof routeDef.postHandler !== "function") {
       throw new import_js_format12.InvalidArgumentError(
-        'The option "postHandler" must be a Function or an Array, but %v was given.',
+        'Option "postHandler" must be a Function or an Array, but %v was given.',
         routeDef.postHandler
       );
     }
@@ -1050,7 +1050,7 @@ function validateRouteDefinition(routeDef) {
   if (routeDef.meta !== void 0) {
     if (!routeDef.meta || typeof routeDef.meta !== "object" || Array.isArray(routeDef.meta)) {
       throw new import_js_format12.InvalidArgumentError(
-        'The option "meta" must be an Object, but %v was given.',
+        'Option "meta" must be an Object, but %v was given.',
         routeDef.meta
       );
     }
@@ -1203,7 +1203,7 @@ var _RouterOptions = class _RouterOptions extends DebuggableService {
   setRequestBodyBytesLimit(input) {
     if (typeof input !== "number" || input < 0) {
       throw new import_js_format13.InvalidArgumentError(
-        'The option "requestBodyBytesLimit" must be a positive Number or 0, but %v was given.',
+        'Option "requestBodyBytesLimit" must be a positive Number or 0, but %v was given.',
         input
       );
     }
@@ -1238,13 +1238,13 @@ var _BodyParser = class _BodyParser extends DebuggableService {
   defineParser(mediaType, parser) {
     if (!mediaType || typeof mediaType !== "string") {
       throw new import_js_format14.InvalidArgumentError(
-        'The parameter "mediaType" must be a non-empty String, but %v was given.',
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
         mediaType
       );
     }
     if (!parser || typeof parser !== "function") {
       throw new import_js_format14.InvalidArgumentError(
-        'The parameter "parser" must be a Function, but %v was given.',
+        'Parameter "parser" must be a Function, but %v was given.',
         parser
       );
     }
@@ -1260,7 +1260,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
   hasParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string") {
       throw new import_js_format14.InvalidArgumentError(
-        'The parameter "mediaType" must be a non-empty String, but %v was given.',
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
         mediaType
       );
     }
@@ -1275,14 +1275,14 @@ var _BodyParser = class _BodyParser extends DebuggableService {
   getParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string") {
       throw new import_js_format14.InvalidArgumentError(
-        'The parameter "mediaType" must be a non-empty String, but %v was given.',
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
         mediaType
       );
     }
     const parser = this._parsers[mediaType];
     if (!parser) {
       throw new import_js_format14.InvalidArgumentError(
-        "The media type %v does not have a parser.",
+        "Media type %v does not have a parser.",
         mediaType
       );
     }
@@ -1297,14 +1297,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
   removeParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string") {
       throw new import_js_format14.InvalidArgumentError(
-        'The parameter "mediaType" must be a non-empty String, but %v was given.',
-        mediaType
-      );
-    }
-    const parser = this._parsers[mediaType];
-    if (!parser) {
-      throw new import_js_format14.InvalidArgumentError(
-        "The parser of %v is not found.",
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
         mediaType
       );
     }
@@ -1459,7 +1452,7 @@ var _RequestParser = class _RequestParser extends DebuggableService {
   parse(request) {
     if (!(request instanceof import_http3.IncomingMessage)) {
       throw new import_js_format15.InvalidArgumentError(
-        'The parameter "request" must be an instance of IncomingMessage, but %v was given.',
+        'Parameter "request" must be an instance of IncomingMessage, but %v was given.',
         request
       );
     }
@@ -1514,7 +1507,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     const debug = this.getDebuggerFor(this.defineRoute);
     if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef)) {
       throw new import_js_format16.InvalidArgumentError(
-        "The route definition must be an Object, but %v was given.",
+        "Route definition must be an Object, but %v was given.",
         routeDef
       );
     }
@@ -1528,7 +1521,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
         const hookResult = hook({ ...routeDef }, this.container);
         if (hookResult !== void 0 && !(hookResult !== null && typeof hookResult === "object" && !Array.isArray(hookResult))) {
           throw new import_js_format16.InvalidArgumentError(
-            'The hook "onDefineRoute" must return an Object or undefined, but %v was given.',
+            'Hook "onDefineRoute" must return an Object or undefined, but %v was given.',
             hookResult
           );
         }
@@ -1738,28 +1731,28 @@ var _RequestContext = class _RequestContext {
   constructor(container, request, response, route) {
     if (!(0, import_js_service3.isServiceContainer)(container)) {
       throw new import_js_format17.InvalidArgumentError(
-        'The parameter "container" must be an instance of ServiceContainer, but %v was given.',
+        'Parameter "container" must be an instance of ServiceContainer, but %v was given.',
         container
       );
     }
     this._container = container;
     if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
       throw new import_js_format17.InvalidArgumentError(
-        'The parameter "request" must be an instance of IncomingMessage, but %v was given.',
+        'Parameter "request" must be an instance of IncomingMessage, but %v was given.',
         request
       );
     }
     this._request = request;
     if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
       throw new import_js_format17.InvalidArgumentError(
-        'The parameter "response" must be an instance of ServerResponse, but %v was given.',
+        'Parameter "response" must be an instance of ServerResponse, but %v was given.',
         response
       );
     }
     this._response = response;
     if (!(route instanceof Route)) {
       throw new import_js_format17.InvalidArgumentError(
-        'The parameter "route" must be an instance of Route, but %v was given.',
+        'Parameter "route" must be an instance of Route, but %v was given.',
         route
       );
     }
@@ -1781,31 +1774,31 @@ var import_js_format18 = require("@e22m4u/js-format");
 function validateRouterBranchDefinition(branchDef) {
   if (!branchDef || typeof branchDef !== "object" || Array.isArray(branchDef)) {
     throw new import_js_format18.InvalidArgumentError(
-      "The branch definition must be an Object, but %v was given.",
+      "Branch definition must be an Object, but %v was given.",
       branchDef
     );
   }
   if (branchDef.method !== void 0) {
     throw new import_js_format18.InvalidArgumentError(
-      'The option "method" is not supported for the router branch, but %v was given.',
+      'Option "method" is not supported for the router branch, but %v was given.',
       branchDef.method
     );
   }
   if (branchDef.handler !== void 0) {
     throw new import_js_format18.InvalidArgumentError(
-      'The option "handler" is not supported for the router branch, but %v was given.',
+      'Option "handler" is not supported for the router branch, but %v was given.',
       branchDef.handler
     );
   }
   if (typeof branchDef.path !== "string") {
     throw new import_js_format18.InvalidArgumentError(
-      'The option "path" must be a String, but %v was given.',
+      'Option "path" must be a String, but %v was given.',
       branchDef.path
     );
   }
   if (!branchDef.path.startsWith("/")) {
     throw new import_js_format18.InvalidArgumentError(
-      'The option "path" must start with "/", but %v was given.',
+      'Option "path" must start with "/", but %v was given.',
       branchDef.path
     );
   }
@@ -1814,14 +1807,14 @@ function validateRouterBranchDefinition(branchDef) {
       branchDef.preHandler.forEach((preHandler) => {
         if (typeof preHandler !== "function") {
           throw new import_js_format18.InvalidArgumentError(
-            'The hook "preHandler" must be a Function, but %v was given.',
+            'Hook "preHandler" must be a Function, but %v was given.',
             preHandler
           );
         }
       });
     } else if (typeof branchDef.preHandler !== "function") {
       throw new import_js_format18.InvalidArgumentError(
-        'The option "preHandler" must be a Function or an Array, but %v was given.',
+        'Option "preHandler" must be a Function or an Array, but %v was given.',
         branchDef.preHandler
       );
     }
@@ -1831,14 +1824,14 @@ function validateRouterBranchDefinition(branchDef) {
       branchDef.postHandler.forEach((postHandler) => {
         if (typeof postHandler !== "function") {
           throw new import_js_format18.InvalidArgumentError(
-            'The hook "postHandler" must be a Function, but %v was given.',
+            'Hook "postHandler" must be a Function, but %v was given.',
             postHandler
           );
         }
       });
     } else if (typeof branchDef.postHandler !== "function") {
       throw new import_js_format18.InvalidArgumentError(
-        'The option "postHandler" must be a Function or an Array, but %v was given.',
+        'Option "postHandler" must be a Function or an Array, but %v was given.',
         branchDef.postHandler
       );
     }
@@ -1846,7 +1839,7 @@ function validateRouterBranchDefinition(branchDef) {
   if (branchDef.meta !== void 0) {
     if (!branchDef.meta || typeof branchDef.meta !== "object" || Array.isArray(branchDef.meta)) {
       throw new import_js_format18.InvalidArgumentError(
-        'The option "meta" must be an Object, but %v was given.',
+        'Option "meta" must be an Object, but %v was given.',
         branchDef.meta
       );
     }
@@ -1933,7 +1926,7 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
   getParentBranch() {
     if (!this._parentBranch) {
       throw new import_js_format19.InvalidArgumentError(
-        "The parent branch does not exist in the router branch."
+        "Parent branch does not exist in the router branch."
       );
     }
     return this._parentBranch;
@@ -1948,7 +1941,7 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
   constructor(router, branchDef, parentBranch) {
     if (!(router instanceof TrieRouter)) {
       throw new import_js_format19.InvalidArgumentError(
-        'The parameter "router" must be an instance of TrieRouter, but %v was given.',
+        'Parameter "router" must be an instance of TrieRouter, but %v was given.',
         router
       );
     }
@@ -1956,7 +1949,7 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
     this._router = router;
     if (parentBranch !== void 0 && !(parentBranch instanceof _RouterBranch)) {
       throw new import_js_format19.InvalidArgumentError(
-        'The parameter "parentBranch" must be an instance of RouterBranch, but %v was given.',
+        'Parameter "parentBranch" must be an instance of RouterBranch, but %v was given.',
         parentBranch
       );
     }

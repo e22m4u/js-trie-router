@@ -7,7 +7,7 @@ describe('mergeRouterBranchDefinitions', function () {
     const throwable = () =>
       mergeRouterBranchDefinitions(123, {path: ROOT_PATH});
     expect(throwable).to.throw(
-      'The branch definition must be an Object, but 123 was given.',
+      'Branch definition must be an Object, but 123 was given.',
     );
   });
 
@@ -15,7 +15,7 @@ describe('mergeRouterBranchDefinitions', function () {
     const throwable = () =>
       mergeRouterBranchDefinitions({path: ROOT_PATH}, 123);
     expect(throwable).to.throw(
-      'The branch definition must be an Object, but 123 was given.',
+      'Branch definition must be an Object, but 123 was given.',
     );
   });
 

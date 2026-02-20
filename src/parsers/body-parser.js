@@ -48,14 +48,14 @@ export class BodyParser extends DebuggableService {
   defineParser(mediaType, parser) {
     if (!mediaType || typeof mediaType !== 'string') {
       throw new InvalidArgumentError(
-        'The parameter "mediaType" must be a non-empty String, ' +
+        'Parameter "mediaType" must be a non-empty String, ' +
           'but %v was given.',
         mediaType,
       );
     }
     if (!parser || typeof parser !== 'function') {
       throw new InvalidArgumentError(
-        'The parameter "parser" must be a Function, but %v was given.',
+        'Parameter "parser" must be a Function, but %v was given.',
         parser,
       );
     }
@@ -72,7 +72,7 @@ export class BodyParser extends DebuggableService {
   hasParser(mediaType) {
     if (!mediaType || typeof mediaType !== 'string') {
       throw new InvalidArgumentError(
-        'The parameter "mediaType" must be a non-empty String, ' +
+        'Parameter "mediaType" must be a non-empty String, ' +
           'but %v was given.',
         mediaType,
       );
@@ -89,7 +89,7 @@ export class BodyParser extends DebuggableService {
   getParser(mediaType) {
     if (!mediaType || typeof mediaType !== 'string') {
       throw new InvalidArgumentError(
-        'The parameter "mediaType" must be a non-empty String, ' +
+        'Parameter "mediaType" must be a non-empty String, ' +
           'but %v was given.',
         mediaType,
       );
@@ -97,7 +97,7 @@ export class BodyParser extends DebuggableService {
     const parser = this._parsers[mediaType];
     if (!parser) {
       throw new InvalidArgumentError(
-        'The media type %v does not have a parser.',
+        'Media type %v does not have a parser.',
         mediaType,
       );
     }
@@ -113,15 +113,8 @@ export class BodyParser extends DebuggableService {
   removeParser(mediaType) {
     if (!mediaType || typeof mediaType !== 'string') {
       throw new InvalidArgumentError(
-        'The parameter "mediaType" must be a non-empty String, ' +
+        'Parameter "mediaType" must be a non-empty String, ' +
           'but %v was given.',
-        mediaType,
-      );
-    }
-    const parser = this._parsers[mediaType];
-    if (!parser) {
-      throw new InvalidArgumentError(
-        'The parser of %v is not found.',
         mediaType,
       );
     }

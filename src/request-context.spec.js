@@ -18,8 +18,8 @@ describe('RequestContext', function () {
       const throwable = v => () => new RequestContext(v, req, res, route);
       const error = v =>
         format(
-          'The parameter "container" must be an instance ' +
-            'of ServiceContainer, but %s was given.',
+          'Parameter "container" must be an instance of ServiceContainer, ' +
+            'but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -42,8 +42,8 @@ describe('RequestContext', function () {
       const throwable = v => () => new RequestContext(cont, v, res, route);
       const error = v =>
         format(
-          'The parameter "request" must be an instance ' +
-            'of IncomingMessage, but %s was given.',
+          'Parameter "request" must be an instance of IncomingMessage, ' +
+            'but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -66,8 +66,8 @@ describe('RequestContext', function () {
       const throwable = v => () => new RequestContext(cont, req, v, route);
       const error = v =>
         format(
-          'The parameter "response" must be an instance ' +
-            'of ServerResponse, but %s was given.',
+          'Parameter "response" must be an instance of ServerResponse, ' +
+            'but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -90,8 +90,7 @@ describe('RequestContext', function () {
       const throwable = v => () => new RequestContext(cont, req, res, v);
       const error = v =>
         format(
-          'The parameter "route" must be an instance ' +
-            'of Route, but %s was given.',
+          'Parameter "route" must be an instance of Route, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));

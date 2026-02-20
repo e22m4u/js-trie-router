@@ -6,10 +6,7 @@ describe('createError', function () {
   it('should require the parameter "errorCtor" to be a Function', function () {
     const throwable = v => () => createError(v);
     const error = v =>
-      format(
-        'The parameter "errorCtor" must be a Function, but %s was given.',
-        v,
-      );
+      format('Parameter "errorCtor" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -26,7 +23,7 @@ describe('createError', function () {
   it('should require the parameter "message" to be a String', function () {
     const throwable = v => () => createError(Error, v);
     const error = v =>
-      format('The parameter "message" must be a String, but %s was given.', v);
+      format('Parameter "message" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(true)).to.throw(error('true'));
     expect(throwable(false)).to.throw(error('false'));

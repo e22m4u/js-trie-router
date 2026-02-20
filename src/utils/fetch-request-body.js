@@ -28,14 +28,14 @@ export const CHARACTER_ENCODING_LIST = [
 export function fetchRequestBody(request, bodyBytesLimit = 0) {
   if (!(request instanceof IncomingMessage)) {
     throw new InvalidArgumentError(
-      'The parameter "request" must be an instance of IncomingMessage, ' +
+      'Parameter "request" must be an instance of IncomingMessage, ' +
         'but %v was given.',
       request,
     );
   }
   if (typeof bodyBytesLimit !== 'number') {
     throw new InvalidArgumentError(
-      'The parameter "bodyBytesLimit" must be a Number, but %v was given.',
+      'Parameter "bodyBytesLimit" must be a Number, but %v was given.',
       bodyBytesLimit,
     );
   }
@@ -66,7 +66,7 @@ export function fetchRequestBody(request, bodyBytesLimit = 0) {
         if (!CHARACTER_ENCODING_LIST.includes(encoding)) {
           throw createError(
             HttpErrors.UnsupportedMediaType,
-            'The request encoding %v is not supported.',
+            'Request encoding %v is not supported.',
             encoding,
           );
         }
