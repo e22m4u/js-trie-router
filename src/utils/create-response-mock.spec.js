@@ -31,13 +31,13 @@ describe('createResponseMock', function () {
   });
 
   describe('headersSent', function () {
-    it('should return false if the response is not sent', function () {
+    it('should return false when the response is not sent', function () {
       const res = createResponseMock();
       expect(res._headersSent).to.be.false;
       expect(res.headersSent).to.be.false;
     });
 
-    it('should return a value from the private property', function () {
+    it('should return a value from the "_headersSent" property', function () {
       const res = createResponseMock();
       expect(res._headersSent).to.be.false;
       expect(res.headersSent).to.be.false;
@@ -55,7 +55,7 @@ describe('createResponseMock', function () {
       expect(res._headers['foo']).to.be.eq('bar');
     });
 
-    it('should throw an error if headers is sent', function () {
+    it('should throw an error when headers are sent', function () {
       const res = createResponseMock();
       res._headersSent = true;
       const throwable = () => res.setHeader('foo');
@@ -82,7 +82,7 @@ describe('createResponseMock', function () {
       expect(ret).to.be.eq('bar');
     });
 
-    it('should use case-insensitive lookup', function () {
+    it('should ignore case-sensitivity for header names', function () {
       const res = createResponseMock();
       res._headers['foo'] = 'bar';
       const ret = res.getHeader('FOO');
@@ -105,7 +105,7 @@ describe('createResponseMock', function () {
   });
 
   describe('getBody', function () {
-    it('should return a promise of the stream content', async function () {
+    it('should return a Promise of the stream content', async function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const res = createResponseMock();
       res.end(body);

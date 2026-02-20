@@ -29,7 +29,7 @@ describe('RequestParser', function () {
       throwable(createRequestMock())();
     });
 
-    it('should return the result object if no request body', function () {
+    it('should return the result object when the request does not have a body', function () {
       const S = new RequestParser();
       const req = createRequestMock();
       const res = S.parse(req);
@@ -76,7 +76,7 @@ describe('RequestParser', function () {
       });
     });
 
-    it('should return the result object with the parsed cookies', function () {
+    it('should return the result object with parsed cookies', function () {
       const S = new RequestParser();
       const req = createRequestMock({headers: {cookie: 'p1=foo; p2=bar;'}});
       const res = S.parse(req);
@@ -91,7 +91,7 @@ describe('RequestParser', function () {
       });
     });
 
-    it('should return the result object with the parsed body of the media type "text/plain"', async function () {
+    it('should parse "text/plain" body correctly', async function () {
       const S = new RequestParser();
       const body = 'Lorem Ipsum is simply dummy text.';
       const req = createRequestMock({
@@ -112,7 +112,7 @@ describe('RequestParser', function () {
       });
     });
 
-    it('should return the result object with the parsed body of the media type "application/json"', async function () {
+    it('should parse "application/json" body correctly', async function () {
       const S = new RequestParser();
       const body = {foo: 'bar', baz: 'qux'};
       const json = JSON.stringify(body);

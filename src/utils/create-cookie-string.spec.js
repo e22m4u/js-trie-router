@@ -20,11 +20,11 @@ describe('createCookieString', function () {
     throwable({})();
   });
 
-  it('should return an empty string if no keys', function () {
+  it('should return an empty string for an empty object', function () {
     expect(createCookieString({})).to.be.eq('');
   });
 
-  it('should return a cookies string from a given object', function () {
+  it('should return the cookie string for the given object', function () {
     const data = {foo: 'bar', baz: 'quz'};
     const result = createCookieString(data);
     expect(result).to.be.eq('foo=bar; baz=quz;');

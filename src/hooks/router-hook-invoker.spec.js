@@ -118,7 +118,7 @@ describe('RouterHookInvoker', function () {
       throwable(createResponseMock())();
     });
 
-    it('should invoke global hooks in priority', function () {
+    it('should prioritize global hooks over route hooks', function () {
       const S = new RouterHookInvoker();
       const order = [];
       S.getService(RouterHookRegistry).addHook(
@@ -159,7 +159,7 @@ describe('RouterHookInvoker', function () {
       ]);
     });
 
-    it('should stop global hooks invocation if any of them returns a value', function () {
+    it('should stop global hooks invocation if any of them returns a non-nullish value', function () {
       const S = new RouterHookInvoker();
       const order = [];
       const ret = 'OK';
@@ -204,7 +204,7 @@ describe('RouterHookInvoker', function () {
       expect(order).to.be.eql(['globalHook1', 'globalHook2']);
     });
 
-    it('should stop route hooks invocation if any of them returns a value', function () {
+    it('should stop route hooks invocation if any of them returns a non-nullish value', function () {
       const S = new RouterHookInvoker();
       const order = [];
       const ret = 'OK';
@@ -251,7 +251,7 @@ describe('RouterHookInvoker', function () {
       ]);
     });
 
-    it('should return the given response and should not call hooks if the response is already sent', function () {
+    it('should ignore hooks and return the given response when response headers are sent before hooks invocation', function () {
       const S = new RouterHookInvoker();
       const res = createResponseMock();
       res._headersSent = true;
@@ -279,7 +279,7 @@ describe('RouterHookInvoker', function () {
       expect(result).to.be.eq(res);
     });
 
-    it('should stop global hooks invocation and return the given response if it is already sent', function () {
+    it('should stop global hooks invocation and return the given response when response headers are sent by the global hook', function () {
       const S = new RouterHookInvoker();
       const order = [];
       const res = createResponseMock();
@@ -324,7 +324,7 @@ describe('RouterHookInvoker', function () {
       expect(order).to.be.eql(['globalHook1', 'globalHook2']);
     });
 
-    it('should stop route hooks invocation and return the given response if it is already sent', function () {
+    it('should stop route hooks invocation and return the given response when response headers are send by the route hook', function () {
       const S = new RouterHookInvoker();
       const order = [];
       const res = createResponseMock();
@@ -371,7 +371,7 @@ describe('RouterHookInvoker', function () {
       ]);
     });
 
-    it('should return a Promise if any global hook is asynchronous', async function () {
+    it('should return a Promise when some of global hooks returns a Promise', async function () {
       const S = new RouterHookInvoker();
       const order = [];
       S.getService(RouterHookRegistry).addHook(
@@ -421,7 +421,7 @@ describe('RouterHookInvoker', function () {
       ]);
     });
 
-    it('should return a Promise if entire global hooks are asynchronous', async function () {
+    it('should return a Promise when all global hooks return a Promise', async function () {
       const S = new RouterHookInvoker();
       const order = [];
       S.getService(RouterHookRegistry).addHook(
@@ -464,7 +464,7 @@ describe('RouterHookInvoker', function () {
       ]);
     });
 
-    it('should return a Promise if any route hook is asynchronous', async function () {
+    it('should return a Promise when some of route hooks returns a Promise', async function () {
       const S = new RouterHookInvoker();
       const order = [];
       S.getService(RouterHookRegistry).addHook(
@@ -511,7 +511,7 @@ describe('RouterHookInvoker', function () {
       ]);
     });
 
-    it('should return a Promise if entire route hooks are asynchronous', async function () {
+    it('should return a Promise when all route hooks return a Promise', async function () {
       const S = new RouterHookInvoker();
       const order = [];
       S.getService(RouterHookRegistry).addHook(

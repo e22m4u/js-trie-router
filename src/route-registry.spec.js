@@ -7,7 +7,7 @@ import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
 
 describe('RouteRegistry', function () {
   describe('defineRoute', function () {
-    it('should return the parameter "routeDef" to be an Object', function () {
+    it('should require the parameter "routeDef" to be an Object', function () {
       const S = new RouteRegistry();
       const throwable = v => () => S.defineRoute(v);
       const error = v =>
@@ -101,7 +101,7 @@ describe('RouteRegistry', function () {
       expect(order).to.be.eql([1, 2]);
     });
 
-    it('should return the hook "onDefineRoute" return an Object or undefined', function () {
+    it('should require the hook "onDefineRoute" return an Object or undefined', function () {
       const routeDef = {
         method: HttpMethod.GET,
         path: '/myPath',

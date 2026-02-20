@@ -19,7 +19,7 @@ describe('parseContentType', function () {
     throwable('text/html')();
   });
 
-  it('should return an object with specific properties', function () {
+  it('should return the object with specific properties', function () {
     const res = parseContentType('');
     expect(res).to.be.eql({
       mediaType: undefined,

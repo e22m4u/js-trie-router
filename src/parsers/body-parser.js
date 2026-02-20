@@ -81,12 +81,36 @@ export class BodyParser extends DebuggableService {
   }
 
   /**
-   * Delete parser.
+   * Get parser.
+   *
+   * @param {string} mediaType
+   * @returns {Function}
+   */
+  getParser(mediaType) {
+    if (!mediaType || typeof mediaType !== 'string') {
+      throw new InvalidArgumentError(
+        'The parameter "mediaType" must be a non-empty String, ' +
+          'but %v was given.',
+        mediaType,
+      );
+    }
+    const parser = this._parsers[mediaType];
+    if (!parser) {
+      throw new InvalidArgumentError(
+        'The media type %v does not have a parser.',
+        mediaType,
+      );
+    }
+    return parser;
+  }
+
+  /**
+   * Remove parser.
    *
    * @param {string} mediaType
    * @returns {this}
    */
-  deleteParser(mediaType) {
+  removeParser(mediaType) {
     if (!mediaType || typeof mediaType !== 'string') {
       throw new InvalidArgumentError(
         'The parameter "mediaType" must be a non-empty String, ' +

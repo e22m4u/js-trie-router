@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {toPascalCase} from './to-pascal-case.js';
 
 describe('toPascalCase', function () {
-  it('should return a PascalCase string', function () {
+  it('should return a given string in pascal case', function () {
     expect(toPascalCase('hello world')).to.be.eq('HelloWorld');
     expect(toPascalCase('snake_case')).to.be.eq('SnakeCase');
     expect(toPascalCase('kebab-case')).to.be.eq('KebabCase');

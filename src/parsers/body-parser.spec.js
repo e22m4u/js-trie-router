@@ -14,8 +14,8 @@ import {
 describe('BodyParser', function () {
   describe('defineParser', function () {
     it('should require the parameter "mediaType" to be a non-empty String', function () {
-      const parser = new BodyParser();
-      const throwable = v => () => parser.defineParser(v, () => undefined);
+      const S = new BodyParser();
+      const throwable = v => () => S.defineParser(v, () => undefined);
       const error = v =>
         format(
           'The parameter "mediaType" must be a non-empty String, ' +
@@ -36,8 +36,8 @@ describe('BodyParser', function () {
     });
 
     it('should require the parameter "parser" to be a Function', function () {
-      const parser = new BodyParser();
-      const throwable = v => () => parser.defineParser('str', v);
+      const S = new BodyParser();
+      const throwable = v => () => S.defineParser('str', v);
       const error = v =>
         format(
           'The parameter "parser" must be a Function, but %s was given.',
@@ -56,25 +56,32 @@ describe('BodyParser', function () {
       throwable(() => undefined)();
     });
 
-    it('should override existing parser', function () {
-      const parser = new BodyParser();
-      const fn = v => v;
-      parser.defineParser('text/plain', fn);
-      expect(parser['_parsers']['text/plain']).to.be.eq(fn);
+    it('should set a parser function for the media type', function () {
+      const S = new BodyParser();
+      const mediaType = 'media/type';
+      const parser = v => v;
+      expect(S.hasParser(mediaType)).to.be.false;
+      S.defineParser(mediaType, parser);
+      expect(S.getParser(mediaType)).to.be.eq(parser);
     });
 
-    it('should set a new parser', function () {
-      const parser = new BodyParser();
-      const fn = v => v;
-      parser.defineParser('my/type', fn);
-      expect(parser['_parsers']['my/type']).to.be.eq(fn);
+    it('should override an existing parser', function () {
+      const S = new BodyParser();
+      const mediaType = 'media/type';
+      const parser1 = v => v;
+      const parser2 = v => v;
+      expect(S.hasParser(mediaType)).to.be.false;
+      S.defineParser(mediaType, parser1);
+      expect(S.getParser(mediaType)).to.be.eq(parser1);
+      S.defineParser(mediaType, parser2);
+      expect(S.getParser(mediaType)).to.be.eq(parser2);
     });
   });
 
   describe('hasParser', function () {
     it('should require the parameter "mediaType" to be a non-empty String', function () {
-      const parser = new BodyParser();
-      const throwable = v => () => parser.hasParser(v);
+      const S = new BodyParser();
+      const throwable = v => () => S.hasParser(v);
       const error = v =>
         format(
           'The parameter "mediaType" must be a non-empty String, ' +
@@ -94,22 +101,20 @@ describe('BodyParser', function () {
       throwable('text/plain')();
     });
 
-    it('should return true if the parser is exist', function () {
-      const parser = new BodyParser();
-      parser.defineParser('type/media', v => v);
-      expect(parser.hasParser('type/media')).to.be.true;
-    });
-
-    it('should return false if the parser is not exist', function () {
-      const parser = new BodyParser();
-      expect(parser.hasParser('text/unknown')).to.be.false;
+    it('should return true if the media type has the parser', function () {
+      const S = new BodyParser();
+      const mediaType = 'media/type';
+      const parser = v => v;
+      expect(S.hasParser(mediaType)).to.be.false;
+      S.defineParser(mediaType, parser);
+      expect(S.hasParser(mediaType)).to.be.true;
     });
   });
 
-  describe('deleteParser', function () {
+  describe('removeParser', function () {
     it('should require the parameter "mediaType" to be a non-empty String', function () {
-      const parser = new BodyParser();
-      const throwable = v => () => parser.deleteParser(v);
+      const S = new BodyParser();
+      const throwable = v => () => S.removeParser(v);
       const error = v =>
         format(
           'The parameter "mediaType" must be a non-empty String, ' +
@@ -129,90 +134,86 @@ describe('BodyParser', function () {
       throwable('text/plain')();
     });
 
-    it('should remove existing parser', function () {
-      const parser = new BodyParser();
-      const fn = v => v;
-      parser.defineParser('my/type', fn);
-      expect(parser['_parsers']['my/type']).to.be.eq(fn);
-      parser.deleteParser('my/type');
-      expect(parser['_parsers']['my/type']).to.be.undefined;
-    });
-
-    it('should throw an error if the media type does not exist', function () {
-      const parser = new BodyParser();
-      const throwable = () => parser.deleteParser('unknown');
-      expect(throwable).to.throw('The parser of "unknown" is not found.');
+    it('should remove a parser function by the media type', function () {
+      const S = new BodyParser();
+      const mediaType = 'media/type';
+      const parser = v => v;
+      expect(S.hasParser(mediaType)).to.be.false;
+      S.defineParser(mediaType, parser);
+      expect(S.hasParser(mediaType)).to.be.true;
+      S.removeParser(mediaType);
+      expect(S.hasParser(mediaType)).to.be.false;
     });
   });
 
   describe('parse', function () {
     it('should return undefined when the request method is not supported', async function () {
-      const parser = new BodyParser();
+      const S = new BodyParser();
       const req = createRequestMock({
         method: 'unsupported',
         body: 'Lorem Ipsum is simply dummy text.',
       });
-      const result = await parser.parse(req);
+      const result = await S.parse(req);
       expect(result).to.be.undefined;
     });
 
     it('should return undefined when the request method is not supported even if the "content-type" header is specified', async function () {
-      const parser = new BodyParser();
+      const S = new BodyParser();
       const req = createRequestMock({
         method: 'unsupported',
         headers: {'content-type': 'text/plain'},
         body: 'Lorem Ipsum is simply dummy text.',
       });
-      const result = await parser.parse(req);
+      const result = await S.parse(req);
       expect(result).to.be.undefined;
     });
 
     it('should return undefined when no "content-type" header is specified', async function () {
-      const parser = new BodyParser();
+      const S = new BodyParser();
       const req = createRequestMock({method: HttpMethod.POST});
-      const result = await parser.parse(req);
+      const result = await S.parse(req);
       expect(result).to.be.undefined;
     });
 
     it('should return undefined when the media type is excluded', async function () {
-      const parser = new BodyParser();
+      const S = new BodyParser();
       for await (const mediaType of UNPARSABLE_MEDIA_TYPES) {
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': mediaType},
           body: 'Lorem Ipsum is simply dummy text.',
         });
-        const result = await parser.parse(req);
+        const result = await S.parse(req);
         expect(result).to.be.undefined;
       }
     });
 
     it('should parse the request body for available methods', async function () {
-      const parser = new BodyParser();
+      const S = new BodyParser();
       const body = 'Lorem Ipsum is simply dummy text.';
       const headers = {'content-type': 'text/plain'};
       for await (const method of Object.values(METHODS_WITH_BODY)) {
         const req = createRequestMock({method, body, headers});
-        const result = await parser.parse(req);
+        const result = await S.parse(req);
         expect(result).to.be.eq(body);
       }
     });
 
-    it('should throw an error for unsupported media type', function () {
-      const parser = new BodyParser();
+    it('should throw an error when the media type is not supported', function () {
+      const S = new BodyParser();
       const req = createRequestMock({
         method: HttpMethod.POST,
         headers: {'content-type': 'media/unknown'},
       });
-      const throwable = () => parser.parse(req);
+      const throwable = () => S.parse(req);
       expect(throwable).to.throw(
         'Media type "media/unknown" is not supported.',
       );
     });
 
     it('should use the option "bodyBytesLimit" from the RouterOptions', async function () {
-      const parser = new BodyParser();
-      parser.getService(RouterOptions).setRequestBodyBytesLimit(1);
+      const S = new BodyParser();
+      S.getService(RouterOptions).setRequestBodyBytesLimit(1);
       const req = createRequestMock({
         method: HttpMethod.POST,
         headers: {
@@ -220,78 +221,78 @@ describe('BodyParser', function () {
           'content-length': '2',
         },
       });
-      const promise = parser.parse(req);
+      const promise = S.parse(req);
       await expect(promise).to.be.rejectedWith(HttpErrors.PayloadTooLarge);
     });
 
     describe('text/plain', function () {
-      it('should return undefined if no request body', async function () {
-        const parser = new BodyParser();
+      it('should return undefined when the request does not have a body', async function () {
+        const S = new BodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'text/plain'},
         });
-        const result = await parser.parse(req);
+        const result = await S.parse(req);
         expect(result).to.be.undefined;
       });
 
-      it('should return a string from the string body', async function () {
+      it('should return a string for the string body', async function () {
         const body = 'Lorem Ipsum is simply dummy text.';
-        const parser = new BodyParser();
+        const S = new BodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'text/plain'},
           body,
         });
-        const result = await parser.parse(req);
+        const result = await S.parse(req);
         expect(result).to.be.eq(body);
       });
 
-      it('should return a string from the Buffer body', async function () {
+      it('should return a string for the Buffer body', async function () {
         const body = 'Lorem Ipsum is simply dummy text.';
-        const parser = new BodyParser();
+        const S = new BodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'text/plain'},
           body: Buffer.from(body, 'utf-8'),
         });
-        const result = await parser.parse(req);
+        const result = await S.parse(req);
         expect(result).to.be.eq(body);
       });
     });
 
     describe('application/json', function () {
-      it('should return undefined if no request body', async function () {
-        const parser = new BodyParser();
+      it('should return undefined when the request does not have a body', async function () {
+        const S = new BodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'application/json'},
         });
-        const result = await parser.parse(req);
+        const result = await S.parse(req);
         expect(result).to.be.undefined;
       });
 
-      it('should return parsed JSON from the string body', async function () {
+      it('should return a parsed JSON for the string body', async function () {
         const body = {foo: 'bar'};
-        const parser = new BodyParser();
+        const S = new BodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'application/json'},
           body: JSON.stringify(body),
         });
-        const result = await parser.parse(req);
+        const result = await S.parse(req);
         expect(result).to.be.eql(body);
       });
 
-      it('should return parsed JSON from the Buffer body', async function () {
+      it('should return a parsed JSON for the Buffer body', async function () {
         const body = {foo: 'bar'};
-        const parser = new BodyParser();
+        const S = new BodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'application/json'},
           body: Buffer.from(JSON.stringify(body)),
         });
-        const result = await parser.parse(req);
+        const result = await S.parse(req);
         expect(result).to.be.eql(body);
       });
     });

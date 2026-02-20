@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {cloneDeep} from './clone-deep.js';
 
 describe('cloneDeep', function () {
-  it('should return a deep copy of a given object', function () {
+  it('should return a deep copy of the given object', function () {
     const value = {
       stringProp: 'string',
       numberProp: 10,
@@ -56,7 +56,7 @@ describe('cloneDeep', function () {
   });
 
   describe('plain objects', function () {
-    it('should create a deep copy of a nested object', function () {
+    it('should create a deep copy of the nested object', function () {
       const original = {
         a: 1,
         b: {
@@ -71,7 +71,7 @@ describe('cloneDeep', function () {
       expect(cloned.b.d).to.be.not.eq(original.b.d);
     });
 
-    it('should correctly clone an object with various data types', function () {
+    it('should correctly clone the given object with various data types', function () {
       const original = {
         stringProp: 'string',
         numberProp: 10,
@@ -101,7 +101,7 @@ describe('cloneDeep', function () {
   });
 
   describe('arrays', function () {
-    it('should create a deep copy of an array with objects', function () {
+    it('should create a deep copy of the objects array', function () {
       const original = [{a: 1}, {b: 2}];
       const cloned = cloneDeep(original);
       expect(cloned).to.be.not.eq(original);
@@ -109,7 +109,7 @@ describe('cloneDeep', function () {
       expect(cloned[0]).to.be.not.eq(original[0]);
     });
 
-    it('should create a deep copy of a nested array', function () {
+    it('should create a deep copy of the nested array', function () {
       const original = [1, [2, 3, [4]]];
       const cloned = cloneDeep(original);
       expect(cloned).to.be.not.eq(original);
@@ -147,7 +147,7 @@ describe('cloneDeep', function () {
       expect(cloned).to.be.instanceOf(MyClass);
     });
 
-    it('should NOT clone properties of class instances', function () {
+    it('should not clone properties of class instances', function () {
       class MyClassWithObject {
         constructor() {
           this.data = {value: 10};
@@ -181,7 +181,7 @@ describe('cloneDeep', function () {
     });
   });
 
-  describe('Edge Cases', function () {
+  describe('edge cases', function () {
     it('should throw on circular references', function () {
       const obj = {};
       obj.a = obj;

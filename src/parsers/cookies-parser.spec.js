@@ -11,13 +11,13 @@ describe('CookiesParser', function () {
       expect(result).to.have.property('equation', 'E=mc^2');
     });
 
-    it('should return an empty object if no cookies', function () {
+    it('should return an empty object if no cookie header is specified', function () {
       const parser = new CookiesParser();
       const result = parser.parse({url: '', headers: {}});
       expect(result).to.be.eql({});
     });
 
-    it('should return an empty object for an empty string', function () {
+    it('should return an empty object if the cookie header has an empty string', function () {
       const parser = new CookiesParser();
       const result = parser.parse({url: '', headers: {cookie: ''}});
       expect(result).to.be.eql({});

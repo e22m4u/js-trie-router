@@ -10,14 +10,14 @@ describe('mergeDeep', function () {
       expect(result).to.deep.equal({a: 1, b: 2});
     });
 
-    it('should overwrite values in target with values from source', function () {
+    it('should overwrite values in the target with values from the source', function () {
       const target = {a: 1, b: 10};
       const source = {a: 2};
       const result = mergeDeep(target, source);
       expect(result).to.deep.equal({a: 2, b: 10});
     });
 
-    it('should return source if target is empty', function () {
+    it('should return the source if the target is empty', function () {
       const target = {};
       const source = {a: 1};
       const result = mergeDeep(target, source);

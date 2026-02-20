@@ -188,7 +188,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('should use the DataSender to send the server response', function (done) {
+    it('should use DataSender to send the server response', function (done) {
       const router = new TrieRouter();
       const resBody = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
@@ -208,7 +208,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('should use the ErrorSender to send the server response', function (done) {
+    it('should use ErrorSender to send the server response', function (done) {
       const router = new TrieRouter();
       const error = new Error();
       router.defineRoute({
@@ -521,7 +521,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('should register the IncomingMessage in the request-scope ServiceContainer', function (done) {
+    it('should register IncomingMessage in the request-scope ServiceContainer', function (done) {
       const router = new TrieRouter();
       const req = createRequestMock();
       const res = createResponseMock();
@@ -537,7 +537,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('should register the ServerResponse in the request-scope ServiceContainer', function (done) {
+    it('should register ServerResponse in the request-scope ServiceContainer', function (done) {
       const router = new TrieRouter();
       const req = createRequestMock();
       const res = createResponseMock();

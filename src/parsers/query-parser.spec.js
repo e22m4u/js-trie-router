@@ -10,13 +10,13 @@ describe('QueryParser', function () {
       expect(result).to.be.eql({foo: 'bar', baz: 'qux'});
     });
 
-    it('should return an empty object if no query', function () {
+    it('should return an empty object when the url does not have a query string', function () {
       const parser = new QueryParser();
       const result = parser.parse({url: `/test`});
       expect(result).to.be.eql({});
     });
 
-    it('should return an empty object for an empty query', function () {
+    it('should return an empty object when the url has an empty query string', function () {
       const parser = new QueryParser();
       const result = parser.parse({url: `/test?`});
       expect(result).to.be.eql({});

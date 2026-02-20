@@ -37,11 +37,18 @@ export declare class BodyParser extends DebuggableService {
   hasParser(mediaType: string): boolean;
 
   /**
-   * Delete parser.
+   * Get parser.
    *
    * @param mediaType
    */
-  deleteParser(mediaType: string): this;
+  getParser(mediaType: string): BodyParserFunction;
+
+  /**
+   * Remove parser.
+   *
+   * @param mediaType
+   */
+  removeParser(mediaType: string): this;
 
   /**
    * Parse.

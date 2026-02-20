@@ -5,7 +5,7 @@ import {createResponseMock} from '../utils/index.js';
 
 describe('DataSender', function () {
   describe('send', function () {
-    it('should not send response when the data is the server response', function (done) {
+    it('should not send the response when the data is the server response', function (done) {
       const res = createResponseMock();
       const writable = new Writable();
       writable._write = function () {
@@ -21,7 +21,7 @@ describe('DataSender', function () {
       setTimeout(() => done(), 5);
     });
 
-    it('should not send response when response headers already sent', function (done) {
+    it('should not send the response when response headers are already sent', function (done) {
       const res = createResponseMock();
       res._headersSent = true;
       const writable = new Writable();
@@ -90,7 +90,7 @@ describe('DataSender', function () {
       S.send(res, stream);
     });
 
-    it('should allow override the header "content-type" for a readable stream', function (done) {
+    it('should allow override the "content-type" header for a readable stream', function (done) {
       const data = 'text';
       const stream = new Readable();
       stream._read = () => {};
@@ -118,7 +118,7 @@ describe('DataSender', function () {
       S.send(res, stream);
     });
 
-    it('should send the number value as a JSON string', function (done) {
+    it('should send a number value as a JSON string', function (done) {
       const data = 10;
       const res = createResponseMock();
       const writable = new Writable();
@@ -141,7 +141,7 @@ describe('DataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the header "content-type" for a number value', function (done) {
+    it('should allow override the "content-type" header for a number value', function (done) {
       const data = 10;
       const res = createResponseMock();
       const contentType = 'custom/type';
@@ -166,7 +166,7 @@ describe('DataSender', function () {
       S.send(res, data);
     });
 
-    it('should send the boolean value as a JSON string', function (done) {
+    it('should send a boolean value as a JSON string', function (done) {
       const data = true;
       const res = createResponseMock();
       const writable = new Writable();
@@ -189,7 +189,7 @@ describe('DataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the header "content-type" for a boolean value', function (done) {
+    it('should allow override the "content-type" header for a boolean value', function (done) {
       const data = true;
       const res = createResponseMock();
       const contentType = 'custom/type';
@@ -214,7 +214,7 @@ describe('DataSender', function () {
       S.send(res, data);
     });
 
-    it('should send the Buffer as a binary data', function (done) {
+    it('should send an instance of Buffer as a binary data', function (done) {
       const data = Buffer.from('text');
       const res = createResponseMock();
       const writable = new Writable();
@@ -236,7 +236,7 @@ describe('DataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the header "content-type" for a Buffer', function (done) {
+    it('should allow override the "content-type" header for a Buffer', function (done) {
       const data = Buffer.from('text');
       const res = createResponseMock();
       const contentType = 'custom/type';
@@ -260,7 +260,7 @@ describe('DataSender', function () {
       S.send(res, data);
     });
 
-    it('should send the object value as a JSON string', function (done) {
+    it('should send an object value as a JSON string', function (done) {
       const data = {foo: 'bar'};
       const res = createResponseMock();
       const writable = new Writable();
@@ -283,7 +283,7 @@ describe('DataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the header "content-type" for an object value', function (done) {
+    it('should allow override the "content-type" header for an object value', function (done) {
       const data = {foo: 'bar'};
       const res = createResponseMock();
       const contentType = 'custom/type';
@@ -308,7 +308,7 @@ describe('DataSender', function () {
       S.send(res, data);
     });
 
-    it('should send the string value as a plain text', function (done) {
+    it('should send a string value as a plain text', function (done) {
       const data = 'text';
       const res = createResponseMock();
       const writable = new Writable();
@@ -330,7 +330,7 @@ describe('DataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the header "content-type" for a string value', function (done) {
+    it('should allow override the "content-type" header for a string value', function (done) {
       const data = 'text';
       const res = createResponseMock();
       const contentType = 'custom/type';

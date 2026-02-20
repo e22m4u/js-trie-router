@@ -68,13 +68,13 @@ describe('RouterBranch', function () {
       throwable(undefined);
     });
 
-    it('should use a service container from a given router', function () {
+    it('should use the service container from the given router', function () {
       const router = new TrieRouter();
       const S = new RouterBranch(router, {path: ROOT_PATH});
       expect(S.container).to.be.eq(router.container);
     });
 
-    it('should merge a parent definition with a given definition', function () {
+    it('should merge the parent definition with the given definition', function () {
       const router = new TrieRouter();
       const parent = router.createBranch({path: '/foo'});
       const S = new RouterBranch(router, {path: '/bar'}, parent);
@@ -101,7 +101,7 @@ describe('RouterBranch', function () {
   });
 
   describe('hasParentBranch', function () {
-    it('should return true if a parent branch exists', function () {
+    it('should return true when the parent branch exists', function () {
       const router = new TrieRouter();
       const parent = router.createBranch({path: ROOT_PATH});
       const branch1 = new RouterBranch(router, {path: ROOT_PATH});
@@ -112,7 +112,7 @@ describe('RouterBranch', function () {
   });
 
   describe('getParentBranch', function () {
-    it('should return a parent branch provided to the constructor', function () {
+    it('should return the parent branch provided to the constructor', function () {
       const router = new TrieRouter();
       const parent = router.createBranch({path: ROOT_PATH});
       const S = new RouterBranch(router, {path: ROOT_PATH}, parent);
@@ -141,7 +141,7 @@ describe('RouterBranch', function () {
       expect(res).to.be.instanceOf(Route);
     });
 
-    it('should combine a branch path with a route path', function () {
+    it('should combine the branch path with the route path', function () {
       const router = new TrieRouter();
       const S = new RouterBranch(router, {path: '/foo'});
       const res = S.defineRoute({
@@ -161,7 +161,7 @@ describe('RouterBranch', function () {
       expect(res).to.be.instanceOf(RouterBranch);
     });
 
-    it('should combine a current path with a new path', function () {
+    it('should combine the current path with the new path', function () {
       const router = new TrieRouter();
       const S = new RouterBranch(router, {path: '/foo'});
       const res = S.createBranch({path: '/bar'});

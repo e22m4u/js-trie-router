@@ -9,7 +9,7 @@ describe('RouterOptions', function () {
       expect(S.requestBodyBytesLimit).to.be.eq(512000);
     });
 
-    it('should return a value from the private property', function () {
+    it('should return a value from the "_requestBodyBytesLimit" property', function () {
       const S = new RouterOptions();
       S._requestBodyBytesLimit = 1;
       expect(S.requestBodyBytesLimit).to.be.eq(1);
@@ -41,7 +41,7 @@ describe('RouterOptions', function () {
       throwable(0)();
     });
 
-    it('should set the given value to the private property', function () {
+    it('should set the given value to the "_requestBodyBytesLimit" property', function () {
       const S = new RouterOptions();
       expect(S._requestBodyBytesLimit).to.be.eq(512000);
       S.setRequestBodyBytesLimit(0);

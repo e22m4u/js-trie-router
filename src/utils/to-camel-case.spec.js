@@ -19,7 +19,7 @@ describe('toCamelCase', function () {
     throwable('')();
   });
 
-  it('should return a camel case string', function () {
+  it('should return a given string in camel case', function () {
     expect(toCamelCase('TestString')).to.be.eq('testString');
     expect(toCamelCase('test-string')).to.be.eq('testString');
     expect(toCamelCase('test string')).to.be.eq('testString');

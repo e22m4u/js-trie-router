@@ -59,7 +59,7 @@ describe('validateRouterBranchDefinition', function () {
     throwable('/')();
   });
 
-  it('should throw an error if the option "handler" is provided', function () {
+  it('should throw an error when the option "handler" is provided', function () {
     const throwable = () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,

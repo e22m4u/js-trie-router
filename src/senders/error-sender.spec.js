@@ -6,7 +6,7 @@ import {createRequestMock, createResponseMock} from '../utils/index.js';
 
 describe('ErrorSender', function () {
   describe('send', function () {
-    it('sends error as utf-8 JSON', function (done) {
+    it('should send an error response as utf-8 JSON', function (done) {
       const error = HttpErrors.Unauthorized();
       const req = createRequestMock();
       const res = createResponseMock();
@@ -65,7 +65,7 @@ describe('ErrorSender', function () {
   });
 
   describe('send404', function () {
-    it('sends plain text', function (done) {
+    it('should send a plain text', function (done) {
       const req = createRequestMock();
       const res = createResponseMock();
       const writable = new Writable();

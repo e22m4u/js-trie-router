@@ -59,7 +59,7 @@ describe('fetchRequestBody', function () {
     expect(result).to.be.eq(body);
   });
 
-  describe('encoding from the "content-type" header', function () {
+  describe('encoding usage from the "content-type" header', function () {
     it('should throw an error for an unsupported encoding', async function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const req = createRequestMock({
@@ -72,7 +72,7 @@ describe('fetchRequestBody', function () {
       );
     });
 
-    it('should ignore the header "content-type" when no charset specified', async function () {
+    it('should ignore the "content-type" header when no charset specified', async function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const req = createRequestMock({
         body,
@@ -94,7 +94,7 @@ describe('fetchRequestBody', function () {
     });
   });
 
-  describe('the header "content-length"', function () {
+  describe('the "content-length" header usage', function () {
     it('should throw an error if the body length is greater than the header', async function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const bodyLength = Buffer.from(body).byteLength;
@@ -135,8 +135,8 @@ describe('fetchRequestBody', function () {
     });
   });
 
-  describe('the parameter "bodyBytesLimit"', function () {
-    it('should throw an error if the header "content-length" is greater than the limit', async function () {
+  describe('the parameter "bodyBytesLimit" usage', function () {
+    it('should throw an error if the "content-length" header is greater than the limit', async function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const bodyLength = Buffer.from(body).byteLength;
       const bodyLimit = bodyLength - 10;
@@ -153,7 +153,7 @@ describe('fetchRequestBody', function () {
       await expect(promise).to.be.rejectedWith(error);
     });
 
-    it('should not throw an error if the header "content-length" does match with the limit', async function () {
+    it('should not throw an error if the "content-length" header does match with the limit', async function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const bodyLength = Buffer.from(body).byteLength;
       const req = createRequestMock({
@@ -164,7 +164,7 @@ describe('fetchRequestBody', function () {
       expect(result).to.be.eq(body);
     });
 
-    it('should not throw an error if the header "content-length" is lower than the limit', async function () {
+    it('should not throw an error if the "content-length" header is lower than the limit', async function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const bodyLength = Buffer.from(body).byteLength;
       const req = createRequestMock({

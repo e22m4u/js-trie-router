@@ -243,7 +243,7 @@ describe('Route', function () {
       throwable(undefined)();
     });
 
-    it('should clone a given definition in the current instance', function () {
+    it('should clone the given definition in the current instance', function () {
       const definition = {
         method: HttpMethod.GET,
         path: ROOT_PATH,
@@ -266,7 +266,7 @@ describe('Route', function () {
       expect(res.method).to.be.eq('GET');
     });
 
-    it('should add a single pre-handler to the hook registry', function () {
+    it('should add the hook "preHandler" to the hook registry', function () {
       const preHandler = () => undefined;
       const definition = {
         method: 'get',
@@ -280,7 +280,7 @@ describe('Route', function () {
       expect(res).to.be.true;
     });
 
-    it('should add each pre-handler from the array to the hook registry', function () {
+    it('should add multiple "preHandler" hooks to the hook registry', function () {
       const preHandler1 = () => undefined;
       const preHandler2 = () => undefined;
       const definition = {
@@ -297,7 +297,7 @@ describe('Route', function () {
       expect(res2).to.be.true;
     });
 
-    it('should add a single post-handler to the hook registry', function () {
+    it('should add the hook "postHandler" to the hook registry', function () {
       const postHandler = () => undefined;
       const definition = {
         method: 'get',
@@ -311,7 +311,7 @@ describe('Route', function () {
       expect(res).to.be.true;
     });
 
-    it('should add each post-handlers from the array to the hook registry', function () {
+    it('should add multiple "postHandler" hooks to the hook registry', function () {
       const postHandler1 = () => undefined;
       const postHandler2 = () => undefined;
       const definition = {
@@ -342,7 +342,7 @@ describe('Route', function () {
   });
 
   describe('getHookRegistry', function () {
-    it('should return the same hook registry instance on subsequent calls', function () {
+    it('should return the same instance of the hook registry on subsequent calls', function () {
       const route = new Route({
         method: HttpMethod.GET,
         path: ROOT_PATH,

@@ -3,14 +3,14 @@ import {Readable} from 'stream';
 import {isReadableStream} from './is-readable-stream.js';
 
 describe('isReadableStream', function () {
-  it('should return true if the value is a readable stream', function () {
+  it('should return true when the value is a readable stream', function () {
     const value1 = new Readable();
     expect(isReadableStream(value1)).to.be.true;
     const value2 = {pipe: () => undefined};
     expect(isReadableStream(value2)).to.be.true;
   });
 
-  it('should return false if the value is not a stream', function () {
+  it('should return false when the value is not a stream', function () {
     expect(isReadableStream('string')).to.be.false;
     expect(isReadableStream(5)).to.be.false;
     expect(isReadableStream([])).to.be.false;

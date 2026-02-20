@@ -440,56 +440,56 @@ function createRequestMock(options) {
   options = options || {};
   if (options.host != null && typeof options.host !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "host" must be a String, but %v was given.',
+      'The option "host" must be a String, but %v was given.',
       options.host
     );
   }
   if (options.method != null && typeof options.method !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "method" must be a String, but %v was given.',
+      'The option "method" must be a String, but %v was given.',
       options.method
     );
   }
   if (options.secure != null && typeof options.secure !== "boolean") {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "secure" must be a Boolean, but %v was given.',
+      'The option "secure" must be a Boolean, but %v was given.',
       options.secure
     );
   }
   if (options.path != null && typeof options.path !== "string") {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "path" must be a String, but %v was given.',
+      'The option "path" must be a String, but %v was given.',
       options.path
     );
   }
   if (options.query != null && typeof options.query !== "object" && typeof options.query !== "string" || Array.isArray(options.query)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "query" must be a String or Object, but %v was given.',
+      'The option "query" must be a String or Object, but %v was given.',
       options.query
     );
   }
   if (options.cookies != null && typeof options.cookies !== "string" && typeof options.cookies !== "object" || Array.isArray(options.cookies)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "cookies" must be a String or Object, but %v was given.',
+      'The option "cookies" must be a String or Object, but %v was given.',
       options.cookies
     );
   }
   if (options.headers != null && typeof options.headers !== "object" || Array.isArray(options.headers)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "headers" must be an Object, but %v was given.',
+      'The option "headers" must be an Object, but %v was given.',
       options.headers
     );
   }
   if (options.stream != null && !isReadableStream(options.stream)) {
     throw new import_js_format8.InvalidArgumentError(
-      'The parameter "stream" must be a Stream, but %v was given.',
+      'The option "stream" must be a Stream, but %v was given.',
       options.stream
     );
   }
   if (options.encoding != null) {
     if (typeof options.encoding !== "string") {
       throw new import_js_format8.InvalidArgumentError(
-        'The parameter "encoding" must be a String, but %v was given.',
+        'The option "encoding" must be a String, but %v was given.',
         options.encoding
       );
     }
@@ -503,17 +503,17 @@ function createRequestMock(options) {
   if (options.stream) {
     if (options.secure != null) {
       throw new import_js_format8.InvalidArgumentError(
-        'The option "stream" cannot be used with the option "secure" simultaneously.'
+        'The "stream" and "secure" options cannot be used together.'
       );
     }
     if (options.body != null) {
       throw new import_js_format8.InvalidArgumentError(
-        'The option "stream" cannot be used with the option "body" simultaneously.'
+        'The "stream" and "body" options cannot be used together.'
       );
     }
     if (options.encoding != null) {
       throw new import_js_format8.InvalidArgumentError(
-        'The option "stream" cannot be used with the option "encoding" simultaneously.'
+        'The "stream" and "encoding" options cannot be used together.'
       );
     }
   }
@@ -1267,12 +1267,34 @@ var _BodyParser = class _BodyParser extends DebuggableService {
     return Boolean(this._parsers[mediaType]);
   }
   /**
-   * Delete parser.
+   * Get parser.
+   *
+   * @param {string} mediaType
+   * @returns {Function}
+   */
+  getParser(mediaType) {
+    if (!mediaType || typeof mediaType !== "string") {
+      throw new import_js_format14.InvalidArgumentError(
+        'The parameter "mediaType" must be a non-empty String, but %v was given.',
+        mediaType
+      );
+    }
+    const parser = this._parsers[mediaType];
+    if (!parser) {
+      throw new import_js_format14.InvalidArgumentError(
+        "The media type %v does not have a parser.",
+        mediaType
+      );
+    }
+    return parser;
+  }
+  /**
+   * Remove parser.
    *
    * @param {string} mediaType
    * @returns {this}
    */
-  deleteParser(mediaType) {
+  removeParser(mediaType) {
     if (!mediaType || typeof mediaType !== "string") {
       throw new import_js_format14.InvalidArgumentError(
         'The parameter "mediaType" must be a non-empty String, but %v was given.',

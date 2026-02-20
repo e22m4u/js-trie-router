@@ -25,7 +25,7 @@ import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 /**
  * Create request mock.
  *
- * @param {RequestOptions} options
+ * @param {RequestOptions} [options]
  * @returns {import('http').IncomingMessage}
  */
 export function createRequestMock(options) {
@@ -41,25 +41,25 @@ export function createRequestMock(options) {
   options = options || {};
   if (options.host != null && typeof options.host !== 'string') {
     throw new InvalidArgumentError(
-      'The parameter "host" must be a String, but %v was given.',
+      'The option "host" must be a String, but %v was given.',
       options.host,
     );
   }
   if (options.method != null && typeof options.method !== 'string') {
     throw new InvalidArgumentError(
-      'The parameter "method" must be a String, but %v was given.',
+      'The option "method" must be a String, but %v was given.',
       options.method,
     );
   }
   if (options.secure != null && typeof options.secure !== 'boolean') {
     throw new InvalidArgumentError(
-      'The parameter "secure" must be a Boolean, but %v was given.',
+      'The option "secure" must be a Boolean, but %v was given.',
       options.secure,
     );
   }
   if (options.path != null && typeof options.path !== 'string') {
     throw new InvalidArgumentError(
-      'The parameter "path" must be a String, but %v was given.',
+      'The option "path" must be a String, but %v was given.',
       options.path,
     );
   }
@@ -70,7 +70,7 @@ export function createRequestMock(options) {
     Array.isArray(options.query)
   ) {
     throw new InvalidArgumentError(
-      'The parameter "query" must be a String or Object, but %v was given.',
+      'The option "query" must be a String or Object, but %v was given.',
       options.query,
     );
   }
@@ -81,7 +81,7 @@ export function createRequestMock(options) {
     Array.isArray(options.cookies)
   ) {
     throw new InvalidArgumentError(
-      'The parameter "cookies" must be a String or Object, but %v was given.',
+      'The option "cookies" must be a String or Object, but %v was given.',
       options.cookies,
     );
   }
@@ -90,20 +90,20 @@ export function createRequestMock(options) {
     Array.isArray(options.headers)
   ) {
     throw new InvalidArgumentError(
-      'The parameter "headers" must be an Object, but %v was given.',
+      'The option "headers" must be an Object, but %v was given.',
       options.headers,
     );
   }
   if (options.stream != null && !isReadableStream(options.stream)) {
     throw new InvalidArgumentError(
-      'The parameter "stream" must be a Stream, but %v was given.',
+      'The option "stream" must be a Stream, but %v was given.',
       options.stream,
     );
   }
   if (options.encoding != null) {
     if (typeof options.encoding !== 'string') {
       throw new InvalidArgumentError(
-        'The parameter "encoding" must be a String, but %v was given.',
+        'The option "encoding" must be a String, but %v was given.',
         options.encoding,
       );
     }
@@ -119,20 +119,17 @@ export function createRequestMock(options) {
   if (options.stream) {
     if (options.secure != null) {
       throw new InvalidArgumentError(
-        'The option "stream" cannot be used with the option "secure" ' +
-          'simultaneously.',
+        'The "stream" and "secure" options cannot be used together.',
       );
     }
     if (options.body != null) {
       throw new InvalidArgumentError(
-        'The option "stream" cannot be used with the option "body" ' +
-          'simultaneously.',
+        'The "stream" and "body" options cannot be used together.',
       );
     }
     if (options.encoding != null) {
       throw new InvalidArgumentError(
-        'The option "stream" cannot be used with the option "encoding" ' +
-          'simultaneously.',
+        'The "stream" and "encoding" options cannot be used together.',
       );
     }
   }

@@ -23,12 +23,12 @@ describe('isResponseSent', function () {
     throwable({headersSent: false})();
   });
 
-  it('should return true if the property "headersSent" is true', function () {
+  it('should return true when the property "headersSent" is true', function () {
     const res = isResponseSent({headersSent: true});
     expect(res).to.be.true;
   });
 
-  it('should return false if the property "headersSent" is false', function () {
+  it('should return false when the property "headersSent" is false', function () {
     const res = isResponseSent({headersSent: false});
     expect(res).to.be.false;
   });
