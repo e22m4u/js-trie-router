@@ -146,7 +146,7 @@ describe('BodyParser', function () {
   });
 
   describe('parse', function () {
-    it('should return undefined if the request method is not supported', async function () {
+    it('should return undefined when the request method is not supported', async function () {
       const parser = new BodyParser();
       const req = createRequestMock({
         method: 'unsupported',
@@ -156,7 +156,7 @@ describe('BodyParser', function () {
       expect(result).to.be.undefined;
     });
 
-    it('should return undefined if the request method is not supported even the header "content-type" is specified', async function () {
+    it('should return undefined when the request method is not supported even if the "content-type" header is specified', async function () {
       const parser = new BodyParser();
       const req = createRequestMock({
         method: 'unsupported',
@@ -167,14 +167,14 @@ describe('BodyParser', function () {
       expect(result).to.be.undefined;
     });
 
-    it('should return undefined if no "content-type" header', async function () {
+    it('should return undefined when no "content-type" header is specified', async function () {
       const parser = new BodyParser();
       const req = createRequestMock({method: HttpMethod.POST});
       const result = await parser.parse(req);
       expect(result).to.be.undefined;
     });
 
-    it('should return undefined if the media type is excluded', async function () {
+    it('should return undefined when the media type is excluded', async function () {
       const parser = new BodyParser();
       for await (const mediaType of UNPARSABLE_MEDIA_TYPES) {
         const req = createRequestMock({
