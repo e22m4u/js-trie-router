@@ -2,9 +2,9 @@ import {Readable} from 'stream';
 import {IncomingMessage} from 'http';
 
 /**
- * Request patch.
+ * Request options.
  */
-type RequestPatch = {
+type RequestOptions = {
   host?: string;
   method?: string;
   secure?: boolean;
@@ -20,8 +20,8 @@ type RequestPatch = {
 /**
  * Create request mock.
  *
- * @param patch
+ * @param options
  */
 export declare function createRequestMock(
-  patch?: RequestPatch,
+  options?: RequestOptions,
 ): IncomingMessage;

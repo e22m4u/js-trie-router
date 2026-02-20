@@ -3,14 +3,10 @@ import {format} from '@e22m4u/js-format';
 import {parseCookieString} from './parse-cookie-string.js';
 
 describe('parseCookieString', function () {
-  it('should require the first parameter to be a String', function () {
+  it('should require the parameter "input" to be a String', function () {
     const throwable = v => () => parseCookieString(v);
     const error = v =>
-      format(
-        'The first parameter of "parseCookieString" must be a String, ' +
-          'but %s was given.',
-        v,
-      );
+      format('The parameter "input" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));

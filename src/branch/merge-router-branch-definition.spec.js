@@ -3,23 +3,23 @@ import {ROOT_PATH} from '../constants.js';
 import {mergeRouterBranchDefinitions} from './merge-router-branch-definitions.js';
 
 describe('mergeRouterBranchDefinitions', function () {
-  it('should require the "firstDef" parameter to be an Object', function () {
+  it('should require the parameter "firstDef" to be an Object', function () {
     const throwable = () =>
       mergeRouterBranchDefinitions(123, {path: ROOT_PATH});
     expect(throwable).to.throw(
-      'Branch definition must be an Object, but 123 was given.',
+      'The branch definition must be an Object, but 123 was given.',
     );
   });
 
-  it('should require the "secondDef" parameter to be an Object', function () {
+  it('should require the parameter "secondDef" to be an Object', function () {
     const throwable = () =>
       mergeRouterBranchDefinitions({path: ROOT_PATH}, 123);
     expect(throwable).to.throw(
-      'Branch definition must be an Object, but 123 was given.',
+      'The branch definition must be an Object, but 123 was given.',
     );
   });
 
-  it('should concatenate the "path" option with the correct order', function () {
+  it('should concatenate the option "path" with the correct order', function () {
     const res = mergeRouterBranchDefinitions({path: '/foo'}, {path: '/bar'});
     expect(res).to.be.eql({path: '/foo/bar'});
   });
@@ -38,12 +38,14 @@ describe('mergeRouterBranchDefinitions', function () {
     expect(res2).to.be.eql({path: '/foo/bar/'});
   });
 
-  it('should not duplicate slashes from the "path" option', function () {
-    const res = mergeRouterBranchDefinitions({path: '/'}, {path: '/'});
-    expect(res).to.be.eql({path: '/'});
+  it('should collapse slashes when the option "path" has a trailing slash', function () {
+    const res1 = mergeRouterBranchDefinitions({path: '/'}, {path: '/'});
+    expect(res1).to.be.eql({path: '/'});
+    const res2 = mergeRouterBranchDefinitions({path: '/foo/'}, {path: '/bar/'});
+    expect(res2).to.be.eql({path: '/foo/bar/'});
   });
 
-  it('should merge the "preHandler" option with a function value', function () {
+  it('should merge the option "preHandler" with a function value', function () {
     const preHandler1 = () => undefined;
     const preHandler2 = () => undefined;
     const res = mergeRouterBranchDefinitions(
@@ -62,7 +64,7 @@ describe('mergeRouterBranchDefinitions', function () {
     });
   });
 
-  it('should merge the "preHandler" option with an array value', function () {
+  it('should merge the option "preHandler" with an array value', function () {
     const preHandler1 = () => undefined;
     const preHandler2 = () => undefined;
     const res = mergeRouterBranchDefinitions(
@@ -81,7 +83,7 @@ describe('mergeRouterBranchDefinitions', function () {
     });
   });
 
-  it('should merge the "postHandler" option with a function value', function () {
+  it('should merge the option "postHandler" with a function value', function () {
     const preHandler1 = () => undefined;
     const preHandler2 = () => undefined;
     const res = mergeRouterBranchDefinitions(
@@ -100,7 +102,7 @@ describe('mergeRouterBranchDefinitions', function () {
     });
   });
 
-  it('should merge the "postHandler" option with an array value', function () {
+  it('should merge the option "postHandler" with an array value', function () {
     const preHandler1 = () => undefined;
     const preHandler2 = () => undefined;
     const res = mergeRouterBranchDefinitions(
@@ -119,7 +121,7 @@ describe('mergeRouterBranchDefinitions', function () {
     });
   });
 
-  it('should use the "meta" option from the first definition', function () {
+  it('should use the option "meta" from the first definition', function () {
     const meta = {foo: 'bar'};
     const res = mergeRouterBranchDefinitions(
       {path: ROOT_PATH, meta},
@@ -128,7 +130,7 @@ describe('mergeRouterBranchDefinitions', function () {
     expect(res).to.be.eql({path: ROOT_PATH, meta});
   });
 
-  it('should use the "meta" option from the second definition', function () {
+  it('should use the option "meta" from the second definition', function () {
     const meta = {foo: 'bar'};
     const res = mergeRouterBranchDefinitions(
       {path: ROOT_PATH},
@@ -137,7 +139,7 @@ describe('mergeRouterBranchDefinitions', function () {
     expect(res).to.be.eql({path: ROOT_PATH, meta});
   });
 
-  it('should merge the "meta" option when both definitions are provided', function () {
+  it('should merge the option "meta" when both definitions are provided', function () {
     const meta1 = {foo: 1};
     const meta2 = {bar: 2};
     const res = mergeRouterBranchDefinitions(
@@ -147,7 +149,7 @@ describe('mergeRouterBranchDefinitions', function () {
     expect(res).to.be.eql({path: ROOT_PATH, meta: {foo: 1, bar: 2}});
   });
 
-  it('should merge arrays in the "meta" option', function () {
+  it('should merge the option "meta" with nested arrays', function () {
     const meta1 = {foo: [1, {bar: 2}]};
     const meta2 = {foo: [3, {baz: 4}]};
     const expectedMeta = {foo: [1, {bar: 2}, 3, {baz: 4}]};
@@ -158,7 +160,7 @@ describe('mergeRouterBranchDefinitions', function () {
     expect(res).to.be.eql({path: ROOT_PATH, meta: expectedMeta});
   });
 
-  it('should merge the "meta" option with a deep recursion', function () {
+  it('should merge the option "meta" with a deep recursion', function () {
     const meta1 = {foo: {bar: 10}};
     const meta2 = {foo: {baz: 20}};
     const expectedMeta = {foo: {bar: 10, baz: 20}};

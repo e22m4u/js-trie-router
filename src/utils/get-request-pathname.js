@@ -14,8 +14,8 @@ export function getRequestPathname(request) {
     typeof request.url !== 'string'
   ) {
     throw new InvalidArgumentError(
-      'The first parameter of "getRequestPathname" must be ' +
-        'an instance of IncomingMessage, but %v was given.',
+      'The parameter "request" must be an instance of IncomingMessage, ' +
+        'but %v was given.',
       request,
     );
   }

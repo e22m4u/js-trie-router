@@ -14,8 +14,8 @@ export function isResponseSent(response) {
     typeof response.headersSent !== 'boolean'
   ) {
     throw new InvalidArgumentError(
-      'The first parameter of "isResponseSent" must be ' +
-        'an instance of ServerResponse, but %v was given.',
+      'The parameter "response" must be an instance of ServerResponse, ' +
+        'but %v was given.',
       response,
     );
   }

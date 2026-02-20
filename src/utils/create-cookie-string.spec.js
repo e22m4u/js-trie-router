@@ -3,14 +3,10 @@ import {format} from '@e22m4u/js-format';
 import {createCookieString} from './create-cookie-string.js';
 
 describe('createCookieString', function () {
-  it('requires the first parameter to be an object', function () {
+  it('should require the parameter "data" to be an object', function () {
     const throwable = v => () => createCookieString(v);
     const error = v =>
-      format(
-        'The first parameter of "createCookieString" must be ' +
-          'an Object, but %s was given.',
-        v,
-      );
+      format('The cookie data must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -24,11 +20,11 @@ describe('createCookieString', function () {
     throwable({})();
   });
 
-  it('returns an empty string if no keys', function () {
+  it('should return an empty string if no keys', function () {
     expect(createCookieString({})).to.be.eq('');
   });
 
-  it('returns a cookies string from a given object', function () {
+  it('should return a cookies string from a given object', function () {
     const data = {foo: 'bar', baz: 'quz'};
     const result = createCookieString(data);
     expect(result).to.be.eq('foo=bar; baz=quz;');

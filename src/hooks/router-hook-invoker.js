@@ -24,19 +24,21 @@ export class RouterHookInvoker extends DebuggableService {
   invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
     if (!route || !(route instanceof Route)) {
       throw new InvalidArgumentError(
-        'Parameter "route" must be a Route instance, but %v was given.',
+        'The parameter "route" must be an instance of Route, ' +
+          'but %v was given.',
         route,
       );
     }
     if (!hookType || typeof hookType !== 'string') {
       throw new InvalidArgumentError(
-        'Parameter "hookType" must be a non-empty String, but %v was given.',
+        'The parameter "hookType" must be a non-empty String, ' +
+          'but %v was given.',
         hookType,
       );
     }
     if (!Object.values(RouterHookType).includes(hookType)) {
       throw new InvalidArgumentError(
-        'Hook type %v is not supported.',
+        'The hook type %v is not supported.',
         hookType,
       );
     }
@@ -47,7 +49,7 @@ export class RouterHookInvoker extends DebuggableService {
       typeof response.headersSent !== 'boolean'
     ) {
       throw new InvalidArgumentError(
-        'Parameter "response" must be a ServerResponse instance, ' +
+        'The parameter "response" must be an instance of ServerResponse, ' +
           'but %v was given.',
         response,
       );

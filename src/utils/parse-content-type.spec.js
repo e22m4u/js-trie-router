@@ -1,16 +1,12 @@
 import {expect} from 'chai';
-import {parseContentType} from './parse-content-type.js';
 import {format} from '@e22m4u/js-format';
+import {parseContentType} from './parse-content-type.js';
 
 describe('parseContentType', function () {
-  it('requires the first parameter to be a string', function () {
+  it('should require the parameter "input" to be a String', function () {
     const throwable = v => () => parseContentType(v);
     const error = s =>
-      format(
-        'The first parameter of `parseContentType` ' +
-          'must be a String, but %s was given.',
-        s,
-      );
+      format('The parameter "input" must be a String, but %s was given.', s);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -23,7 +19,7 @@ describe('parseContentType', function () {
     throwable('text/html')();
   });
 
-  it('returns an object with specific properties', function () {
+  it('should return an object with specific properties', function () {
     const res = parseContentType('');
     expect(res).to.be.eql({
       mediaType: undefined,
@@ -32,7 +28,7 @@ describe('parseContentType', function () {
     });
   });
 
-  it('parses media type', function () {
+  it('should parse the media type from the given string', function () {
     const res1 = parseContentType('text/html');
     expect(res1).to.be.eql({
       mediaType: 'text/html',
@@ -47,7 +43,7 @@ describe('parseContentType', function () {
     });
   });
 
-  it('parses media type with charset', function () {
+  it('should parse the media type with charset', function () {
     const res1 = parseContentType('text/html; charset=utf-8');
     expect(res1).to.be.eql({
       mediaType: 'text/html',
@@ -62,7 +58,7 @@ describe('parseContentType', function () {
     });
   });
 
-  it('parses media type with boundary', function () {
+  it('should parse the media type with boundary', function () {
     const res1 = parseContentType(
       'multipart/form-data; boundary=---WebKitFormBoundary7MA4YWxkTrZu0gW',
     );

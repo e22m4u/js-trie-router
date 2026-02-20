@@ -3,14 +3,10 @@ import {format} from '@e22m4u/js-format';
 import {toCamelCase} from './to-camel-case.js';
 
 describe('toCamelCase', function () {
-  it('requires the first parameter to be a String', function () {
+  it('should require the parameter "input" to be a String', function () {
     const throwable = v => () => toCamelCase(v);
     const error = v =>
-      format(
-        'The first parameter of "toCamelCase" ' +
-          'must be a String, but %s was given.',
-        v,
-      );
+      format('The parameter "input" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -23,7 +19,7 @@ describe('toCamelCase', function () {
     throwable('')();
   });
 
-  it('returns a camelCase string', function () {
+  it('should return a camel case string', function () {
     expect(toCamelCase('TestString')).to.be.eq('testString');
     expect(toCamelCase('test-string')).to.be.eq('testString');
     expect(toCamelCase('test string')).to.be.eq('testString');

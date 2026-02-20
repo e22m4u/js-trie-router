@@ -5,12 +5,12 @@ import {DebuggableService} from '../debuggable-service.js';
 /**
  * Method names to be parsed.
  */
-export type METHODS_WITH_BODY = string[];
+export declare const METHODS_WITH_BODY: string[];
 
 /**
  * Unparsable media types.
  */
-export type UNPARSABLE_MEDIA_TYPES = string[];
+export declare const UNPARSABLE_MEDIA_TYPES: string[];
 
 /**
  * Body parser function.

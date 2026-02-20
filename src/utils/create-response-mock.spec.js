@@ -3,13 +3,13 @@ import {PassThrough} from 'stream';
 import {createResponseMock} from './create-response-mock.js';
 
 describe('createResponseMock', function () {
-  it('returns an instance of PassThrough', function () {
+  it('should return an instance of PassThrough', function () {
     const res = createResponseMock();
     expect(res).to.be.instanceof(PassThrough);
   });
 
   describe('setEncoding', function () {
-    it('sets the given encoding and returns the response', function () {
+    it('should set the given encoding and return the response', function () {
       const res = createResponseMock();
       expect(res._encoding).to.be.undefined;
       const ret = res.setEncoding('utf-8');
@@ -19,7 +19,7 @@ describe('createResponseMock', function () {
   });
 
   describe('getEncoding', function () {
-    it('returns encoding', function () {
+    it('should return the current encoding', function () {
       const res = createResponseMock();
       expect(res._encoding).to.be.undefined;
       const ret1 = res.getEncoding();
@@ -31,13 +31,13 @@ describe('createResponseMock', function () {
   });
 
   describe('headersSent', function () {
-    it('returns false if the response is not sent', function () {
+    it('should return false if the response is not sent', function () {
       const res = createResponseMock();
       expect(res._headersSent).to.be.false;
       expect(res.headersSent).to.be.false;
     });
 
-    it('returns a value of the "_headersSent" property', function () {
+    it('should return a value from the private property', function () {
       const res = createResponseMock();
       expect(res._headersSent).to.be.false;
       expect(res.headersSent).to.be.false;
@@ -47,7 +47,7 @@ describe('createResponseMock', function () {
   });
 
   describe('setHeader', function () {
-    it('sets the given header and returns the response', function () {
+    it('should set the given header and return the response', function () {
       const res = createResponseMock();
       expect(res._headers['foo']).to.be.eq(undefined);
       const ret = res.setHeader('foo', 'bar');
@@ -55,7 +55,7 @@ describe('createResponseMock', function () {
       expect(res._headers['foo']).to.be.eq('bar');
     });
 
-    it('throws an error if headers is sent', function () {
+    it('should throw an error if headers is sent', function () {
       const res = createResponseMock();
       res._headersSent = true;
       const throwable = () => res.setHeader('foo');
@@ -65,7 +65,7 @@ describe('createResponseMock', function () {
       );
     });
 
-    it('sets the header value as a string', function () {
+    it('should set the header value as a String', function () {
       const res = createResponseMock();
       expect(res._headers['num']).to.be.eq(undefined);
       const ret = res.setHeader('num', 10);
@@ -75,14 +75,14 @@ describe('createResponseMock', function () {
   });
 
   describe('getHeader', function () {
-    it('returns the header value if exists', function () {
+    it('should return the header value if exists', function () {
       const res = createResponseMock();
       res._headers['foo'] = 'bar';
       const ret = res.getHeader('foo');
       expect(ret).to.be.eq('bar');
     });
 
-    it('uses case-insensitivity lookup', function () {
+    it('should use case-insensitive lookup', function () {
       const res = createResponseMock();
       res._headers['foo'] = 'bar';
       const ret = res.getHeader('FOO');
@@ -91,7 +91,7 @@ describe('createResponseMock', function () {
   });
 
   describe('getHeaders', function () {
-    it('returns a copy of the headers object', function () {
+    it('should return a copy of the headers object', function () {
       const res = createResponseMock();
       const ret1 = res.getHeaders();
       res._headers['foo'] = 'bar';
@@ -105,7 +105,7 @@ describe('createResponseMock', function () {
   });
 
   describe('getBody', function () {
-    it('returns a promise of the stream content', async function () {
+    it('should return a promise of the stream content', async function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const res = createResponseMock();
       res.end(body);
@@ -116,7 +116,7 @@ describe('createResponseMock', function () {
   });
 
   describe('Stream', function () {
-    it('sets "headerSent" to true when the stream ends', function () {
+    it('should set the property "headerSent" to true when the stream ends', function () {
       const res = createResponseMock();
       expect(res.headersSent).to.be.false;
       res.end('test');

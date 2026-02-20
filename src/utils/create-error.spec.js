@@ -3,12 +3,11 @@ import {format} from '@e22m4u/js-format';
 import {createError} from './create-error.js';
 
 describe('createError', function () {
-  it('requires the first parameter to be a constructor', function () {
+  it('should require the parameter "errorCtor" to be a Function', function () {
     const throwable = v => () => createError(v);
     const error = v =>
       format(
-        'The first parameter of "createError" must be ' +
-          'a constructor, but %s was given.',
+        'The parameter "errorCtor" must be a Function, but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -24,14 +23,10 @@ describe('createError', function () {
     throwable(Error)();
   });
 
-  it('requires the second parameter to be a String', function () {
+  it('should require the parameter "message" to be a String', function () {
     const throwable = v => () => createError(Error, v);
     const error = v =>
-      format(
-        'The second parameter of "createError" must be ' +
-          'a String, but %s was given.',
-        v,
-      );
+      format('The parameter "message" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(true)).to.throw(error('true'));
     expect(throwable(false)).to.throw(error('false'));
@@ -43,7 +38,7 @@ describe('createError', function () {
     throwable(undefined)();
   });
 
-  it('interpolates the given message with arguments', function () {
+  it('should interpolate the given message with arguments', function () {
     const res = createError(Error, 'My %s', 'message');
     expect(res.message).to.be.eq('My message');
   });

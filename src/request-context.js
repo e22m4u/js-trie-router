@@ -177,8 +177,8 @@ export class RequestContext {
   constructor(container, request, response, route) {
     if (!isServiceContainer(container)) {
       throw new InvalidArgumentError(
-        'Parameter "container" of RequestContext.constructor ' +
-          'must be an instance of ServiceContainer, but %v was given.',
+        'The parameter "container" must be an instance ' +
+          'of ServiceContainer, but %v was given.',
         container,
       );
     }
@@ -190,8 +190,8 @@ export class RequestContext {
       !isReadableStream(request)
     ) {
       throw new InvalidArgumentError(
-        'Parameter "request" of RequestContext.constructor ' +
-          'must be an instance of IncomingMessage, but %v was given.',
+        'The parameter "request" must be an instance ' +
+          'of IncomingMessage, but %v was given.',
         request,
       );
     }
@@ -203,16 +203,16 @@ export class RequestContext {
       !isWritableStream(response)
     ) {
       throw new InvalidArgumentError(
-        'Parameter "response" of RequestContext.constructor ' +
-          'must be an instance of ServerResponse, but %v was given.',
+        'The parameter "response" must be an instance ' +
+          'of ServerResponse, but %v was given.',
         response,
       );
     }
     this._response = response;
     if (!(route instanceof Route)) {
       throw new InvalidArgumentError(
-        'Parameter "route" of RequestContext.constructor ' +
-          'must be an instance of Route, but %v was given.',
+        'The parameter "route" must be an instance ' +
+          'of Route, but %v was given.',
         route,
       );
     }

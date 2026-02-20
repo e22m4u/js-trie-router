@@ -31,7 +31,7 @@ describe('ErrorSender', function () {
       S.send(req, res, error);
     });
 
-    it('exposes only specified properties of the given error', function (done) {
+    it('should expose only specified properties of the given error', function (done) {
       const error = HttpErrors.Unauthorized();
       EXPOSED_ERROR_PROPERTIES.forEach(name => (error[name] = name));
       error.shouldNotBeExposedProp = 'shouldNotBeExposedProp';

@@ -11,7 +11,7 @@ import {createRequestMock, createResponseMock} from './utils/index.js';
 
 describe('TrieRouter', function () {
   describe('defineRoute', function () {
-    it('should return a Route instance', function () {
+    it('should return an instance of Route', function () {
       const router = new TrieRouter();
       const path = '/path';
       const handler = () => 'ok';
@@ -24,7 +24,7 @@ describe('TrieRouter', function () {
   });
 
   describe('createBranch', function () {
-    it('should return a RouterBranch instance', function () {
+    it('should return an instance of RouterBranch', function () {
       const router = new TrieRouter();
       const res = router.createBranch({path: ROOT_PATH});
       expect(res).to.be.instanceOf(RouterBranch);

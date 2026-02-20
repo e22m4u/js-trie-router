@@ -11,15 +11,15 @@ import {
 
 describe('RequestContext', function () {
   describe('constructor', function () {
-    it('should require the parameter "container" to be a ServiceContainer instance', function () {
+    it('should require the parameter "container" to be an instance of ServiceContainer', function () {
       const req = createRequestMock();
       const res = createResponseMock();
       const route = createRouteMock();
       const throwable = v => () => new RequestContext(v, req, res, route);
       const error = v =>
         format(
-          'Parameter "container" of RequestContext.constructor ' +
-            'must be an instance of ServiceContainer, but %s was given.',
+          'The parameter "container" must be an instance ' +
+            'of ServiceContainer, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -35,15 +35,15 @@ describe('RequestContext', function () {
       throwable(new ServiceContainer())();
     });
 
-    it('should require the parameter "request" to be an IncomingMessage instance', function () {
+    it('should require the parameter "request" to be an instance of IncomingMessage', function () {
       const res = createResponseMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();
       const throwable = v => () => new RequestContext(cont, v, res, route);
       const error = v =>
         format(
-          'Parameter "request" of RequestContext.constructor ' +
-            'must be an instance of IncomingMessage, but %s was given.',
+          'The parameter "request" must be an instance ' +
+            'of IncomingMessage, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -59,15 +59,15 @@ describe('RequestContext', function () {
       throwable(createRequestMock())();
     });
 
-    it('should require the parameter "response" to be a ServerResponse instance', function () {
+    it('should require the parameter "response" to be an instance of ServerResponse', function () {
       const req = createRequestMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();
       const throwable = v => () => new RequestContext(cont, req, v, route);
       const error = v =>
         format(
-          'Parameter "response" of RequestContext.constructor ' +
-            'must be an instance of ServerResponse, but %s was given.',
+          'The parameter "response" must be an instance ' +
+            'of ServerResponse, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -83,15 +83,15 @@ describe('RequestContext', function () {
       throwable(createResponseMock())();
     });
 
-    it('should require the parameter "route" to be a Route instance', function () {
+    it('should require the parameter "route" to be an instance of Route', function () {
       const req = createRequestMock();
       const res = createResponseMock();
       const cont = new ServiceContainer();
       const throwable = v => () => new RequestContext(cont, req, res, v);
       const error = v =>
         format(
-          'Parameter "route" of RequestContext.constructor ' +
-            'must be an instance of Route, but %s was given.',
+          'The parameter "route" must be an instance ' +
+            'of Route, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));

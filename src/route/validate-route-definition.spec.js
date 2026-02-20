@@ -5,10 +5,10 @@ import {ROOT_PATH} from '../constants.js';
 import {validateRouteDefinition} from './validate-route-definition.js';
 
 describe('validateRouteDefinition', function () {
-  it('should require the "routeDef" parameter to be an Object', function () {
+  it('should require the parameter "routeDef" to be an Object', function () {
     const throwable = v => () => validateRouteDefinition(v);
     const error = v =>
-      format('Route definition must be an Object, but %s was given.', v);
+      format('The route definition must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -26,7 +26,7 @@ describe('validateRouteDefinition', function () {
     })();
   });
 
-  it('should require the "method" option to be a non-empty String', function () {
+  it('should require the option "method" to be a non-empty String', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: v,
@@ -35,7 +35,7 @@ describe('validateRouteDefinition', function () {
       });
     const error = v =>
       format(
-        'Option "method" must be a non-empty String, but %s was given.',
+        'The option "method" must be a non-empty String, but %s was given.',
         v,
       );
     expect(throwable('')).to.throw(error('""'));
@@ -51,7 +51,7 @@ describe('validateRouteDefinition', function () {
     throwable(HttpMethod.GET)();
   });
 
-  it('should require the "path" option to be a String', function () {
+  it('should require the option "path" to be a String', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
@@ -59,7 +59,7 @@ describe('validateRouteDefinition', function () {
         handler: () => undefined,
       });
     const error = v =>
-      format('Option "path" must be a String, but %s was given.', v);
+      format('The option "path" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -72,7 +72,7 @@ describe('validateRouteDefinition', function () {
     throwable('/path')();
   });
 
-  it('should require the "path" option to start with a forward slash', function () {
+  it('should require the option "path" to start with a forward slash', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
@@ -80,14 +80,14 @@ describe('validateRouteDefinition', function () {
         handler: () => undefined,
       });
     const error = s =>
-      format('Option "path" must start with "/", but %s was given.', s);
+      format('The option "path" must start with "/", but %s was given.', s);
     expect(throwable('path')).to.throw(error('"path"'));
     expect(throwable('')).to.throw(error('""'));
     throwable('/path')();
     throwable('/')();
   });
 
-  it('should require the "handler" option to be a Function', function () {
+  it('should require the option "handler" to be a Function', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
@@ -95,7 +95,7 @@ describe('validateRouteDefinition', function () {
         handler: v,
       });
     const error = v =>
-      format('Option "handler" must be a Function, but %s was given.', v);
+      format('The option "handler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -109,7 +109,7 @@ describe('validateRouteDefinition', function () {
     throwable(() => undefined)();
   });
 
-  it('should require the "preHandler" option to be a Function or an Array of Function', function () {
+  it('should require the option "preHandler" to be a Function or an Array', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
@@ -119,8 +119,8 @@ describe('validateRouteDefinition', function () {
       });
     const error = v =>
       format(
-        'Option "preHandler" must be a Function ' +
-          'or an Array, but %s was given.',
+        'The option "preHandler" must be a Function or an Array, ' +
+          'but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -136,7 +136,7 @@ describe('validateRouteDefinition', function () {
     throwable(undefined)();
   });
 
-  it('should require an array of the "preHandler" option to contain a Function', function () {
+  it('should require an array of the option "preHandler" to contain a Function', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
@@ -145,7 +145,7 @@ describe('validateRouteDefinition', function () {
         handler: () => undefined,
       });
     const error = v =>
-      format('Route pre-handler must be a Function, but %s was given.', v);
+      format('The hook "preHandler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -159,7 +159,7 @@ describe('validateRouteDefinition', function () {
     throwable(() => undefined)();
   });
 
-  it('should require the "postHandler" option to be a Function or an Array of Function', function () {
+  it('should require the option "postHandler" to be a Function or an Array', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
@@ -169,8 +169,8 @@ describe('validateRouteDefinition', function () {
       });
     const error = v =>
       format(
-        'Option "postHandler" must be a Function ' +
-          'or an Array, but %s was given.',
+        'The option "postHandler" must be a Function or an Array, ' +
+          'but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -186,7 +186,7 @@ describe('validateRouteDefinition', function () {
     throwable(undefined)();
   });
 
-  it('should require an array of the "postHandler" option to contain a Function', function () {
+  it('should require an array of the option "postHandler" to contain a Function', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
@@ -195,7 +195,7 @@ describe('validateRouteDefinition', function () {
         handler: () => undefined,
       });
     const error = v =>
-      format('Route post-handler must be a Function, but %s was given.', v);
+      format('The hook "postHandler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -209,7 +209,7 @@ describe('validateRouteDefinition', function () {
     throwable(() => undefined)();
   });
 
-  it('should require the "meta" option to be an Object', function () {
+  it('should require the option "meta" to be an Object', function () {
     const throwable = v => () =>
       validateRouteDefinition({
         method: HttpMethod.GET,
@@ -218,7 +218,7 @@ describe('validateRouteDefinition', function () {
         meta: v,
       });
     const error = v =>
-      format('Option "meta" must be an Object, but %s was given.', v);
+      format('The option "meta" must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));

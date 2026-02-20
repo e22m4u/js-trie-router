@@ -48,15 +48,14 @@ export class BodyParser extends DebuggableService {
   defineParser(mediaType, parser) {
     if (!mediaType || typeof mediaType !== 'string') {
       throw new InvalidArgumentError(
-        'The parameter "mediaType" of BodyParser.defineParser ' +
-          'must be a non-empty String, but %v was given.',
+        'The parameter "mediaType" must be a non-empty String, ' +
+          'but %v was given.',
         mediaType,
       );
     }
     if (!parser || typeof parser !== 'function') {
       throw new InvalidArgumentError(
-        'The parameter "parser" of BodyParser.defineParser ' +
-          'must be a Function, but %v was given.',
+        'The parameter "parser" must be a Function, but %v was given.',
         parser,
       );
     }
@@ -73,8 +72,8 @@ export class BodyParser extends DebuggableService {
   hasParser(mediaType) {
     if (!mediaType || typeof mediaType !== 'string') {
       throw new InvalidArgumentError(
-        'The parameter "mediaType" of BodyParser.hasParser ' +
-          'must be a non-empty String, but %v was given.',
+        'The parameter "mediaType" must be a non-empty String, ' +
+          'but %v was given.',
         mediaType,
       );
     }
@@ -90,8 +89,8 @@ export class BodyParser extends DebuggableService {
   deleteParser(mediaType) {
     if (!mediaType || typeof mediaType !== 'string') {
       throw new InvalidArgumentError(
-        'The parameter "mediaType" of BodyParser.deleteParser ' +
-          'must be a non-empty String, but %v was given.',
+        'The parameter "mediaType" must be a non-empty String, ' +
+          'but %v was given.',
         mediaType,
       );
     }

@@ -31,8 +31,8 @@ export class RouterOptions extends DebuggableService {
   setRequestBodyBytesLimit(input) {
     if (typeof input !== 'number' || input < 0) {
       throw new InvalidArgumentError(
-        'Option "requestBodyBytesLimit" must be a positive Number or 0, ' +
-          'but %v was given.',
+        'The option "requestBodyBytesLimit" must be ' +
+          'a positive Number or 0, but %v was given.',
         input,
       );
     }

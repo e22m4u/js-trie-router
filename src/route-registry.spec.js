@@ -7,11 +7,11 @@ import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
 
 describe('RouteRegistry', function () {
   describe('defineRoute', function () {
-    it('requires the parameter "routeDef" to be an Object', function () {
+    it('should return the parameter "routeDef" to be an Object', function () {
       const S = new RouteRegistry();
       const throwable = v => () => S.defineRoute(v);
       const error = v =>
-        format('Route definition must be an Object, but %s was given.', v);
+        format('The route definition must be an Object, but %s was given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -29,7 +29,7 @@ describe('RouteRegistry', function () {
       })();
     });
 
-    it('returns a new route with the given "method", "path" and "handler"', function () {
+    it('should return a new route with the given "method", "path" and "handler"', function () {
       const S = new RouteRegistry();
       const method = HttpMethod.PATCH;
       const path = '/myPath';
@@ -40,7 +40,7 @@ describe('RouteRegistry', function () {
       expect(route.handler).to.be.eq(handler);
     });
 
-    it('adds a new route to the routes trie', function () {
+    it('should add a new route to the routes trie', function () {
       const S = new RouteRegistry();
       const method = HttpMethod.PATCH;
       const path = '/myPath';
@@ -101,7 +101,7 @@ describe('RouteRegistry', function () {
       expect(order).to.be.eql([1, 2]);
     });
 
-    it('should require the hook "onDefineRoute" return an Object or undefined', function () {
+    it('should return the hook "onDefineRoute" return an Object or undefined', function () {
       const routeDef = {
         method: HttpMethod.GET,
         path: '/myPath',
@@ -115,7 +115,7 @@ describe('RouteRegistry', function () {
       };
       const error = s =>
         format(
-          'Hook "onDefineRoute" must return an Object or undefined, ' +
+          'The hook "onDefineRoute" must return an Object or undefined, ' +
             'but %s was given.',
           s,
         );
@@ -133,7 +133,7 @@ describe('RouteRegistry', function () {
   });
 
   describe('matchRouteByRequest', function () {
-    it('returns the route and parsed parameters', function () {
+    it('should return the route and parsed parameters', function () {
       const S = new RouteRegistry(new ServiceContainer());
       const handler = () => undefined;
       S.defineRoute({

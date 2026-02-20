@@ -16,9 +16,9 @@ export declare class TrieRouter extends DebuggableService {
    * ```
    * const router = new TrieRouter();
    * router.defineRoute({
-   *   method: HttpMethod.GET,        // Request method.
+   *   method: HttpMethod.GET,         // Request method.
    *   path: '/',                      // Path template.
-   *   handler: ctx => 'Hello world!', // Request handler.
+   *   handler: ctx => 'Hello world!', // Route handler.
    * });
    * ```
    *
@@ -26,11 +26,11 @@ export declare class TrieRouter extends DebuggableService {
    * ```
    * const router = new TrieRouter();
    * router.defineRoute({
-   *   method: HttpMethod.POST,       // Request method.
+   *   method: HttpMethod.POST,        // Request method.
    *   path: '/users/:id',             // The path template may have parameters.
-   *   preHandler(ctx) { ... },        // The "preHandler" is executed before a route handler.
-   *   handler(ctx) { ... },           // Request handler function.
-   *   postHandler(ctx, data) { ... }, // The "postHandler" is executed after a route handler
+   *   preHandler(ctx) { ... },        // The hook "preHandler" is executed before a route handler.
+   *   handler(ctx) { ... },           // Route handler function.
+   *   postHandler(ctx, data) { ... }, // The hook "postHandler" is executed after a route handler
    * });
    * ```
    *

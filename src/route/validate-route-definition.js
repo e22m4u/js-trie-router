@@ -8,31 +8,31 @@ import {InvalidArgumentError} from '@e22m4u/js-format';
 export function validateRouteDefinition(routeDef) {
   if (!routeDef || typeof routeDef !== 'object' || Array.isArray(routeDef)) {
     throw new InvalidArgumentError(
-      'Route definition must be an Object, but %v was given.',
+      'The route definition must be an Object, but %v was given.',
       routeDef,
     );
   }
   if (!routeDef.method || typeof routeDef.method !== 'string') {
     throw new InvalidArgumentError(
-      'Option "method" must be a non-empty String, but %v was given.',
+      'The option "method" must be a non-empty String, but %v was given.',
       routeDef.method,
     );
   }
   if (typeof routeDef.path !== 'string') {
     throw new InvalidArgumentError(
-      'Option "path" must be a String, but %v was given.',
+      'The option "path" must be a String, but %v was given.',
       routeDef.path,
     );
   }
   if (!routeDef.path.startsWith('/')) {
     throw new InvalidArgumentError(
-      'Option "path" must start with "/", but %v was given.',
+      'The option "path" must start with "/", but %v was given.',
       routeDef.path,
     );
   }
   if (typeof routeDef.handler !== 'function') {
     throw new InvalidArgumentError(
-      'Option "handler" must be a Function, but %v was given.',
+      'The option "handler" must be a Function, but %v was given.',
       routeDef.handler,
     );
   }
@@ -41,14 +41,15 @@ export function validateRouteDefinition(routeDef) {
       routeDef.preHandler.forEach(preHandler => {
         if (typeof preHandler !== 'function') {
           throw new InvalidArgumentError(
-            'Route pre-handler must be a Function, but %v was given.',
+            'The hook "preHandler" must be a Function, but %v was given.',
             preHandler,
           );
         }
       });
     } else if (typeof routeDef.preHandler !== 'function') {
       throw new InvalidArgumentError(
-        'Option "preHandler" must be a Function or an Array, but %v was given.',
+        'The option "preHandler" must be a Function or an Array, ' +
+          'but %v was given.',
         routeDef.preHandler,
       );
     }
@@ -58,14 +59,15 @@ export function validateRouteDefinition(routeDef) {
       routeDef.postHandler.forEach(postHandler => {
         if (typeof postHandler !== 'function') {
           throw new InvalidArgumentError(
-            'Route post-handler must be a Function, but %v was given.',
+            'The hook "postHandler" must be a Function, but %v was given.',
             postHandler,
           );
         }
       });
     } else if (typeof routeDef.postHandler !== 'function') {
       throw new InvalidArgumentError(
-        'Option "postHandler" must be a Function or an Array, but %v was given.',
+        'The option "postHandler" must be a Function or an Array, ' +
+          'but %v was given.',
         routeDef.postHandler,
       );
     }
@@ -77,7 +79,7 @@ export function validateRouteDefinition(routeDef) {
       Array.isArray(routeDef.meta)
     ) {
       throw new InvalidArgumentError(
-        'Option "meta" must be an Object, but %v was given.',
+        'The option "meta" must be an Object, but %v was given.',
         routeDef.meta,
       );
     }

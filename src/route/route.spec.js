@@ -9,10 +9,10 @@ import {createRequestMock, createResponseMock} from '../utils/index.js';
 
 describe('Route', function () {
   describe('constructor', function () {
-    it('should require the "routeDef" parameter to be an Object', function () {
+    it('should require the parameter "routeDef" to be an Object', function () {
       const throwable = v => () => new Route(v);
       const error = v =>
-        format('Route definition must be an Object, but %s was given.', v);
+        format('The route definition must be an Object, but %s was given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -30,7 +30,7 @@ describe('Route', function () {
       })();
     });
 
-    it('should require the "method" option to be a non-empty String', function () {
+    it('should require the option "method" to be a non-empty String', function () {
       const throwable = v => () =>
         new Route({
           method: v,
@@ -39,7 +39,7 @@ describe('Route', function () {
         });
       const error = v =>
         format(
-          'Option "method" must be a non-empty String, but %s was given.',
+          'The option "method" must be a non-empty String, but %s was given.',
           v,
         );
       expect(throwable('')).to.throw(error('""'));
@@ -55,7 +55,7 @@ describe('Route', function () {
       throwable(HttpMethod.GET)();
     });
 
-    it('should require the "path" option to be a non-empty String', function () {
+    it('should require the option "path" to be a non-empty String', function () {
       const throwable = v => () =>
         new Route({
           method: HttpMethod.GET,
@@ -63,7 +63,7 @@ describe('Route', function () {
           handler: () => 'Ok',
         });
       const error = v =>
-        format('Option "path" must be a String, but %s was given.', v);
+        format('The option "path" must be a String, but %s was given.', v);
       expect(throwable(10)).to.throw(error('10'));
       expect(throwable(0)).to.throw(error('0'));
       expect(throwable(true)).to.throw(error('true'));
@@ -76,7 +76,7 @@ describe('Route', function () {
       throwable('/path')();
     });
 
-    it('should require the "path" option to start with a forward slash', function () {
+    it('should require the option "path" to start with a forward slash', function () {
       const throwable = v => () =>
         new Route({
           method: HttpMethod.GET,
@@ -84,14 +84,14 @@ describe('Route', function () {
           handler: () => 'Ok',
         });
       const error = s =>
-        format('Option "path" must start with "/", but %s was given.', s);
+        format('The option "path" must start with "/", but %s was given.', s);
       expect(throwable('path')).to.throw(error('"path"'));
       expect(throwable('')).to.throw(error('""'));
       throwable('/path')();
       throwable('/')();
     });
 
-    it('should require the "handler" option to be a Function', function () {
+    it('should require the option "handler" to be a Function', function () {
       const throwable = v => () =>
         new Route({
           method: HttpMethod.GET,
@@ -99,7 +99,7 @@ describe('Route', function () {
           handler: v,
         });
       const error = v =>
-        format('Option "handler" must be a Function, but %s was given.', v);
+        format('The option "handler" must be a Function, but %s was given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -113,7 +113,7 @@ describe('Route', function () {
       throwable(() => undefined)();
     });
 
-    it('should require the "preHandler" option to be a Function or an Array', function () {
+    it('should require the option "preHandler" to be a Function or an Array', function () {
       const throwable = v => () =>
         new Route({
           method: HttpMethod.GET,
@@ -123,8 +123,8 @@ describe('Route', function () {
         });
       const error = v =>
         format(
-          'Option "preHandler" must be a Function ' +
-            'or an Array, but %s was given.',
+          'The option "preHandler" must be a Function or an Array, ' +
+            'but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -140,7 +140,7 @@ describe('Route', function () {
       throwable(undefined)();
     });
 
-    it('should require each element in the "preHandler" option to be a Function', function () {
+    it('should require an array of the option "preHandler" to contain a Function', function () {
       const throwable = v => () =>
         new Route({
           method: HttpMethod.GET,
@@ -149,7 +149,10 @@ describe('Route', function () {
           handler: () => 'Ok',
         });
       const error = v =>
-        format('Route pre-handler must be a Function, but %s was given.', v);
+        format(
+          'The hook "preHandler" must be a Function, but %s was given.',
+          v,
+        );
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -163,7 +166,7 @@ describe('Route', function () {
       throwable(() => undefined)();
     });
 
-    it('should require the "postHandler" option to be a Function or an Array', function () {
+    it('should require the option "postHandler" to be a Function or an Array', function () {
       const throwable = v => () =>
         new Route({
           method: HttpMethod.GET,
@@ -173,8 +176,8 @@ describe('Route', function () {
         });
       const error = v =>
         format(
-          'Option "postHandler" must be a Function ' +
-            'or an Array, but %s was given.',
+          'The option "postHandler" must be a Function or an Array, ' +
+            'but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -190,7 +193,7 @@ describe('Route', function () {
       throwable(undefined)();
     });
 
-    it('should require each element in the "postHandler" option to be a Function', function () {
+    it('should require an array of the option "postHandler" to contain a Function', function () {
       const throwable = v => () =>
         new Route({
           method: HttpMethod.GET,
@@ -199,7 +202,10 @@ describe('Route', function () {
           handler: () => 'Ok',
         });
       const error = v =>
-        format('Route post-handler must be a Function, but %s was given.', v);
+        format(
+          'The hook "postHandler" must be a Function, but %s was given.',
+          v,
+        );
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -213,7 +219,7 @@ describe('Route', function () {
       throwable(() => undefined)();
     });
 
-    it('should require the "meta" option to be a plain Object', function () {
+    it('should require the option "meta" to be a plain Object', function () {
       const throwable = v => () =>
         new Route({
           method: HttpMethod.GET,
@@ -222,7 +228,7 @@ describe('Route', function () {
           meta: v,
         });
       const error = v =>
-        format('Option "meta" must be an Object, but %s was given.', v);
+        format('The option "meta" must be an Object, but %s was given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));
@@ -249,7 +255,7 @@ describe('Route', function () {
       expect(res).to.be.not.eq(definition);
     });
 
-    it('should convert the "method" option to upper case', function () {
+    it('should convert a value of the option "method" to upper case', function () {
       const definition = {
         method: 'get',
         path: ROOT_PATH,
@@ -350,7 +356,7 @@ describe('Route', function () {
   });
 
   describe('method', function () {
-    it('should return a value of the "method" option', function () {
+    it('should return the option "method" from the route definition', function () {
       const route = new Route({
         method: HttpMethod.GET,
         path: ROOT_PATH,
@@ -361,7 +367,7 @@ describe('Route', function () {
   });
 
   describe('path', function () {
-    it('should return a value of the "path" option', function () {
+    it('should return the option "path" from the route definition', function () {
       const value = '/myPath';
       const route = new Route({
         method: HttpMethod.GET,
@@ -373,7 +379,7 @@ describe('Route', function () {
   });
 
   describe('meta', function () {
-    it('should return a value of the "meta" option', function () {
+    it('should return the option "meta" from the route definition', function () {
       const value = {foo: 'bar'};
       const route = new Route({
         method: HttpMethod.GET,
@@ -384,7 +390,7 @@ describe('Route', function () {
       expect(route.meta).to.be.eql(value);
     });
 
-    it('should return an empty object if the "meta" option is not provided', function () {
+    it('should return an empty object if the option "meta" is not provided', function () {
       const route = new Route({
         method: HttpMethod.GET,
         path: ROOT_PATH,
@@ -393,7 +399,7 @@ describe('Route', function () {
       expect(route.meta).to.be.eql({});
     });
 
-    it('should return an empty object if the "meta" option is undefined', function () {
+    it('should return an empty object if the option "meta" is undefined', function () {
       const route = new Route({
         method: HttpMethod.GET,
         path: ROOT_PATH,
@@ -405,7 +411,7 @@ describe('Route', function () {
   });
 
   describe('handler', function () {
-    it('should return a value of the "handler" option', function () {
+    it('should return the option "handler" from the route definition', function () {
       const value = () => 'Ok';
       const route = new Route({
         method: HttpMethod.GET,
@@ -417,7 +423,7 @@ describe('Route', function () {
   });
 
   describe('handle', function () {
-    it('should invoke the handler with the given RequestContext and return its result', function () {
+    it('should invoke the route handler with RequestContext and return the handler result', function () {
       const route = new Route({
         method: HttpMethod.GET,
         path: ROOT_PATH,

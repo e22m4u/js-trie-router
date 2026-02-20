@@ -3,12 +3,12 @@ import {format} from '@e22m4u/js-format';
 import {isResponseSent} from './is-response-sent.js';
 
 describe('isResponseSent', function () {
-  it('requires the first parameter to be an Object with "headersSent" property', function () {
+  it('should require the parameter "response" to be an Object with the "headersSent" property', function () {
     const throwable = v => () => isResponseSent(v);
     const error = v =>
       format(
-        'The first parameter of "isResponseSent" must be ' +
-          'an instance of ServerResponse, but %s was given.',
+        'The parameter "response" must be an instance of ServerResponse, ' +
+          'but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -23,12 +23,12 @@ describe('isResponseSent', function () {
     throwable({headersSent: false})();
   });
 
-  it('returns true if the property "headersSent" is true', function () {
+  it('should return true if the property "headersSent" is true', function () {
     const res = isResponseSent({headersSent: true});
     expect(res).to.be.true;
   });
 
-  it('returns false if the property "headersSent" is false', function () {
+  it('should return false if the property "headersSent" is false', function () {
     const res = isResponseSent({headersSent: false});
     expect(res).to.be.false;
   });

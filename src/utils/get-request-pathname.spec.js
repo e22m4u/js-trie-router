@@ -3,12 +3,12 @@ import {format} from '@e22m4u/js-format';
 import {getRequestPathname} from './get-request-pathname.js';
 
 describe('getRequestPathname', function () {
-  it('requires the first parameter to be an Object with "url" property', function () {
+  it('should require the parameter "request" to be an Object with the "url" property', function () {
     const throwable = v => () => getRequestPathname(v);
     const error = v =>
       format(
-        'The first parameter of "getRequestPathname" must be ' +
-          'an instance of IncomingMessage, but %s was given.',
+        'The parameter "request" must be an instance of IncomingMessage, ' +
+          'but %s was given.',
         v,
       );
     expect(throwable('str')).to.throw(error('"str"'));
@@ -24,8 +24,15 @@ describe('getRequestPathname', function () {
     throwable({url: ''})();
   });
 
-  it('returns the request path without the query string', function () {
+  it('should return the request path without the query string', function () {
     const res = getRequestPathname({url: '/pathname?foo=bar'});
     expect(res).to.be.eq('/pathname');
+  });
+
+  it('should preserve a trailing slash', function () {
+    const res1 = getRequestPathname({url: '/pathname/'});
+    expect(res1).to.be.eq('/pathname/');
+    const res2 = getRequestPathname({url: '/pathname/?foo=bar'});
+    expect(res2).to.be.eq('/pathname/');
   });
 });

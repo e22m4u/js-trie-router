@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {cloneDeep} from './clone-deep.js';
 
 describe('cloneDeep', function () {
-  it('returns a deep copy of a given object', function () {
+  it('should return a deep copy of a given object', function () {
     const value = {
       stringProp: 'string',
       numberProp: 10,

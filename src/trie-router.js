@@ -37,9 +37,9 @@ export class TrieRouter extends DebuggableService {
    * router.defineRoute({
    *   method: HttpMethod.POST,        // Request method.
    *   path: '/users/:id',             // The path template may have parameters.
-   *   preHandler(ctx) { ... },        // The "preHandler" executes before a route handler.
-   *   handler(ctx) { ... },           // Request handler function.
-   *   postHandler(ctx, data) { ... }, // The "postHandler" executes after a route handler.
+   *   preHandler(ctx) { ... },        // The hook "preHandler" executes before a route handler.
+   *   handler(ctx) { ... },           // Route handler function.
+   *   postHandler(ctx, data) { ... }, // The hook "postHandler" executes after a route handler.
    * });
    * ```
    *

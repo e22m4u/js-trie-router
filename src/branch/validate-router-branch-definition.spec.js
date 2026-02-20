@@ -4,10 +4,10 @@ import {ROOT_PATH} from '../constants.js';
 import {validateRouterBranchDefinition} from './validate-router-branch-definition.js';
 
 describe('validateRouterBranchDefinition', function () {
-  it('should require the "routeDef" parameter to be an Object', function () {
+  it('should require the parameter "routeDef" to be an Object', function () {
     const throwable = v => () => validateRouterBranchDefinition(v);
     const error = v =>
-      format('Branch definition must be an Object, but %s was given.', v);
+      format('The branch definition must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -21,22 +21,22 @@ describe('validateRouterBranchDefinition', function () {
     throwable({path: ROOT_PATH})();
   });
 
-  it('should throw an error if the "method" option is provided', function () {
+  it('should throw an error if the option "method" is provided', function () {
     const throwable = () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,
         method: 123,
       });
     expect(throwable).to.throw(
-      'Option "method" is not supported for the router branch, ' +
+      'The option "method" is not supported for the router branch, ' +
         'but 123 was given.',
     );
   });
 
-  it('should require the "path" option to be a String', function () {
+  it('should require the option "path" to be a String', function () {
     const throwable = v => () => validateRouterBranchDefinition({path: v});
     const error = v =>
-      format('Option "path" must be a String, but %s was given.', v);
+      format('The option "path" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
@@ -49,29 +49,29 @@ describe('validateRouterBranchDefinition', function () {
     throwable('/path')();
   });
 
-  it('should require the "path" option to start with a forward slash', function () {
+  it('should require the option "path" to start with a forward slash', function () {
     const throwable = v => () => validateRouterBranchDefinition({path: v});
     const error = s =>
-      format('Option "path" must start with "/", but %s was given.', s);
+      format('The option "path" must start with "/", but %s was given.', s);
     expect(throwable('path')).to.throw(error('"path"'));
     expect(throwable('')).to.throw(error('""'));
     throwable('/path')();
     throwable('/')();
   });
 
-  it('should throw an error if the "handler" option is provided', function () {
+  it('should throw an error if the option "handler" is provided', function () {
     const throwable = () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,
         handler: 123,
       });
     expect(throwable).to.throw(
-      'Option "handler" is not supported for the router branch, ' +
+      'The option "handler" is not supported for the router branch, ' +
         'but 123 was given.',
     );
   });
 
-  it('should require the "preHandler" option to be a Function or an Array', function () {
+  it('should require the option "preHandler" to be a Function or an Array', function () {
     const throwable = v => () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,
@@ -79,7 +79,7 @@ describe('validateRouterBranchDefinition', function () {
       });
     const error = v =>
       format(
-        'Option "preHandler" must be a Function ' +
+        'The option "preHandler" must be a Function ' +
           'or an Array, but %s was given.',
         v,
       );
@@ -96,14 +96,14 @@ describe('validateRouterBranchDefinition', function () {
     throwable(undefined)();
   });
 
-  it('should require an array of the "preHandler" option to contain a Function', function () {
+  it('should require an array of the option "preHandler" to contain a Function', function () {
     const throwable = v => () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,
         preHandler: [v],
       });
     const error = v =>
-      format('Route pre-handler must be a Function, but %s was given.', v);
+      format('The hook "preHandler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -117,7 +117,7 @@ describe('validateRouterBranchDefinition', function () {
     throwable(() => undefined)();
   });
 
-  it('should require the "postHandler" option to be a Function or an Array', function () {
+  it('should require the option "postHandler" to be a Function or an Array', function () {
     const throwable = v => () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,
@@ -125,7 +125,7 @@ describe('validateRouterBranchDefinition', function () {
       });
     const error = v =>
       format(
-        'Option "postHandler" must be a Function ' +
+        'The option "postHandler" must be a Function ' +
           'or an Array, but %s was given.',
         v,
       );
@@ -142,14 +142,14 @@ describe('validateRouterBranchDefinition', function () {
     throwable(undefined)();
   });
 
-  it('should require an array of the "postHandler" option to contain a Function', function () {
+  it('should require an array of the option "postHandler" to contain a Function', function () {
     const throwable = v => () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,
         postHandler: [v],
       });
     const error = v =>
-      format('Route post-handler must be a Function, but %s was given.', v);
+      format('The hook "postHandler" must be a Function, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));
@@ -163,14 +163,14 @@ describe('validateRouterBranchDefinition', function () {
     throwable(() => undefined)();
   });
 
-  it('should require the "meta" option to be an Object', function () {
+  it('should require the option "meta" to be an Object', function () {
     const throwable = v => () =>
       validateRouterBranchDefinition({
         path: ROOT_PATH,
         meta: v,
       });
     const error = v =>
-      format('Option "meta" must be an Object, but %s was given.', v);
+      format('The option "meta" must be an Object, but %s was given.', v);
     expect(throwable('str')).to.throw(error('"str"'));
     expect(throwable('')).to.throw(error('""'));
     expect(throwable(10)).to.throw(error('10'));

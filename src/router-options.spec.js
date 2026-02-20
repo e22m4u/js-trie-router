@@ -4,12 +4,12 @@ import {RouterOptions} from './router-options.js';
 
 describe('RouterOptions', function () {
   describe('requestBodyBytesLimit', function () {
-    it('returns the default value', function () {
+    it('should return the default value', function () {
       const S = new RouterOptions();
       expect(S.requestBodyBytesLimit).to.be.eq(512000);
     });
 
-    it('returns a value of the property "_requestBodyBytesLimit"', function () {
+    it('should return a value from the private property', function () {
       const S = new RouterOptions();
       S._requestBodyBytesLimit = 1;
       expect(S.requestBodyBytesLimit).to.be.eq(1);
@@ -19,13 +19,13 @@ describe('RouterOptions', function () {
   });
 
   describe('setRequestBodyBytesLimit', function () {
-    it('requires the parameter "input" to be a positive Number or 0', function () {
+    it('should require the parameter "input" to be a positive Number or 0', function () {
       const S = new RouterOptions();
       const throwable = v => () => S.setRequestBodyBytesLimit(v);
       const error = v =>
         format(
-          'Option "requestBodyBytesLimit" must be a positive Number or 0, ' +
-            'but %s was given.',
+          'The option "requestBodyBytesLimit" must be ' +
+            'a positive Number or 0, but %s was given.',
           v,
         );
       expect(throwable('str')).to.throw(error('"str"'));
@@ -41,7 +41,7 @@ describe('RouterOptions', function () {
       throwable(0)();
     });
 
-    it('sets the given value to the property "_requestBodyBytesLimit"', function () {
+    it('should set the given value to the private property', function () {
       const S = new RouterOptions();
       expect(S._requestBodyBytesLimit).to.be.eq(512000);
       S.setRequestBodyBytesLimit(0);

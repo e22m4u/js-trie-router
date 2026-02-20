@@ -9,8 +9,7 @@ import {InvalidArgumentError} from '@e22m4u/js-format';
 export function createCookieString(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     throw new InvalidArgumentError(
-      'The first parameter of "createCookieString" must be ' +
-        'an Object, but %v was given.',
+      'The cookie data must be an Object, but %v was given.',
       data,
     );
   }
