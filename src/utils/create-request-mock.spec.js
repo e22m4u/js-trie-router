@@ -267,7 +267,7 @@ describe('createRequestMock', function () {
     expect(req.socket).to.be.instanceof(TLSSocket);
   });
 
-  it('should set a string body to the stream and uses "utf-8" encoding by default', async function () {
+  it('should pass a string body to the stream with "utf-8" encoding by default', async function () {
     const body = 'requestBody';
     const req = createRequestMock({body});
     const chunks = [];
@@ -279,7 +279,7 @@ describe('createRequestMock', function () {
     expect(data).to.be.eq(body);
   });
 
-  it('should set a string body to the stream with "ascii" encoding', async function () {
+  it('should pass a string body to the stream with "ascii" encoding', async function () {
     const body = 'requestBody';
     const req = createRequestMock({body, encoding: 'ascii'});
     const chunks = [];
@@ -291,7 +291,7 @@ describe('createRequestMock', function () {
     expect(data).to.be.eq(body);
   });
 
-  it('should set a binary data to the stream', async function () {
+  it('should pass a binary data to the stream', async function () {
     const body = Buffer.from('test');
     const req = createRequestMock({body});
     const chunks = [];
