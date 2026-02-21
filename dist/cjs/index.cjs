@@ -2278,7 +2278,6 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           const allowHeader = allowedMethods.join(", ");
           response.statusCode = 204;
           response.setHeader("Allow", allowHeader);
-          response.setHeader("Access-Control-Allow-Methods", allowHeader);
           response.end();
           return;
         }

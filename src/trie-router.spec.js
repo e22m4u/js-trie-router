@@ -692,9 +692,6 @@ describe('TrieRouter', function () {
         await router._handleRequest(req, res);
         expect(res.statusCode).to.be.eq(204);
         expect(res.getHeader('Allow')).to.be.eq('GET, POST, OPTIONS');
-        expect(res.getHeader('Access-Control-Allow-Methods')).to.be.eq(
-          'GET, POST, OPTIONS',
-        );
       });
 
       it('should execute a custom OPTIONS handler when it is explicitly defined', async function () {
