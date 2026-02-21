@@ -662,6 +662,7 @@ __name(createRequestHeaders, "createRequestHeaders");
 var import_stream = require("stream");
 function createResponseMock() {
   const response = new import_stream.PassThrough();
+  response.statusCode = 200;
   patchEncoding(response);
   patchHeaders(response);
   patchBody(response);
@@ -1064,7 +1065,8 @@ var HttpMethod = {
   POST: "POST",
   PUT: "PUT",
   PATCH: "PATCH",
-  DELETE: "DELETE"
+  DELETE: "DELETE",
+  OPTIONS: "OPTIONS"
 };
 var DEFAULT_META = Object.freeze({});
 var _Route = class _Route extends import_js_debug.Debuggable {
@@ -1491,7 +1493,7 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
   /**
    * Constructor.
    *
-   * @param {ServiceContainer} container
+   * @param {ServiceContainer} [container]
    */
   constructor(container) {
     super(container);
@@ -1576,6 +1578,35 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
       request.method.toUpperCase(),
       requestPath
     );
+  }
+  /**
+   * Get allowed methods for request path.
+   *
+   * @param {string} requestPath
+   * @returns {string[]}
+   */
+  getAllowedMethodsForRequestPath(requestPath) {
+    if (typeof requestPath !== "string") {
+      throw new import_js_format16.InvalidArgumentError(
+        'Parameter "requestPath" must be a String, but %v was given.',
+        requestPath
+      );
+    }
+    const debug = this.getDebuggerFor(this.getAllowedMethodsForRequestPath);
+    const allowedMethods = [];
+    for (const method of Object.values(HttpMethod)) {
+      const rawTriePath = `${method}/${requestPath}`;
+      const triePath = rawTriePath.replace(/\/+/g, "/");
+      if (this._trie.match(triePath)) {
+        allowedMethods.push(method);
+      }
+    }
+    if (allowedMethods.length) {
+      debug("Allowed methods for %v are: %l.", requestPath, allowedMethods);
+    } else {
+      debug("Path %v does not have allowed methods.", requestPath);
+    }
+    return allowedMethods;
   }
 };
 __name(_RouteRegistry, "RouteRegistry");
@@ -2233,9 +2264,25 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = getRequestPathname(request);
+    const routeRegistry = this.getService(RouteRegistry);
     debug("Handling an incoming request %s %v.", request.method, requestPath);
     const resolved = this.getService(RouteRegistry).matchRouteByRequest(request);
     if (!resolved) {
+      if (request.method.toUpperCase() === HttpMethod.OPTIONS) {
+        const allowedMethods = routeRegistry.getAllowedMethodsForRequestPath(requestPath);
+        if (allowedMethods.length > 0) {
+          debug("Auto-handling OPTIONS request.");
+          if (!allowedMethods.includes("OPTIONS")) {
+            allowedMethods.push("OPTIONS");
+          }
+          const allowHeader = allowedMethods.join(", ");
+          response.statusCode = 204;
+          response.setHeader("Allow", allowHeader);
+          response.setHeader("Access-Control-Allow-Methods", allowHeader);
+          response.end();
+          return;
+        }
+      }
       debug(
         "No route found for the request %s %v.",
         request.method,

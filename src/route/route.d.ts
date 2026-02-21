@@ -11,6 +11,7 @@ export declare const HttpMethod: {
   PUT: 'PUT';
   PATCH: 'PATCH';
   DELETE: 'DELETE';
+  OPTIONS: 'OPTIONS';
 };
 
 /**

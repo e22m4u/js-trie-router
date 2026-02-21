@@ -13,6 +13,7 @@ import {
   RouterHookInvoker,
   RouterHookRegistry,
 } from './hooks/index.js';
+import {HttpMethod} from './route/route.js';
 
 /**
  * Trie router.
@@ -104,10 +105,31 @@ export class TrieRouter extends DebuggableService {
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = getRequestPathname(request);
+    const routeRegistry = this.getService(RouteRegistry);
     debug('Handling an incoming request %s %v.', request.method, requestPath);
     const resolved =
       this.getService(RouteRegistry).matchRouteByRequest(request);
     if (!resolved) {
+      // обработка метода OPTIONS выполняется автоматически
+      // перед отправкой ошибки 404, если для пути запроса
+      // имеются другие методы, то вместо ошибки 404 будет
+      // отправлен ответ с "Allow*" заголовками
+      if (request.method.toUpperCase() === HttpMethod.OPTIONS) {
+        const allowedMethods =
+          routeRegistry.getAllowedMethodsForRequestPath(requestPath);
+        if (allowedMethods.length > 0) {
+          debug('Auto-handling OPTIONS request.');
+          if (!allowedMethods.includes('OPTIONS')) {
+            allowedMethods.push('OPTIONS');
+          }
+          const allowHeader = allowedMethods.join(', ');
+          response.statusCode = 204;
+          response.setHeader('Allow', allowHeader);
+          response.setHeader('Access-Control-Allow-Methods', allowHeader);
+          response.end();
+          return;
+        }
+      }
       debug(
         'No route found for the request %s %v.',
         request.method,

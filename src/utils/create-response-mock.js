@@ -7,6 +7,7 @@ import {PassThrough} from 'stream';
  */
 export function createResponseMock() {
   const response = new PassThrough();
+  response.statusCode = 200;
   patchEncoding(response);
   patchHeaders(response);
   patchBody(response);

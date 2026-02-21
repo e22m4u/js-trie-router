@@ -28,6 +28,7 @@ import {validateRouteDefinition} from './validate-route-definition.js';
  *   PUT: 'PUT',
  *   PATCH: 'PATCH',
  *   DELETE: 'DELETE',
+ *   OPTIONS: 'OPTIONS',
  * }}
  */
 export const HttpMethod = {
@@ -36,6 +37,7 @@ export const HttpMethod = {
   PUT: 'PUT',
   PATCH: 'PATCH',
   DELETE: 'DELETE',
+  OPTIONS: 'OPTIONS',
 };
 
 /**

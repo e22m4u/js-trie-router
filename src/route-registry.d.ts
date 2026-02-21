@@ -21,7 +21,7 @@ export declare class RouteRegistry extends DebuggableService {
    *
    * @param container
    */
-  constructor(container: ServiceContainer);
+  constructor(container?: ServiceContainer);
 
   /**
    * Define route.
@@ -36,4 +36,11 @@ export declare class RouteRegistry extends DebuggableService {
    * @param request
    */
   matchRouteByRequest(request: IncomingMessage): ResolvedRoute | undefined;
+
+  /**
+   * Get allowed methods for request path.
+   *
+   * @param requestPath
+   */
+  getAllowedMethodsForRequestPath(requestPath: string): string[];
 }

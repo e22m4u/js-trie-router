@@ -8,6 +8,13 @@ describe('createResponseMock', function () {
     expect(res).to.be.instanceof(PassThrough);
   });
 
+  describe('statusCode', function () {
+    it('should be initialized with 200 by default', function () {
+      const res = createResponseMock();
+      expect(res.statusCode).to.be.eq(200);
+    });
+  });
+
   describe('setEncoding', function () {
     it('should set the given encoding and return the response', function () {
       const res = createResponseMock();
