@@ -878,9 +878,9 @@ var RouterHookRegistry = _RouterHookRegistry;
 var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
   /**
    * Последовательно вызывает глобальные хуки и хуки маршрута указанного
-   * типа, пока один из них не вернет отличное от undefined и null значение
-   * или не отправит HTTP-ответ. Метод выполняет хуки в синхронном режиме
-   * для улучшения производительности. Если один из хуков возвращает Promise,
+   * типа, пока один из них не вернет отличное от undefined значение или
+   * не отправит HTTP-ответ. Метод выполняет хуки в синхронном режиме для
+   * улучшения производительности. Если один из хуков возвращает Promise,
    * выполнение оставшейся части цепочки переключается в асинхронный режим.
    *
    * @param {Route} route
@@ -928,7 +928,7 @@ var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
       if (isResponseSent(response)) {
         return response;
       }
-      if (result != null) {
+      if (result !== void 0) {
         if (isPromise(result)) {
           return this._continueHooksInvocationAsync(
             hooks,
@@ -963,7 +963,7 @@ var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
     if (isResponseSent(response)) {
       return response;
     }
-    if (result != null) {
+    if (result !== void 0) {
       return result;
     }
     for (let i = startIndex; i < hooks.length; i++) {
@@ -971,7 +971,7 @@ var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
       if (isResponseSent(response)) {
         return response;
       }
-      if (result != null) {
+      if (result !== void 0) {
         return result;
       }
     }
@@ -2315,7 +2315,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
         if (isPromise(data)) {
           data = await data;
         }
-        if (!isResponseSent(response) && data == null) {
+        if (!isResponseSent(response) && data === void 0) {
           data = route.handle(context);
           if (isPromise(data)) {
             data = await data;
@@ -2330,7 +2330,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           if (isPromise(postHandlerData)) {
             postHandlerData = await postHandlerData;
           }
-          if (postHandlerData != null) {
+          if (postHandlerData !== void 0) {
             data = postHandlerData;
           }
         }

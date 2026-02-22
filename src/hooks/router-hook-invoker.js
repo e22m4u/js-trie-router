@@ -10,9 +10,9 @@ import {RouterHookRegistry, RouterHookType} from './router-hook-registry.js';
 export class RouterHookInvoker extends DebuggableService {
   /**
    * Последовательно вызывает глобальные хуки и хуки маршрута указанного
-   * типа, пока один из них не вернет отличное от undefined и null значение
-   * или не отправит HTTP-ответ. Метод выполняет хуки в синхронном режиме
-   * для улучшения производительности. Если один из хуков возвращает Promise,
+   * типа, пока один из них не вернет отличное от undefined значение или
+   * не отправит HTTP-ответ. Метод выполняет хуки в синхронном режиме для
+   * улучшения производительности. Если один из хуков возвращает Promise,
    * выполнение оставшейся части цепочки переключается в асинхронный режим.
    *
    * @param {Route} route
@@ -81,9 +81,9 @@ export class RouterHookInvoker extends DebuggableService {
         return response;
       }
       // если синхронный вызов хука вернул значение отличное
-      // от undefined и null, то требуется проверить данное
-      // значение для коррекции режима вызова оставшихся хуков
-      if (result != null) {
+      // от undefined , то требуется проверить данное значение
+      // для коррекции режима вызова оставшихся хуков
+      if (result !== undefined) {
         // если синхронный вызов хука вернул Promise, то дальнейшее
         // выполнение переключается в асинхронный режим, начиная
         // с индекса следующего хука
@@ -97,8 +97,8 @@ export class RouterHookInvoker extends DebuggableService {
           );
         }
         // если синхронный хук вернул значение отличное
-        // от undefined и null, то данное значение
-        // возвращается в качестве результата
+        // от undefined, то данное значение возвращается
+        // в качестве результата
         return result;
       }
     }
@@ -138,9 +138,9 @@ export class RouterHookInvoker extends DebuggableService {
       return response;
     }
     // если Promise разрешился значением отличным
-    // от undefined и null, то данное значение
-    // возвращается в качестве результата
-    if (result != null) {
+    // от undefined, то данное значение возвращается
+    // в качестве результата
+    if (result !== undefined) {
       return result;
     }
     // продолжение вызова хуков начиная
@@ -154,10 +154,10 @@ export class RouterHookInvoker extends DebuggableService {
       if (isResponseSent(response)) {
         return response;
       }
-      // если хук вернул значение отличное
-      // от undefined и null, то данное значение
-      // возвращается в качестве результата
-      if (result != null) {
+      // если хук вернул значение отличное от undefined,
+      // то данное значение возвращается в качестве
+      // результата
+      if (result !== undefined) {
         return result;
       }
     }

@@ -354,7 +354,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
-      it('should invoke the route handler when all "preHandler" hooks return nullish values', async function () {
+      it('should invoke the route handler when all "preHandler" hooks return undefined', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -368,7 +368,7 @@ describe('TrieRouter', function () {
             },
             () => {
               order.push('preHandler2');
-              return null;
+              return undefined;
             },
           ],
           handler: () => {
@@ -384,7 +384,7 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('should send a return value form the route handler when all "postHandler" hooks return nullish values', async function () {
+      it('should send a return value form the route handler when all "postHandler" hooks return undefined', async function () {
         const router = new TrieRouter();
         const order = [];
         const body = 'OK';
@@ -402,7 +402,7 @@ describe('TrieRouter', function () {
             },
             () => {
               order.push('postHandler2');
-              return null;
+              return undefined;
             },
           ],
         });
@@ -576,7 +576,7 @@ describe('TrieRouter', function () {
       });
     });
 
-    it('should skip the route handler when the hook "preHandler" returns a non-nullish value', async function () {
+    it('should skip the route handler when the hook "preHandler" returns a non-undefined value', async function () {
       let handlerCalled = false;
       const router = new TrieRouter();
       router.defineRoute({
@@ -598,7 +598,7 @@ describe('TrieRouter', function () {
       expect(handlerCalled).to.be.false;
     });
 
-    it('should skip the route handler when the hook "preHandler" resolves to a non-nullish value', async function () {
+    it('should skip the route handler when the hook "preHandler" resolves to a non-undefined value', async function () {
       let handlerCalled = false;
       const router = new TrieRouter();
       router.defineRoute({

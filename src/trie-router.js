@@ -176,7 +176,7 @@ export class TrieRouter extends DebuggableService {
         // ответа сервера
         const hookInvoker = this.getService(RouterHookInvoker);
         // если результатом вызова хуков "preHandler" является
-        // значение (или Promise) отличное от "undefined" и "null",
+        // значение (или Promise) отличное от "undefined",
         // то такое значение используется в качестве ответа
         data = hookInvoker.invokeAndContinueUntilValueReceived(
           route,
@@ -191,7 +191,7 @@ export class TrieRouter extends DebuggableService {
         // и сами "preHandler" хуки не вернули значения, то вызывается
         // основной обработчик маршрута, результат которого передается
         // в хуки "postHandler"
-        if (!isResponseSent(response) && data == null) {
+        if (!isResponseSent(response) && data === undefined) {
           data = route.handle(context);
           if (isPromise(data)) {
             data = await data;
@@ -208,7 +208,7 @@ export class TrieRouter extends DebuggableService {
           if (isPromise(postHandlerData)) {
             postHandlerData = await postHandlerData;
           }
-          if (postHandlerData != null) {
+          if (postHandlerData !== undefined) {
             data = postHandlerData;
           }
         }
