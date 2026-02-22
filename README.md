@@ -290,7 +290,7 @@ router.defineRoute({
     return 'Hello World!';
   },
   postHandler(ctx, data) {
-    console.log(data); // Hello World!
+    console.log(data); // > Hello World!
   },
 });
 ```
@@ -607,7 +607,7 @@ const router = new TrieRouter();
 // перед основным обработчиком каждого маршрута
 router.addHook(RouterHookType.PRE_HANDLER, (ctx) => {
   // доступ к метаданным текущего маршрута
-  console.log(ctx.meta); // {foo: 'bar'}
+  console.log(ctx.meta); // > {foo: 'bar'}
 });
 
 router.defineRoute({
@@ -706,7 +706,7 @@ adminBranch.defineRoute({
   path: '/dashboard',
   handler: (ctx) => {
     // маршрут наследует префикс /admin и метаданные
-    console.log(ctx.meta); // {access: 'admin'}
+    console.log(ctx.meta); // > {access: 'admin'}
     return 'Dashboard';
   },
 });
