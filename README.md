@@ -519,7 +519,7 @@ router.defineRoute({
 
 ```js
 router.addHook(RouterHookType.POST_HANDLER, (ctx, data) => {
-  // обертка ответа маршрута в единую структуру
+  // обертка ответа в единую структуру
   return {
     meta: {
       timestamp: Date.now(),
