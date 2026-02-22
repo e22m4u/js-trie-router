@@ -1,7 +1,5 @@
-import {ServerResponse} from 'http';
-import {Route} from '../route/index.js';
 import {ValueOrPromise} from '../types.js';
-import {RouterHookType} from './router-hook-registry.js';
+import {RequestContext} from '../request-context.js';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
@@ -9,17 +7,20 @@ import {DebuggableService} from '../debuggable-service.js';
  */
 export declare class RouterHookInvoker extends DebuggableService {
   /**
-   * Invoke and continue until value received.
+   * Invoke pre-handler hooks.
    *
-   * @param route
-   * @param hookType
-   * @param response
-   * @param args
+   * @param context
    */
-  invokeAndContinueUntilValueReceived(
-    route: Route,
-    hookType: RouterHookType,
-    response: ServerResponse,
-    ...args: unknown[]
+  invokePreHandlerHooks(context: RequestContext): ValueOrPromise<unknown>;
+
+  /**
+   * Invoke post-handler hooks.
+   *
+   * @param context
+   * @param initialData
+   */
+  invokePostHandlerHooks(
+    context: RequestContext,
+    initialData: unknown,
   ): ValueOrPromise<unknown>;
 }

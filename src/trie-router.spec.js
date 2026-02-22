@@ -188,6 +188,55 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
+    it('should register RequestContext in the request-scope ServiceContainer', function (done) {
+      const router = new TrieRouter();
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
+        handler(ctx) {
+          const res = ctx.container.getRegistered(RequestContext);
+          expect(res).to.be.eq(ctx);
+          expect(res).to.be.not.eq(router.container);
+          done();
+        },
+      });
+      const req = createRequestMock();
+      const res = createResponseMock();
+      router.requestListener(req, res);
+    });
+
+    it('should register IncomingMessage in the request-scope ServiceContainer', function (done) {
+      const router = new TrieRouter();
+      const req = createRequestMock();
+      const res = createResponseMock();
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
+        handler(ctx) {
+          const result = ctx.container.getRegistered(IncomingMessage);
+          expect(result).to.be.eq(req);
+          done();
+        },
+      });
+      router.requestListener(req, res);
+    });
+
+    it('should register ServerResponse in the request-scope ServiceContainer', function (done) {
+      const router = new TrieRouter();
+      const req = createRequestMock();
+      const res = createResponseMock();
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
+        handler(ctx) {
+          const result = ctx.container.getRegistered(ServerResponse);
+          expect(result).to.be.eq(res);
+          done();
+        },
+      });
+      router.requestListener(req, res);
+    });
+
     it('should use DataSender to send the server response', function (done) {
       const router = new TrieRouter();
       const resBody = 'Lorem Ipsum is simply dummy text.';
@@ -231,7 +280,30 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    describe('hooks', function () {
+    it('should send an error response for invalid JSON body instead of throwing', async function () {
+      const router = new TrieRouter();
+      router.defineRoute({
+        method: HttpMethod.POST,
+        path: ROOT_PATH,
+        handler() {},
+      });
+      const req = createRequestMock({
+        method: HttpMethod.POST,
+        headers: {'content-type': 'application/json'},
+        body: 'invalid',
+      });
+      const res = createResponseMock();
+      router.requestListener(req, res);
+      const body = await res.getBody();
+      expect(res.statusCode).to.be.eq(400);
+      expect(JSON.parse(body)).to.be.eql({
+        error: {
+          message: `Unexpected token 'i', "invalid" is not valid JSON`,
+        },
+      });
+    });
+
+    describe('router hooks invocation', function () {
       it('should invoke "preHandler" hooks before the route handler', async function () {
         const router = new TrieRouter();
         const order = [];
@@ -414,7 +486,59 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
-      it('should send a return value from the hook "preHandler" in the first priority', async function () {
+      it('should prioritize a return value from the hook "preHandler" over the route handler', async function () {
+        const router = new TrieRouter();
+        const order = [];
+        const preHandlerBody = 'foo';
+        const handlerBody = 'bar';
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler() {
+            order.push('preHandler');
+            return preHandlerBody;
+          },
+          handler: () => {
+            order.push('handler');
+            return handlerBody;
+          },
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        router.requestListener(req, res);
+        const result = await res.getBody();
+        expect(result).to.be.eq(preHandlerBody);
+        expect(result).to.be.not.eq(handlerBody);
+        expect(order).to.be.eql(['preHandler']);
+      });
+
+      it('should prioritize a return value from the hook "postHandler" over the route handler', async function () {
+        const router = new TrieRouter();
+        const order = [];
+        const handlerBody = 'foo';
+        const postHandlerBody = 'bar';
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler: () => {
+            order.push('handler');
+            return handlerBody;
+          },
+          postHandler() {
+            order.push('postHandler');
+            return postHandlerBody;
+          },
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        router.requestListener(req, res);
+        const result = await res.getBody();
+        expect(result).to.be.not.eq(handlerBody);
+        expect(result).to.be.eq(postHandlerBody);
+        expect(order).to.be.eql(['handler', 'postHandler']);
+      });
+
+      it('should prioritize a return value from the "postHandler" hook over the "preHandler" hook', async function () {
         const router = new TrieRouter();
         const order = [];
         const preHandlerBody = 'foo';
@@ -440,235 +564,254 @@ describe('TrieRouter', function () {
         const res = createResponseMock();
         router.requestListener(req, res);
         const result = await res.getBody();
-        expect(result).to.be.eq(preHandlerBody);
-        expect(result).not.to.be.eq(handlerBody);
-        expect(result).not.to.be.eq(postHandlerBody);
-        expect(order).to.be.eql(['preHandler']);
-      });
-
-      it('should send a return value from the hook "postHandler" in the second priority', async function () {
-        const router = new TrieRouter();
-        const order = [];
-        const handlerBody = 'foo';
-        const postHandlerBody = 'bar';
-        router.defineRoute({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-          preHandler() {
-            order.push('preHandler');
-          },
-          handler: () => {
-            order.push('handler');
-            return handlerBody;
-          },
-          postHandler() {
-            order.push('postHandler');
-            return postHandlerBody;
-          },
-        });
-        const req = createRequestMock();
-        const res = createResponseMock();
-        router.requestListener(req, res);
-        const result = await res.getBody();
-        expect(result).not.to.be.eq(handlerBody);
+        expect(result).to.be.not.eq(handlerBody);
         expect(result).to.be.eq(postHandlerBody);
-        expect(order).to.be.eql(['preHandler', 'handler', 'postHandler']);
+        expect(order).to.be.eql(['preHandler', 'postHandler']);
       });
 
-      it('should send a return value from the route handler in the third priority', async function () {
+      it('should skip the route handler when the hook "preHandler" returns a non-undefined value', async function () {
         const router = new TrieRouter();
-        const order = [];
-        const body = 'OK';
         router.defineRoute({
           method: HttpMethod.GET,
           path: ROOT_PATH,
           preHandler() {
-            order.push('preHandler');
+            return 'Response from preHandler';
           },
-          handler: () => {
-            order.push('handler');
-            return body;
-          },
-          postHandler() {
-            order.push('postHandler');
+          handler() {
+            throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock();
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
         const res = createResponseMock();
-        router.requestListener(req, res);
-        const result = await res.getBody();
-        expect(result).to.be.eq(body);
-        expect(order).to.be.eql(['preHandler', 'handler', 'postHandler']);
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('Response from preHandler');
       });
-    });
-  });
 
-  describe('_handleRequest', function () {
-    it('should register the request context in the request-scope ServiceContainer', function (done) {
-      const router = new TrieRouter();
-      router.defineRoute({
-        method: HttpMethod.GET,
-        path: ROOT_PATH,
-        handler(ctx) {
-          const res = ctx.container.getRegistered(RequestContext);
-          expect(res).to.be.eq(ctx);
-          expect(res).to.be.not.eq(router.container);
-          done();
-        },
+      it('should skip the route handler when the hook "preHandler" resolves to a non-undefined value', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler() {
+            return Promise.resolve('Response from preHandler');
+          },
+          handler() {
+            throw new Error('Should not be called!');
+          },
+        });
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('Response from preHandler');
       });
-      const req = createRequestMock();
-      const res = createResponseMock();
-      router.requestListener(req, res);
-    });
 
-    it('should register IncomingMessage in the request-scope ServiceContainer', function (done) {
-      const router = new TrieRouter();
-      const req = createRequestMock();
-      const res = createResponseMock();
-      router.defineRoute({
-        method: HttpMethod.GET,
-        path: ROOT_PATH,
-        handler(ctx) {
-          const result = ctx.container.getRegistered(IncomingMessage);
-          expect(result).to.be.eq(req);
-          done();
-        },
+      it('should skip the route handler when the hook "preHandler" sends the response manually', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler(ctx) {
+            ctx.response.setHeader('Content-Type', 'text/plain');
+            ctx.response.end('Response from preHandler');
+          },
+          handler() {
+            throw new Error('Should not be called!');
+          },
+        });
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('Response from preHandler');
       });
-      router.requestListener(req, res);
-    });
 
-    it('should register ServerResponse in the request-scope ServiceContainer', function (done) {
-      const router = new TrieRouter();
-      const req = createRequestMock();
-      const res = createResponseMock();
-      router.defineRoute({
-        method: HttpMethod.GET,
-        path: ROOT_PATH,
-        handler(ctx) {
-          const result = ctx.container.getRegistered(ServerResponse);
-          expect(result).to.be.eq(res);
-          done();
-        },
+      it('should skip the route handler when the hook "preHandler" sends the response manually within a Promise', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler(ctx) {
+            return new Promise(resolve => {
+              setTimeout(() => {
+                ctx.response.setHeader('Content-Type', 'text/plain');
+                ctx.response.end('Response from preHandler');
+                resolve(undefined);
+              }, 10);
+            });
+          },
+          handler() {
+            throw new Error('Should not be called!');
+          },
+        });
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('Response from preHandler');
       });
-      router.requestListener(req, res);
-    });
 
-    it('should send an error response for invalid JSON body instead of throwing', async function () {
-      const router = new TrieRouter();
-      router.defineRoute({
-        method: HttpMethod.POST,
-        path: ROOT_PATH,
-        handler() {},
+      it('should skip "postHandler" hooks when the hook "preHandler" sends the response manually', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler(ctx) {
+            ctx.response.setHeader('Content-Type', 'text/plain');
+            ctx.response.end('Response from preHandler');
+          },
+          handler() {
+            throw new Error('Should not be called!');
+          },
+          postHandler() {
+            throw new Error('Should not be called!');
+          },
+        });
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('Response from preHandler');
       });
-      const req = createRequestMock({
-        method: HttpMethod.POST,
-        headers: {'content-type': 'application/json'},
-        body: 'invalid',
-      });
-      const res = createResponseMock();
-      router.requestListener(req, res);
-      const body = await res.getBody();
-      expect(res.statusCode).to.be.eq(400);
-      expect(JSON.parse(body)).to.be.eql({
-        error: {
-          message: `Unexpected token 'i', "invalid" is not valid JSON`,
-        },
-      });
-    });
 
-    it('should skip the route handler when the hook "preHandler" returns a non-undefined value', async function () {
-      let handlerCalled = false;
-      const router = new TrieRouter();
-      router.defineRoute({
-        method: HttpMethod.GET,
-        path: ROOT_PATH,
-        preHandler() {
-          return 'Response from preHandler';
-        },
-        handler() {
-          handlerCalled = true;
-          return 'Response from the route handler';
-        },
+      it('should skip "postHandler" hooks when the hook "preHandler" sends the response manually within a Promise', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler(ctx) {
+            return new Promise(resolve => {
+              setTimeout(() => {
+                ctx.response.setHeader('Content-Type', 'text/plain');
+                ctx.response.end('Response from preHandler');
+                resolve(undefined);
+              }, 10);
+            });
+          },
+          handler() {
+            throw new Error('Should not be called!');
+          },
+          postHandler() {
+            throw new Error('Should not be called!');
+          },
+        });
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('Response from preHandler');
       });
-      const req = createRequestMock({method: HttpMethod.GET, path: ROOT_PATH});
-      const res = createResponseMock();
-      await router._handleRequest(req, res);
-      const responseBody = await res.getBody();
-      expect(responseBody).to.equal('Response from preHandler');
-      expect(handlerCalled).to.be.false;
-    });
 
-    it('should skip the route handler when the hook "preHandler" resolves to a non-undefined value', async function () {
-      let handlerCalled = false;
-      const router = new TrieRouter();
-      router.defineRoute({
-        method: HttpMethod.GET,
-        path: ROOT_PATH,
-        preHandler() {
-          return Promise.resolve('Response from preHandler');
-        },
-        handler() {
-          handlerCalled = true;
-          return 'Response from the route handler';
-        },
+      it('should pass a value from the route handler to the "postHandler" hook', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler() {
+            return 'Hello World!';
+          },
+          postHandler(ctx, data) {
+            expect(data).to.be.eql('Hello World!');
+            return data.toUpperCase();
+          },
+        });
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('HELLO WORLD!');
       });
-      const req = createRequestMock({method: HttpMethod.GET, path: ROOT_PATH});
-      const res = createResponseMock();
-      await router._handleRequest(req, res);
-      const responseBody = await res.getBody();
-      expect(responseBody).to.equal('Response from preHandler');
-      expect(handlerCalled).to.be.false;
-    });
 
-    it('should skip the route handler when the hook "preHandler" sends the response manually', async function () {
-      let handlerCalled = false;
-      const router = new TrieRouter();
-      router.defineRoute({
-        method: HttpMethod.GET,
-        path: ROOT_PATH,
-        preHandler(ctx) {
-          ctx.response.setHeader('Content-Type', 'text/plain');
-          ctx.response.end('Response from preHandler');
-        },
-        handler() {
-          handlerCalled = true;
-          return 'Response from the route handler';
-        },
+      it('should pass a value from the "preHandler" hook to the "postHandler" hook', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler() {
+            return 'Hello World!';
+          },
+          handler() {
+            throw new Error('Should not be called!');
+          },
+          postHandler(ctx, data) {
+            expect(data).to.be.eql('Hello World!');
+            return data.toUpperCase();
+          },
+        });
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('HELLO WORLD!');
       });
-      const req = createRequestMock({method: HttpMethod.GET, path: ROOT_PATH});
-      const res = createResponseMock();
-      await router._handleRequest(req, res);
-      const responseBody = await res.getBody();
-      expect(responseBody).to.equal('Response from preHandler');
-      expect(handlerCalled).to.be.false;
-    });
 
-    it('should skip the route handler when the hook "preHandler" sends the response manually within a Promise', async function () {
-      let handlerCalled = false;
-      const router = new TrieRouter();
-      router.defineRoute({
-        method: HttpMethod.GET,
-        path: ROOT_PATH,
-        preHandler(ctx) {
-          return new Promise(resolve => {
-            setTimeout(() => {
-              ctx.response.setHeader('Content-Type', 'text/plain');
-              ctx.response.end('Response from preHandler');
-              resolve(undefined);
-            }, 10);
-          });
-        },
-        handler() {
-          handlerCalled = true;
-          return 'Response from the route handler';
-        },
+      it('should transform a value from the route handler by "postHandler" hooks', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler() {
+            return 'a';
+          },
+          postHandler: [(ctx, data) => data + 'b', (ctx, data) => data + 'c'],
+        });
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('abc');
       });
-      const req = createRequestMock({method: HttpMethod.GET, path: ROOT_PATH});
-      const res = createResponseMock();
-      await router._handleRequest(req, res);
-      const responseBody = await res.getBody();
-      expect(responseBody).to.equal('Response from preHandler');
-      expect(handlerCalled).to.be.false;
+
+      it('should transform a value from the "preHandler" hook by "postHandler" hooks', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler() {
+            return 'a';
+          },
+          handler() {
+            throw new Error('Should not be called!');
+          },
+          postHandler: [(ctx, data) => data + 'b', (ctx, data) => data + 'c'],
+        });
+        const req = createRequestMock({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+        });
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const responseBody = await res.getBody();
+        expect(responseBody).to.equal('abc');
+      });
     });
 
     describe('OPTIONS method handling', function () {
@@ -689,7 +832,7 @@ describe('TrieRouter', function () {
           path: '/api/resource',
         });
         const res = createResponseMock();
-        await router._handleRequest(req, res);
+        await router.requestListener(req, res);
         expect(res.statusCode).to.be.eq(204);
         expect(res.getHeader('Allow')).to.be.eq('GET, POST, OPTIONS');
       });
@@ -710,7 +853,7 @@ describe('TrieRouter', function () {
           path: '/api/resource',
         });
         const res = createResponseMock();
-        await router._handleRequest(req, res);
+        await router.requestListener(req, res);
         const body = await res.getBody();
         expect(customOptionsCalled).to.be.true;
         expect(res.statusCode).to.be.eq(200);
@@ -724,7 +867,7 @@ describe('TrieRouter', function () {
           path: '/unknown',
         });
         const res = createResponseMock();
-        await router._handleRequest(req, res);
+        await router.requestListener(req, res);
         expect(res.statusCode).to.be.eq(404);
       });
     });

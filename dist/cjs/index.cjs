@@ -777,844 +777,9 @@ function getRequestPathname(request) {
 }
 __name(getRequestPathname, "getRequestPathname");
 
-// src/hooks/router-hook-invoker.js
-var import_js_format11 = require("@e22m4u/js-format");
-
-// src/hooks/router-hook-registry.js
-var import_js_format10 = require("@e22m4u/js-format");
-var RouterHookType = {
-  PRE_HANDLER: "preHandler",
-  POST_HANDLER: "postHandler",
-  ON_DEFINE_ROUTE: "onDefineRoute"
-};
-var ROUTER_HOOK_TYPES = Object.values(RouterHookType);
-var _RouterHookRegistry = class _RouterHookRegistry {
-  /**
-   * Hooks.
-   *
-   * @type {Map<string, Function[]>}
-   * @private
-   */
-  _hooks = /* @__PURE__ */ new Map();
-  /**
-   * Add hook.
-   *
-   * @param {string} type
-   * @param {Function} hook
-   * @returns {this}
-   */
-  addHook(type, hook) {
-    if (!type || typeof type !== "string") {
-      throw new import_js_format10.InvalidArgumentError(
-        "Hook type is required, but %v was given.",
-        type
-      );
-    }
-    if (!Object.values(RouterHookType).includes(type)) {
-      throw new import_js_format10.InvalidArgumentError("Hook type %v is not supported.", type);
-    }
-    if (!hook || typeof hook !== "function") {
-      throw new import_js_format10.InvalidArgumentError(
-        "Router hook %v must be a Function, but %v was given.",
-        type,
-        hook
-      );
-    }
-    const hooks = this._hooks.get(type) || [];
-    hooks.push(hook);
-    this._hooks.set(type, hooks);
-    return this;
-  }
-  /**
-   * Has hook.
-   *
-   * @param {string} type
-   * @param {Function} hook
-   * @returns {boolean}
-   */
-  hasHook(type, hook) {
-    if (!type || typeof type !== "string") {
-      throw new import_js_format10.InvalidArgumentError(
-        "Hook type is required, but %v was given.",
-        type
-      );
-    }
-    if (!Object.values(RouterHookType).includes(type)) {
-      throw new import_js_format10.InvalidArgumentError("Hook type %v is not supported.", type);
-    }
-    if (!hook || typeof hook !== "function") {
-      throw new import_js_format10.InvalidArgumentError(
-        "Router hook %v must be a Function, but %v was given.",
-        type,
-        hook
-      );
-    }
-    const hooks = this._hooks.get(type) || [];
-    return hooks.indexOf(hook) > -1;
-  }
-  /**
-   * Get hooks.
-   *
-   * @param {string} type
-   * @returns {Function[]}
-   */
-  getHooks(type) {
-    if (!type || typeof type !== "string") {
-      throw new import_js_format10.InvalidArgumentError(
-        "Hook type is required, but %v was given.",
-        type
-      );
-    }
-    if (!Object.values(RouterHookType).includes(type)) {
-      throw new import_js_format10.InvalidArgumentError("Hook type %v is not supported.", type);
-    }
-    return this._hooks.get(type) || [];
-  }
-};
-__name(_RouterHookRegistry, "RouterHookRegistry");
-var RouterHookRegistry = _RouterHookRegistry;
-
-// src/hooks/router-hook-invoker.js
-var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
-  /**
-   * Последовательно вызывает глобальные хуки и хуки маршрута указанного
-   * типа, пока один из них не вернет отличное от undefined значение или
-   * не отправит HTTP-ответ. Метод выполняет хуки в синхронном режиме для
-   * улучшения производительности. Если один из хуков возвращает Promise,
-   * выполнение оставшейся части цепочки переключается в асинхронный режим.
-   *
-   * @param {Route} route
-   * @param {string} hookType
-   * @param {import('http').ServerResponse} response
-   * @param {*[]} args
-   * @returns {Promise<*>|*}
-   */
-  invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
-    if (!route || !(route instanceof Route)) {
-      throw new import_js_format11.InvalidArgumentError(
-        'Parameter "route" must be an instance of Route, but %v was given.',
-        route
-      );
-    }
-    if (!hookType || typeof hookType !== "string") {
-      throw new import_js_format11.InvalidArgumentError(
-        'Parameter "hookType" must be a non-empty String, but %v was given.',
-        hookType
-      );
-    }
-    if (!Object.values(RouterHookType).includes(hookType)) {
-      throw new import_js_format11.InvalidArgumentError(
-        "Hook type %v is not supported.",
-        hookType
-      );
-    }
-    if (!response || typeof response !== "object" || Array.isArray(response) || typeof response.headersSent !== "boolean") {
-      throw new import_js_format11.InvalidArgumentError(
-        'Parameter "response" must be an instance of ServerResponse, but %v was given.',
-        response
-      );
-    }
-    if (isResponseSent(response)) {
-      return response;
-    }
-    const hooks = [
-      ...this.getService(RouterHookRegistry).getHooks(hookType),
-      ...route.getHookRegistry().getHooks(hookType)
-    ];
-    let result = void 0;
-    for (let i = 0; i < hooks.length; i++) {
-      const hook = hooks[i];
-      result = hook(...args);
-      if (isResponseSent(response)) {
-        return response;
-      }
-      if (result !== void 0) {
-        if (isPromise(result)) {
-          return this._continueHooksInvocationAsync(
-            hooks,
-            i + 1,
-            result,
-            response,
-            args
-          );
-        }
-        return result;
-      }
-    }
-    return;
-  }
-  /**
-   * Асинхронно продолжает выполнение цепочки хуков, начиная с указанного
-   * индекса. Данный метод вызывается, когда хук в основном синхронном цикле
-   * возвращает Promise. Метод ожидает разрешения начального Promise, а затем
-   * последовательно выполняет оставшиеся хуки в асинхронном режиме, следуя
-   * той же логике прерывания (при получении значения или отправке ответа),
-   * что и основной метод.
-   *
-   * @param {Function[]} hooks
-   * @param {number} startIndex
-   * @param {Promise} initialPromise
-   * @param {import('http').ServerResponse} response
-   * @param {*} args
-   * @returns {Promise<*>}
-   */
-  async _continueHooksInvocationAsync(hooks, startIndex, initialPromise, response, args) {
-    let result = await initialPromise;
-    if (isResponseSent(response)) {
-      return response;
-    }
-    if (result !== void 0) {
-      return result;
-    }
-    for (let i = startIndex; i < hooks.length; i++) {
-      result = await hooks[i](...args);
-      if (isResponseSent(response)) {
-        return response;
-      }
-      if (result !== void 0) {
-        return result;
-      }
-    }
-    return;
-  }
-};
-__name(_RouterHookInvoker, "RouterHookInvoker");
-var RouterHookInvoker = _RouterHookInvoker;
-
-// src/route/validate-route-definition.js
-var import_js_format12 = require("@e22m4u/js-format");
-function validateRouteDefinition(routeDef) {
-  if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef)) {
-    throw new import_js_format12.InvalidArgumentError(
-      "Route definition must be an Object, but %v was given.",
-      routeDef
-    );
-  }
-  if (!routeDef.method || typeof routeDef.method !== "string") {
-    throw new import_js_format12.InvalidArgumentError(
-      'Option "method" must be a non-empty String, but %v was given.',
-      routeDef.method
-    );
-  }
-  if (typeof routeDef.path !== "string") {
-    throw new import_js_format12.InvalidArgumentError(
-      'Option "path" must be a String, but %v was given.',
-      routeDef.path
-    );
-  }
-  if (!routeDef.path.startsWith("/")) {
-    throw new import_js_format12.InvalidArgumentError(
-      'Option "path" must start with "/", but %v was given.',
-      routeDef.path
-    );
-  }
-  if (typeof routeDef.handler !== "function") {
-    throw new import_js_format12.InvalidArgumentError(
-      'Option "handler" must be a Function, but %v was given.',
-      routeDef.handler
-    );
-  }
-  if (routeDef.preHandler !== void 0) {
-    if (Array.isArray(routeDef.preHandler)) {
-      routeDef.preHandler.forEach((preHandler) => {
-        if (typeof preHandler !== "function") {
-          throw new import_js_format12.InvalidArgumentError(
-            'Hook "preHandler" must be a Function, but %v was given.',
-            preHandler
-          );
-        }
-      });
-    } else if (typeof routeDef.preHandler !== "function") {
-      throw new import_js_format12.InvalidArgumentError(
-        'Option "preHandler" must be a Function or an Array, but %v was given.',
-        routeDef.preHandler
-      );
-    }
-  }
-  if (routeDef.postHandler !== void 0) {
-    if (Array.isArray(routeDef.postHandler)) {
-      routeDef.postHandler.forEach((postHandler) => {
-        if (typeof postHandler !== "function") {
-          throw new import_js_format12.InvalidArgumentError(
-            'Hook "postHandler" must be a Function, but %v was given.',
-            postHandler
-          );
-        }
-      });
-    } else if (typeof routeDef.postHandler !== "function") {
-      throw new import_js_format12.InvalidArgumentError(
-        'Option "postHandler" must be a Function or an Array, but %v was given.',
-        routeDef.postHandler
-      );
-    }
-  }
-  if (routeDef.meta !== void 0) {
-    if (!routeDef.meta || typeof routeDef.meta !== "object" || Array.isArray(routeDef.meta)) {
-      throw new import_js_format12.InvalidArgumentError(
-        'Option "meta" must be an Object, but %v was given.',
-        routeDef.meta
-      );
-    }
-  }
-}
-__name(validateRouteDefinition, "validateRouteDefinition");
-
-// src/route/route.js
-var HttpMethod = {
-  GET: "GET",
-  POST: "POST",
-  PUT: "PUT",
-  PATCH: "PATCH",
-  DELETE: "DELETE",
-  OPTIONS: "OPTIONS"
-};
-var DEFAULT_META = Object.freeze({});
-var _Route = class _Route extends import_js_debug.Debuggable {
-  /**
-   * Definition.
-   *
-   * @type {RouteDefinition}
-   */
-  _definition;
-  /**
-   * Get definition.
-   *
-   * @returns {RouteDefinition}
-   */
-  getDefinition() {
-    return this._definition;
-  }
-  /**
-   * Hook registry.
-   *
-   * @type {RouterHookRegistry}
-   */
-  _hookRegistry = new RouterHookRegistry();
-  /**
-   * Get hook registry.
-   *
-   * @returns {RouterHookRegistry}
-   */
-  getHookRegistry() {
-    return this._hookRegistry;
-  }
-  /**
-   * Getter of the method.
-   *
-   * @returns {string}
-   */
-  get method() {
-    return this._definition.method;
-  }
-  /**
-   * Getter of the path.
-   *
-   * @returns {string}
-   */
-  get path() {
-    return this._definition.path;
-  }
-  /**
-   * Getter of the meta.
-   *
-   * @returns {object}
-   */
-  get meta() {
-    return this._definition.meta || DEFAULT_META;
-  }
-  /**
-   * Getter of the handler.
-   *
-   * @returns {*}
-   */
-  get handler() {
-    return this._definition.handler;
-  }
-  /**
-   * Constructor.
-   *
-   * @param {RouteDefinition} routeDef
-   */
-  constructor(routeDef) {
-    super({
-      namespace: MODULE_DEBUG_NAMESPACE,
-      noEnvironmentNamespace: true,
-      noInstantiationMessage: true
-    });
-    validateRouteDefinition(routeDef);
-    this._definition = cloneDeep(routeDef);
-    this._definition.method = this._definition.method.toUpperCase();
-    if (routeDef.preHandler !== void 0) {
-      const preHandlerHooks = [routeDef.preHandler].flat().filter(Boolean);
-      preHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(RouterHookType.PRE_HANDLER, hook);
-      });
-    }
-    if (routeDef.postHandler !== void 0) {
-      const postHandlerHooks = [routeDef.postHandler].flat().filter(Boolean);
-      postHandlerHooks.forEach((hook) => {
-        this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
-      });
-    }
-    this.ctorDebug("Created a route %s %v.", this.method, this.path);
-  }
-  /**
-   * Handle request.
-   *
-   * @param {RequestContext} context
-   * @returns {*}
-   */
-  handle(context) {
-    const debug = this.getDebuggerFor(this.handle);
-    const requestPath = getRequestPathname(context.request);
-    debug("Invoking a route handler %s %v.", this.method, requestPath);
-    return this.handler(context);
-  }
-};
-__name(_Route, "Route");
-var Route = _Route;
-
-// src/parsers/body-parser.js
-var import_http_errors2 = __toESM(require("http-errors"), 1);
-
-// src/router-options.js
-var import_js_format13 = require("@e22m4u/js-format");
-var _RouterOptions = class _RouterOptions extends DebuggableService {
-  /**
-   * Request body bytes limit.
-   *
-   * @type {number}
-   * @private
-   */
-  _requestBodyBytesLimit = 512e3;
-  // 512kb
-  /**
-   * Getter of request body bytes limit.
-   *
-   * @returns {number}
-   */
-  get requestBodyBytesLimit() {
-    return this._requestBodyBytesLimit;
-  }
-  /**
-   * Set request body bytes limit.
-   *
-   * @param {number} input
-   * @returns {RouterOptions}
-   */
-  setRequestBodyBytesLimit(input) {
-    if (typeof input !== "number" || input < 0) {
-      throw new import_js_format13.InvalidArgumentError(
-        'Option "requestBodyBytesLimit" must be a positive Number or 0, but %v was given.',
-        input
-      );
-    }
-    this._requestBodyBytesLimit = input;
-    return this;
-  }
-};
-__name(_RouterOptions, "RouterOptions");
-var RouterOptions = _RouterOptions;
-
-// src/parsers/body-parser.js
-var import_js_format14 = require("@e22m4u/js-format");
-var METHODS_WITH_BODY = ["POST", "PUT", "PATCH", "DELETE"];
-var UNPARSABLE_MEDIA_TYPES = ["multipart/form-data"];
-var _BodyParser = class _BodyParser extends DebuggableService {
-  /**
-   * Parsers.
-   *
-   * @type {{[mime: string]: Function}}
-   */
-  _parsers = {
-    "text/plain": /* @__PURE__ */ __name((v) => String(v), "text/plain"),
-    "application/json": parseJsonBody
-  };
-  /**
-   * Set parser.
-   *
-   * @param {string} mediaType
-   * @param {Function} parser
-   * @returns {this}
-   */
-  defineParser(mediaType, parser) {
-    if (!mediaType || typeof mediaType !== "string") {
-      throw new import_js_format14.InvalidArgumentError(
-        'Parameter "mediaType" must be a non-empty String, but %v was given.',
-        mediaType
-      );
-    }
-    if (!parser || typeof parser !== "function") {
-      throw new import_js_format14.InvalidArgumentError(
-        'Parameter "parser" must be a Function, but %v was given.',
-        parser
-      );
-    }
-    this._parsers[mediaType] = parser;
-    return this;
-  }
-  /**
-   * Has parser.
-   *
-   * @param {string} mediaType
-   * @returns {boolean}
-   */
-  hasParser(mediaType) {
-    if (!mediaType || typeof mediaType !== "string") {
-      throw new import_js_format14.InvalidArgumentError(
-        'Parameter "mediaType" must be a non-empty String, but %v was given.',
-        mediaType
-      );
-    }
-    return Boolean(this._parsers[mediaType]);
-  }
-  /**
-   * Get parser.
-   *
-   * @param {string} mediaType
-   * @returns {Function}
-   */
-  getParser(mediaType) {
-    if (!mediaType || typeof mediaType !== "string") {
-      throw new import_js_format14.InvalidArgumentError(
-        'Parameter "mediaType" must be a non-empty String, but %v was given.',
-        mediaType
-      );
-    }
-    const parser = this._parsers[mediaType];
-    if (!parser) {
-      throw new import_js_format14.InvalidArgumentError(
-        "Media type %v does not have a parser.",
-        mediaType
-      );
-    }
-    return parser;
-  }
-  /**
-   * Remove parser.
-   *
-   * @param {string} mediaType
-   * @returns {this}
-   */
-  removeParser(mediaType) {
-    if (!mediaType || typeof mediaType !== "string") {
-      throw new import_js_format14.InvalidArgumentError(
-        'Parameter "mediaType" must be a non-empty String, but %v was given.',
-        mediaType
-      );
-    }
-    delete this._parsers[mediaType];
-    return this;
-  }
-  /**
-   * Parse.
-   *
-   * @param {import('http').IncomingMessage} request
-   * @returns {Promise<*>|undefined}
-   */
-  parse(request) {
-    const debug = this.getDebuggerFor(this.parse);
-    debug(
-      "Parsing a request body %s %v.",
-      request.method.toUpperCase(),
-      getRequestPathname(request)
-    );
-    if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
-      debug(
-        "Skipping body parsing for the %s method.",
-        request.method.toUpperCase()
-      );
-      return;
-    }
-    const contentType = (request.headers["content-type"] || "").replace(
-      /^([^;]+);.*$/,
-      "$1"
-    );
-    if (!contentType) {
-      debug("Skipping body parsing because no content type is provided.");
-      return;
-    }
-    const { mediaType } = parseContentType(contentType);
-    if (!mediaType) {
-      throw createError(
-        import_http_errors2.default.BadRequest,
-        'Unable to parse the "content-type" header.'
-      );
-    }
-    const parser = this._parsers[mediaType];
-    if (!parser) {
-      if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
-        debug("Skipping body parsing for the media type %v.", mediaType);
-        return;
-      }
-      throw createError(
-        import_http_errors2.default.UnsupportedMediaType,
-        "Media type %v is not supported.",
-        mediaType
-      );
-    }
-    const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
-    debug("Fetching a request body.");
-    debug("Body limit is %v bytes.", bodyBytesLimit);
-    return fetchRequestBody(request, bodyBytesLimit).then((rawBody) => {
-      if (rawBody != null) {
-        debug("Read %v bytes.", Buffer.byteLength(rawBody, "utf8"));
-        return parser(rawBody);
-      }
-      debug("Request body has no content.");
-      return rawBody;
-    });
-  }
-};
-__name(_BodyParser, "BodyParser");
-var BodyParser = _BodyParser;
-function parseJsonBody(input) {
-  if (typeof input !== "string") {
-    return void 0;
-  }
-  try {
-    return JSON.parse(input);
-  } catch (error) {
-    throw createError(import_http_errors2.default.BadRequest, error.message);
-  }
-}
-__name(parseJsonBody, "parseJsonBody");
-
-// src/parsers/query-parser.js
-var import_querystring2 = __toESM(require("querystring"), 1);
-var _QueryParser = class _QueryParser extends DebuggableService {
-  /**
-   * Parse
-   *
-   * @param {import('http').IncomingMessage} request
-   * @returns {object}
-   */
-  parse(request) {
-    const debug = this.getDebuggerFor(this.parse);
-    const queryStr = request.url.replace(/^[^?]*\??/, "");
-    const query = queryStr ? import_querystring2.default.parse(queryStr) : {};
-    const queryKeys = Object.keys(query);
-    if (queryKeys.length) {
-      queryKeys.forEach((key) => {
-        debug("Found a query parameter %v with a value %v.", key, query[key]);
-      });
-    } else {
-      debug(
-        "Request %s %v had no query parameters.",
-        request.method,
-        getRequestPathname(request)
-      );
-    }
-    return query;
-  }
-};
-__name(_QueryParser, "QueryParser");
-var QueryParser = _QueryParser;
-
-// src/parsers/cookies-parser.js
-var _CookiesParser = class _CookiesParser extends DebuggableService {
-  /**
-   * Parse
-   *
-   * @param {import('http').IncomingMessage} request
-   * @returns {object}
-   */
-  parse(request) {
-    const debug = this.getDebuggerFor(this.parse);
-    const cookiesString = request.headers["cookie"] || "";
-    const cookies = parseCookieString(cookiesString);
-    const cookiesKeys = Object.keys(cookies);
-    if (cookiesKeys.length) {
-      cookiesKeys.forEach((key) => {
-        debug("Found a cookie %v with a value %v.", key, cookies[key]);
-      });
-    } else {
-      debug(
-        "Request %s %v had no cookies.",
-        request.method,
-        getRequestPathname(request)
-      );
-    }
-    return cookies;
-  }
-};
-__name(_CookiesParser, "CookiesParser");
-var CookiesParser = _CookiesParser;
-
-// src/parsers/request-parser.js
-var import_http3 = require("http");
-var import_js_format15 = require("@e22m4u/js-format");
-var _RequestParser = class _RequestParser extends DebuggableService {
-  /**
-   * Parse.
-   *
-   * @param {IncomingMessage} request
-   * @returns {Promise<object>|object}
-   */
-  parse(request) {
-    if (!(request instanceof import_http3.IncomingMessage)) {
-      throw new import_js_format15.InvalidArgumentError(
-        'Parameter "request" must be an instance of IncomingMessage, but %v was given.',
-        request
-      );
-    }
-    const data = {};
-    const promises = [];
-    const parsedQuery = this.getService(QueryParser).parse(request);
-    if (isPromise(parsedQuery)) {
-      promises.push(parsedQuery.then((v) => data.query = v));
-    } else {
-      data.query = parsedQuery;
-    }
-    const parsedCookies = this.getService(CookiesParser).parse(request);
-    if (isPromise(parsedCookies)) {
-      promises.push(parsedCookies.then((v) => data.cookies = v));
-    } else {
-      data.cookies = parsedCookies;
-    }
-    const parsedBody = this.getService(BodyParser).parse(request);
-    if (isPromise(parsedBody)) {
-      promises.push(parsedBody.then((v) => data.body = v));
-    } else {
-      data.body = parsedBody;
-    }
-    data.headers = Object.assign({}, request.headers);
-    return promises.length ? Promise.all(promises).then(() => data) : data;
-  }
-};
-__name(_RequestParser, "RequestParser");
-var RequestParser = _RequestParser;
-
-// src/route-registry.js
-var import_js_path_trie = require("@e22m4u/js-path-trie");
-var import_js_service2 = require("@e22m4u/js-service");
-var import_js_format16 = require("@e22m4u/js-format");
-var _RouteRegistry = class _RouteRegistry extends DebuggableService {
-  /**
-   * Constructor.
-   *
-   * @param {ServiceContainer} [container]
-   */
-  constructor(container) {
-    super(container);
-    this._trie = new import_js_path_trie.PathTrie();
-  }
-  /**
-   * Define route.
-   *
-   * @param {import('./route/index.js').RouteDefinition} routeDef
-   * @returns {Route}
-   */
-  defineRoute(routeDef) {
-    const debug = this.getDebuggerFor(this.defineRoute);
-    if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef)) {
-      throw new import_js_format16.InvalidArgumentError(
-        "Route definition must be an Object, but %v was given.",
-        routeDef
-      );
-    }
-    const hookRegistry = this.getService(RouterHookRegistry);
-    const onDefineRouteHooks = hookRegistry.getHooks(
-      RouterHookType.ON_DEFINE_ROUTE
-    );
-    if (onDefineRouteHooks.length) {
-      debug('Invoking %v "onDefineRoute" hook(s).', onDefineRouteHooks.length);
-      for (const hook of onDefineRouteHooks) {
-        const hookResult = hook({ ...routeDef }, this.container);
-        if (hookResult !== void 0 && !(hookResult !== null && typeof hookResult === "object" && !Array.isArray(hookResult))) {
-          throw new import_js_format16.InvalidArgumentError(
-            'Hook "onDefineRoute" must return an Object or undefined, but %v was given.',
-            hookResult
-          );
-        }
-        if (hookResult !== void 0) {
-          routeDef = hookResult;
-        }
-      }
-      debug("Hooks invoked.");
-    }
-    const route = new Route(routeDef);
-    const triePath = `${route.method}/${route.path}`;
-    this._trie.add(triePath, route);
-    debug("Registered a route %s %v.", route.method.toUpperCase(), route.path);
-    return route;
-  }
-  /**
-   * Match route by request.
-   *
-   * @param {import('http').IncomingRequest} request
-   * @returns {ResolvedRoute|undefined}
-   */
-  matchRouteByRequest(request) {
-    const debug = this.getDebuggerFor(this.matchRouteByRequest);
-    const requestPath = getRequestPathname(request);
-    debug(
-      "Matching routes for the request %s %v.",
-      request.method.toUpperCase(),
-      requestPath
-    );
-    const rawTriePath = `${request.method.toUpperCase()}/${requestPath}`;
-    const triePath = rawTriePath.replace(/\/+/g, "/");
-    const resolved = this._trie.match(triePath);
-    if (resolved) {
-      const route = resolved.value;
-      debug("Matched route is %s %v.", route.method.toUpperCase(), route.path);
-      const paramNames = Object.keys(resolved.params);
-      if (paramNames.length) {
-        paramNames.forEach((name) => {
-          debug(
-            "Found a path parameter %v with a value %v.",
-            name,
-            resolved.params[name]
-          );
-        });
-      } else {
-        debug("No path parameters found.");
-      }
-      return { route, params: resolved.params };
-    }
-    debug(
-      "No route found for the request %s %v.",
-      request.method.toUpperCase(),
-      requestPath
-    );
-  }
-  /**
-   * Get allowed methods for request path.
-   *
-   * @param {string} requestPath
-   * @returns {string[]}
-   */
-  getAllowedMethodsForRequestPath(requestPath) {
-    if (typeof requestPath !== "string") {
-      throw new import_js_format16.InvalidArgumentError(
-        'Parameter "requestPath" must be a String, but %v was given.',
-        requestPath
-      );
-    }
-    const debug = this.getDebuggerFor(this.getAllowedMethodsForRequestPath);
-    const allowedMethods = [];
-    for (const method of Object.values(HttpMethod)) {
-      const rawTriePath = `${method}/${requestPath}`;
-      const triePath = rawTriePath.replace(/\/+/g, "/");
-      if (this._trie.match(triePath)) {
-        allowedMethods.push(method);
-      }
-    }
-    if (allowedMethods.length) {
-      debug("Allowed methods for %v are: %l.", requestPath, allowedMethods);
-    } else {
-      debug("Path %v does not have allowed methods.", requestPath);
-    }
-    return allowedMethods;
-  }
-};
-__name(_RouteRegistry, "RouteRegistry");
-var RouteRegistry = _RouteRegistry;
-
 // src/request-context.js
-var import_js_format17 = require("@e22m4u/js-format");
-var import_js_service3 = require("@e22m4u/js-service");
+var import_js_format10 = require("@e22m4u/js-format");
+var import_js_service2 = require("@e22m4u/js-service");
 var _RequestContext = class _RequestContext {
   /**
    * Service container.
@@ -1760,29 +925,29 @@ var _RequestContext = class _RequestContext {
    * @param {Route} route
    */
   constructor(container, request, response, route) {
-    if (!(0, import_js_service3.isServiceContainer)(container)) {
-      throw new import_js_format17.InvalidArgumentError(
+    if (!(0, import_js_service2.isServiceContainer)(container)) {
+      throw new import_js_format10.InvalidArgumentError(
         'Parameter "container" must be an instance of ServiceContainer, but %v was given.',
         container
       );
     }
     this._container = container;
     if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
-      throw new import_js_format17.InvalidArgumentError(
+      throw new import_js_format10.InvalidArgumentError(
         'Parameter "request" must be an instance of IncomingMessage, but %v was given.',
         request
       );
     }
     this._request = request;
     if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
-      throw new import_js_format17.InvalidArgumentError(
+      throw new import_js_format10.InvalidArgumentError(
         'Parameter "response" must be an instance of ServerResponse, but %v was given.',
         response
       );
     }
     this._response = response;
     if (!(route instanceof Route)) {
-      throw new import_js_format17.InvalidArgumentError(
+      throw new import_js_format10.InvalidArgumentError(
         'Parameter "route" must be an instance of Route, but %v was given.',
         route
       );
@@ -1792,6 +957,895 @@ var _RequestContext = class _RequestContext {
 };
 __name(_RequestContext, "RequestContext");
 var RequestContext = _RequestContext;
+
+// src/hooks/router-hook-invoker.js
+var import_js_format12 = require("@e22m4u/js-format");
+
+// src/hooks/router-hook-registry.js
+var import_js_format11 = require("@e22m4u/js-format");
+var RouterHookType = {
+  PRE_HANDLER: "preHandler",
+  POST_HANDLER: "postHandler",
+  ON_DEFINE_ROUTE: "onDefineRoute"
+};
+var ROUTER_HOOK_TYPES = Object.values(RouterHookType);
+var _RouterHookRegistry = class _RouterHookRegistry {
+  /**
+   * Hooks.
+   *
+   * @type {Map<string, Function[]>}
+   * @private
+   */
+  _hooks = /* @__PURE__ */ new Map();
+  /**
+   * Add hook.
+   *
+   * @param {string} type
+   * @param {Function} hook
+   * @returns {this}
+   */
+  addHook(type, hook) {
+    if (!type || typeof type !== "string") {
+      throw new import_js_format11.InvalidArgumentError(
+        "Hook type is required, but %v was given.",
+        type
+      );
+    }
+    if (!Object.values(RouterHookType).includes(type)) {
+      throw new import_js_format11.InvalidArgumentError("Hook type %v is not supported.", type);
+    }
+    if (!hook || typeof hook !== "function") {
+      throw new import_js_format11.InvalidArgumentError(
+        "Router hook %v must be a Function, but %v was given.",
+        type,
+        hook
+      );
+    }
+    const hooks = this._hooks.get(type) || [];
+    hooks.push(hook);
+    this._hooks.set(type, hooks);
+    return this;
+  }
+  /**
+   * Has hook.
+   *
+   * @param {string} type
+   * @param {Function} hook
+   * @returns {boolean}
+   */
+  hasHook(type, hook) {
+    if (!type || typeof type !== "string") {
+      throw new import_js_format11.InvalidArgumentError(
+        "Hook type is required, but %v was given.",
+        type
+      );
+    }
+    if (!Object.values(RouterHookType).includes(type)) {
+      throw new import_js_format11.InvalidArgumentError("Hook type %v is not supported.", type);
+    }
+    if (!hook || typeof hook !== "function") {
+      throw new import_js_format11.InvalidArgumentError(
+        "Router hook %v must be a Function, but %v was given.",
+        type,
+        hook
+      );
+    }
+    const hooks = this._hooks.get(type) || [];
+    return hooks.indexOf(hook) > -1;
+  }
+  /**
+   * Get hooks.
+   *
+   * @param {string} type
+   * @returns {Function[]}
+   */
+  getHooks(type) {
+    if (!type || typeof type !== "string") {
+      throw new import_js_format11.InvalidArgumentError(
+        "Hook type is required, but %v was given.",
+        type
+      );
+    }
+    if (!Object.values(RouterHookType).includes(type)) {
+      throw new import_js_format11.InvalidArgumentError("Hook type %v is not supported.", type);
+    }
+    return this._hooks.get(type) || [];
+  }
+};
+__name(_RouterHookRegistry, "RouterHookRegistry");
+var RouterHookRegistry = _RouterHookRegistry;
+
+// src/hooks/router-hook-invoker.js
+var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
+  /**
+   * Последовательно вызывает глобальные хуки и хуки маршрута типа "preHandler",
+   * пока один из них не вернет отличное от undefined значение или не отправит
+   * HTTP-ответ. Метод выполняет хуки в синхронном режиме для улучшения
+   * производительности. Если один из хуков возвращает Promise, выполнение
+   * оставшейся части цепочки переключается в асинхронный режим.
+   *
+   * @param {import('../request-context.js').RequestContext} context
+   * @returns {Promise<*>|*}
+   */
+  invokePreHandlerHooks(context) {
+    if (!(context instanceof RequestContext)) {
+      throw new import_js_format12.InvalidArgumentError(
+        'Parameter "context" must be an instance of RequestContext, but %v was given.',
+        context
+      );
+    }
+    if (isResponseSent(context.response)) {
+      return context.response;
+    }
+    const hooks = [
+      ...this.getService(RouterHookRegistry).getHooks(
+        RouterHookType.PRE_HANDLER
+      ),
+      ...context.route.getHookRegistry().getHooks(RouterHookType.PRE_HANDLER)
+    ];
+    let result = void 0;
+    for (let i = 0; i < hooks.length; i++) {
+      const hook = hooks[i];
+      result = hook(context);
+      if (isResponseSent(context.response)) {
+        return context.response;
+      }
+      if (result !== void 0) {
+        if (isPromise(result)) {
+          return this._continuePreHandlerHooksInvocationAsync(
+            hooks,
+            i + 1,
+            result,
+            context
+          );
+        }
+        return result;
+      }
+    }
+    return;
+  }
+  /**
+   * Асинхронно продолжает выполнение цепочки хуков "preHandler",
+   * начиная с указанного индекса. Данный метод вызывается, когда
+   * хук в основном синхронном цикле возвращает Promise. Метод ожидает
+   * разрешения начального Promise, а затем последовательно выполняет
+   * оставшиеся хуки в асинхронном режиме, следуя той же логике
+   * прерывания (при получении значения или отправке ответа),
+   * что и основной метод.
+   *
+   * @param {Function[]} hooks
+   * @param {number} startIndex
+   * @param {Promise} initialPromise
+   * @param {import('../request-context.js').RequestContext} context
+   * @returns {Promise<*>}
+   */
+  async _continuePreHandlerHooksInvocationAsync(hooks, startIndex, initialPromise, context) {
+    let result = await initialPromise;
+    if (isResponseSent(context.response)) {
+      return context.response;
+    }
+    if (result !== void 0) {
+      return result;
+    }
+    for (let i = startIndex; i < hooks.length; i++) {
+      result = await hooks[i](context);
+      if (isResponseSent(context.response)) {
+        return context.response;
+      }
+      if (result !== void 0) {
+        return result;
+      }
+    }
+    return;
+  }
+  /**
+   * Invoke post-handler hooks.
+   *
+   * @param {import('../request-context.js').RequestContext} context
+   * @param {*} initialData
+   * @returns {Promise<*>|*}
+   */
+  invokePostHandlerHooks(context, initialData) {
+    if (!(context instanceof RequestContext)) {
+      throw new import_js_format12.InvalidArgumentError(
+        'Parameter "context" must be an instance of RequestContext, but %v was given.',
+        context
+      );
+    }
+    if (isResponseSent(context.response)) {
+      return context.response;
+    }
+    const hooks = [
+      ...context.route.getHookRegistry().getHooks(RouterHookType.POST_HANDLER),
+      ...this.getService(RouterHookRegistry).getHooks(
+        RouterHookType.POST_HANDLER
+      )
+    ];
+    let currentData = initialData;
+    for (let i = 0; i < hooks.length; i++) {
+      const hook = hooks[i];
+      const result = hook(context, currentData);
+      if (isResponseSent(context.response)) {
+        return context.response;
+      }
+      if (result !== void 0) {
+        if (isPromise(result)) {
+          return this._continuePostHandlerHooksInvocationAsync(
+            hooks,
+            i + 1,
+            result,
+            context,
+            currentData
+          );
+        }
+        currentData = result;
+      }
+    }
+    return currentData;
+  }
+  /**
+   * Continue post-handler hooks invocation async.
+   *
+   * @param {Function[]} hooks
+   * @param {number} startIndex
+   * @param {Promise} initialPromise
+   * @param {import('../request-context.js').RequestContext} context
+   * @param {*} currentData
+   * @returns {Promise<*>}
+   */
+  async _continuePostHandlerHooksInvocationAsync(hooks, startIndex, initialPromise, context, currentData) {
+    let result = await initialPromise;
+    if (isResponseSent(context.response)) {
+      return context.response;
+    }
+    if (result !== void 0) {
+      currentData = result;
+    }
+    for (let i = startIndex; i < hooks.length; i++) {
+      result = await hooks[i](context, currentData);
+      if (isResponseSent(context.response)) {
+        return context.response;
+      }
+      if (result !== void 0) {
+        currentData = result;
+      }
+    }
+    return currentData;
+  }
+};
+__name(_RouterHookInvoker, "RouterHookInvoker");
+var RouterHookInvoker = _RouterHookInvoker;
+
+// src/route/validate-route-definition.js
+var import_js_format13 = require("@e22m4u/js-format");
+function validateRouteDefinition(routeDef) {
+  if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef)) {
+    throw new import_js_format13.InvalidArgumentError(
+      "Route definition must be an Object, but %v was given.",
+      routeDef
+    );
+  }
+  if (!routeDef.method || typeof routeDef.method !== "string") {
+    throw new import_js_format13.InvalidArgumentError(
+      'Option "method" must be a non-empty String, but %v was given.',
+      routeDef.method
+    );
+  }
+  if (typeof routeDef.path !== "string") {
+    throw new import_js_format13.InvalidArgumentError(
+      'Option "path" must be a String, but %v was given.',
+      routeDef.path
+    );
+  }
+  if (!routeDef.path.startsWith("/")) {
+    throw new import_js_format13.InvalidArgumentError(
+      'Option "path" must start with "/", but %v was given.',
+      routeDef.path
+    );
+  }
+  if (typeof routeDef.handler !== "function") {
+    throw new import_js_format13.InvalidArgumentError(
+      'Option "handler" must be a Function, but %v was given.',
+      routeDef.handler
+    );
+  }
+  if (routeDef.preHandler !== void 0) {
+    if (Array.isArray(routeDef.preHandler)) {
+      routeDef.preHandler.forEach((preHandler) => {
+        if (typeof preHandler !== "function") {
+          throw new import_js_format13.InvalidArgumentError(
+            'Hook "preHandler" must be a Function, but %v was given.',
+            preHandler
+          );
+        }
+      });
+    } else if (typeof routeDef.preHandler !== "function") {
+      throw new import_js_format13.InvalidArgumentError(
+        'Option "preHandler" must be a Function or an Array, but %v was given.',
+        routeDef.preHandler
+      );
+    }
+  }
+  if (routeDef.postHandler !== void 0) {
+    if (Array.isArray(routeDef.postHandler)) {
+      routeDef.postHandler.forEach((postHandler) => {
+        if (typeof postHandler !== "function") {
+          throw new import_js_format13.InvalidArgumentError(
+            'Hook "postHandler" must be a Function, but %v was given.',
+            postHandler
+          );
+        }
+      });
+    } else if (typeof routeDef.postHandler !== "function") {
+      throw new import_js_format13.InvalidArgumentError(
+        'Option "postHandler" must be a Function or an Array, but %v was given.',
+        routeDef.postHandler
+      );
+    }
+  }
+  if (routeDef.meta !== void 0) {
+    if (!routeDef.meta || typeof routeDef.meta !== "object" || Array.isArray(routeDef.meta)) {
+      throw new import_js_format13.InvalidArgumentError(
+        'Option "meta" must be an Object, but %v was given.',
+        routeDef.meta
+      );
+    }
+  }
+}
+__name(validateRouteDefinition, "validateRouteDefinition");
+
+// src/route/route.js
+var HttpMethod = {
+  GET: "GET",
+  POST: "POST",
+  PUT: "PUT",
+  PATCH: "PATCH",
+  DELETE: "DELETE",
+  OPTIONS: "OPTIONS"
+};
+var DEFAULT_META = Object.freeze({});
+var _Route = class _Route extends import_js_debug.Debuggable {
+  /**
+   * Definition.
+   *
+   * @type {RouteDefinition}
+   */
+  _definition;
+  /**
+   * Get definition.
+   *
+   * @returns {RouteDefinition}
+   */
+  getDefinition() {
+    return this._definition;
+  }
+  /**
+   * Hook registry.
+   *
+   * @type {RouterHookRegistry}
+   */
+  _hookRegistry = new RouterHookRegistry();
+  /**
+   * Get hook registry.
+   *
+   * @returns {RouterHookRegistry}
+   */
+  getHookRegistry() {
+    return this._hookRegistry;
+  }
+  /**
+   * Getter of the method.
+   *
+   * @returns {string}
+   */
+  get method() {
+    return this._definition.method;
+  }
+  /**
+   * Getter of the path.
+   *
+   * @returns {string}
+   */
+  get path() {
+    return this._definition.path;
+  }
+  /**
+   * Getter of the meta.
+   *
+   * @returns {object}
+   */
+  get meta() {
+    return this._definition.meta || DEFAULT_META;
+  }
+  /**
+   * Getter of the handler.
+   *
+   * @returns {*}
+   */
+  get handler() {
+    return this._definition.handler;
+  }
+  /**
+   * Constructor.
+   *
+   * @param {RouteDefinition} routeDef
+   */
+  constructor(routeDef) {
+    super({
+      namespace: MODULE_DEBUG_NAMESPACE,
+      noEnvironmentNamespace: true,
+      noInstantiationMessage: true
+    });
+    validateRouteDefinition(routeDef);
+    this._definition = cloneDeep(routeDef);
+    this._definition.method = this._definition.method.toUpperCase();
+    if (routeDef.preHandler !== void 0) {
+      const preHandlerHooks = [routeDef.preHandler].flat().filter(Boolean);
+      preHandlerHooks.forEach((hook) => {
+        this._hookRegistry.addHook(RouterHookType.PRE_HANDLER, hook);
+      });
+    }
+    if (routeDef.postHandler !== void 0) {
+      const postHandlerHooks = [routeDef.postHandler].flat().filter(Boolean);
+      postHandlerHooks.forEach((hook) => {
+        this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
+      });
+    }
+    this.ctorDebug("Created a route %s %v.", this.method, this.path);
+  }
+  /**
+   * Handle request.
+   *
+   * @param {RequestContext} context
+   * @returns {*}
+   */
+  handle(context) {
+    const debug = this.getDebuggerFor(this.handle);
+    const requestPath = getRequestPathname(context.request);
+    debug("Invoking a route handler %s %v.", this.method, requestPath);
+    return this.handler(context);
+  }
+};
+__name(_Route, "Route");
+var Route = _Route;
+
+// src/parsers/body-parser.js
+var import_http_errors2 = __toESM(require("http-errors"), 1);
+
+// src/router-options.js
+var import_js_format14 = require("@e22m4u/js-format");
+var _RouterOptions = class _RouterOptions extends DebuggableService {
+  /**
+   * Request body bytes limit.
+   *
+   * @type {number}
+   * @private
+   */
+  _requestBodyBytesLimit = 512e3;
+  // 512kb
+  /**
+   * Getter of request body bytes limit.
+   *
+   * @returns {number}
+   */
+  get requestBodyBytesLimit() {
+    return this._requestBodyBytesLimit;
+  }
+  /**
+   * Set request body bytes limit.
+   *
+   * @param {number} input
+   * @returns {RouterOptions}
+   */
+  setRequestBodyBytesLimit(input) {
+    if (typeof input !== "number" || input < 0) {
+      throw new import_js_format14.InvalidArgumentError(
+        'Option "requestBodyBytesLimit" must be a positive Number or 0, but %v was given.',
+        input
+      );
+    }
+    this._requestBodyBytesLimit = input;
+    return this;
+  }
+};
+__name(_RouterOptions, "RouterOptions");
+var RouterOptions = _RouterOptions;
+
+// src/parsers/body-parser.js
+var import_js_format15 = require("@e22m4u/js-format");
+var METHODS_WITH_BODY = ["POST", "PUT", "PATCH", "DELETE"];
+var UNPARSABLE_MEDIA_TYPES = ["multipart/form-data"];
+var _BodyParser = class _BodyParser extends DebuggableService {
+  /**
+   * Parsers.
+   *
+   * @type {{[mime: string]: Function}}
+   */
+  _parsers = {
+    "text/plain": /* @__PURE__ */ __name((v) => String(v), "text/plain"),
+    "application/json": parseJsonBody
+  };
+  /**
+   * Set parser.
+   *
+   * @param {string} mediaType
+   * @param {Function} parser
+   * @returns {this}
+   */
+  defineParser(mediaType, parser) {
+    if (!mediaType || typeof mediaType !== "string") {
+      throw new import_js_format15.InvalidArgumentError(
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
+        mediaType
+      );
+    }
+    if (!parser || typeof parser !== "function") {
+      throw new import_js_format15.InvalidArgumentError(
+        'Parameter "parser" must be a Function, but %v was given.',
+        parser
+      );
+    }
+    this._parsers[mediaType] = parser;
+    return this;
+  }
+  /**
+   * Has parser.
+   *
+   * @param {string} mediaType
+   * @returns {boolean}
+   */
+  hasParser(mediaType) {
+    if (!mediaType || typeof mediaType !== "string") {
+      throw new import_js_format15.InvalidArgumentError(
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
+        mediaType
+      );
+    }
+    return Boolean(this._parsers[mediaType]);
+  }
+  /**
+   * Get parser.
+   *
+   * @param {string} mediaType
+   * @returns {Function}
+   */
+  getParser(mediaType) {
+    if (!mediaType || typeof mediaType !== "string") {
+      throw new import_js_format15.InvalidArgumentError(
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
+        mediaType
+      );
+    }
+    const parser = this._parsers[mediaType];
+    if (!parser) {
+      throw new import_js_format15.InvalidArgumentError(
+        "Media type %v does not have a parser.",
+        mediaType
+      );
+    }
+    return parser;
+  }
+  /**
+   * Remove parser.
+   *
+   * @param {string} mediaType
+   * @returns {this}
+   */
+  removeParser(mediaType) {
+    if (!mediaType || typeof mediaType !== "string") {
+      throw new import_js_format15.InvalidArgumentError(
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
+        mediaType
+      );
+    }
+    delete this._parsers[mediaType];
+    return this;
+  }
+  /**
+   * Parse.
+   *
+   * @param {import('http').IncomingMessage} request
+   * @returns {Promise<*>|undefined}
+   */
+  parse(request) {
+    const debug = this.getDebuggerFor(this.parse);
+    debug(
+      "Parsing a request body %s %v.",
+      request.method.toUpperCase(),
+      getRequestPathname(request)
+    );
+    if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
+      debug(
+        "Skipping body parsing for the %s method.",
+        request.method.toUpperCase()
+      );
+      return;
+    }
+    const contentType = (request.headers["content-type"] || "").replace(
+      /^([^;]+);.*$/,
+      "$1"
+    );
+    if (!contentType) {
+      debug("Skipping body parsing because no content type is provided.");
+      return;
+    }
+    const { mediaType } = parseContentType(contentType);
+    if (!mediaType) {
+      throw createError(
+        import_http_errors2.default.BadRequest,
+        'Unable to parse the "content-type" header.'
+      );
+    }
+    const parser = this._parsers[mediaType];
+    if (!parser) {
+      if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
+        debug("Skipping body parsing for the media type %v.", mediaType);
+        return;
+      }
+      throw createError(
+        import_http_errors2.default.UnsupportedMediaType,
+        "Media type %v is not supported.",
+        mediaType
+      );
+    }
+    const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
+    debug("Fetching a request body.");
+    debug("Body limit is %v bytes.", bodyBytesLimit);
+    return fetchRequestBody(request, bodyBytesLimit).then((rawBody) => {
+      if (rawBody != null) {
+        debug("Read %v bytes.", Buffer.byteLength(rawBody, "utf8"));
+        return parser(rawBody);
+      }
+      debug("Request body has no content.");
+      return rawBody;
+    });
+  }
+};
+__name(_BodyParser, "BodyParser");
+var BodyParser = _BodyParser;
+function parseJsonBody(input) {
+  if (typeof input !== "string") {
+    return void 0;
+  }
+  try {
+    return JSON.parse(input);
+  } catch (error) {
+    throw createError(import_http_errors2.default.BadRequest, error.message);
+  }
+}
+__name(parseJsonBody, "parseJsonBody");
+
+// src/parsers/query-parser.js
+var import_querystring2 = __toESM(require("querystring"), 1);
+var _QueryParser = class _QueryParser extends DebuggableService {
+  /**
+   * Parse
+   *
+   * @param {import('http').IncomingMessage} request
+   * @returns {object}
+   */
+  parse(request) {
+    const debug = this.getDebuggerFor(this.parse);
+    const queryStr = request.url.replace(/^[^?]*\??/, "");
+    const query = queryStr ? import_querystring2.default.parse(queryStr) : {};
+    const queryKeys = Object.keys(query);
+    if (queryKeys.length) {
+      queryKeys.forEach((key) => {
+        debug("Found a query parameter %v with a value %v.", key, query[key]);
+      });
+    } else {
+      debug(
+        "Request %s %v had no query parameters.",
+        request.method,
+        getRequestPathname(request)
+      );
+    }
+    return query;
+  }
+};
+__name(_QueryParser, "QueryParser");
+var QueryParser = _QueryParser;
+
+// src/parsers/cookies-parser.js
+var _CookiesParser = class _CookiesParser extends DebuggableService {
+  /**
+   * Parse
+   *
+   * @param {import('http').IncomingMessage} request
+   * @returns {object}
+   */
+  parse(request) {
+    const debug = this.getDebuggerFor(this.parse);
+    const cookiesString = request.headers["cookie"] || "";
+    const cookies = parseCookieString(cookiesString);
+    const cookiesKeys = Object.keys(cookies);
+    if (cookiesKeys.length) {
+      cookiesKeys.forEach((key) => {
+        debug("Found a cookie %v with a value %v.", key, cookies[key]);
+      });
+    } else {
+      debug(
+        "Request %s %v had no cookies.",
+        request.method,
+        getRequestPathname(request)
+      );
+    }
+    return cookies;
+  }
+};
+__name(_CookiesParser, "CookiesParser");
+var CookiesParser = _CookiesParser;
+
+// src/parsers/request-parser.js
+var import_http3 = require("http");
+var import_js_format16 = require("@e22m4u/js-format");
+var _RequestParser = class _RequestParser extends DebuggableService {
+  /**
+   * Parse.
+   *
+   * @param {IncomingMessage} request
+   * @returns {Promise<object>|object}
+   */
+  parse(request) {
+    if (!(request instanceof import_http3.IncomingMessage)) {
+      throw new import_js_format16.InvalidArgumentError(
+        'Parameter "request" must be an instance of IncomingMessage, but %v was given.',
+        request
+      );
+    }
+    const data = {};
+    const promises = [];
+    const parsedQuery = this.getService(QueryParser).parse(request);
+    if (isPromise(parsedQuery)) {
+      promises.push(parsedQuery.then((v) => data.query = v));
+    } else {
+      data.query = parsedQuery;
+    }
+    const parsedCookies = this.getService(CookiesParser).parse(request);
+    if (isPromise(parsedCookies)) {
+      promises.push(parsedCookies.then((v) => data.cookies = v));
+    } else {
+      data.cookies = parsedCookies;
+    }
+    const parsedBody = this.getService(BodyParser).parse(request);
+    if (isPromise(parsedBody)) {
+      promises.push(parsedBody.then((v) => data.body = v));
+    } else {
+      data.body = parsedBody;
+    }
+    data.headers = Object.assign({}, request.headers);
+    return promises.length ? Promise.all(promises).then(() => data) : data;
+  }
+};
+__name(_RequestParser, "RequestParser");
+var RequestParser = _RequestParser;
+
+// src/route-registry.js
+var import_js_path_trie = require("@e22m4u/js-path-trie");
+var import_js_service3 = require("@e22m4u/js-service");
+var import_js_format17 = require("@e22m4u/js-format");
+var _RouteRegistry = class _RouteRegistry extends DebuggableService {
+  /**
+   * Constructor.
+   *
+   * @param {ServiceContainer} [container]
+   */
+  constructor(container) {
+    super(container);
+    this._trie = new import_js_path_trie.PathTrie();
+  }
+  /**
+   * Define route.
+   *
+   * @param {import('./route/index.js').RouteDefinition} routeDef
+   * @returns {Route}
+   */
+  defineRoute(routeDef) {
+    const debug = this.getDebuggerFor(this.defineRoute);
+    if (!routeDef || typeof routeDef !== "object" || Array.isArray(routeDef)) {
+      throw new import_js_format17.InvalidArgumentError(
+        "Route definition must be an Object, but %v was given.",
+        routeDef
+      );
+    }
+    const hookRegistry = this.getService(RouterHookRegistry);
+    const onDefineRouteHooks = hookRegistry.getHooks(
+      RouterHookType.ON_DEFINE_ROUTE
+    );
+    if (onDefineRouteHooks.length) {
+      debug('Invoking %v "onDefineRoute" hook(s).', onDefineRouteHooks.length);
+      for (const hook of onDefineRouteHooks) {
+        const hookResult = hook({ ...routeDef }, this.container);
+        if (hookResult !== void 0 && !(hookResult !== null && typeof hookResult === "object" && !Array.isArray(hookResult))) {
+          throw new import_js_format17.InvalidArgumentError(
+            'Hook "onDefineRoute" must return an Object or undefined, but %v was given.',
+            hookResult
+          );
+        }
+        if (hookResult !== void 0) {
+          routeDef = hookResult;
+        }
+      }
+      debug("Hooks invoked.");
+    }
+    const route = new Route(routeDef);
+    const triePath = `${route.method}/${route.path}`;
+    this._trie.add(triePath, route);
+    debug("Registered a route %s %v.", route.method.toUpperCase(), route.path);
+    return route;
+  }
+  /**
+   * Match route by request.
+   *
+   * @param {import('http').IncomingRequest} request
+   * @returns {ResolvedRoute|undefined}
+   */
+  matchRouteByRequest(request) {
+    const debug = this.getDebuggerFor(this.matchRouteByRequest);
+    const requestPath = getRequestPathname(request);
+    debug(
+      "Matching routes for the request %s %v.",
+      request.method.toUpperCase(),
+      requestPath
+    );
+    const rawTriePath = `${request.method.toUpperCase()}/${requestPath}`;
+    const triePath = rawTriePath.replace(/\/+/g, "/");
+    const resolved = this._trie.match(triePath);
+    if (resolved) {
+      const route = resolved.value;
+      debug("Matched route is %s %v.", route.method.toUpperCase(), route.path);
+      const paramNames = Object.keys(resolved.params);
+      if (paramNames.length) {
+        paramNames.forEach((name) => {
+          debug(
+            "Found a path parameter %v with a value %v.",
+            name,
+            resolved.params[name]
+          );
+        });
+      } else {
+        debug("No path parameters found.");
+      }
+      return { route, params: resolved.params };
+    }
+    debug(
+      "No route found for the request %s %v.",
+      request.method.toUpperCase(),
+      requestPath
+    );
+  }
+  /**
+   * Get allowed methods for request path.
+   *
+   * @param {string} requestPath
+   * @returns {string[]}
+   */
+  getAllowedMethodsForRequestPath(requestPath) {
+    if (typeof requestPath !== "string") {
+      throw new import_js_format17.InvalidArgumentError(
+        'Parameter "requestPath" must be a String, but %v was given.',
+        requestPath
+      );
+    }
+    const debug = this.getDebuggerFor(this.getAllowedMethodsForRequestPath);
+    const allowedMethods = [];
+    for (const method of Object.values(HttpMethod)) {
+      const rawTriePath = `${method}/${requestPath}`;
+      const triePath = rawTriePath.replace(/\/+/g, "/");
+      if (this._trie.match(triePath)) {
+        allowedMethods.push(method);
+      }
+    }
+    if (allowedMethods.length) {
+      debug("Allowed methods for %v are: %l.", requestPath, allowedMethods);
+    } else {
+      debug("Path %v does not have allowed methods.", requestPath);
+    }
+    return allowedMethods;
+  }
+};
+__name(_RouteRegistry, "RouteRegistry");
+var RouteRegistry = _RouteRegistry;
 
 // src/trie-router.js
 var import_js_service4 = require("@e22m4u/js-service");
@@ -2306,24 +2360,18 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           Object.assign(context, reqDataOrPromise);
         }
         const hookInvoker = this.getService(RouterHookInvoker);
-        data = hookInvoker.invokeAndContinueUntilValueReceived(
-          route,
-          RouterHookType.PRE_HANDLER,
-          response,
-          context
-        );
+        data = hookInvoker.invokePreHandlerHooks(context);
         if (isPromise(data)) {
           data = await data;
         }
-        if (!isResponseSent(response) && data === void 0) {
-          data = route.handle(context);
-          if (isPromise(data)) {
-            data = await data;
+        if (!isResponseSent(response)) {
+          if (data === void 0) {
+            data = route.handle(context);
+            if (isPromise(data)) {
+              data = await data;
+            }
           }
-          let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
-            route,
-            RouterHookType.POST_HANDLER,
-            response,
+          let postHandlerData = hookInvoker.invokePostHandlerHooks(
             context,
             data
           );

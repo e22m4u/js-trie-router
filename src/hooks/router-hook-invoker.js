@@ -1,4 +1,4 @@
-import {Route} from '../route/index.js';
+import {RequestContext} from '../request-context.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from '../debuggable-service.js';
 import {isPromise, isResponseSent} from '../utils/index.js';
@@ -9,62 +9,36 @@ import {RouterHookRegistry, RouterHookType} from './router-hook-registry.js';
  */
 export class RouterHookInvoker extends DebuggableService {
   /**
-   * Последовательно вызывает глобальные хуки и хуки маршрута указанного
-   * типа, пока один из них не вернет отличное от undefined значение или
-   * не отправит HTTP-ответ. Метод выполняет хуки в синхронном режиме для
-   * улучшения производительности. Если один из хуков возвращает Promise,
-   * выполнение оставшейся части цепочки переключается в асинхронный режим.
+   * Последовательно вызывает глобальные хуки и хуки маршрута типа "preHandler",
+   * пока один из них не вернет отличное от undefined значение или не отправит
+   * HTTP-ответ. Метод выполняет хуки в синхронном режиме для улучшения
+   * производительности. Если один из хуков возвращает Promise, выполнение
+   * оставшейся части цепочки переключается в асинхронный режим.
    *
-   * @param {Route} route
-   * @param {string} hookType
-   * @param {import('http').ServerResponse} response
-   * @param {*[]} args
+   * @param {import('../request-context.js').RequestContext} context
    * @returns {Promise<*>|*}
    */
-  invokeAndContinueUntilValueReceived(route, hookType, response, ...args) {
-    if (!route || !(route instanceof Route)) {
+  invokePreHandlerHooks(context) {
+    if (!(context instanceof RequestContext)) {
       throw new InvalidArgumentError(
-        'Parameter "route" must be an instance of Route, ' +
+        'Parameter "context" must be an instance of RequestContext, ' +
           'but %v was given.',
-        route,
-      );
-    }
-    if (!hookType || typeof hookType !== 'string') {
-      throw new InvalidArgumentError(
-        'Parameter "hookType" must be a non-empty String, ' +
-          'but %v was given.',
-        hookType,
-      );
-    }
-    if (!Object.values(RouterHookType).includes(hookType)) {
-      throw new InvalidArgumentError(
-        'Hook type %v is not supported.',
-        hookType,
-      );
-    }
-    if (
-      !response ||
-      typeof response !== 'object' ||
-      Array.isArray(response) ||
-      typeof response.headersSent !== 'boolean'
-    ) {
-      throw new InvalidArgumentError(
-        'Parameter "response" must be an instance of ServerResponse, ' +
-          'but %v was given.',
-        response,
+        context,
       );
     }
     // если ответ уже отправлен,
     // то возвращается ServerResponse
-    if (isResponseSent(response)) {
-      return response;
+    if (isResponseSent(context.response)) {
+      return context.response;
     }
-    // так как хуки роута выполняются
-    // после глобальных, то объединяем
-    // их в данной последовательности
+    // формирование списка вызываемых хуков,
+    // в который сначала добавляются глобальные
+    // хуки, а потом хуки маршрута
     const hooks = [
-      ...this.getService(RouterHookRegistry).getHooks(hookType),
-      ...route.getHookRegistry().getHooks(hookType),
+      ...this.getService(RouterHookRegistry).getHooks(
+        RouterHookType.PRE_HANDLER,
+      ),
+      ...context.route.getHookRegistry().getHooks(RouterHookType.PRE_HANDLER),
     ];
     let result = undefined;
     // итерация по хукам выполняется по индексу,
@@ -74,11 +48,11 @@ export class RouterHookInvoker extends DebuggableService {
       const hook = hooks[i];
       // вызов хука выполняется
       // в синхронном режиме
-      result = hook(...args);
+      result = hook(context);
       // если ответ уже отправлен,
       // то возвращается ServerResponse
-      if (isResponseSent(response)) {
-        return response;
+      if (isResponseSent(context.response)) {
+        return context.response;
       }
       // если синхронный вызов хука вернул значение отличное
       // от undefined , то требуется проверить данное значение
@@ -88,12 +62,11 @@ export class RouterHookInvoker extends DebuggableService {
         // выполнение переключается в асинхронный режим, начиная
         // с индекса следующего хука
         if (isPromise(result)) {
-          return this._continueHooksInvocationAsync(
+          return this._continuePreHandlerHooksInvocationAsync(
             hooks,
             i + 1,
             result,
-            response,
-            args,
+            context,
           );
         }
         // если синхронный хук вернул значение отличное
@@ -108,34 +81,33 @@ export class RouterHookInvoker extends DebuggableService {
   }
 
   /**
-   * Асинхронно продолжает выполнение цепочки хуков, начиная с указанного
-   * индекса. Данный метод вызывается, когда хук в основном синхронном цикле
-   * возвращает Promise. Метод ожидает разрешения начального Promise, а затем
-   * последовательно выполняет оставшиеся хуки в асинхронном режиме, следуя
-   * той же логике прерывания (при получении значения или отправке ответа),
+   * Асинхронно продолжает выполнение цепочки хуков "preHandler",
+   * начиная с указанного индекса. Данный метод вызывается, когда
+   * хук в основном синхронном цикле возвращает Promise. Метод ожидает
+   * разрешения начального Promise, а затем последовательно выполняет
+   * оставшиеся хуки в асинхронном режиме, следуя той же логике
+   * прерывания (при получении значения или отправке ответа),
    * что и основной метод.
    *
    * @param {Function[]} hooks
    * @param {number} startIndex
    * @param {Promise} initialPromise
-   * @param {import('http').ServerResponse} response
-   * @param {*} args
+   * @param {import('../request-context.js').RequestContext} context
    * @returns {Promise<*>}
    */
-  async _continueHooksInvocationAsync(
+  async _continuePreHandlerHooksInvocationAsync(
     hooks,
     startIndex,
     initialPromise,
-    response,
-    args,
+    context,
   ) {
     // ожидание Promise, который был получен
     // на предыдущем шаге (в синхронном режиме)
     let result = await initialPromise;
     // если ответ уже отправлен,
     // то возвращается ServerResponse
-    if (isResponseSent(response)) {
-      return response;
+    if (isResponseSent(context.response)) {
+      return context.response;
     }
     // если Promise разрешился значением отличным
     // от undefined, то данное значение возвращается
@@ -148,11 +120,11 @@ export class RouterHookInvoker extends DebuggableService {
     for (let i = startIndex; i < hooks.length; i++) {
       // с этого момента все синхронные
       // хуки выполняются как асинхронные
-      result = await hooks[i](...args);
+      result = await hooks[i](context);
       // если ответ уже отправлен,
       // то возвращается ServerResponse
-      if (isResponseSent(response)) {
-        return response;
+      if (isResponseSent(context.response)) {
+        return context.response;
       }
       // если хук вернул значение отличное от undefined,
       // то данное значение возвращается в качестве
@@ -162,5 +134,129 @@ export class RouterHookInvoker extends DebuggableService {
       }
     }
     return;
+  }
+
+  /**
+   * Invoke post-handler hooks.
+   *
+   * @param {import('../request-context.js').RequestContext} context
+   * @param {*} initialData
+   * @returns {Promise<*>|*}
+   */
+  invokePostHandlerHooks(context, initialData) {
+    if (!(context instanceof RequestContext)) {
+      throw new InvalidArgumentError(
+        'Parameter "context" must be an instance of RequestContext, ' +
+          'but %v was given.',
+        context,
+      );
+    }
+    // если ответ уже отправлен,
+    // то возвращается ServerResponse
+    if (isResponseSent(context.response)) {
+      return context.response;
+    }
+    // формирование списка вызываемых хуков,
+    // в который сначала добавляются хуки маршрута,
+    // а потом глобальные хуки
+    const hooks = [
+      ...context.route.getHookRegistry().getHooks(RouterHookType.POST_HANDLER),
+      ...this.getService(RouterHookRegistry).getHooks(
+        RouterHookType.POST_HANDLER,
+      ),
+    ];
+    let currentData = initialData;
+    // итерация по хукам выполняется по индексу,
+    // чтобы знать, с какого места продолжать
+    // в асинхронном режиме
+    for (let i = 0; i < hooks.length; i++) {
+      const hook = hooks[i];
+      // вызов хука выполняется
+      // в синхронном режиме
+      const result = hook(context, currentData);
+      // если ответ уже отправлен,
+      // то возвращается ServerResponse
+      if (isResponseSent(context.response)) {
+        return context.response;
+      }
+      // если синхронный вызов хука вернул значение отличное
+      // от undefined , то требуется проверить данное значение
+      // для коррекции режима вызова оставшихся хуков
+      if (result !== undefined) {
+        // если синхронный вызов хука вернул Promise, то дальнейшее
+        // выполнение переключается в асинхронный режим, начиная
+        // с индекса следующего хука
+        if (isPromise(result)) {
+          return this._continuePostHandlerHooksInvocationAsync(
+            hooks,
+            i + 1,
+            result,
+            context,
+            currentData,
+          );
+        }
+        // если синхронный хук вернул значение отличное
+        // от undefined, то данное значение подменяет
+        // ответ обработчика
+        currentData = result;
+      }
+    }
+    // если все хуки были синхронными
+    // то возвращается итоговое значение
+    return currentData;
+  }
+
+  /**
+   * Continue post-handler hooks invocation async.
+   *
+   * @param {Function[]} hooks
+   * @param {number} startIndex
+   * @param {Promise} initialPromise
+   * @param {import('../request-context.js').RequestContext} context
+   * @param {*} currentData
+   * @returns {Promise<*>}
+   */
+  async _continuePostHandlerHooksInvocationAsync(
+    hooks,
+    startIndex,
+    initialPromise,
+    context,
+    currentData,
+  ) {
+    // ожидание Promise, который был получен
+    // на предыдущем шаге (в синхронном режиме)
+    let result = await initialPromise;
+    // если ответ уже отправлен,
+    // то возвращается ServerResponse
+    if (isResponseSent(context.response)) {
+      return context.response;
+    }
+    // если Promise разрешился значением отличным
+    // от undefined, то данное значение используется
+    // вместо возвращаемых данных основного обработчика
+    if (result !== undefined) {
+      currentData = result;
+    }
+    // продолжение вызова хуков начиная
+    // со следующего индекса (асинхронно)
+    for (let i = startIndex; i < hooks.length; i++) {
+      // с этого момента все синхронные
+      // хуки выполняются как асинхронные
+      result = await hooks[i](context, currentData);
+      // если ответ уже отправлен,
+      // то возвращается ServerResponse
+      if (isResponseSent(context.response)) {
+        return context.response;
+      }
+      // если хук вернул значение отличное от undefined,
+      // то данное значение используется вместо возвращаемых
+      // данных основного обработчика
+      if (result !== undefined) {
+        currentData = result;
+      }
+    }
+    // возвращается итоговое значение
+    // обработчика маршрута
+    return currentData;
   }
 }

@@ -1,3 +1,4 @@
+import {HttpMethod} from './route/route.js';
 import {RequestParser} from './parsers/index.js';
 import {RouteRegistry} from './route-registry.js';
 import {RequestContext} from './request-context.js';
@@ -6,14 +7,8 @@ import {ServerResponse, IncomingMessage} from 'http';
 import {RouterBranch} from './branch/router-branch.js';
 import {DebuggableService} from './debuggable-service.js';
 import {DataSender, ErrorSender} from './senders/index.js';
+import {RouterHookInvoker, RouterHookRegistry} from './hooks/index.js';
 import {isPromise, isResponseSent, getRequestPathname} from './utils/index.js';
-
-import {
-  RouterHookType,
-  RouterHookInvoker,
-  RouterHookRegistry,
-} from './hooks/index.js';
-import {HttpMethod} from './route/route.js';
 
 /**
  * Trie router.
@@ -178,30 +173,26 @@ export class TrieRouter extends DebuggableService {
         // если результатом вызова хуков "preHandler" является
         // значение (или Promise) отличное от "undefined",
         // то такое значение используется в качестве ответа
-        data = hookInvoker.invokeAndContinueUntilValueReceived(
-          route,
-          RouterHookType.PRE_HANDLER,
-          response,
-          context,
-        );
+        data = hookInvoker.invokePreHandlerHooks(context);
         if (isPromise(data)) {
           data = await data;
         }
-        // если ответ не бы отправлен внутри "preHandler" хуков,
-        // и сами "preHandler" хуки не вернули значения, то вызывается
-        // основной обработчик маршрута, результат которого передается
-        // в хуки "postHandler"
-        if (!isResponseSent(response) && data === undefined) {
-          data = route.handle(context);
-          if (isPromise(data)) {
-            data = await data;
+        // если на данном этапе ответ не бы отправлен через
+        // ServerResponse, то выполняется вызов основного
+        // обработчика маршрута и "postHandler" хуков
+        if (!isResponseSent(response)) {
+          // если "preHandler" хуки не сформировали ответ
+          // сервера, то выполняется основной обработчик
+          if (data === undefined) {
+            data = route.handle(context);
+            if (isPromise(data)) {
+              data = await data;
+            }
           }
-          // вызываются хуки "postHandler", результат которых
-          // также может быть использован в качестве ответа
-          let postHandlerData = hookInvoker.invokeAndContinueUntilValueReceived(
-            route,
-            RouterHookType.POST_HANDLER,
-            response,
+          // подготовленные данные передаются в "postHandler"
+          // хуки, которые выполняют трансформацию этих данных,
+          // если результат их работы отличается от undefined
+          let postHandlerData = hookInvoker.invokePostHandlerHooks(
             context,
             data,
           );

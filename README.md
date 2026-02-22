@@ -276,25 +276,91 @@ router.defineRoute({ // регистрация маршрута
 
 #### postHandler (для маршрута)
 
-Данный хук работает аналогично `preHandler`, с той лишь разницей,
-что выполняется после вызова основного обработчика и позволяет
-модифицировать его результат, который принимает вторым аргументом.
+Данный хук выполняется после вызова основного обработчика маршрута
+(или после `preHandler`, если тот завершил запрос досрочно). Его главной
+задачей является перехват и трансформация данных перед отправкой клиенту.
+Хук принимает контекст запроса первым аргументом, а вторым текущие данные
+для отправки.
 
 ```js
 router.defineRoute({
-  // ...
+  method: HttpMethod.GET,
+  path: '/hello',
   handler(ctx) {
-    return 'Hello world!';
+    return 'Hello World!';
   },
   postHandler(ctx, data) {
-    // после обработчика маршрута
-    return data.toUpperCase(); // HELLO WORLD!
+    console.log(data); // Hello World!
   },
 });
 ```
 
-Если хук `postHandler` вернул значение или отправил ответ, то вызов следующих
-хуков маршрута и глобальных хуков будет прерван.
+В отличие от `preHandler`, хуки `postHandler` работают по принципу конвейера.
+Значение, возвращаемое хуком (если оно отлично от `undefined`), автоматически
+заменяет собой текущие данные. Обновленный результат передается следующему
+зарегистрированному хуку.
+
+```js
+router.defineRoute({
+  method: HttpMethod.GET,
+  path: '/users/:id',
+  handler(ctx) {
+    // основной обработчик ничего не знает о формате ответа, 
+    // он просто возвращает "сырые" данные из базы
+    return {id: 1, name: 'John Doe', passwordHash: 'secret'};
+  },
+  postHandler: [
+    // удаление чувствительных данных
+    (ctx, data) => {
+      const {passwordHash, ...safeUser} = data;
+      // возврат безопасного объекта, который заменит собой
+      // исходные данные и будет передан в следующий хук
+      // (или отправлен клиенту, если следующего хука нет)
+      return safeUser; 
+    },
+    // стандартизация ответа
+    (ctx, data) => {
+      return {success: true, payload: data};
+    }
+  ],
+});
+
+// итоговый JSON, который уйдет клиенту:
+// {
+//   "success": true,
+//   "payload": {"id": 1, "name": "John Doe"}
+// }
+```
+
+Единственным условием для досрочного прерывания вызова `postHandler` хуков
+является принудительная отправка HTTP-ответа внутри самого хука с использованием
+нативного объекта `ctx.response`. В таком случае выполнение оставшихся хуков
+прерывается.
+
+```js
+router.defineRoute({
+  method: HttpMethod.GET,
+  path: '/report',
+  handler() {
+    // основной обработчик возвращает сырые данные
+    return {status: 'pending', id: 123};
+  },
+  postHandler: [
+    (ctx, data) => {
+      // принудительная отправка ответа напрямую 
+      // через нативный объект ServerResponse
+      ctx.response.statusCode = 202;
+      ctx.response.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      ctx.response.end('Отчет еще формируется, попробуйте позже.');
+    },
+    (ctx, data) => {
+      // данный хук никогда не будет выполнен, так как ответ
+      // уже был отправлен предыдущим хуком
+      return {...data, formatted: true};
+    },
+  ],
+});
+```
 
 ### Глобальные хуки
 
@@ -315,10 +381,6 @@ router.defineRoute({
 определения маршрута, а во второй экземпляр сервис-контейнера.
 
 ```js
-import {TrieRouter, RouterHookType} form '@e22m4u/js-trie-router';
-
-const router = new TrieRouter();
-
 router.addHook(RouterHookType.ON_DEFINE_ROUTE, (routeDef, container) => {
   // выполняется перед добавлением маршрута
   console.log(routeDef);
@@ -338,10 +400,6 @@ router.addHook(RouterHookType.ON_DEFINE_ROUTE, (routeDef, container) => {
 маршрутизатором, требуется передать новое определение в качестве результата.
 
 ```js
-import {TrieRouter, RouterHookType} form '@e22m4u/js-trie-router';
-
-const router = new TrieRouter();
-
 router.addHook(RouterHookType.ON_DEFINE_ROUTE, (routeDef, container) => {
   // позволяет модифицировать определение
   // маршрута в момент его регистрации
@@ -365,10 +423,6 @@ router.addHook(RouterHookType.ON_DEFINE_ROUTE, (routeDef, container) => {
 соответствующий маршрут.
 
 ```js
-import {TrieRouter, HttpMethod, RouterHookType} form '@e22m4u/js-trie-router';
-
-const router = new TrieRouter();
-
 router.addHook(RouterHookType.PRE_HANDLER, (ctx) => {
   // вызывается перед каждым обработчиком маршрута
   const token = ctx.headers['Authorization'];
@@ -383,10 +437,6 @@ router.addHook(RouterHookType.PRE_HANDLER, (ctx) => {
 следующих хуков и основного обработчика маршрута будет прерван.
 
 ```js
-import {TrieRouter, HttpMethod, RouterHookType} form '@e22m4u/js-trie-router';
-
-const router = new TrieRouter();
-
 router.addHook(RouterHookType.PRE_HANDLER, (ctx) => {
   // вызывается перед каждым обработчиком маршрута
   return 'Hello World!';
@@ -415,10 +465,6 @@ router.defineRoute({
 то вызов следующих хуков и основного обработчика маршрута будет прерван.
 
 ```js
-import {TrieRouter, RouterHookType} form '@e22m4u/js-trie-router';
-
-const router = new TrieRouter();
-
 router.addHook(RouterHookType.PRE_HANDLER, (ctx) => {
   // отправка ответа через ServerResponse
   ctx.response.statusCode = 200;
@@ -446,32 +492,93 @@ router.defineRoute({
 
 #### postHandler (глобальный)
 
-Данный хук работает аналогично `preHandler`, с той лишь разницей,
-что выполняется после вызова основного обработчика маршрута и позволяет
-модифицировать его результат, который принимает вторым аргументом.
+Глобальный хук `postHandler` работает по такому же принципу, как и одноименный
+хук на уровне маршрута, но применяется абсолютно ко всем обработанным запросам.
+Хук принимает контекст запроса первым аргументом, а вторым данные для отправки.
 
 ```js
-import {TrieRouter, RouterHookType} form '@e22m4u/js-trie-router';
-
-const router = new TrieRouter();
-
 router.addHook(RouterHookType.POST_HANDLER, (ctx, data) => {
-  // вызывается после каждого обработчика маршрута
-  return data.toUpperCase(); // 'HELLO WORLD!'
+  // GET /hello
+  console.log(data); // > Hello World!
 });
 
 // регистрация маршрута
 router.defineRoute({
   method: HttpMethod.GET,
-  path: '/',
+  path: '/hello',
   handler() {
     return 'Hello World!';
   },
 });
 ```
 
-Если хук `postHandler` вернул значение или отправил ответ, то вызов следующих
-глобальных хуков и хуков маршрута будет прерван.
+Глобальные хуки `postHandler` позволяют применять трансформации ко всем ответам
+маршрутизатора. Это может быть использовано для реализации единого формата
+ответов, когда результат работы любого маршрута автоматически оборачивается
+в стандартизированную структуру с добавлением метаинформации.
+
+```js
+router.addHook(RouterHookType.POST_HANDLER, (ctx, data) => {
+  // обертка ответа маршрута в единую структуру
+  return {
+    meta: {
+      timestamp: Date.now(),
+      path: ctx.pathname
+    },
+    data: data
+  };
+});
+
+// регистрация маршрута
+router.defineRoute({
+  method: HttpMethod.GET,
+  path: '/hello',
+  handler() {
+    return 'Hello World!';
+  },
+});
+
+// запрос: GET /hello
+// ответ сервера:
+// { 
+//   "meta": {"timestamp": 1672531200000, "path": "/hello"},
+//   "data": "Hello World!" 
+// }
+```
+
+Если внутри хука выполнена отправка HTTP-ответа через методы нативного
+объекта `ctx.response` (например, для перенаправления), то выполнение
+цепочки хуков немедленно прерывается, и все последующие хуки игнорируются.
+
+```js
+router.addHook(RouterHookType.POST_HANDLER, (ctx, data) => {
+  // если обработчик вернул команду на редирект
+  if (data === 'REDIRECT_TO_LOGIN') {
+    // принудительная отправка ответа через ServerResponse
+    ctx.response.statusCode = 302;
+    ctx.response.setHeader('Location', '/login');
+    ctx.response.end();
+    // на данном этапе выполнение цепочки хуков прекращается
+    return;
+  }
+  return data;
+});
+
+router.addHook(RouterHookType.POST_HANDLER, (ctx, data) => {
+  // этот код не будет выполнен, если предыдущий хук
+  // уже отправил ответ клиенту (вызвал ctx.response.end)
+  return {result: data};
+});
+
+// регистрация маршрута
+router.defineRoute({
+  method: HttpMethod.GET,
+  path: '/dashboard',
+  handler() {
+    return 'REDIRECT_TO_LOGIN';
+  },
+});
+```
 
 ### Метаданные маршрута
 
