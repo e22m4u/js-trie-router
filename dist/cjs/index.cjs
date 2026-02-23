@@ -964,9 +964,10 @@ var import_js_format12 = require("@e22m4u/js-format");
 // src/hooks/router-hook-registry.js
 var import_js_format11 = require("@e22m4u/js-format");
 var RouterHookType = {
+  ON_DEFINE_ROUTE: "onDefineRoute",
+  ON_REQUEST: "onRequest",
   PRE_HANDLER: "preHandler",
-  POST_HANDLER: "postHandler",
-  ON_DEFINE_ROUTE: "onDefineRoute"
+  POST_HANDLER: "postHandler"
 };
 var ROUTER_HOOK_TYPES = Object.values(RouterHookType);
 var _RouterHookRegistry = class _RouterHookRegistry {
@@ -1057,6 +1058,110 @@ var RouterHookRegistry = _RouterHookRegistry;
 
 // src/hooks/router-hook-invoker.js
 var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
+  /**
+   * Invoke on-request hooks.
+   *
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
+   * @returns {Promise<boolean|undefined>|boolean|undefined}
+   */
+  invokeOnRequestHooks(request, response) {
+    if (!request || typeof request !== "object" || Array.isArray(request) || !isReadableStream(request)) {
+      throw new import_js_format12.InvalidArgumentError(
+        'Parameter "request" must be an instance of IncomingMessage, but %v was given.',
+        request
+      );
+    }
+    if (!response || typeof response !== "object" || Array.isArray(response) || !isWritableStream(response)) {
+      throw new import_js_format12.InvalidArgumentError(
+        'Parameter "response" must be an instance of ServerResponse, but %v was given.',
+        response
+      );
+    }
+    if (isResponseSent(response)) {
+      return;
+    }
+    const hooks = this.getService(RouterHookRegistry).getHooks(
+      RouterHookType.ON_REQUEST
+    );
+    let isInterrupted = void 0;
+    for (let i = 0; i < hooks.length; i++) {
+      const hook = hooks[i];
+      const result = hook(request, response, this.container);
+      if (isResponseSent(response)) {
+        return;
+      }
+      if (result !== void 0) {
+        if (isPromise(result)) {
+          return this._continueOnRequestHooksInvocationAsync(
+            hooks,
+            i + 1,
+            result,
+            request,
+            response
+          );
+        }
+        if (result === true) {
+          isInterrupted = result;
+          break;
+        }
+        if (result !== false) {
+          throw new import_js_format12.InvalidArgumentError(
+            'Hook "onRequest" must return undefined or a Boolean, but %v was given.',
+            result
+          );
+        }
+      }
+    }
+    return isInterrupted;
+  }
+  /**
+   * Continue on-request hooks invocation async.
+   *
+   * @param {Function[]} hooks
+   * @param {number} startIndex
+   * @param {Promise} initialPromise
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
+   * @returns {Promise<boolean|undefined>}
+   */
+  async _continueOnRequestHooksInvocationAsync(hooks, startIndex, initialPromise, request, response) {
+    let result = await initialPromise;
+    if (isResponseSent(response)) {
+      return;
+    }
+    if (result !== void 0) {
+      if (result === true) {
+        return result;
+      }
+      if (result !== false) {
+        throw new import_js_format12.InvalidArgumentError(
+          'Hook "onRequest" must return undefined or a Boolean, but %v was given.',
+          result
+        );
+      }
+    }
+    let isInterrupted = void 0;
+    for (let i = startIndex; i < hooks.length; i++) {
+      result = await hooks[i](request, response, this.container);
+      if (isResponseSent(response)) {
+        return;
+      }
+      if (result !== void 0) {
+        if (result === true) {
+          isInterrupted = result;
+          break;
+        }
+        if (result !== false) {
+          throw new import_js_format12.InvalidArgumentError(
+            'Hook "onRequest" must return undefined or a Boolean, but %v was given.',
+            result
+          );
+        }
+      }
+    }
+    return isInterrupted;
+  }
   /**
    * Последовательно вызывает глобальные хуки и хуки маршрута типа "preHandler",
    * пока один из них не вернет отличное от undefined значение или не отправит
@@ -2318,40 +2423,66 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = getRequestPathname(request);
-    const routeRegistry = this.getService(RouteRegistry);
     debug("Handling an incoming request %s %v.", request.method, requestPath);
-    const resolved = this.getService(RouteRegistry).matchRouteByRequest(request);
-    if (!resolved) {
-      if (request.method.toUpperCase() === HttpMethod.OPTIONS) {
-        const allowedMethods = routeRegistry.getAllowedMethodsForRequestPath(requestPath);
-        if (allowedMethods.length > 0) {
-          debug("Auto-handling OPTIONS request.");
-          if (!allowedMethods.includes("OPTIONS")) {
-            allowedMethods.push("OPTIONS");
-          }
-          const allowHeader = allowedMethods.join(", ");
-          response.statusCode = 204;
-          response.setHeader("Allow", allowHeader);
-          response.end();
+    try {
+      if (isResponseSent(response)) {
+        debug("Response has been sent before handling.");
+        return;
+      }
+      const hookInvoker = this.getService(RouterHookInvoker);
+      const onRequestHooks = this.getService(RouterHookRegistry).getHooks(
+        RouterHookType.ON_REQUEST
+      );
+      if (onRequestHooks.length) {
+        debug('Invoking "onRequest" hooks, %v hook(s) found.');
+        let shouldIgnoreRequest = hookInvoker.invokeOnRequestHooks(
+          request,
+          response
+        );
+        if (isPromise(shouldIgnoreRequest)) {
+          shouldIgnoreRequest = await shouldIgnoreRequest;
+        }
+        if (isResponseSent(response)) {
+          debug('Response has been sent by "onRequest" hook.');
+          return;
+        }
+        if (shouldIgnoreRequest === true) {
+          debug('Response handling was interrupted by "onRequest" hook.');
           return;
         }
       }
-      debug(
-        "No route found for the request %s %v.",
-        request.method,
-        requestPath
-      );
-      this.getService(ErrorSender).send404(request, response);
-    } else {
-      const { route, params } = resolved;
-      const container = new import_js_service4.ServiceContainer(this.container);
-      const context = new RequestContext(container, request, response, route);
-      container.set(RequestContext, context);
-      container.set(import_http4.IncomingMessage, request);
-      container.set(import_http4.ServerResponse, response);
-      context.params = params;
-      let data;
-      try {
+      const resolved = this.getService(RouteRegistry).matchRouteByRequest(request);
+      if (!resolved) {
+        if (request.method.toUpperCase() === HttpMethod.OPTIONS) {
+          const allowedMethods = this.getService(RouteRegistry).getAllowedMethodsForRequestPath(
+            requestPath
+          );
+          if (allowedMethods.length > 0) {
+            debug("Auto-handling OPTIONS request.");
+            if (!allowedMethods.includes("OPTIONS")) {
+              allowedMethods.push("OPTIONS");
+            }
+            const allowHeader = allowedMethods.join(", ");
+            response.statusCode = 204;
+            response.setHeader("Allow", allowHeader);
+            response.end();
+            return;
+          }
+        }
+        debug(
+          "No route found for the request %s %v.",
+          request.method,
+          requestPath
+        );
+        this.getService(ErrorSender).send404(request, response);
+      } else {
+        const { route, params } = resolved;
+        const container = new import_js_service4.ServiceContainer(this.container);
+        const context = new RequestContext(container, request, response, route);
+        container.set(RequestContext, context);
+        container.set(import_http4.IncomingMessage, request);
+        container.set(import_http4.ServerResponse, response);
+        context.params = params;
         const reqDataOrPromise = this.getService(RequestParser).parse(request);
         if (isPromise(reqDataOrPromise)) {
           const reqData = await reqDataOrPromise;
@@ -2359,8 +2490,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
         } else {
           Object.assign(context, reqDataOrPromise);
         }
-        const hookInvoker = this.getService(RouterHookInvoker);
-        data = hookInvoker.invokePreHandlerHooks(context);
+        let data = hookInvoker.invokePreHandlerHooks(context);
         if (isPromise(data)) {
           data = await data;
         }
@@ -2371,6 +2501,10 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
               data = await data;
             }
           }
+          if (isResponseSent(response)) {
+            debug("Response has been sent by the route handler.");
+            return;
+          }
           let postHandlerData = hookInvoker.invokePostHandlerHooks(
             context,
             data
@@ -2378,17 +2512,24 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           if (isPromise(postHandlerData)) {
             postHandlerData = await postHandlerData;
           }
+          if (isResponseSent(response)) {
+            debug('Response has been sent by "postHandler" hook.');
+            return;
+          }
           if (postHandlerData !== void 0) {
             data = postHandlerData;
           }
+        } else {
+          debug('Response has been sent by "preHandler" hook.');
+          return;
         }
-      } catch (error) {
-        this.getService(ErrorSender).send(request, response, error);
-        return;
+        if (!isResponseSent(response)) {
+          this.getService(DataSender).send(response, data);
+        }
       }
-      if (!isResponseSent(response)) {
-        this.getService(DataSender).send(response, data);
-      }
+    } catch (error) {
+      this.getService(ErrorSender).send(request, response, error);
+      return;
     }
   }
   /**

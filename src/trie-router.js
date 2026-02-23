@@ -7,8 +7,13 @@ import {ServerResponse, IncomingMessage} from 'http';
 import {RouterBranch} from './branch/router-branch.js';
 import {DebuggableService} from './debuggable-service.js';
 import {DataSender, ErrorSender} from './senders/index.js';
-import {RouterHookInvoker, RouterHookRegistry} from './hooks/index.js';
 import {isPromise, isResponseSent, getRequestPathname} from './utils/index.js';
+
+import {
+  RouterHookType,
+  RouterHookInvoker,
+  RouterHookRegistry,
+} from './hooks/index.js';
 
 /**
  * Trie router.
@@ -100,59 +105,95 @@ export class TrieRouter extends DebuggableService {
   async _handleRequest(request, response) {
     const debug = this.getDebuggerFor(this._handleRequest);
     const requestPath = getRequestPathname(request);
-    const routeRegistry = this.getService(RouteRegistry);
     debug('Handling an incoming request %s %v.', request.method, requestPath);
-    const resolved =
-      this.getService(RouteRegistry).matchRouteByRequest(request);
-    if (!resolved) {
-      // обработка метода OPTIONS выполняется автоматически
-      // перед отправкой ошибки 404, если для пути запроса
-      // имеются другие методы, то вместо ошибки 404 будет
-      // отправлен ответ с "Allow*" заголовками
-      if (request.method.toUpperCase() === HttpMethod.OPTIONS) {
-        const allowedMethods =
-          routeRegistry.getAllowedMethodsForRequestPath(requestPath);
-        if (allowedMethods.length > 0) {
-          debug('Auto-handling OPTIONS request.');
-          if (!allowedMethods.includes('OPTIONS')) {
-            allowedMethods.push('OPTIONS');
-          }
-          const allowHeader = allowedMethods.join(', ');
-          response.statusCode = 204;
-          response.setHeader('Allow', allowHeader);
-          response.end();
+    // при обработке запроса требуется перехватывать
+    // возможные ошибки, чтобы избежать падения процесса
+    try {
+      // если ответ уже отправлен, то дальнейшая
+      // обработка запроса прерывается
+      if (isResponseSent(response)) {
+        debug('Response has been sent before handling.');
+        return;
+      }
+      // проверка наличия "onRequest" хуков
+      // и их последовательный вызов
+      const hookInvoker = this.getService(RouterHookInvoker);
+      const onRequestHooks = this.getService(RouterHookRegistry).getHooks(
+        RouterHookType.ON_REQUEST,
+      );
+      if (onRequestHooks.length) {
+        debug('Invoking "onRequest" hooks, %v hook(s) found.');
+        let shouldIgnoreRequest = hookInvoker.invokeOnRequestHooks(
+          request,
+          response,
+        );
+        // если результатом вызова "onRequest" хуков
+        // является Promise, то ожидается его значение
+        if (isPromise(shouldIgnoreRequest)) {
+          shouldIgnoreRequest = await shouldIgnoreRequest;
+        }
+        // если ответ уже отправлен, то дальнейшая
+        // обработка запроса прерывается
+        if (isResponseSent(response)) {
+          debug('Response has been sent by "onRequest" hook.');
+          return;
+        }
+        // если результатом вызова "onRequest" хуков
+        // является логическое значение true, то обработка
+        // текущего запроса прерывается
+        if (shouldIgnoreRequest === true) {
+          debug('Response handling was interrupted by "onRequest" hook.');
           return;
         }
       }
-      debug(
-        'No route found for the request %s %v.',
-        request.method,
-        requestPath,
-      );
-      this.getService(ErrorSender).send404(request, response);
-    } else {
-      const {route, params} = resolved;
-      // создание дочернего сервис-контейнера для передачи
-      // в контекст запроса, чтобы родительский контекст
-      // нельзя было модифицировать
-      const container = new ServiceContainer(this.container);
-      const context = new RequestContext(container, request, response, route);
-      // регистрация контекста запроса в сервис-контейнере
-      // для доступа через container.getRegistered(RequestContext)
-      container.set(RequestContext, context);
-      // регистрация текущего экземпляра IncomingMessage
-      // и ServerResponse в сервис-контейнере запроса
-      container.set(IncomingMessage, request);
-      container.set(ServerResponse, response);
-      // запись параметров пути в контекст запроса,
-      // так как они были определены в момент
-      // поиска подходящего роута
-      context.params = params;
-      // при разборе входящих данных и выполнении обработчиков
-      // запроса, требуется перехватывать возможные ошибки
-      // для корректной отправки сервисом ErrorSender
-      let data;
-      try {
+      const resolved =
+        this.getService(RouteRegistry).matchRouteByRequest(request);
+      if (!resolved) {
+        // обработка метода OPTIONS выполняется автоматически
+        // перед отправкой ошибки 404, если для пути запроса
+        // имеются другие методы, то вместо ошибки 404 будет
+        // отправлен ответ с "Allow*" заголовками
+        if (request.method.toUpperCase() === HttpMethod.OPTIONS) {
+          const allowedMethods =
+            this.getService(RouteRegistry).getAllowedMethodsForRequestPath(
+              requestPath,
+            );
+          if (allowedMethods.length > 0) {
+            debug('Auto-handling OPTIONS request.');
+            if (!allowedMethods.includes('OPTIONS')) {
+              allowedMethods.push('OPTIONS');
+            }
+            const allowHeader = allowedMethods.join(', ');
+            response.statusCode = 204;
+            response.setHeader('Allow', allowHeader);
+            response.end();
+            return;
+          }
+        }
+        debug(
+          'No route found for the request %s %v.',
+          request.method,
+          requestPath,
+        );
+        this.getService(ErrorSender).send404(request, response);
+      } else {
+        const {route, params} = resolved;
+        // создание дочернего сервис-контейнера для передачи
+        // в контекст запроса, чтобы родительский контекст
+        // нельзя было модифицировать
+        const container = new ServiceContainer(this.container);
+        const context = new RequestContext(container, request, response, route);
+        // регистрация контекста запроса в сервис-контейнере
+        // для доступа через container.getRegistered(RequestContext)
+        container.set(RequestContext, context);
+        // регистрация текущего экземпляра IncomingMessage
+        // и ServerResponse в сервис-контейнере запроса
+        container.set(IncomingMessage, request);
+        container.set(ServerResponse, response);
+        // запись параметров пути в контекст запроса,
+        // так как они были определены в момент
+        // поиска подходящего роута
+        context.params = params;
         // разбор тела, заголовков и других данных запроса
         // выполняется отдельным сервисом, после чего результат
         // записывается в контекст передаваемый обработчику
@@ -166,14 +207,10 @@ export class TrieRouter extends DebuggableService {
         } else {
           Object.assign(context, reqDataOrPromise);
         }
-        // получение данных от обработчика, который находится
-        // в найденном маршруте, и отправка результата в качестве
-        // ответа сервера
-        const hookInvoker = this.getService(RouterHookInvoker);
         // если результатом вызова хуков "preHandler" является
         // значение (или Promise) отличное от "undefined",
         // то такое значение используется в качестве ответа
-        data = hookInvoker.invokePreHandlerHooks(context);
+        let data = hookInvoker.invokePreHandlerHooks(context);
         if (isPromise(data)) {
           data = await data;
         }
@@ -189,30 +226,56 @@ export class TrieRouter extends DebuggableService {
               data = await data;
             }
           }
+          // если ответ был отправлен через ServerResponse
+          // внутри основного обработчика, то обработка запроса
+          // немедленно завершается
+          if (isResponseSent(response)) {
+            debug('Response has been sent by the route handler.');
+            return;
+          }
           // подготовленные данные передаются в "postHandler"
           // хуки, которые выполняют трансформацию этих данных,
-          // если результат их работы отличается от undefined
+          // и возвращают новое значение (или undefined)
           let postHandlerData = hookInvoker.invokePostHandlerHooks(
             context,
             data,
           );
+          // если результатом вызова "postHandler" хуков
+          // является Promise, то ожидается его значение
           if (isPromise(postHandlerData)) {
             postHandlerData = await postHandlerData;
           }
+          // если ответ был отправлен через ServerResponse
+          // внутри "postHandler" хука, то обработка запроса
+          // немедленно завершается
+          if (isResponseSent(response)) {
+            debug('Response has been sent by "postHandler" hook.');
+            return;
+          }
+          // если "postHandler" хук вернул значение, отличное
+          // от undefined, то новое значение подменяет данные,
+          // возвращаемые клиенту
           if (postHandlerData !== undefined) {
             data = postHandlerData;
           }
         }
-      } catch (error) {
-        this.getService(ErrorSender).send(request, response, error);
-        return;
+        // если ответ был отправлен через ServerResponse
+        // внутри "preHandler" хука, то обработка запроса
+        // немедленно завершается
+        else {
+          debug('Response has been sent by "preHandler" hook.');
+          return;
+        }
+        // если ответ не был отправлен во время выполнения
+        // хуков и основного обработчика запроса, то итоговые
+        // данные передаются в DataSender
+        if (!isResponseSent(response)) {
+          this.getService(DataSender).send(response, data);
+        }
       }
-      // если ответ не был отправлен во время выполнения
-      // хуков и основного обработчика запроса,
-      // то результат передается в DataSender
-      if (!isResponseSent(response)) {
-        this.getService(DataSender).send(response, data);
-      }
+    } catch (error) {
+      this.getService(ErrorSender).send(request, response, error);
+      return;
     }
   }
 

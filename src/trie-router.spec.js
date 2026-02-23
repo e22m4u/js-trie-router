@@ -303,7 +303,136 @@ describe('TrieRouter', function () {
       });
     });
 
-    describe('router hooks invocation', function () {
+    it('should execute global and route hooks in the exact correct order', async function () {
+      const router = new TrieRouter();
+      const order = [];
+      router.addHook(RouterHookType.ON_REQUEST, () => {
+        order.push('global:onRequest');
+      });
+      router.addHook(RouterHookType.PRE_HANDLER, () => {
+        order.push('global:preHandler');
+      });
+      router.addHook(RouterHookType.POST_HANDLER, (ctx, data) => {
+        order.push('global:postHandler');
+        return data;
+      });
+      router.defineRoute({
+        method: HttpMethod.GET,
+        path: ROOT_PATH,
+        preHandler: () => {
+          order.push('route:preHandler');
+        },
+        handler: () => {
+          order.push('handler');
+          return 'OK';
+        },
+        postHandler: (ctx, data) => {
+          order.push('route:postHandler');
+          return data;
+        },
+      });
+      const req = createRequestMock();
+      const res = createResponseMock();
+      await router.requestListener(req, res);
+      expect(order).to.be.eql([
+        'global:onRequest',
+        'global:preHandler',
+        'route:preHandler',
+        'handler',
+        'route:postHandler',
+        'global:postHandler',
+      ]);
+    });
+
+    describe('the "onRequest" hooks', function () {
+      it('should invoke "onRequest" hooks even when no route is matched (404)', async function () {
+        const router = new TrieRouter();
+        let hookCalled = false;
+        router.addHook(RouterHookType.ON_REQUEST, () => {
+          hookCalled = true;
+        });
+        const req = createRequestMock({path: '/does-not-exist'});
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        expect(hookCalled).to.be.true;
+        expect(res.statusCode).to.be.eq(404);
+      });
+
+      it('should interrupt request handling when the hook "onRequest" returns true', async function () {
+        const router = new TrieRouter();
+        let handlerCalled = false;
+        router.addHook(RouterHookType.ON_REQUEST, () => true);
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler: () => {
+            handlerCalled = true;
+            return 'OK';
+          },
+        });
+        const req = createRequestMock({path: ROOT_PATH});
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        expect(handlerCalled).to.be.false;
+        expect(res.headersSent).to.be.false;
+      });
+
+      it('should interrupt request handling when the hook "onRequest" sends response headers', async function () {
+        const router = new TrieRouter();
+        let handlerCalled = false;
+        router.addHook(RouterHookType.ON_REQUEST, (req, res) => {
+          res.statusCode = 403;
+          res.end('Forbidden by onRequest');
+        });
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler: () => {
+            handlerCalled = true;
+            return 'OK';
+          },
+        });
+        const req = createRequestMock({path: ROOT_PATH});
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const body = await res.getBody();
+        expect(handlerCalled).to.be.false;
+        expect(res.statusCode).to.be.eq(403);
+        expect(body).to.be.eq('Forbidden by onRequest');
+      });
+
+      it('should catch synchronous errors from "onRequest" hooks and use ErrorSender', async function () {
+        const router = new TrieRouter();
+        router.addHook(RouterHookType.ON_REQUEST, () => {
+          throw new Error('Sync error in onRequest');
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const body = await res.getBody();
+        expect(res.statusCode).to.be.eq(500);
+        expect(JSON.parse(body)).to.be.eql({
+          error: {message: 'Sync error in onRequest'},
+        });
+      });
+
+      it('should catch asynchronous (rejected Promise) errors from "onRequest" hooks', async function () {
+        const router = new TrieRouter();
+        router.addHook(RouterHookType.ON_REQUEST, async () => {
+          throw new Error('Async error in onRequest');
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const body = await res.getBody();
+        expect(res.statusCode).to.be.eq(500);
+        expect(JSON.parse(body)).to.be.eql({
+          error: {message: 'Async error in onRequest'},
+        });
+      });
+    });
+
+    describe('the route-scoped "preHandler" hooks', function () {
       it('should invoke "preHandler" hooks before the route handler', async function () {
         const router = new TrieRouter();
         const order = [];
@@ -330,34 +459,6 @@ describe('TrieRouter', function () {
         const result = await res.getBody();
         expect(result).to.be.eq(body);
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
-      });
-
-      it('should invoke "postHandler" hooks after the route handler', async function () {
-        const router = new TrieRouter();
-        const order = [];
-        const body = 'OK';
-        router.defineRoute({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-          handler: () => {
-            order.push('handler');
-            return body;
-          },
-          postHandler: [
-            () => {
-              order.push('postHandler1');
-            },
-            () => {
-              order.push('postHandler2');
-            },
-          ],
-        });
-        const req = createRequestMock();
-        const res = createResponseMock();
-        router.requestListener(req, res);
-        const result = await res.getBody();
-        expect(result).to.be.eq(body);
-        expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
       });
 
       it('should provide the request context to "preHandler" hooks', async function () {
@@ -391,41 +492,6 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('should provide the request context and a return value from the route handler to "postHandler" hooks', async function () {
-        const router = new TrieRouter();
-        const order = [];
-        const body = 'OK';
-        let requestContext;
-        router.defineRoute({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-          handler: ctx => {
-            order.push('handler');
-            expect(ctx).to.be.instanceof(RequestContext);
-            requestContext = ctx;
-            return body;
-          },
-          postHandler: [
-            (ctx, data) => {
-              order.push('postHandler1');
-              expect(ctx).to.be.eq(requestContext);
-              expect(data).to.be.eq(body);
-            },
-            (ctx, data) => {
-              order.push('postHandler2');
-              expect(ctx).to.be.eq(requestContext);
-              expect(data).to.be.eq(body);
-            },
-          ],
-        });
-        const req = createRequestMock();
-        const res = createResponseMock();
-        router.requestListener(req, res);
-        const result = await res.getBody();
-        expect(result).to.be.eq(body);
-        expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
-      });
-
       it('should invoke the route handler when all "preHandler" hooks return undefined', async function () {
         const router = new TrieRouter();
         const order = [];
@@ -456,36 +522,6 @@ describe('TrieRouter', function () {
         expect(order).to.be.eql(['preHandler1', 'preHandler2', 'handler']);
       });
 
-      it('should send a return value form the route handler when all "postHandler" hooks return undefined', async function () {
-        const router = new TrieRouter();
-        const order = [];
-        const body = 'OK';
-        router.defineRoute({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-          handler: () => {
-            order.push('handler');
-            return body;
-          },
-          postHandler: [
-            () => {
-              order.push('postHandler1');
-              return undefined;
-            },
-            () => {
-              order.push('postHandler2');
-              return undefined;
-            },
-          ],
-        });
-        const req = createRequestMock();
-        const res = createResponseMock();
-        router.requestListener(req, res);
-        const result = await res.getBody();
-        expect(result).to.be.eq(body);
-        expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
-      });
-
       it('should prioritize a return value from the hook "preHandler" over the route handler', async function () {
         const router = new TrieRouter();
         const order = [];
@@ -510,63 +546,6 @@ describe('TrieRouter', function () {
         expect(result).to.be.eq(preHandlerBody);
         expect(result).to.be.not.eq(handlerBody);
         expect(order).to.be.eql(['preHandler']);
-      });
-
-      it('should prioritize a return value from the hook "postHandler" over the route handler', async function () {
-        const router = new TrieRouter();
-        const order = [];
-        const handlerBody = 'foo';
-        const postHandlerBody = 'bar';
-        router.defineRoute({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-          handler: () => {
-            order.push('handler');
-            return handlerBody;
-          },
-          postHandler() {
-            order.push('postHandler');
-            return postHandlerBody;
-          },
-        });
-        const req = createRequestMock();
-        const res = createResponseMock();
-        router.requestListener(req, res);
-        const result = await res.getBody();
-        expect(result).to.be.not.eq(handlerBody);
-        expect(result).to.be.eq(postHandlerBody);
-        expect(order).to.be.eql(['handler', 'postHandler']);
-      });
-
-      it('should prioritize a return value from the "postHandler" hook over the "preHandler" hook', async function () {
-        const router = new TrieRouter();
-        const order = [];
-        const preHandlerBody = 'foo';
-        const handlerBody = 'bar';
-        const postHandlerBody = 'baz';
-        router.defineRoute({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-          preHandler() {
-            order.push('preHandler');
-            return preHandlerBody;
-          },
-          handler: () => {
-            order.push('handler');
-            return handlerBody;
-          },
-          postHandler() {
-            order.push('postHandler');
-            return postHandlerBody;
-          },
-        });
-        const req = createRequestMock();
-        const res = createResponseMock();
-        router.requestListener(req, res);
-        const result = await res.getBody();
-        expect(result).to.be.not.eq(handlerBody);
-        expect(result).to.be.eq(postHandlerBody);
-        expect(order).to.be.eql(['preHandler', 'postHandler']);
       });
 
       it('should skip the route handler when the hook "preHandler" returns a non-undefined value', async function () {
@@ -662,6 +641,198 @@ describe('TrieRouter', function () {
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
         expect(responseBody).to.equal('Response from preHandler');
+      });
+
+      it('should catch synchronous errors from "preHandler" hooks and use ErrorSender', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler: () => {
+            throw new Error('Sync error in preHandler');
+          },
+          handler: () => 'OK',
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const body = await res.getBody();
+        expect(res.statusCode).to.be.eq(500);
+        expect(JSON.parse(body)).to.be.eql({
+          error: {message: 'Sync error in preHandler'},
+        });
+      });
+
+      it('should catch asynchronous errors from "preHandler" hooks and use ErrorSender', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler: async () => {
+            throw new Error('Async error in preHandler');
+          },
+          handler: () => 'OK',
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const body = await res.getBody();
+        expect(res.statusCode).to.be.eq(500);
+        expect(JSON.parse(body)).to.be.eql({
+          error: {message: 'Async error in preHandler'},
+        });
+      });
+    });
+
+    describe('the route-scoped "postHandler" hooks', function () {
+      it('should invoke "postHandler" hooks after the route handler', async function () {
+        const router = new TrieRouter();
+        const order = [];
+        const body = 'OK';
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler: () => {
+            order.push('handler');
+            return body;
+          },
+          postHandler: [
+            () => {
+              order.push('postHandler1');
+            },
+            () => {
+              order.push('postHandler2');
+            },
+          ],
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        router.requestListener(req, res);
+        const result = await res.getBody();
+        expect(result).to.be.eq(body);
+        expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
+      });
+
+      it('should provide the request context and a return value from the route handler to "postHandler" hooks', async function () {
+        const router = new TrieRouter();
+        const order = [];
+        const body = 'OK';
+        let requestContext;
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler: ctx => {
+            order.push('handler');
+            expect(ctx).to.be.instanceof(RequestContext);
+            requestContext = ctx;
+            return body;
+          },
+          postHandler: [
+            (ctx, data) => {
+              order.push('postHandler1');
+              expect(ctx).to.be.eq(requestContext);
+              expect(data).to.be.eq(body);
+            },
+            (ctx, data) => {
+              order.push('postHandler2');
+              expect(ctx).to.be.eq(requestContext);
+              expect(data).to.be.eq(body);
+            },
+          ],
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        router.requestListener(req, res);
+        const result = await res.getBody();
+        expect(result).to.be.eq(body);
+        expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
+      });
+
+      it('should send a return value form the route handler when all "postHandler" hooks return undefined', async function () {
+        const router = new TrieRouter();
+        const order = [];
+        const body = 'OK';
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler: () => {
+            order.push('handler');
+            return body;
+          },
+          postHandler: [
+            () => {
+              order.push('postHandler1');
+              return undefined;
+            },
+            () => {
+              order.push('postHandler2');
+              return undefined;
+            },
+          ],
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        router.requestListener(req, res);
+        const result = await res.getBody();
+        expect(result).to.be.eq(body);
+        expect(order).to.be.eql(['handler', 'postHandler1', 'postHandler2']);
+      });
+
+      it('should prioritize a return value from the hook "postHandler" over the route handler', async function () {
+        const router = new TrieRouter();
+        const order = [];
+        const handlerBody = 'foo';
+        const postHandlerBody = 'bar';
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler: () => {
+            order.push('handler');
+            return handlerBody;
+          },
+          postHandler() {
+            order.push('postHandler');
+            return postHandlerBody;
+          },
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        router.requestListener(req, res);
+        const result = await res.getBody();
+        expect(result).to.be.not.eq(handlerBody);
+        expect(result).to.be.eq(postHandlerBody);
+        expect(order).to.be.eql(['handler', 'postHandler']);
+      });
+
+      it('should prioritize a return value from the "postHandler" hook over the "preHandler" hook', async function () {
+        const router = new TrieRouter();
+        const order = [];
+        const preHandlerBody = 'foo';
+        const handlerBody = 'bar';
+        const postHandlerBody = 'baz';
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          preHandler() {
+            order.push('preHandler');
+            return preHandlerBody;
+          },
+          handler: () => {
+            order.push('handler');
+            return handlerBody;
+          },
+          postHandler() {
+            order.push('postHandler');
+            return postHandlerBody;
+          },
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        router.requestListener(req, res);
+        const result = await res.getBody();
+        expect(result).to.be.not.eq(handlerBody);
+        expect(result).to.be.eq(postHandlerBody);
+        expect(order).to.be.eql(['preHandler', 'postHandler']);
       });
 
       it('should skip "postHandler" hooks when the hook "preHandler" sends the response manually', async function () {
@@ -811,6 +982,46 @@ describe('TrieRouter', function () {
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
         expect(responseBody).to.equal('abc');
+      });
+
+      it('should catch synchronous errors from "postHandler" hooks and use ErrorSender', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler: () => 'OK',
+          postHandler: () => {
+            throw new Error('Sync error in postHandler');
+          },
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const body = await res.getBody();
+        expect(res.statusCode).to.be.eq(500);
+        expect(JSON.parse(body)).to.be.eql({
+          error: {message: 'Sync error in postHandler'},
+        });
+      });
+
+      it('should catch asynchronous errors from "postHandler" hooks and use ErrorSender', async function () {
+        const router = new TrieRouter();
+        router.defineRoute({
+          method: HttpMethod.GET,
+          path: ROOT_PATH,
+          handler: () => 'OK',
+          postHandler: async () => {
+            throw new Error('Async error in postHandler');
+          },
+        });
+        const req = createRequestMock();
+        const res = createResponseMock();
+        await router.requestListener(req, res);
+        const body = await res.getBody();
+        expect(res.statusCode).to.be.eq(500);
+        expect(JSON.parse(body)).to.be.eql({
+          error: {message: 'Async error in postHandler'},
+        });
       });
     });
 

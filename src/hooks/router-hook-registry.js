@@ -4,15 +4,17 @@ import {InvalidArgumentError} from '@e22m4u/js-format';
  * Hook type.
  *
  * @type {{
+ *   ON_DEFINE_ROUTE: 'onDefineRoute',
+ *   ON_REQUEST: 'onRequest',
  *   PRE_HANDLER: 'preHandler',
  *   POST_HANDLER: 'postHandler',
- *   ON_DEFINE_ROUTE: 'onDefineRoute',
  * }}
  */
 export const RouterHookType = {
+  ON_DEFINE_ROUTE: 'onDefineRoute',
+  ON_REQUEST: 'onRequest',
   PRE_HANDLER: 'preHandler',
   POST_HANDLER: 'postHandler',
-  ON_DEFINE_ROUTE: 'onDefineRoute',
 };
 
 /**

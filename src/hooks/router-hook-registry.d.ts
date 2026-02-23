@@ -8,9 +8,10 @@ import {DebuggableService} from '../debuggable-service.js';
  * Router hook type.
  */
 export declare const RouterHookType: {
+  ON_DEFINE_ROUTE: 'onDefineRoute';
+  ON_REQUEST: 'onRequest';
   PRE_HANDLER: 'preHandler';
   POST_HANDLER: 'postHandler';
-  ON_DEFINE_ROUTE: 'onDefineRoute';
 };
 
 /**
