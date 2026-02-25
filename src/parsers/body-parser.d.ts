@@ -3,11 +3,6 @@ import {ValueOrPromise} from '../types.js';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
- * Method names to be parsed.
- */
-export declare const METHODS_WITH_BODY: string[];
-
-/**
  * Body parser function.
  */
 export type BodyParserFunction = <T = unknown>(input: string) => T;

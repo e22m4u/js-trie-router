@@ -38,7 +38,6 @@ __export(index_exports, {
   EXPOSED_ERROR_PROPERTIES: () => EXPOSED_ERROR_PROPERTIES,
   ErrorSender: () => ErrorSender,
   HttpMethod: () => HttpMethod,
-  METHODS_WITH_BODY: () => METHODS_WITH_BODY,
   QueryParser: () => QueryParser,
   ROOT_PATH: () => ROOT_PATH,
   ROUTER_HOOK_TYPES: () => ROUTER_HOOK_TYPES,
@@ -59,6 +58,7 @@ __export(index_exports, {
   createRouteMock: () => createRouteMock,
   fetchRequestBody: () => fetchRequestBody,
   getRequestPathname: () => getRequestPathname,
+  hasRequestBody: () => hasRequestBody,
   isPromise: () => isPromise,
   isReadableStream: () => isReadableStream,
   isResponseSent: () => isResponseSent,
@@ -217,6 +217,18 @@ function isResponseSent(response) {
   return response.headersSent;
 }
 __name(isResponseSent, "isResponseSent");
+
+// src/utils/has-request-body.js
+function hasRequestBody(request) {
+  if (request.headers["transfer-encoding"] !== void 0) {
+    return true;
+  }
+  if (!isNaN(request.headers["content-length"]) && request.headers["content-length"] !== "0") {
+    return true;
+  }
+  return false;
+}
+__name(hasRequestBody, "hasRequestBody");
 
 // src/utils/create-route-mock.js
 function createRouteMock(options = {}) {
@@ -640,7 +652,7 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
       obj["content-type"] = "application/json";
     }
   }
-  if (body != null && obj["content-length"] == null) {
+  if (body != null && obj["transfer-encoding"] == null && obj["content-length"] == null) {
     if (typeof body === "string") {
       const length = Buffer.byteLength(body, encoding);
       obj["content-length"] = String(length);
@@ -1557,7 +1569,6 @@ var RouterOptions = _RouterOptions;
 
 // src/parsers/body-parser.js
 var import_js_format15 = require("@e22m4u/js-format");
-var METHODS_WITH_BODY = ["POST", "PUT", "PATCH", "DELETE"];
 var _BodyParser = class _BodyParser extends DebuggableService {
   /**
    * Parsers.
@@ -1588,7 +1599,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
         parser
       );
     }
-    this._parsers[mediaType] = parser;
+    this._parsers[mediaType.toLowerCase()] = parser;
     return this;
   }
   /**
@@ -1604,7 +1615,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
         mediaType
       );
     }
-    return Boolean(this._parsers[mediaType]);
+    return Boolean(this._parsers[mediaType.toLowerCase()]);
   }
   /**
    * Get parser.
@@ -1619,7 +1630,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
         mediaType
       );
     }
-    const parser = this._parsers[mediaType];
+    const parser = this._parsers[mediaType.toLowerCase()];
     if (!parser) {
       throw new import_js_format15.InvalidArgumentError(
         "Media type %v does not have a parser.",
@@ -1641,7 +1652,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
         mediaType
       );
     }
-    delete this._parsers[mediaType];
+    delete this._parsers[mediaType.toLowerCase()];
     return this;
   }
   /**
@@ -1657,17 +1668,11 @@ var _BodyParser = class _BodyParser extends DebuggableService {
       request.method.toUpperCase(),
       getRequestPathname(request)
     );
-    if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
-      debug(
-        "Skipping body parsing for the %s method.",
-        request.method.toUpperCase()
-      );
+    if (!hasRequestBody(request)) {
+      debug("Skipping body parsing because no body is provided.");
       return;
     }
-    const contentType = (request.headers["content-type"] || "").replace(
-      /^([^;]+);.*$/,
-      "$1"
-    );
+    const contentType = request.headers["content-type"];
     if (!contentType) {
       debug("Skipping body parsing because no content type is provided.");
       return;
@@ -1679,7 +1684,7 @@ var _BodyParser = class _BodyParser extends DebuggableService {
         'Unable to parse the "content-type" header.'
       );
     }
-    const parser = this._parsers[mediaType];
+    const parser = this._parsers[mediaType.toLowerCase()];
     if (!parser) {
       debug("No body parser for the media type %v.", mediaType);
       return;
@@ -1706,7 +1711,7 @@ function parseJsonBody(input) {
   try {
     return JSON.parse(input);
   } catch (error) {
-    throw createError(import_http_errors2.default.BadRequest, error.message);
+    throw new import_http_errors2.default.BadRequest(error.message);
   }
 }
 __name(parseJsonBody, "parseJsonBody");
@@ -2556,7 +2561,6 @@ var TrieRouter = _TrieRouter;
   EXPOSED_ERROR_PROPERTIES,
   ErrorSender,
   HttpMethod,
-  METHODS_WITH_BODY,
   QueryParser,
   ROOT_PATH,
   ROUTER_HOOK_TYPES,
@@ -2577,6 +2581,7 @@ var TrieRouter = _TrieRouter;
   createRouteMock,
   fetchRequestBody,
   getRequestPathname,
+  hasRequestBody,
   isPromise,
   isReadableStream,
   isResponseSent,

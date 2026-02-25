@@ -5,17 +5,11 @@ import {DebuggableService} from '../debuggable-service.js';
 
 import {
   createError,
+  hasRequestBody,
   parseContentType,
   fetchRequestBody,
   getRequestPathname,
 } from '../utils/index.js';
-
-/**
- * Method names to be parsed.
- *
- * @type {string[]}
- */
-export const METHODS_WITH_BODY = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
 /**
  * Body parser.
@@ -52,7 +46,7 @@ export class BodyParser extends DebuggableService {
         parser,
       );
     }
-    this._parsers[mediaType] = parser;
+    this._parsers[mediaType.toLowerCase()] = parser;
     return this;
   }
 
@@ -70,7 +64,7 @@ export class BodyParser extends DebuggableService {
         mediaType,
       );
     }
-    return Boolean(this._parsers[mediaType]);
+    return Boolean(this._parsers[mediaType.toLowerCase()]);
   }
 
   /**
@@ -87,7 +81,7 @@ export class BodyParser extends DebuggableService {
         mediaType,
       );
     }
-    const parser = this._parsers[mediaType];
+    const parser = this._parsers[mediaType.toLowerCase()];
     if (!parser) {
       throw new InvalidArgumentError(
         'Media type %v does not have a parser.',
@@ -111,7 +105,7 @@ export class BodyParser extends DebuggableService {
         mediaType,
       );
     }
-    delete this._parsers[mediaType];
+    delete this._parsers[mediaType.toLowerCase()];
     return this;
   }
 
@@ -128,17 +122,11 @@ export class BodyParser extends DebuggableService {
       request.method.toUpperCase(),
       getRequestPathname(request),
     );
-    if (!METHODS_WITH_BODY.includes(request.method.toUpperCase())) {
-      debug(
-        'Skipping body parsing for the %s method.',
-        request.method.toUpperCase(),
-      );
+    if (!hasRequestBody(request)) {
+      debug('Skipping body parsing because no body is provided.');
       return;
     }
-    const contentType = (request.headers['content-type'] || '').replace(
-      /^([^;]+);.*$/,
-      '$1',
-    );
+    const contentType = request.headers['content-type'];
     if (!contentType) {
       debug('Skipping body parsing because no content type is provided.');
       return;
@@ -150,7 +138,7 @@ export class BodyParser extends DebuggableService {
         'Unable to parse the "content-type" header.',
       );
     }
-    const parser = this._parsers[mediaType];
+    const parser = this._parsers[mediaType.toLowerCase()];
     if (!parser) {
       debug('No body parser for the media type %v.', mediaType);
       return;
@@ -182,6 +170,6 @@ export function parseJsonBody(input) {
   try {
     return JSON.parse(input);
   } catch (error) {
-    throw createError(HttpErrors.BadRequest, error.message);
+    throw new HttpErrors.BadRequest(error.message);
   }
 }

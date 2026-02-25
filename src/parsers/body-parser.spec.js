@@ -1,10 +1,10 @@
 import {expect} from 'chai';
 import HttpErrors from 'http-errors';
 import {format} from '@e22m4u/js-format';
+import {BodyParser} from './body-parser.js';
 import {HttpMethod} from '../route/index.js';
 import {RouterOptions} from '../router-options.js';
 import {createRequestMock} from '../utils/index.js';
-import {BodyParser, METHODS_WITH_BODY} from './body-parser.js';
 
 describe('BodyParser', function () {
   describe('defineParser', function () {
@@ -101,6 +101,13 @@ describe('BodyParser', function () {
       S.defineParser(mediaType, parser);
       expect(S.hasParser(mediaType)).to.be.true;
     });
+
+    it('should be case-insensitive when looking up the parser', function () {
+      const S = new BodyParser();
+      const parser = v => v;
+      S.defineParser('MeDiA/TyPe', parser);
+      expect(S.hasParser('mEdIa/tYpE')).to.be.true;
+    });
   });
 
   describe('getParser', function () {
@@ -141,6 +148,13 @@ describe('BodyParser', function () {
       const parser = v => v;
       S.defineParser(mediaType, parser);
       expect(S.getParser(mediaType)).to.be.eq(parser);
+    });
+
+    it('should be case-insensitive when looking up the parser', function () {
+      const S = new BodyParser();
+      const parser = v => v;
+      S.defineParser('MeDiA/TyPe', parser);
+      expect(S.getParser('mEdIa/tYpE')).to.be.eq(parser);
     });
   });
 
@@ -183,38 +197,69 @@ describe('BodyParser', function () {
       S.removeParser(mediaType);
       expect(S.hasParser(mediaType)).to.be.false;
     });
+
+    it('should be case-insensitive when removing the parser', function () {
+      const S = new BodyParser();
+      const parser = v => v;
+      const mediaType = 'MeDiA/TyPe';
+      S.defineParser(mediaType, parser);
+      expect(S.hasParser(mediaType)).to.be.true;
+      S.removeParser('mEdIa/tYpE');
+      expect(S.hasParser(mediaType)).to.be.false;
+    });
   });
 
   describe('parse', function () {
-    it('should return undefined when the request method is not supported', async function () {
+    it('should parse the request body when the "content-type" and "content-length" headers are provided', async function () {
       const S = new BodyParser();
-      const req = createRequestMock({
-        method: 'unsupported',
-        body: 'Lorem Ipsum is simply dummy text.',
-      });
-      const result = await S.parse(req);
-      expect(result).to.be.undefined;
+      const body = 'Lorem Ipsum is simply dummy text.';
+      const headers = {
+        'content-type': 'text/plain',
+        'content-length': Buffer.byteLength(body, 'utf-8'),
+      };
+      for await (const method of Object.values(HttpMethod)) {
+        const req = createRequestMock({method, body, headers});
+        const result = await S.parse(req);
+        expect(result).to.be.eq(body);
+      }
     });
 
-    it('should return undefined when the request method is not supported even if the "content-type" header is specified', async function () {
+    it('should parse the request body when the "content-type" and "transfer-encoding" headers are provided', async function () {
       const S = new BodyParser();
-      const req = createRequestMock({
-        method: 'unsupported',
-        headers: {'content-type': 'text/plain'},
-        body: 'Lorem Ipsum is simply dummy text.',
-      });
-      const result = await S.parse(req);
-      expect(result).to.be.undefined;
+      const body = 'Lorem Ipsum is simply dummy text.';
+      const headers = {
+        'content-type': 'text/plain',
+        'transfer-encoding': 'chunked',
+      };
+      for await (const method of Object.values(HttpMethod)) {
+        const req = createRequestMock({method, body, headers});
+        const result = await S.parse(req);
+        expect(result).to.be.eq(body);
+      }
     });
 
-    it('should return undefined when no "content-type" header is specified', async function () {
+    it('should skip parsing when the header "content-length" has an invalid value', async function () {
+      const S = new BodyParser();
+      const body = 'Lorem Ipsum is simply dummy text.';
+      const headers = {
+        'content-type': 'text/plain',
+        'content-length': 'invalid',
+      };
+      for await (const method of Object.values(HttpMethod)) {
+        const req = createRequestMock({method, body, headers});
+        const result = await S.parse(req);
+        expect(result).to.be.undefined;
+      }
+    });
+
+    it('should return undefined when no "content-type" header is provided', async function () {
       const S = new BodyParser();
       const req = createRequestMock({method: HttpMethod.POST});
       const result = await S.parse(req);
       expect(result).to.be.undefined;
     });
 
-    it('should return undefined when no registered parser for the media type', async function () {
+    it('should return undefined when the media type does not have a registered parser', async function () {
       const S = new BodyParser();
       const req = createRequestMock({
         method: HttpMethod.POST,
@@ -223,17 +268,6 @@ describe('BodyParser', function () {
       });
       const result = await S.parse(req);
       expect(result).to.be.undefined;
-    });
-
-    it('should parse the request body for available methods', async function () {
-      const S = new BodyParser();
-      const body = 'Lorem Ipsum is simply dummy text.';
-      const headers = {'content-type': 'text/plain'};
-      for await (const method of Object.values(METHODS_WITH_BODY)) {
-        const req = createRequestMock({method, body, headers});
-        const result = await S.parse(req);
-        expect(result).to.be.eq(body);
-      }
     });
 
     it('should use the option "bodyBytesLimit" from the RouterOptions', async function () {

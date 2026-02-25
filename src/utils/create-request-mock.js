@@ -316,7 +316,11 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   }
   // подсчет количества байт тела
   // для заголовка "content-length"
-  if (body != null && obj['content-length'] == null) {
+  if (
+    body != null &&
+    obj['transfer-encoding'] == null &&
+    obj['content-length'] == null
+  ) {
     if (typeof body === 'string') {
       const length = Buffer.byteLength(body, encoding);
       obj['content-length'] = String(length);
