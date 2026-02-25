@@ -4,12 +4,7 @@ import {format} from '@e22m4u/js-format';
 import {HttpMethod} from '../route/index.js';
 import {RouterOptions} from '../router-options.js';
 import {createRequestMock} from '../utils/index.js';
-
-import {
-  BodyParser,
-  METHODS_WITH_BODY,
-  UNPARSABLE_MEDIA_TYPES,
-} from './body-parser.js';
+import {BodyParser, METHODS_WITH_BODY} from './body-parser.js';
 
 describe('BodyParser', function () {
   describe('defineParser', function () {
@@ -219,17 +214,15 @@ describe('BodyParser', function () {
       expect(result).to.be.undefined;
     });
 
-    it('should return undefined when the media type is excluded', async function () {
+    it('should return undefined when no registered parser for the media type', async function () {
       const S = new BodyParser();
-      for await (const mediaType of UNPARSABLE_MEDIA_TYPES) {
-        const req = createRequestMock({
-          method: HttpMethod.POST,
-          headers: {'content-type': mediaType},
-          body: 'Lorem Ipsum is simply dummy text.',
-        });
-        const result = await S.parse(req);
-        expect(result).to.be.undefined;
-      }
+      const req = createRequestMock({
+        method: HttpMethod.POST,
+        headers: {'content-type': 'type/unknown'},
+        body: 'Lorem Ipsum is simply dummy text.',
+      });
+      const result = await S.parse(req);
+      expect(result).to.be.undefined;
     });
 
     it('should parse the request body for available methods', async function () {
@@ -241,18 +234,6 @@ describe('BodyParser', function () {
         const result = await S.parse(req);
         expect(result).to.be.eq(body);
       }
-    });
-
-    it('should throw an error when the media type is not supported', function () {
-      const S = new BodyParser();
-      const req = createRequestMock({
-        method: HttpMethod.POST,
-        headers: {'content-type': 'media/unknown'},
-      });
-      const throwable = () => S.parse(req);
-      expect(throwable).to.throw(
-        'Media type "media/unknown" is not supported.',
-      );
     });
 
     it('should use the option "bodyBytesLimit" from the RouterOptions', async function () {

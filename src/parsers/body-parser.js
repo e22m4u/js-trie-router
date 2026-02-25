@@ -18,13 +18,6 @@ import {
 export const METHODS_WITH_BODY = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
 /**
- * Unparsable media types.
- *
- * @type {string[]}
- */
-export const UNPARSABLE_MEDIA_TYPES = ['multipart/form-data'];
-
-/**
  * Body parser.
  */
 export class BodyParser extends DebuggableService {
@@ -159,15 +152,8 @@ export class BodyParser extends DebuggableService {
     }
     const parser = this._parsers[mediaType];
     if (!parser) {
-      if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
-        debug('Skipping body parsing for the media type %v.', mediaType);
-        return;
-      }
-      throw createError(
-        HttpErrors.UnsupportedMediaType,
-        'Media type %v is not supported.',
-        mediaType,
-      );
+      debug('No body parser for the media type %v.', mediaType);
+      return;
     }
     const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
     debug('Fetching a request body.');

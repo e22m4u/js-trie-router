@@ -8,11 +8,6 @@ import {DebuggableService} from '../debuggable-service.js';
 export declare const METHODS_WITH_BODY: string[];
 
 /**
- * Unparsable media types.
- */
-export declare const UNPARSABLE_MEDIA_TYPES: string[];
-
-/**
  * Body parser function.
  */
 export type BodyParserFunction = <T = unknown>(input: string) => T;

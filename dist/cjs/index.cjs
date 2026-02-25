@@ -51,7 +51,6 @@ __export(index_exports, {
   RouterHookType: () => RouterHookType,
   RouterOptions: () => RouterOptions,
   TrieRouter: () => TrieRouter,
-  UNPARSABLE_MEDIA_TYPES: () => UNPARSABLE_MEDIA_TYPES,
   cloneDeep: () => cloneDeep,
   createCookieString: () => createCookieString,
   createError: () => createError,
@@ -1559,7 +1558,6 @@ var RouterOptions = _RouterOptions;
 // src/parsers/body-parser.js
 var import_js_format15 = require("@e22m4u/js-format");
 var METHODS_WITH_BODY = ["POST", "PUT", "PATCH", "DELETE"];
-var UNPARSABLE_MEDIA_TYPES = ["multipart/form-data"];
 var _BodyParser = class _BodyParser extends DebuggableService {
   /**
    * Parsers.
@@ -1683,15 +1681,8 @@ var _BodyParser = class _BodyParser extends DebuggableService {
     }
     const parser = this._parsers[mediaType];
     if (!parser) {
-      if (UNPARSABLE_MEDIA_TYPES.includes(mediaType)) {
-        debug("Skipping body parsing for the media type %v.", mediaType);
-        return;
-      }
-      throw createError(
-        import_http_errors2.default.UnsupportedMediaType,
-        "Media type %v is not supported.",
-        mediaType
-      );
+      debug("No body parser for the media type %v.", mediaType);
+      return;
     }
     const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
     debug("Fetching a request body.");
@@ -2578,7 +2569,6 @@ var TrieRouter = _TrieRouter;
   RouterHookType,
   RouterOptions,
   TrieRouter,
-  UNPARSABLE_MEDIA_TYPES,
   cloneDeep,
   createCookieString,
   createError,
