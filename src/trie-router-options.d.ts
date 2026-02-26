@@ -3,6 +3,7 @@
  */
 export type TrieRouterOptionsInput = {
   requestBodyBytesLimit?: number;
+  ignoredMediaTypes?: string[];
 };
 
 /**
@@ -10,14 +11,33 @@ export type TrieRouterOptionsInput = {
  */
 export declare class TrieRouterOptions {
   /**
-   * Getter of request body bytes limit.
+   * Get request body bytes limit.
+   *
+   * @param limit
    */
-  get requestBodyBytesLimit(): number;
+  setRequestBodyBytesLimit(limit: number): this;
 
   /**
-   * Constructor.
-   *
-   * @param options
+   * Get request body bytes limit.
    */
-  constructor(options?: TrieRouterOptionsInput);
+  getRequestBodyBytesLimit(): number;
+
+  /**
+   * Get ignored media types.
+   *
+   * @param mediaType
+   */
+  addIgnoredMediaType(mediaType: string): this;
+
+  /**
+   * Has ignored media type.
+   *
+   * @param mediaType
+   */
+  hasIgnoredMediaType(mediaType: string): boolean;
+
+  /**
+   * Get ignored media types.
+   */
+  getIgnoredMediaTypes(): string[];
 }

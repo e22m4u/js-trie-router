@@ -1894,18 +1894,15 @@ var _TrieRouterOptions = class _TrieRouterOptions {
    * Request body bytes limit.
    *
    * @type {number}
-   * @private
    */
-  _requestBodyBytesLimit = 512e3;
+  _requestBodyBytesLimit = 512 * 1024;
   // 512kb
   /**
-   * Getter of the request body bytes limit.
+   * Ignored media types.
    *
-   * @returns {number}
+   * @type {string[]}
    */
-  get requestBodyBytesLimit() {
-    return this._requestBodyBytesLimit;
-  }
+  _ignoredMediaTypes = [];
   /**
    * Constructor.
    *
@@ -1927,6 +1924,93 @@ var _TrieRouterOptions = class _TrieRouterOptions {
       }
       this._requestBodyBytesLimit = options.requestBodyBytesLimit;
     }
+    if (options.ignoredMediaTypes !== void 0) {
+      if (!Array.isArray(options.ignoredMediaTypes)) {
+        throw new import_js_format17.InvalidArgumentError(
+          'Option "ignoredMediaTypes" must be an Array, but %v was given.',
+          options.ignoredMediaTypes
+        );
+      }
+      options.ignoredMediaTypes.forEach((mediaType, index) => {
+        if (!mediaType || typeof mediaType !== "string") {
+          throw new import_js_format17.InvalidArgumentError(
+            'Element %d of the option "ignoredMediaTypes" must be a non-empty String, but %v was given.',
+            index,
+            mediaType
+          );
+        }
+        const mediaTypeLc = mediaType.toLowerCase();
+        if (!this._ignoredMediaTypes.includes(mediaTypeLc)) {
+          this._ignoredMediaTypes.push(mediaTypeLc);
+        }
+      });
+    }
+  }
+  /**
+   * Get request body bytes limit.
+   *
+   * @param {number} limit
+   * @returns {this}
+   */
+  setRequestBodyBytesLimit(limit) {
+    if (typeof limit !== "number" || limit < 0) {
+      throw new import_js_format17.InvalidArgumentError(
+        'Parameter "limit" must be a positive Number or 0, but %v was given.',
+        limit
+      );
+    }
+    this._requestBodyBytesLimit = limit;
+    return this;
+  }
+  /**
+   * Get request body bytes limit.
+   *
+   * @returns {number}
+   */
+  getRequestBodyBytesLimit() {
+    return this._requestBodyBytesLimit;
+  }
+  /**
+   * Get ignored media types.
+   *
+   * @param {string} mediaType
+   * @returns {this}
+   */
+  addIgnoredMediaType(mediaType) {
+    if (!mediaType || typeof mediaType !== "string") {
+      throw new import_js_format17.InvalidArgumentError(
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
+        mediaType
+      );
+    }
+    const mediaTypeLc = mediaType.toLowerCase();
+    if (!this._ignoredMediaTypes.includes(mediaTypeLc)) {
+      this._ignoredMediaTypes.push(mediaTypeLc);
+    }
+    return this;
+  }
+  /**
+   * Has ignored media type.
+   *
+   * @param {string} mediaType
+   * @returns {boolean}
+   */
+  hasIgnoredMediaType(mediaType) {
+    if (!mediaType || typeof mediaType !== "string") {
+      throw new import_js_format17.InvalidArgumentError(
+        'Parameter "mediaType" must be a non-empty String, but %v was given.',
+        mediaType
+      );
+    }
+    return this._ignoredMediaTypes.includes(mediaType.toLowerCase());
+  }
+  /**
+   * Get ignored media types.
+   *
+   * @returns {string[]}
+   */
+  getIgnoredMediaTypes() {
+    return this._ignoredMediaTypes.slice();
   }
 };
 __name(_TrieRouterOptions, "TrieRouterOptions");
@@ -2048,12 +2132,21 @@ var _BodyParser = class _BodyParser extends DebuggableService {
         'Unable to parse the "content-type" header.'
       );
     }
-    const parser = this._parsers[mediaType.toLowerCase()];
-    if (!parser) {
-      debug("No body parser for the media type %v.", mediaType);
+    const options = this.getService(TrieRouterOptions);
+    const isMediaTypeIgnored = options.hasIgnoredMediaType(mediaType);
+    if (isMediaTypeIgnored) {
+      debug("Media type %v is ignored.", mediaType);
       return;
     }
-    const bodyBytesLimit = this.getService(TrieRouterOptions).requestBodyBytesLimit;
+    const parser = this._parsers[mediaType.toLowerCase()];
+    if (!parser) {
+      throw createError(
+        import_http_errors2.default.UnsupportedMediaType,
+        "Media type %v is not supported.",
+        mediaType
+      );
+    }
+    const bodyBytesLimit = options.getRequestBodyBytesLimit();
     debug("Fetching a request body.");
     debug("Body limit is %v bytes.", bodyBytesLimit);
     return fetchRequestBody(request, bodyBytesLimit).then((rawBody) => {

@@ -122,15 +122,21 @@ export class BodyParser extends DebuggableService {
       request.method.toUpperCase(),
       getRequestPathname(request),
     );
+    // если запрос не содержит тела,
+    // то парсинг тела пропускается
     if (!hasRequestBody(request)) {
       debug('Skipping body parsing because no body is provided.');
       return;
     }
+    // если запрос содержит тело, но "content-type"
+    // не определен, то парсинг тела пропускается
     const contentType = request.headers['content-type'];
     if (!contentType) {
       debug('Skipping body parsing because no content type is provided.');
       return;
     }
+    // если содержание заголовка "content-type"
+    // разобрать не удалось, то выбрасывается ошибка
     const {mediaType} = parseContentType(contentType);
     if (!mediaType) {
       throw createError(
@@ -138,15 +144,31 @@ export class BodyParser extends DebuggableService {
         'Unable to parse the "content-type" header.',
       );
     }
-    const parser = this._parsers[mediaType.toLowerCase()];
-    if (!parser) {
-      debug('No body parser for the media type %v.', mediaType);
+    // если текущий медиа тип исключен
+    // настройками, то парсинг пропускается
+    const options = this.getService(TrieRouterOptions);
+    const isMediaTypeIgnored = options.hasIgnoredMediaType(mediaType);
+    if (isMediaTypeIgnored) {
+      debug('Media type %v is ignored.', mediaType);
       return;
     }
-    const bodyBytesLimit =
-      this.getService(TrieRouterOptions).requestBodyBytesLimit;
+    // если парсер для текущего медиа типа
+    // не определен, то выбрасывается ошибка
+    const parser = this._parsers[mediaType.toLowerCase()];
+    if (!parser) {
+      throw createError(
+        HttpErrors.UnsupportedMediaType,
+        'Media type %v is not supported.',
+        mediaType,
+      );
+    }
+    // определение максимального количества
+    // байт, извлекаемых из тела запроса
+    const bodyBytesLimit = options.getRequestBodyBytesLimit();
     debug('Fetching a request body.');
     debug('Body limit is %v bytes.', bodyBytesLimit);
+    // извлечение тела запроса для последующего
+    // разбора соответствующим парсером
     return fetchRequestBody(request, bodyBytesLimit).then(rawBody => {
       if (rawBody != null) {
         debug('Read %v bytes.', Buffer.byteLength(rawBody, 'utf8'));

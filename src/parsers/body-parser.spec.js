@@ -259,15 +259,18 @@ describe('BodyParser', function () {
       expect(result).to.be.undefined;
     });
 
-    it('should return undefined when the media type does not have a registered parser', async function () {
+    it('should throw an error when the media type does not have a registered parser', function () {
       const S = new BodyParser();
       const req = createRequestMock({
         method: HttpMethod.POST,
-        headers: {'content-type': 'type/unknown'},
+        headers: {'content-type': 'media/unknown'},
         body: 'Lorem Ipsum is simply dummy text.',
       });
-      const result = await S.parse(req);
-      expect(result).to.be.undefined;
+      const throwable = () => S.parse(req);
+      expect(throwable).to.throw(
+        HttpErrors.UnsupportedMediaType,
+        'Media type "media/unknown" is not supported.',
+      );
     });
 
     it('should use the option "bodyBytesLimit" from the TrieRouterOptions', async function () {
@@ -282,6 +285,18 @@ describe('BodyParser', function () {
       });
       const promise = S.parse(req);
       await expect(promise).to.be.rejectedWith(HttpErrors.PayloadTooLarge);
+    });
+
+    it('should return undefined when the media type is ignored even when a request body is provided', async function () {
+      const S = new BodyParser();
+      S.getService(TrieRouterOptions, {ignoredMediaTypes: ['text/plain']});
+      const req = createRequestMock({
+        method: HttpMethod.POST,
+        headers: {'content-type': 'text/plain'},
+        body: 'Lorem Ipsum is simply dummy text.',
+      });
+      const result = await S.parse(req);
+      expect(result).to.be.undefined;
     });
 
     describe('text/plain', function () {
