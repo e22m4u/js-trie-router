@@ -1,10 +1,10 @@
-import {HttpMethod, Route} from './route/index.js';
+import {HttpMethod, Route} from './route.js';
 import {PathTrie} from '@e22m4u/js-path-trie';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {getRequestPathname} from './utils/index.js';
+import {getRequestPathname} from '../utils/index.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
-import {DebuggableService} from './debuggable-service.js';
-import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
+import {DebuggableService} from '../debuggable-service.js';
+import {RouterHookRegistry, RouterHookType} from '../hooks/index.js';
 
 /**
  * @typedef {{

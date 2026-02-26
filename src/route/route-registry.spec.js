@@ -1,9 +1,9 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
+import {Route, HttpMethod} from './route.js';
 import {RouteRegistry} from './route-registry.js';
-import {Route, HttpMethod} from './route/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
+import {RouterHookRegistry, RouterHookType} from '../hooks/index.js';
 
 describe('RouteRegistry', function () {
   describe('defineRoute', function () {

@@ -3,8 +3,8 @@ import HttpErrors from 'http-errors';
 import {format} from '@e22m4u/js-format';
 import {BodyParser} from './body-parser.js';
 import {HttpMethod} from '../route/index.js';
-import {RouterOptions} from '../router-options.js';
 import {createRequestMock} from '../utils/index.js';
+import {TrieRouterOptions} from '../trie-router-options.js';
 
 describe('BodyParser', function () {
   describe('defineParser', function () {
@@ -270,9 +270,9 @@ describe('BodyParser', function () {
       expect(result).to.be.undefined;
     });
 
-    it('should use the option "bodyBytesLimit" from the RouterOptions', async function () {
+    it('should use the option "bodyBytesLimit" from the TrieRouterOptions', async function () {
       const S = new BodyParser();
-      S.getService(RouterOptions).setRequestBodyBytesLimit(1);
+      S.useService(TrieRouterOptions, {requestBodyBytesLimit: 1});
       const req = createRequestMock({
         method: HttpMethod.POST,
         headers: {

@@ -1,14 +1,38 @@
 import {RequestListener} from 'http';
 import {Route} from './route/index.js';
 import {RouteDefinition} from './route/index.js';
+import {ServiceContainer} from '@e22m4u/js-service';
 import {DebuggableService} from './debuggable-service.js';
 import {RouterHook, RouterHookType} from './hooks/index.js';
+import {TrieRouterOptionsInput} from './trie-router-options.js';
 import {RouterBranch, RouterBranchDefinition} from './branch/index.js';
 
 /**
  * Trie router.
  */
 export declare class TrieRouter extends DebuggableService {
+  /**
+   * Constructor.
+   *
+   * @param container
+   */
+  constructor(container: ServiceContainer);
+
+  /**
+   * Constructor.
+   *
+   * @param options
+   */
+  constructor(options: TrieRouterOptionsInput);
+
+  /**
+   * Constructor.
+   *
+   * @param container
+   * @param options
+   */
+  constructor(container: ServiceContainer, options: TrieRouterOptionsInput);
+
   /**
    * Define route.
    *

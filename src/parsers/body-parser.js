@@ -1,7 +1,7 @@
 import HttpErrors from 'http-errors';
-import {RouterOptions} from '../router-options.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from '../debuggable-service.js';
+import {TrieRouterOptions} from '../trie-router-options.js';
 
 import {
   createError,
@@ -143,7 +143,8 @@ export class BodyParser extends DebuggableService {
       debug('No body parser for the media type %v.', mediaType);
       return;
     }
-    const bodyBytesLimit = this.getService(RouterOptions).requestBodyBytesLimit;
+    const bodyBytesLimit =
+      this.getService(TrieRouterOptions).requestBodyBytesLimit;
     debug('Fetching a request body.');
     debug('Body limit is %v bytes.', bodyBytesLimit);
     return fetchRequestBody(request, bodyBytesLimit).then(rawBody => {

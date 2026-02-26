@@ -1,12 +1,11 @@
-import {HttpMethod} from './route/route.js';
+import {RouterBranch} from './branch/index.js';
 import {RequestParser} from './parsers/index.js';
-import {RouteRegistry} from './route-registry.js';
 import {RequestContext} from './request-context.js';
-import {ServiceContainer} from '@e22m4u/js-service';
 import {ServerResponse, IncomingMessage} from 'http';
-import {RouterBranch} from './branch/router-branch.js';
 import {DebuggableService} from './debuggable-service.js';
+import {HttpMethod, RouteRegistry} from './route/index.js';
 import {DataSender, ErrorSender} from './senders/index.js';
+import {isServiceContainer, ServiceContainer} from '@e22m4u/js-service';
 import {isPromise, isResponseSent, getRequestPathname} from './utils/index.js';
 
 import {
@@ -14,11 +13,38 @@ import {
   RouterHookInvoker,
   RouterHookRegistry,
 } from './hooks/index.js';
+import {TrieRouterOptions} from './trie-router-options.js';
 
 /**
  * Trie router.
  */
 export class TrieRouter extends DebuggableService {
+  /**
+   * Constructor.
+   *
+   * @param {import('@e22m4u/js-service').ServiceContainer|import('./trie-router-options.js').TrieRouterOptionsInput} [containerOrOptions]
+   * @param {import('./trie-router-options.js').TrieRouterOptionsInput} [options]
+   */
+  constructor(containerOrOptions, options) {
+    // первый аргумент является контейнером,
+    // который передается в базовый конструктор
+    if (isServiceContainer(containerOrOptions)) {
+      super(containerOrOptions);
+    }
+    // если первый аргумент не является контейнером,
+    // то значение воспринимается как объект настроек
+    else if (containerOrOptions !== undefined) {
+      super();
+      options = containerOrOptions;
+    }
+    // если первый аргумент не определен, то объект
+    // настроек ожидается во втором аргументе
+    else {
+      super();
+    }
+    this.useService(TrieRouterOptions, options);
+  }
+
   /**
    * Define route.
    *

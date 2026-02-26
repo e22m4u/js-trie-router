@@ -3,13 +3,44 @@ import {ROOT_PATH} from './constants.js';
 import {TrieRouter} from './trie-router.js';
 import {Route, HttpMethod} from './route/index.js';
 import {RequestContext} from './request-context.js';
+import {ServiceContainer} from '@e22m4u/js-service';
 import {ServerResponse, IncomingMessage} from 'http';
 import {RouterBranch} from './branch/router-branch.js';
+import {TrieRouterOptions} from './trie-router-options.js';
 import {DataSender, ErrorSender} from './senders/index.js';
 import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
 import {createRequestMock, createResponseMock} from './utils/index.js';
 
 describe('TrieRouter', function () {
+  describe('constructor', function () {
+    it('should create an instance without arguments', function () {
+      const router = new TrieRouter();
+      expect(router).to.be.instanceOf(TrieRouter);
+    });
+
+    it('should use the service container from the first parameter', function () {
+      const container = new ServiceContainer();
+      const router = new TrieRouter(container);
+      expect(router.container).to.be.eq(container);
+    });
+
+    it('should use the router options from the first parameter', function () {
+      const optionsInput = {requestBodyBytesLimit: 10};
+      const router = new TrieRouter(optionsInput);
+      const options = router.getService(TrieRouterOptions);
+      expect(options.requestBodyBytesLimit).to.be.eq(10);
+    });
+
+    it('should use the service container and the router options from parameters', function () {
+      const container = new ServiceContainer();
+      const optionsInput = {requestBodyBytesLimit: 10};
+      const router = new TrieRouter(container, optionsInput);
+      const options = router.getService(TrieRouterOptions);
+      expect(router.container).to.be.eq(container);
+      expect(options.requestBodyBytesLimit).to.be.eq(10);
+    });
+  });
+
   describe('defineRoute', function () {
     it('should return an instance of Route', function () {
       const router = new TrieRouter();
