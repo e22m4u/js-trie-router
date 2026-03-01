@@ -8,9 +8,9 @@ import {DebuggableService} from '../debuggable-service.js';
 export const EXPOSED_ERROR_PROPERTIES: ['code', 'details'];
 
 /**
- * Error sender.
+ * Router error sender.
  */
-export declare class ErrorSender extends DebuggableService {
+export declare class RouterErrorSender extends DebuggableService {
   /**
    * Send.
    *

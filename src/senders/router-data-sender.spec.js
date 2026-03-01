@@ -1,9 +1,9 @@
 import {expect} from 'chai';
 import {Readable, Writable} from 'stream';
-import {DataSender} from './data-sender.js';
 import {createResponseMock} from '../utils/index.js';
+import {RouterDataSender} from './router-data-sender.js';
 
-describe('DataSender', function () {
+describe('RouterDataSender', function () {
   describe('send', function () {
     it('should not send the response when the data is the server response', function (done) {
       const res = createResponseMock();
@@ -15,7 +15,7 @@ describe('DataSender', function () {
         throw new Error('Should not be called');
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       const result = S.send(res, res);
       expect(result).to.be.undefined;
       setTimeout(() => done(), 5);
@@ -32,7 +32,7 @@ describe('DataSender', function () {
         throw new Error('Should not be called');
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       const result = S.send(res, 'data');
       expect(result).to.be.undefined;
       setTimeout(() => done(), 5);
@@ -46,7 +46,7 @@ describe('DataSender', function () {
         expect(res.statusCode).to.be.eq(204);
         done();
       });
-      const S = new DataSender();
+      const S = new RouterDataSender();
       const result = S.send(res, undefined);
       expect(result).to.be.undefined;
     });
@@ -59,7 +59,7 @@ describe('DataSender', function () {
         expect(res.statusCode).to.be.eq(204);
         done();
       });
-      const S = new DataSender();
+      const S = new RouterDataSender();
       const result = S.send(res, null);
       expect(result).to.be.undefined;
     });
@@ -86,7 +86,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, stream);
     });
 
@@ -114,7 +114,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, stream);
     });
 
@@ -137,7 +137,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
 
@@ -162,7 +162,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
 
@@ -185,7 +185,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
 
@@ -210,7 +210,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
 
@@ -232,7 +232,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
 
@@ -256,7 +256,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
 
@@ -279,7 +279,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
 
@@ -304,7 +304,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
 
@@ -326,7 +326,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
 
@@ -350,7 +350,7 @@ describe('DataSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new DataSender();
+      const S = new RouterDataSender();
       S.send(res, data);
     });
   });

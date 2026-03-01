@@ -2,9 +2,9 @@ import {ServerResponse} from 'http';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
- * Data sender.
+ * Router data sender.
  */
-export declare class DataSender extends DebuggableService {
+export declare class RouterDataSender extends DebuggableService {
   /**
    * Send.
    *

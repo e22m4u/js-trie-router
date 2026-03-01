@@ -3,9 +3,9 @@ import {DebuggableService} from '../debuggable-service.js';
 import {isReadableStream, toPascalCase} from '../utils/index.js';
 
 /**
- * Data sender.
+ * Router data sender.
  */
-export class DataSender extends DebuggableService {
+export class RouterDataSender extends DebuggableService {
   /**
    * Send.
    *

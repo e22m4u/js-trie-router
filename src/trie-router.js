@@ -4,7 +4,7 @@ import {RequestContext} from './request-context.js';
 import {ServerResponse, IncomingMessage} from 'http';
 import {DebuggableService} from './debuggable-service.js';
 import {HttpMethod, RouteRegistry} from './route/index.js';
-import {DataSender, ErrorSender} from './senders/index.js';
+import {RouterDataSender, RouterErrorSender} from './senders/index.js';
 import {isServiceContainer, ServiceContainer} from '@e22m4u/js-service';
 import {isPromise, isResponseSent, getRequestPathname} from './utils/index.js';
 
@@ -201,7 +201,7 @@ export class TrieRouter extends DebuggableService {
           request.method,
           requestPath,
         );
-        this.getService(ErrorSender).send404(request, response);
+        this.getService(RouterErrorSender).send404(request, response);
       } else {
         const {route, params} = resolved;
         // создание дочернего сервис-контейнера для передачи
@@ -294,13 +294,13 @@ export class TrieRouter extends DebuggableService {
         }
         // если ответ не был отправлен во время выполнения
         // хуков и основного обработчика запроса, то итоговые
-        // данные передаются в DataSender
+        // данные передаются в RouterDataSender
         if (!isResponseSent(response)) {
-          this.getService(DataSender).send(response, data);
+          this.getService(RouterDataSender).send(response, data);
         }
       }
     } catch (error) {
-      this.getService(ErrorSender).send(request, response, error);
+      this.getService(RouterErrorSender).send(request, response, error);
       return;
     }
   }

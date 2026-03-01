@@ -34,9 +34,7 @@ __export(index_exports, {
   BodyParser: () => BodyParser,
   CHARACTER_ENCODING_LIST: () => CHARACTER_ENCODING_LIST,
   CookiesParser: () => CookiesParser,
-  DataSender: () => DataSender,
   EXPOSED_ERROR_PROPERTIES: () => EXPOSED_ERROR_PROPERTIES,
-  ErrorSender: () => ErrorSender,
   HttpMethod: () => HttpMethod,
   QueryParser: () => QueryParser,
   ROOT_PATH: () => ROOT_PATH,
@@ -45,6 +43,8 @@ __export(index_exports, {
   RequestParser: () => RequestParser,
   Route: () => Route,
   RouteRegistry: () => RouteRegistry,
+  RouterDataSender: () => RouterDataSender,
+  RouterErrorSender: () => RouterErrorSender,
   RouterHookInvoker: () => RouterHookInvoker,
   RouterHookRegistry: () => RouterHookRegistry,
   RouterHookType: () => RouterHookType,
@@ -2281,9 +2281,9 @@ var RequestParser = _RequestParser;
 // src/trie-router.js
 var import_http4 = require("http");
 
-// src/senders/data-sender.js
+// src/senders/router-data-sender.js
 var import_js_format20 = require("@e22m4u/js-format");
-var _DataSender = class _DataSender extends DebuggableService {
+var _RouterDataSender = class _RouterDataSender extends DebuggableService {
   /**
    * Send.
    *
@@ -2344,14 +2344,14 @@ var _DataSender = class _DataSender extends DebuggableService {
     debug(debugMsg);
   }
 };
-__name(_DataSender, "DataSender");
-var DataSender = _DataSender;
+__name(_RouterDataSender, "RouterDataSender");
+var RouterDataSender = _RouterDataSender;
 
-// src/senders/error-sender.js
+// src/senders/router-error-sender.js
 var import_util = require("util");
 var import_statuses = __toESM(require("statuses"), 1);
 var EXPOSED_ERROR_PROPERTIES = ["code", "details"];
-var _ErrorSender = class _ErrorSender extends DebuggableService {
+var _RouterErrorSender = class _RouterErrorSender extends DebuggableService {
   /**
    * Handle.
    *
@@ -2429,8 +2429,8 @@ var _ErrorSender = class _ErrorSender extends DebuggableService {
     );
   }
 };
-__name(_ErrorSender, "ErrorSender");
-var ErrorSender = _ErrorSender;
+__name(_RouterErrorSender, "RouterErrorSender");
+var RouterErrorSender = _RouterErrorSender;
 
 // src/trie-router.js
 var import_js_service4 = require("@e22m4u/js-service");
@@ -2586,7 +2586,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           request.method,
           requestPath
         );
-        this.getService(ErrorSender).send404(request, response);
+        this.getService(RouterErrorSender).send404(request, response);
       } else {
         const { route, params } = resolved;
         const container = new import_js_service4.ServiceContainer(this.container);
@@ -2636,11 +2636,11 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
           return;
         }
         if (!isResponseSent(response)) {
-          this.getService(DataSender).send(response, data);
+          this.getService(RouterDataSender).send(response, data);
         }
       }
     } catch (error) {
-      this.getService(ErrorSender).send(request, response, error);
+      this.getService(RouterErrorSender).send(request, response, error);
       return;
     }
   }
@@ -2673,9 +2673,7 @@ var TrieRouter = _TrieRouter;
   BodyParser,
   CHARACTER_ENCODING_LIST,
   CookiesParser,
-  DataSender,
   EXPOSED_ERROR_PROPERTIES,
-  ErrorSender,
   HttpMethod,
   QueryParser,
   ROOT_PATH,
@@ -2684,6 +2682,8 @@ var TrieRouter = _TrieRouter;
   RequestParser,
   Route,
   RouteRegistry,
+  RouterDataSender,
+  RouterErrorSender,
   RouterHookInvoker,
   RouterHookRegistry,
   RouterHookType,

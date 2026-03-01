@@ -1,10 +1,14 @@
 import {expect} from 'chai';
 import {Writable} from 'stream';
 import HttpErrors from 'http-errors';
-import {ErrorSender, EXPOSED_ERROR_PROPERTIES} from './error-sender.js';
 import {createRequestMock, createResponseMock} from '../utils/index.js';
 
-describe('ErrorSender', function () {
+import {
+  RouterErrorSender,
+  EXPOSED_ERROR_PROPERTIES,
+} from './router-error-sender.js';
+
+describe('RouterErrorSender', function () {
   describe('send', function () {
     it('should send an error response as utf-8 JSON', function (done) {
       const error = HttpErrors.Unauthorized();
@@ -27,7 +31,7 @@ describe('ErrorSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new ErrorSender();
+      const S = new RouterErrorSender();
       S.send(req, res, error);
     });
 
@@ -59,7 +63,7 @@ describe('ErrorSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new ErrorSender();
+      const S = new RouterErrorSender();
       S.send(req, res, error);
     });
   });
@@ -84,7 +88,7 @@ describe('ErrorSender', function () {
         done();
       };
       res.pipe(writable);
-      const S = new ErrorSender();
+      const S = new RouterErrorSender();
       S.send404(req, res);
     });
   });

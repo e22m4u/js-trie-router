@@ -7,7 +7,7 @@ import {ServiceContainer} from '@e22m4u/js-service';
 import {ServerResponse, IncomingMessage} from 'http';
 import {RouterBranch} from './branch/router-branch.js';
 import {TrieRouterOptions} from './trie-router-options.js';
-import {DataSender, ErrorSender} from './senders/index.js';
+import {RouterDataSender, RouterErrorSender} from './senders/index.js';
 import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
 import {createRequestMock, createResponseMock} from './utils/index.js';
 
@@ -268,7 +268,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('should use DataSender to send the server response', function (done) {
+    it('should use RouterDataSender to send the server response', function (done) {
       const router = new TrieRouter();
       const resBody = 'Lorem Ipsum is simply dummy text.';
       router.defineRoute({
@@ -278,7 +278,7 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock();
       const res = createResponseMock();
-      router.setService(DataSender, {
+      router.setService(RouterDataSender, {
         send(response, data) {
           expect(response).to.be.eq(res);
           expect(data).to.be.eq(resBody);
@@ -288,7 +288,7 @@ describe('TrieRouter', function () {
       router.requestListener(req, res);
     });
 
-    it('should use ErrorSender to send the server response', function (done) {
+    it('should use RouterErrorSender to send the server response', function (done) {
       const router = new TrieRouter();
       const error = new Error();
       router.defineRoute({
@@ -300,7 +300,7 @@ describe('TrieRouter', function () {
       });
       const req = createRequestMock();
       const res = createResponseMock();
-      router.setService(ErrorSender, {
+      router.setService(RouterErrorSender, {
         send(request, response, err) {
           expect(request).to.be.eq(req);
           expect(response).to.be.eq(res);
@@ -432,7 +432,7 @@ describe('TrieRouter', function () {
         expect(body).to.be.eq('Forbidden by onRequest');
       });
 
-      it('should catch errors from "onRequest" hooks and use ErrorSender', async function () {
+      it('should catch errors from "onRequest" hooks and use RouterErrorSender', async function () {
         const router = new TrieRouter();
         router.addHook(RouterHookType.ON_REQUEST, () => {
           throw new Error('Sync error in onRequest');
@@ -668,7 +668,7 @@ describe('TrieRouter', function () {
         expect(responseBody).to.equal('Response from global preHandler');
       });
 
-      it('should catch errors from global-scoped "preHandler" hooks and use ErrorSender', async function () {
+      it('should catch errors from global-scoped "preHandler" hooks and use RouterErrorSender', async function () {
         const router = new TrieRouter();
         router.addHook(RouterHookType.PRE_HANDLER, () => {
           throw new Error('Sync error in global preHandler');
@@ -688,7 +688,7 @@ describe('TrieRouter', function () {
         });
       });
 
-      it('should catch asynchronous errors from global-scoped "preHandler" hooks and use ErrorSender', async function () {
+      it('should catch asynchronous errors from global-scoped "preHandler" hooks and use RouterErrorSender', async function () {
         const router = new TrieRouter();
         router.addHook(RouterHookType.PRE_HANDLER, async () => {
           throw new Error('Async error in global preHandler');
@@ -920,7 +920,7 @@ describe('TrieRouter', function () {
         expect(responseBody).to.equal('Response from preHandler');
       });
 
-      it('should catch errors from route-scoped "preHandler" hooks and use ErrorSender', async function () {
+      it('should catch errors from route-scoped "preHandler" hooks and use RouterErrorSender', async function () {
         const router = new TrieRouter();
         router.defineRoute({
           method: HttpMethod.GET,
@@ -940,7 +940,7 @@ describe('TrieRouter', function () {
         });
       });
 
-      it('should catch asynchronous errors from route-scoped "preHandler" hooks and use ErrorSender', async function () {
+      it('should catch asynchronous errors from route-scoped "preHandler" hooks and use RouterErrorSender', async function () {
         const router = new TrieRouter();
         router.defineRoute({
           method: HttpMethod.GET,
@@ -1284,7 +1284,7 @@ describe('TrieRouter', function () {
         expect(responseBody).to.equal('abc');
       });
 
-      it('should catch errors from global-scoped "postHandler" hooks and use ErrorSender', async function () {
+      it('should catch errors from global-scoped "postHandler" hooks and use RouterErrorSender', async function () {
         const router = new TrieRouter();
         router.addHook(RouterHookType.POST_HANDLER, () => {
           throw new Error('Sync error in postHandler');
@@ -1304,7 +1304,7 @@ describe('TrieRouter', function () {
         });
       });
 
-      it('should catch asynchronous errors from global-scoped "postHandler" hooks and use ErrorSender', async function () {
+      it('should catch asynchronous errors from global-scoped "postHandler" hooks and use RouterErrorSender', async function () {
         const router = new TrieRouter();
         router.addHook(RouterHookType.POST_HANDLER, async () => {
           throw new Error('Async error in postHandler');
@@ -1648,7 +1648,7 @@ describe('TrieRouter', function () {
         expect(responseBody).to.equal('abc');
       });
 
-      it('should catch errors from route-scoped "postHandler" hooks and use ErrorSender', async function () {
+      it('should catch errors from route-scoped "postHandler" hooks and use RouterErrorSender', async function () {
         const router = new TrieRouter();
         router.defineRoute({
           method: HttpMethod.GET,
@@ -1668,7 +1668,7 @@ describe('TrieRouter', function () {
         });
       });
 
-      it('should catch asynchronous errors from route-scoped "postHandler" hooks and use ErrorSender', async function () {
+      it('should catch asynchronous errors from route-scoped "postHandler" hooks and use RouterErrorSender', async function () {
         const router = new TrieRouter();
         router.defineRoute({
           method: HttpMethod.GET,
