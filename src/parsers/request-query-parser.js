@@ -5,7 +5,7 @@ import {DebuggableService} from '../debuggable-service.js';
 /**
  * Query parser.
  */
-export class QueryParser extends DebuggableService {
+export class RequestQueryParser extends DebuggableService {
   /**
    * Parse
    *

@@ -1,10 +1,10 @@
 import {IncomingMessage} from 'http';
 import {isPromise} from '../utils/index.js';
-import {BodyParser} from './body-parser.js';
-import {QueryParser} from './query-parser.js';
-import {CookiesParser} from './cookies-parser.js';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {DebuggableService} from '../debuggable-service.js';
+import {RequestBodyParser} from './request-body-parser.js';
+import {RequestQueryParser} from './request-query-parser.js';
+import {RequestCookiesParser} from './request-cookies-parser.js';
 
 /**
  * Request parser.
@@ -30,7 +30,7 @@ export class RequestParser extends DebuggableService {
     // значения, так как парсер может вернуть
     // Promise, и тогда придется разрывать
     // "eventLoop" с помощью "await"
-    const parsedQuery = this.getService(QueryParser).parse(request);
+    const parsedQuery = this.getService(RequestQueryParser).parse(request);
     if (isPromise(parsedQuery)) {
       promises.push(parsedQuery.then(v => (data.query = v)));
     } else {
@@ -40,7 +40,7 @@ export class RequestParser extends DebuggableService {
     // данные заголовка "cookie" с проверкой
     // значения на Promise, и разрываем
     // "eventLoop" при необходимости
-    const parsedCookies = this.getService(CookiesParser).parse(request);
+    const parsedCookies = this.getService(RequestCookiesParser).parse(request);
     if (isPromise(parsedCookies)) {
       promises.push(parsedCookies.then(v => (data.cookies = v)));
     } else {
@@ -49,7 +49,7 @@ export class RequestParser extends DebuggableService {
     // аналогично предыдущей операции, разбираем
     // тело запроса с проверкой результата
     // на наличие Promise
-    const parsedBody = this.getService(BodyParser).parse(request);
+    const parsedBody = this.getService(RequestBodyParser).parse(request);
     if (isPromise(parsedBody)) {
       promises.push(parsedBody.then(v => (data.body = v)));
     } else {

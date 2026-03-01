@@ -1,15 +1,15 @@
 import {expect} from 'chai';
 import HttpErrors from 'http-errors';
 import {format} from '@e22m4u/js-format';
-import {BodyParser} from './body-parser.js';
 import {HttpMethod} from '../route/index.js';
 import {createRequestMock} from '../utils/index.js';
+import {RequestBodyParser} from './request-body-parser.js';
 import {TrieRouterOptions} from '../trie-router-options.js';
 
-describe('BodyParser', function () {
+describe('RequestBodyParser', function () {
   describe('defineParser', function () {
     it('should require the parameter "mediaType" to be a non-empty String', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const throwable = v => () => S.defineParser(v, () => undefined);
       const error = v =>
         format(
@@ -31,7 +31,7 @@ describe('BodyParser', function () {
     });
 
     it('should require the parameter "parser" to be a Function', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const throwable = v => () => S.defineParser('str', v);
       const error = v =>
         format('Parameter "parser" must be a Function, but %s was given.', v);
@@ -49,7 +49,7 @@ describe('BodyParser', function () {
     });
 
     it('should set a parser function for the media type', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const mediaType = 'media/type';
       const parser = v => v;
       expect(S.hasParser(mediaType)).to.be.false;
@@ -58,7 +58,7 @@ describe('BodyParser', function () {
     });
 
     it('should override an existing parser', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const mediaType = 'media/type';
       const parser1 = v => v;
       const parser2 = v => v;
@@ -72,7 +72,7 @@ describe('BodyParser', function () {
 
   describe('hasParser', function () {
     it('should require the parameter "mediaType" to be a non-empty String', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const throwable = v => () => S.hasParser(v);
       const error = v =>
         format(
@@ -94,7 +94,7 @@ describe('BodyParser', function () {
     });
 
     it('should return true if the media type has the parser', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const mediaType = 'media/type';
       const parser = v => v;
       expect(S.hasParser(mediaType)).to.be.false;
@@ -103,7 +103,7 @@ describe('BodyParser', function () {
     });
 
     it('should be case-insensitive when looking up the parser', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const parser = v => v;
       S.defineParser('MeDiA/TyPe', parser);
       expect(S.hasParser('mEdIa/tYpE')).to.be.true;
@@ -112,7 +112,7 @@ describe('BodyParser', function () {
 
   describe('getParser', function () {
     it('should require the parameter "mediaType" to be a non-empty String', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       S.defineParser('media/type', v => v);
       const throwable = v => () => S.getParser(v);
       const error = v =>
@@ -135,7 +135,7 @@ describe('BodyParser', function () {
     });
 
     it('should throw an error when the media type is not registered', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const throwable = () => S.getParser('media/unknown');
       expect(throwable).to.throw(
         'Media type "media/unknown" does not have a parser.',
@@ -143,7 +143,7 @@ describe('BodyParser', function () {
     });
 
     it('should return an existing parser for the media type', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const mediaType = 'media/type';
       const parser = v => v;
       S.defineParser(mediaType, parser);
@@ -151,7 +151,7 @@ describe('BodyParser', function () {
     });
 
     it('should be case-insensitive when looking up the parser', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const parser = v => v;
       S.defineParser('MeDiA/TyPe', parser);
       expect(S.getParser('mEdIa/tYpE')).to.be.eq(parser);
@@ -160,7 +160,7 @@ describe('BodyParser', function () {
 
   describe('removeParser', function () {
     it('should require the parameter "mediaType" to be a non-empty String', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const throwable = v => () => S.removeParser(v);
       const error = v =>
         format(
@@ -182,13 +182,13 @@ describe('BodyParser', function () {
     });
 
     it('should not throw an error when the parser is not registered', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const mediaType = 'media/type';
       S.removeParser(mediaType);
     });
 
     it('should remove a parser function by the media type', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const mediaType = 'media/type';
       const parser = v => v;
       expect(S.hasParser(mediaType)).to.be.false;
@@ -199,7 +199,7 @@ describe('BodyParser', function () {
     });
 
     it('should be case-insensitive when removing the parser', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const parser = v => v;
       const mediaType = 'MeDiA/TyPe';
       S.defineParser(mediaType, parser);
@@ -211,7 +211,7 @@ describe('BodyParser', function () {
 
   describe('parse', function () {
     it('should parse the request body when the "content-type" and "content-length" headers are provided', async function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const body = 'Lorem Ipsum is simply dummy text.';
       const headers = {
         'content-type': 'text/plain',
@@ -225,7 +225,7 @@ describe('BodyParser', function () {
     });
 
     it('should parse the request body when the "content-type" and "transfer-encoding" headers are provided', async function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const body = 'Lorem Ipsum is simply dummy text.';
       const headers = {
         'content-type': 'text/plain',
@@ -239,7 +239,7 @@ describe('BodyParser', function () {
     });
 
     it('should skip parsing when the header "content-length" has an invalid value', async function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const body = 'Lorem Ipsum is simply dummy text.';
       const headers = {
         'content-type': 'text/plain',
@@ -253,14 +253,14 @@ describe('BodyParser', function () {
     });
 
     it('should return undefined when no "content-type" header is provided', async function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const req = createRequestMock({method: HttpMethod.POST});
       const result = await S.parse(req);
       expect(result).to.be.undefined;
     });
 
     it('should throw an error when the media type does not have a registered parser', function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       const req = createRequestMock({
         method: HttpMethod.POST,
         headers: {'content-type': 'media/unknown'},
@@ -274,7 +274,7 @@ describe('BodyParser', function () {
     });
 
     it('should use the option "bodyBytesLimit" from the TrieRouterOptions', async function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       S.useService(TrieRouterOptions, {requestBodyBytesLimit: 1});
       const req = createRequestMock({
         method: HttpMethod.POST,
@@ -288,7 +288,7 @@ describe('BodyParser', function () {
     });
 
     it('should return undefined when the media type is ignored even when a request body is provided', async function () {
-      const S = new BodyParser();
+      const S = new RequestBodyParser();
       S.getService(TrieRouterOptions, {ignoredMediaTypes: ['text/plain']});
       const req = createRequestMock({
         method: HttpMethod.POST,
@@ -301,7 +301,7 @@ describe('BodyParser', function () {
 
     describe('text/plain', function () {
       it('should return undefined when the request does not have a body', async function () {
-        const S = new BodyParser();
+        const S = new RequestBodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'text/plain'},
@@ -312,7 +312,7 @@ describe('BodyParser', function () {
 
       it('should return a string for the string body', async function () {
         const body = 'Lorem Ipsum is simply dummy text.';
-        const S = new BodyParser();
+        const S = new RequestBodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'text/plain'},
@@ -324,7 +324,7 @@ describe('BodyParser', function () {
 
       it('should return a string for the Buffer body', async function () {
         const body = 'Lorem Ipsum is simply dummy text.';
-        const S = new BodyParser();
+        const S = new RequestBodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'text/plain'},
@@ -337,7 +337,7 @@ describe('BodyParser', function () {
 
     describe('application/json', function () {
       it('should return undefined when the request does not have a body', async function () {
-        const S = new BodyParser();
+        const S = new RequestBodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'application/json'},
@@ -348,7 +348,7 @@ describe('BodyParser', function () {
 
       it('should return a parsed JSON for the string body', async function () {
         const body = {foo: 'bar'};
-        const S = new BodyParser();
+        const S = new RequestBodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'application/json'},
@@ -360,7 +360,7 @@ describe('BodyParser', function () {
 
       it('should return a parsed JSON for the Buffer body', async function () {
         const body = {foo: 'bar'};
-        const S = new BodyParser();
+        const S = new RequestBodyParser();
         const req = createRequestMock({
           method: HttpMethod.POST,
           headers: {'content-type': 'application/json'},

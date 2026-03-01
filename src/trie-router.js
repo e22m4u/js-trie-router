@@ -3,6 +3,7 @@ import {RequestParser} from './parsers/index.js';
 import {RequestContext} from './request-context.js';
 import {ServerResponse, IncomingMessage} from 'http';
 import {DebuggableService} from './debuggable-service.js';
+import {TrieRouterOptions} from './trie-router-options.js';
 import {HttpMethod, RouteRegistry} from './route/index.js';
 import {RouterDataSender, RouterErrorSender} from './senders/index.js';
 import {isServiceContainer, ServiceContainer} from '@e22m4u/js-service';
@@ -13,7 +14,6 @@ import {
   RouterHookInvoker,
   RouterHookRegistry,
 } from './hooks/index.js';
-import {TrieRouterOptions} from './trie-router-options.js';
 
 /**
  * Trie router.

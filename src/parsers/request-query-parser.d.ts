@@ -11,7 +11,7 @@ export type ParsedQuery = {
 /**
  * Query parser.
  */
-export declare class QueryParser extends DebuggableService {
+export declare class RequestQueryParser extends DebuggableService {
   /**
    * Parse.
    *

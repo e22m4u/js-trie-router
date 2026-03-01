@@ -7,8 +7,8 @@ import {ServiceContainer} from '@e22m4u/js-service';
 import {ServerResponse, IncomingMessage} from 'http';
 import {RouterBranch} from './branch/router-branch.js';
 import {TrieRouterOptions} from './trie-router-options.js';
-import {RouterDataSender, RouterErrorSender} from './senders/index.js';
 import {RouterHookRegistry, RouterHookType} from './hooks/index.js';
+import {RouterDataSender, RouterErrorSender} from './senders/index.js';
 import {createRequestMock, createResponseMock} from './utils/index.js';
 
 describe('TrieRouter', function () {

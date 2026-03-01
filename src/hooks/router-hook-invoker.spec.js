@@ -2,10 +2,10 @@ import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
 import {ROOT_PATH} from '../constants.js';
 import {Route, HttpMethod} from '../route/index.js';
-import {createRequestMock, createResponseMock} from '../utils/index.js';
-import {RouterHookInvoker} from './router-hook-invoker.js';
-import {RouterHookRegistry, RouterHookType} from './router-hook-registry.js';
 import {RequestContext} from '../request-context.js';
+import {RouterHookInvoker} from './router-hook-invoker.js';
+import {createRequestMock, createResponseMock} from '../utils/index.js';
+import {RouterHookRegistry, RouterHookType} from './router-hook-registry.js';
 
 describe('RouterHookInvoker', function () {
   describe('invokeOnRequestHooks', function () {

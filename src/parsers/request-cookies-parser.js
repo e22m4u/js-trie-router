@@ -2,9 +2,9 @@ import {DebuggableService} from '../debuggable-service.js';
 import {parseCookieString, getRequestPathname} from '../utils/index.js';
 
 /**
- * Cookies parser.
+ * Request cookies parser.
  */
-export class CookiesParser extends DebuggableService {
+export class RequestCookiesParser extends DebuggableService {
   /**
    * Parse
    *

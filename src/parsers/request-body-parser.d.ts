@@ -8,9 +8,9 @@ import {DebuggableService} from '../debuggable-service.js';
 export type BodyParserFunction = <T = unknown>(input: string) => T;
 
 /**
- * Body parser.
+ * Request body parser.
  */
-export declare class BodyParser extends DebuggableService {
+export declare class RequestBodyParser extends DebuggableService {
   /**
    * Define parser.
    *

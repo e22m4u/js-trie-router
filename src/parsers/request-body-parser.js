@@ -12,9 +12,9 @@ import {
 } from '../utils/index.js';
 
 /**
- * Body parser.
+ * Request body parser.
  */
-export class BodyParser extends DebuggableService {
+export class RequestBodyParser extends DebuggableService {
   /**
    * Parsers.
    *

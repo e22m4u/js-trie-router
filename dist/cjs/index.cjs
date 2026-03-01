@@ -31,16 +31,16 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.js
 var index_exports = {};
 __export(index_exports, {
-  BodyParser: () => BodyParser,
   CHARACTER_ENCODING_LIST: () => CHARACTER_ENCODING_LIST,
-  CookiesParser: () => CookiesParser,
   EXPOSED_ERROR_PROPERTIES: () => EXPOSED_ERROR_PROPERTIES,
   HttpMethod: () => HttpMethod,
-  QueryParser: () => QueryParser,
   ROOT_PATH: () => ROOT_PATH,
   ROUTER_HOOK_TYPES: () => ROUTER_HOOK_TYPES,
+  RequestBodyParser: () => RequestBodyParser,
   RequestContext: () => RequestContext,
+  RequestCookiesParser: () => RequestCookiesParser,
   RequestParser: () => RequestParser,
+  RequestQueryParser: () => RequestQueryParser,
   Route: () => Route,
   RouteRegistry: () => RouteRegistry,
   RouterDataSender: () => RouterDataSender,
@@ -1883,7 +1883,11 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
 __name(_RouterBranch, "RouterBranch");
 var RouterBranch = _RouterBranch;
 
-// src/parsers/body-parser.js
+// src/parsers/request-parser.js
+var import_http3 = require("http");
+var import_js_format19 = require("@e22m4u/js-format");
+
+// src/parsers/request-body-parser.js
 var import_http_errors2 = __toESM(require("http-errors"), 1);
 var import_js_format18 = require("@e22m4u/js-format");
 
@@ -2016,8 +2020,8 @@ var _TrieRouterOptions = class _TrieRouterOptions {
 __name(_TrieRouterOptions, "TrieRouterOptions");
 var TrieRouterOptions = _TrieRouterOptions;
 
-// src/parsers/body-parser.js
-var _BodyParser = class _BodyParser extends DebuggableService {
+// src/parsers/request-body-parser.js
+var _RequestBodyParser = class _RequestBodyParser extends DebuggableService {
   /**
    * Parsers.
    *
@@ -2159,8 +2163,8 @@ var _BodyParser = class _BodyParser extends DebuggableService {
     });
   }
 };
-__name(_BodyParser, "BodyParser");
-var BodyParser = _BodyParser;
+__name(_RequestBodyParser, "RequestBodyParser");
+var RequestBodyParser = _RequestBodyParser;
 function parseJsonBody(input) {
   if (typeof input !== "string") {
     return void 0;
@@ -2173,9 +2177,9 @@ function parseJsonBody(input) {
 }
 __name(parseJsonBody, "parseJsonBody");
 
-// src/parsers/query-parser.js
+// src/parsers/request-query-parser.js
 var import_querystring2 = __toESM(require("querystring"), 1);
-var _QueryParser = class _QueryParser extends DebuggableService {
+var _RequestQueryParser = class _RequestQueryParser extends DebuggableService {
   /**
    * Parse
    *
@@ -2201,11 +2205,11 @@ var _QueryParser = class _QueryParser extends DebuggableService {
     return query;
   }
 };
-__name(_QueryParser, "QueryParser");
-var QueryParser = _QueryParser;
+__name(_RequestQueryParser, "RequestQueryParser");
+var RequestQueryParser = _RequestQueryParser;
 
-// src/parsers/cookies-parser.js
-var _CookiesParser = class _CookiesParser extends DebuggableService {
+// src/parsers/request-cookies-parser.js
+var _RequestCookiesParser = class _RequestCookiesParser extends DebuggableService {
   /**
    * Parse
    *
@@ -2231,12 +2235,10 @@ var _CookiesParser = class _CookiesParser extends DebuggableService {
     return cookies;
   }
 };
-__name(_CookiesParser, "CookiesParser");
-var CookiesParser = _CookiesParser;
+__name(_RequestCookiesParser, "RequestCookiesParser");
+var RequestCookiesParser = _RequestCookiesParser;
 
 // src/parsers/request-parser.js
-var import_http3 = require("http");
-var import_js_format19 = require("@e22m4u/js-format");
 var _RequestParser = class _RequestParser extends DebuggableService {
   /**
    * Parse.
@@ -2253,19 +2255,19 @@ var _RequestParser = class _RequestParser extends DebuggableService {
     }
     const data = {};
     const promises = [];
-    const parsedQuery = this.getService(QueryParser).parse(request);
+    const parsedQuery = this.getService(RequestQueryParser).parse(request);
     if (isPromise(parsedQuery)) {
       promises.push(parsedQuery.then((v) => data.query = v));
     } else {
       data.query = parsedQuery;
     }
-    const parsedCookies = this.getService(CookiesParser).parse(request);
+    const parsedCookies = this.getService(RequestCookiesParser).parse(request);
     if (isPromise(parsedCookies)) {
       promises.push(parsedCookies.then((v) => data.cookies = v));
     } else {
       data.cookies = parsedCookies;
     }
-    const parsedBody = this.getService(BodyParser).parse(request);
+    const parsedBody = this.getService(RequestBodyParser).parse(request);
     if (isPromise(parsedBody)) {
       promises.push(parsedBody.then((v) => data.body = v));
     } else {
@@ -2670,16 +2672,16 @@ __name(_TrieRouter, "TrieRouter");
 var TrieRouter = _TrieRouter;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  BodyParser,
   CHARACTER_ENCODING_LIST,
-  CookiesParser,
   EXPOSED_ERROR_PROPERTIES,
   HttpMethod,
-  QueryParser,
   ROOT_PATH,
   ROUTER_HOOK_TYPES,
+  RequestBodyParser,
   RequestContext,
+  RequestCookiesParser,
   RequestParser,
+  RequestQueryParser,
   Route,
   RouteRegistry,
   RouterDataSender,

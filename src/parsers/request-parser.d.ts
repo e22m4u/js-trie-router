@@ -1,7 +1,7 @@
 import {IncomingMessage} from 'http';
 import {ValueOrPromise} from '../types.js';
-import {ParsedQuery} from './query-parser.js';
 import {ParsedCookies} from '../utils/index.js';
+import {ParsedQuery} from './request-query-parser.js';
 import {DebuggableService} from '../debuggable-service.js';
 
 /**
