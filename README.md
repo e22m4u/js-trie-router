@@ -73,8 +73,8 @@ router.defineRoute({
   },
 });
 
-server.on('request', router.requestListener); // подключение роутера
-server.listen(3000, 'localhost');             // прослушивание запросов
+server.on('request', router.handleRequest); // подключение обработчика
+server.listen(3000, 'localhost');           // прослушивание запросов
 
 // Open in browser http://localhost:3000
 ```
@@ -754,7 +754,7 @@ router.defineRoute({
   },
 });
 
-server.on('request', router.requestListener);
+server.on('request', router.handleRequest);
 server.listen(3000, 'localhost');
 ```
 

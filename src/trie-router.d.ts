@@ -1,7 +1,7 @@
-import {RequestListener} from 'http';
 import {Route} from './route/index.js';
 import {RouteDefinition} from './route/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {IncomingMessage, ServerResponse} from 'http';
 import {DebuggableService} from './debuggable-service.js';
 import {RouterHook, RouterHookType} from './hooks/index.js';
 import {TrieRouterOptionsInput} from './trie-router-options.js';
@@ -83,7 +83,7 @@ export declare class TrieRouter extends DebuggableService {
   createBranch(branchDef: RouterBranchDefinition): RouterBranch;
 
   /**
-   * Request listener.
+   * Handle request.
    *
    * Example:
    * ```
@@ -92,13 +92,18 @@ export declare class TrieRouter extends DebuggableService {
    *
    * const router = new TrieRouter();
    * const server = new http.Server();
-   * server.on('request', router.requestListener); // Sets the request listener.
-   * server.listen(3000);                          // Starts listening for connections.
+   * server.on('request', router.handleRequest); // Bind the request listener.
+   * server.listen(3000);                        // Listen for connections.
    * ```
    *
+   * @param request
+   * @param response
    * @returns {Function}
    */
-  get requestListener(): RequestListener;
+  handleRequest(
+    request: IncomingMessage,
+    response: ServerResponse,
+  ): Promise<void>;
 
   /**
    * Add hook.

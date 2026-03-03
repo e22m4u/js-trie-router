@@ -101,7 +101,7 @@ export class TrieRouter extends DebuggableService {
   }
 
   /**
-   * Request listener.
+   * Handle request.
    *
    * Example:
    * ```
@@ -110,26 +110,16 @@ export class TrieRouter extends DebuggableService {
    *
    * const router = new TrieRouter();
    * const server = new http.Server();
-   * server.on('request', router.requestListener); // Sets the request listener.
-   * server.listen(3000);                          // Starts listening for connections.
+   * server.on('request', router.handleRequest); // Bind the request listener.
+   * server.listen(3000);                        // Listen for connections.
    * ```
-   *
-   * @returns {Function}
-   */
-  get requestListener() {
-    return this._handleRequest.bind(this);
-  }
-
-  /**
-   * Handle incoming request.
    *
    * @param {import('http').IncomingMessage} request
    * @param {import('http').ServerResponse} response
    * @returns {Promise<undefined>}
-   * @private
    */
-  async _handleRequest(request, response) {
-    const debug = this.getDebuggerFor(this._handleRequest);
+  async handleRequest(request, response) {
+    const debug = this.getDebuggerFor(this.handleRequest);
     const requestPath = getRequestPathname(request);
     debug('Handling an incoming request %s %v.', request.method, requestPath);
     // при обработке запроса требуется перехватывать
