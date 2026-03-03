@@ -427,6 +427,7 @@ __name(parseCookieString, "parseCookieString");
 // src/utils/create-request-mock.js
 var import_net = require("net");
 var import_tls = require("tls");
+var import_querystring = __toESM(require("querystring"), 1);
 var import_http2 = require("http");
 var import_js_format9 = require("@e22m4u/js-format");
 
@@ -460,6 +461,8 @@ var SUPPORTED_OPTIONS = [
   "method",
   "secure",
   "url",
+  "path",
+  "query",
   "cookies",
   "headers",
   "body",
@@ -511,6 +514,40 @@ function createRequestMock(options) {
         throw new import_js_format9.InvalidArgumentError(
           'Option "url" must not contain "#", but %v was given.',
           options.url
+        );
+      }
+    }
+    if (options.path !== void 0) {
+      if (typeof options.path !== "string") {
+        throw new import_js_format9.InvalidArgumentError(
+          'Option "path" must be a String, but %v was given.',
+          options.path
+        );
+      }
+      if (options.path.indexOf("#") !== -1) {
+        throw new import_js_format9.InvalidArgumentError(
+          'Option "path" must not contain "#", but %v was given.',
+          options.path
+        );
+      }
+      if (options.path.indexOf("?") !== -1) {
+        throw new import_js_format9.InvalidArgumentError(
+          'Option "path" must not contain "?", but %v was given.',
+          options.path
+        );
+      }
+      if (!options.path.startsWith("/")) {
+        throw new import_js_format9.InvalidArgumentError(
+          'Option "path" must start with "/", but %v was given.',
+          options.path
+        );
+      }
+    }
+    if (options.query !== void 0) {
+      if (!options.query || typeof options.query !== "object" || Array.isArray(options.query)) {
+        throw new import_js_format9.InvalidArgumentError(
+          'Option "query" must be an Object, but %v was given.',
+          options.query
         );
       }
     }
@@ -584,7 +621,19 @@ function createRequestMock(options) {
         );
       }
     }
-    if (options.stream) {
+    if (options.url !== void 0) {
+      if (options.path !== void 0) {
+        throw new import_js_format9.InvalidArgumentError(
+          'The "url" and "path" options cannot be used together.'
+        );
+      }
+      if (options.query !== void 0) {
+        throw new import_js_format9.InvalidArgumentError(
+          'The "url" and "query" options cannot be used together.'
+        );
+      }
+    }
+    if (options.stream !== void 0) {
       if (options.secure !== void 0) {
         throw new import_js_format9.InvalidArgumentError(
           'The "stream" and "secure" options cannot be used together.'
@@ -620,7 +669,12 @@ function createRequestMock(options) {
   Object.defineProperty(request.socket, "remoteAddress", { value: "127.0.0.1" });
   Object.defineProperty(request.socket, "localAddress", { value: "127.0.0.1" });
   request.httpVersion = "1.1";
-  request.url = options.url || "/";
+  request.url = "/";
+  if (options.url !== void 0) {
+    request.url = options.url;
+  } else if (options.path !== void 0 || options.query !== void 0) {
+    request.url = createRequestUrl(options.path, options.query);
+  }
   request.headers = createRequestHeaders(
     options.host,
     options.secure,
@@ -659,6 +713,31 @@ function createRequestStream(secure, body, encoding) {
   return request;
 }
 __name(createRequestStream, "createRequestStream");
+function createRequestUrl(path, query) {
+  if (path !== void 0 && typeof path !== "string") {
+    throw new import_js_format9.InvalidArgumentError(
+      'Parameter "path" must be a String, but %v was given.',
+      path
+    );
+  }
+  if (query !== void 0) {
+    if (!query || typeof query !== "object" || Array.isArray(query)) {
+      throw new import_js_format9.InvalidArgumentError(
+        'Parameter "query" must be an Object, but %v was given.',
+        query
+      );
+    }
+  }
+  let res = path !== void 0 ? path : "/";
+  if (typeof query === "object") {
+    const qs = import_querystring.default.stringify(query);
+    if (qs) {
+      res += `?${qs}`;
+    }
+  }
+  return res;
+}
+__name(createRequestUrl, "createRequestUrl");
 function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (host !== void 0 && typeof host !== "string") {
     throw new import_js_format9.InvalidArgumentError(
@@ -2267,7 +2346,7 @@ function parseJsonBody(input) {
 __name(parseJsonBody, "parseJsonBody");
 
 // src/parsers/request-query-parser.js
-var import_querystring = __toESM(require("querystring"), 1);
+var import_querystring2 = __toESM(require("querystring"), 1);
 var _RequestQueryParser = class _RequestQueryParser extends DebuggableService {
   /**
    * Parse
@@ -2278,7 +2357,7 @@ var _RequestQueryParser = class _RequestQueryParser extends DebuggableService {
   parse(request) {
     const debug = this.getDebuggerFor(this.parse);
     const queryStr = request.url.replace(/^[^?]*\??/, "");
-    const query = queryStr ? import_querystring.default.parse(queryStr) : {};
+    const query = queryStr ? import_querystring2.default.parse(queryStr) : {};
     const queryKeys = Object.keys(query);
     if (queryKeys.length) {
       queryKeys.forEach((key) => {

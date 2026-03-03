@@ -2,6 +2,13 @@ import {Readable} from 'stream';
 import {IncomingMessage} from 'http';
 
 /**
+ * Request query input.
+ */
+type RequestQueryInput = {
+  [name: string]: unknown;
+};
+
+/**
  * Request headers input.
  */
 type RequestHeadersInput = {
@@ -16,6 +23,8 @@ type RequestOptions = {
   method?: string;
   secure?: boolean;
   url?: string;
+  path?: string;
+  query?: RequestQueryInput;
   cookies?: object;
   headers?: RequestHeadersInput;
   body?: unknown;

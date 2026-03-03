@@ -139,6 +139,16 @@ describe('RequestContext', function () {
       expect(req.url).to.be.eq('/pathname?foo=bar');
       expect(ctx.path).to.be.eq('/pathname?foo=bar');
     });
+
+    it('should ignore a protocol and host in the request url', function () {
+      const req = createRequestMock({url: 'http://example.com:80/pathname'});
+      const res = createResponseMock();
+      const route = createRouteMock();
+      const cont = new ServiceContainer();
+      const ctx = new RequestContext(cont, req, res, route);
+      expect(req.url).to.be.eq('http://example.com:80/pathname');
+      expect(ctx.path).to.be.eq('/pathname');
+    });
   });
 
   describe('pathname', function () {

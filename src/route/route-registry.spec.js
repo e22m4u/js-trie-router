@@ -142,8 +142,8 @@ describe('RouteRegistry', function () {
         handler,
       });
       const res = S.matchRouteByRequest({
-        url: '/foo/baz/bar/qux',
         method: HttpMethod.GET,
+        url: '/foo/baz/bar/qux',
       });
       expect(typeof res).to.be.eq('object');
       expect(res.route).to.be.instanceof(Route);

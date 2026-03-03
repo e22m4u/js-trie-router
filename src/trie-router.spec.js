@@ -88,7 +88,7 @@ describe('TrieRouter', function () {
           done();
         },
       });
-      const req = createRequestMock({url: '/test'});
+      const req = createRequestMock({path: '/test'});
       const res = createResponseMock();
       router.handleRequest(req, res);
     });
@@ -103,7 +103,7 @@ describe('TrieRouter', function () {
           done();
         },
       });
-      const req = createRequestMock({url: '/foo-bar'});
+      const req = createRequestMock({path: '/foo-bar'});
       const res = createResponseMock();
       router.handleRequest(req, res);
     });
@@ -118,7 +118,7 @@ describe('TrieRouter', function () {
           done();
         },
       });
-      const req = createRequestMock({url: '?p1=foo&p2=bar'});
+      const req = createRequestMock({query: {p1: 'foo', p2: 'bar'}});
       const res = createResponseMock();
       router.handleRequest(req, res);
     });
@@ -385,7 +385,7 @@ describe('TrieRouter', function () {
         router.addHook(RouterHookType.ON_REQUEST, () => {
           hookCalled = true;
         });
-        const req = createRequestMock({url: '/does-not-exist'});
+        const req = createRequestMock({path: '/does-not-exist'});
         const res = createResponseMock();
         await router.handleRequest(req, res);
         expect(hookCalled).to.be.true;
@@ -1641,7 +1641,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock({
           method: HttpMethod.OPTIONS,
-          url: '/api/resource',
+          path: '/api/resource',
         });
         const res = createResponseMock();
         await router.handleRequest(req, res);
@@ -1662,7 +1662,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock({
           method: HttpMethod.OPTIONS,
-          url: '/api/resource',
+          path: '/api/resource',
         });
         const res = createResponseMock();
         await router.handleRequest(req, res);
@@ -1676,7 +1676,7 @@ describe('TrieRouter', function () {
         const router = new TrieRouter();
         const req = createRequestMock({
           method: HttpMethod.OPTIONS,
-          url: '/unknown',
+          path: '/unknown',
         });
         const res = createResponseMock();
         await router.handleRequest(req, res);

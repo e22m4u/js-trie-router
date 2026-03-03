@@ -12,13 +12,13 @@ describe('RequestQueryParser', function () {
 
     it('should return an empty object when the url does not have a query string', function () {
       const parser = new RequestQueryParser();
-      const result = parser.parse({url: `/test`});
+      const result = parser.parse({url: '/test'});
       expect(result).to.be.eql({});
     });
 
     it('should return an empty object when the url has an empty query string', function () {
       const parser = new RequestQueryParser();
-      const result = parser.parse({url: `/test?`});
+      const result = parser.parse({url: '/test?'});
       expect(result).to.be.eql({});
     });
   });

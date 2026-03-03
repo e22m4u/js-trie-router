@@ -1,11 +1,12 @@
 import {Socket} from 'net';
 import {TLSSocket} from 'tls';
+import queryString from 'querystring';
 import {IncomingMessage} from 'http';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {isReadableStream} from './is-readable-stream.js';
-import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
-import {createCookieString} from './create-cookie-string.js';
 import {parseCookieString} from './parse-cookie-string.js';
+import {createCookieString} from './create-cookie-string.js';
+import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 
 /**
  * Supported options.
@@ -15,6 +16,8 @@ const SUPPORTED_OPTIONS = [
   'method',
   'secure',
   'url',
+  'path',
+  'query',
   'cookies',
   'headers',
   'body',
@@ -77,6 +80,49 @@ export function createRequestMock(options) {
         throw new InvalidArgumentError(
           'Option "url" must not contain "#", but %v was given.',
           options.url,
+        );
+      }
+    }
+    // options.path
+    if (options.path !== undefined) {
+      if (typeof options.path !== 'string') {
+        throw new InvalidArgumentError(
+          'Option "path" must be a String, but %v was given.',
+          options.path,
+        );
+      }
+      // contain #
+      if (options.path.indexOf('#') !== -1) {
+        throw new InvalidArgumentError(
+          'Option "path" must not contain "#", but %v was given.',
+          options.path,
+        );
+      }
+      // contain ?
+      if (options.path.indexOf('?') !== -1) {
+        throw new InvalidArgumentError(
+          'Option "path" must not contain "?", but %v was given.',
+          options.path,
+        );
+      }
+      // not starting with /
+      if (!options.path.startsWith('/')) {
+        throw new InvalidArgumentError(
+          'Option "path" must start with "/", but %v was given.',
+          options.path,
+        );
+      }
+    }
+    // options.query
+    if (options.query !== undefined) {
+      if (
+        !options.query ||
+        typeof options.query !== 'object' ||
+        Array.isArray(options.query)
+      ) {
+        throw new InvalidArgumentError(
+          'Option "query" must be an Object, but %v was given.',
+          options.query,
         );
       }
     }
@@ -166,9 +212,23 @@ export function createRequestMock(options) {
         );
       }
     }
+    // если определен url, выполняется
+    // проверка на несовместимые опции
+    if (options.url !== undefined) {
+      if (options.path !== undefined) {
+        throw new InvalidArgumentError(
+          'The "url" and "path" options cannot be used together.',
+        );
+      }
+      if (options.query !== undefined) {
+        throw new InvalidArgumentError(
+          'The "url" and "query" options cannot be used together.',
+        );
+      }
+    }
     // если передан поток, выполняется
     // проверка на несовместимые опции
-    if (options.stream) {
+    if (options.stream !== undefined) {
       if (options.secure !== undefined) {
         throw new InvalidArgumentError(
           'The "stream" and "secure" options cannot be used together.',
@@ -211,7 +271,12 @@ export function createRequestMock(options) {
   // определение остальных свойств
   // экземпляра IncomingMessage
   request.httpVersion = '1.1';
-  request.url = options.url || '/';
+  request.url = '/';
+  if (options.url !== undefined) {
+    request.url = options.url;
+  } else if (options.path !== undefined || options.query !== undefined) {
+    request.url = createRequestUrl(options.path, options.query);
+  }
   request.headers = createRequestHeaders(
     options.host,
     options.secure,
@@ -264,6 +329,38 @@ function createRequestStream(secure, body, encoding) {
   // конец данных
   request.push(null);
   return request;
+}
+
+/**
+ * Create request url.
+ *
+ * @param {string|undefined} path
+ * @param {object|undefined} query
+ * @returns {string}
+ */
+function createRequestUrl(path, query) {
+  if (path !== undefined && typeof path !== 'string') {
+    throw new InvalidArgumentError(
+      'Parameter "path" must be a String, but %v was given.',
+      path,
+    );
+  }
+  if (query !== undefined) {
+    if (!query || typeof query !== 'object' || Array.isArray(query)) {
+      throw new InvalidArgumentError(
+        'Parameter "query" must be an Object, but %v was given.',
+        query,
+      );
+    }
+  }
+  let res = path !== undefined ? path : '/';
+  if (typeof query === 'object') {
+    const qs = queryString.stringify(query);
+    if (qs) {
+      res += `?${qs}`;
+    }
+  }
+  return res;
 }
 
 /**

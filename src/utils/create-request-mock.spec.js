@@ -88,19 +88,68 @@ describe('createRequestMock', function () {
     throwable(undefined)();
   });
 
-  it('should require the option "url" to not contain "#" symbol', function () {
+  it('should require the option "url" to not contain "#"', function () {
     const throwable = v => () => createRequestMock({url: v});
-    const mustThrowFor = v => {
+    const mustThrowWith = v => {
       expect(throwable(v)).to.throw(
         format('Option "url" must not contain "#", but %v was given.', v),
       );
     };
-    mustThrowFor('#');
-    mustThrowFor('pathname#');
-    mustThrowFor('/pathname#');
-    mustThrowFor('http://example.com/#');
-    mustThrowFor('http://example.com/pathname#');
-    mustThrowFor('http://example.com/pathname?foo=bar#');
+    mustThrowWith('#');
+    mustThrowWith('pathname#');
+    mustThrowWith('/pathname#');
+    mustThrowWith('http://example.com/#');
+    mustThrowWith('http://example.com/pathname#');
+    mustThrowWith('http://example.com/pathname?foo=bar#');
+  });
+
+  it('should require the option "path" to be a String', function () {
+    const throwable = v => () => createRequestMock({path: v});
+    const error = v =>
+      format('Option "path" must be a String, but %s was given.', v);
+    expect(throwable(10)).to.throw(error('10'));
+    expect(throwable(0)).to.throw(error('0'));
+    expect(throwable(true)).to.throw(error('true'));
+    expect(throwable(false)).to.throw(error('false'));
+    expect(throwable([])).to.throw(error('Array'));
+    expect(throwable({})).to.throw(error('Object'));
+    expect(throwable(null)).to.throw(error('null'));
+    throwable('/path')();
+    throwable('/')();
+    throwable(undefined)();
+  });
+
+  it('should require the option "path" to not contain "#"', function () {
+    const throwable = v => () => createRequestMock({path: v});
+    const mustThrowWith = v => {
+      expect(throwable(v)).to.throw(
+        format('Option "path" must not contain "#", but %v was given.', v),
+      );
+    };
+    mustThrowWith('/#');
+    mustThrowWith('/path#');
+  });
+
+  it('should require the option "path" to not contain "?"', function () {
+    const throwable = v => () => createRequestMock({path: v});
+    const mustThrowWith = v => {
+      expect(throwable(v)).to.throw(
+        format('Option "path" must not contain "?", but %v was given.', v),
+      );
+    };
+    mustThrowWith('/?');
+    mustThrowWith('/path?');
+  });
+
+  it('should require the option "path" to start with "/"', function () {
+    const throwable = v => () => createRequestMock({path: v});
+    const mustThrowWith = v => {
+      expect(throwable(v)).to.throw(
+        format('Option "path" must start with "/", but %v was given.', v),
+      );
+    };
+    mustThrowWith('path');
+    mustThrowWith('');
   });
 
   it('should require the option "cookies" to be an Object', function () {
@@ -227,6 +276,18 @@ describe('createRequestMock', function () {
   it('should not allow unsupported options', function () {
     const throwable = () => createRequestMock({unknownOption: 'value'});
     expect(throwable).to.throw('Option "unknownOption" is not supported.');
+  });
+
+  it('should not allow using the "url" and "path" options together', function () {
+    const throwable = () => createRequestMock({url: 'url', path: '/path'});
+    const error = 'The "url" and "path" options cannot be used together.';
+    expect(throwable).to.throw(error);
+  });
+
+  it('should not allow using the "url" and "query" options together', function () {
+    const throwable = () => createRequestMock({url: 'url', query: {p: 1}});
+    const error = 'The "url" and "query" options cannot be used together.';
+    expect(throwable).to.throw(error);
   });
 
   it('should require the option "encoding" to be a correct value', function () {
@@ -384,9 +445,24 @@ describe('createRequestMock', function () {
     expect(data).to.be.eql(body);
   });
 
-  it('should set the "url" option to the request url', function () {
+  it('should pass the "url" option to the request url', function () {
     const req = createRequestMock({url: '/test'});
     expect(req.url).to.be.eq('/test');
+  });
+
+  it('should pass the "path" option to the request url', function () {
+    const req = createRequestMock({path: '/test'});
+    expect(req.url).to.be.eq('/test');
+  });
+
+  it('should pass the "query" option to the request url', async function () {
+    const req = createRequestMock({query: {foo: 'bar', baz: 'qux'}});
+    expect(req.url).to.be.eq('/?foo=bar&baz=qux');
+  });
+
+  it('should combine the "path" and "query" options in the request url', function () {
+    const req = createRequestMock({path: '/test', query: {foo: 'bar'}});
+    expect(req.url).to.be.eq('/test?foo=bar');
   });
 
   it('should set the property "method" in upper case', async function () {
