@@ -428,12 +428,39 @@ __name(parseCookieString, "parseCookieString");
 var import_net = require("net");
 var import_tls = require("tls");
 var import_http2 = require("http");
+var import_js_format9 = require("@e22m4u/js-format");
+
+// src/utils/create-cookie-string.js
 var import_js_format8 = require("@e22m4u/js-format");
+function createCookieString(data) {
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    throw new import_js_format8.InvalidArgumentError(
+      "Cookie data must be an Object, but %v was given.",
+      data
+    );
+  }
+  let cookies = "";
+  for (const key in data) {
+    if (!Object.prototype.hasOwnProperty.call(data, key)) {
+      continue;
+    }
+    const val = data[key];
+    if (val == null) {
+      continue;
+    }
+    cookies += `${key}=${val}; `;
+  }
+  return cookies.trim().replace(/;$/, "");
+}
+__name(createCookieString, "createCookieString");
+
+// src/utils/create-request-mock.js
 var SUPPORTED_OPTIONS = [
   "host",
   "method",
   "secure",
   "url",
+  "cookies",
   "headers",
   "body",
   "stream",
@@ -442,54 +469,72 @@ var SUPPORTED_OPTIONS = [
 function createRequestMock(options) {
   if (options !== void 0) {
     if (!options || typeof options !== "object" || Array.isArray(options)) {
-      throw new import_js_format8.InvalidArgumentError(
+      throw new import_js_format9.InvalidArgumentError(
         'Parameter "options" must be an Object, but %v was given.',
         options
       );
     }
     Object.keys(options).forEach((optionName) => {
       if (!SUPPORTED_OPTIONS.includes(optionName)) {
-        throw new import_js_format8.InvalidArgumentError(
+        throw new import_js_format9.InvalidArgumentError(
           "Option %v is not supported.",
           optionName
         );
       }
     });
     if (options.host !== void 0 && typeof options.host !== "string") {
-      throw new import_js_format8.InvalidArgumentError(
+      throw new import_js_format9.InvalidArgumentError(
         'Option "host" must be a String, but %v was given.',
         options.host
       );
     }
     if (options.method !== void 0 && typeof options.method !== "string") {
-      throw new import_js_format8.InvalidArgumentError(
+      throw new import_js_format9.InvalidArgumentError(
         'Option "method" must be a String, but %v was given.',
         options.method
       );
     }
     if (options.secure !== void 0 && typeof options.secure !== "boolean") {
-      throw new import_js_format8.InvalidArgumentError(
+      throw new import_js_format9.InvalidArgumentError(
         'Option "secure" must be a Boolean, but %v was given.',
         options.secure
       );
     }
     if (options.url !== void 0) {
       if (typeof options.url !== "string") {
-        throw new import_js_format8.InvalidArgumentError(
+        throw new import_js_format9.InvalidArgumentError(
           'Option "url" must be a String, but %v was given.',
           options.url
         );
       }
       if (options.url.indexOf("#") !== -1) {
-        throw new import_js_format8.InvalidArgumentError(
+        throw new import_js_format9.InvalidArgumentError(
           'Option "url" must not contain "#", but %v was given.',
           options.url
         );
       }
     }
+    if (options.cookies !== void 0) {
+      if (!options.cookies || typeof options.cookies !== "object" || Array.isArray(options.cookies)) {
+        throw new import_js_format9.InvalidArgumentError(
+          'Option "cookies" must be an Object, but %v was given.',
+          options.cookies
+        );
+      }
+      Object.keys(options.cookies).forEach((cookieName) => {
+        const cookieValue = options.cookies[cookieName];
+        if (cookieValue !== void 0 && typeof cookieValue !== "string") {
+          throw new import_js_format9.InvalidArgumentError(
+            "Cookie %v must be a String, but %v was given.",
+            cookieName,
+            cookieValue
+          );
+        }
+      });
+    }
     if (options.headers !== void 0) {
       if (!options.headers || typeof options.headers !== "object" || Array.isArray(options.headers)) {
-        throw new import_js_format8.InvalidArgumentError(
+        throw new import_js_format9.InvalidArgumentError(
           'Option "headers" must be an Object, but %v was given.',
           options.headers
         );
@@ -498,7 +543,7 @@ function createRequestMock(options) {
         const headerValue = options.headers[headerName];
         if (headerValue !== void 0) {
           if (typeof headerValue !== "string" && !Array.isArray(headerValue)) {
-            throw new import_js_format8.InvalidArgumentError(
+            throw new import_js_format9.InvalidArgumentError(
               "Header %v must be a String or an Array, but %v was given.",
               headerName,
               headerValue
@@ -507,7 +552,7 @@ function createRequestMock(options) {
           if (Array.isArray(headerValue)) {
             headerValue.forEach((headerEl, index) => {
               if (typeof headerEl !== "string") {
-                throw new import_js_format8.InvalidArgumentError(
+                throw new import_js_format9.InvalidArgumentError(
                   "Element %d of the header %v must be a String, but %v was given.",
                   index,
                   headerName,
@@ -520,20 +565,20 @@ function createRequestMock(options) {
       });
     }
     if (options.stream !== void 0 && !isReadableStream(options.stream)) {
-      throw new import_js_format8.InvalidArgumentError(
+      throw new import_js_format9.InvalidArgumentError(
         'Option "stream" must be a Stream, but %v was given.',
         options.stream
       );
     }
     if (options.encoding !== void 0) {
       if (typeof options.encoding !== "string") {
-        throw new import_js_format8.InvalidArgumentError(
+        throw new import_js_format9.InvalidArgumentError(
           'Option "encoding" must be a String, but %v was given.',
           options.encoding
         );
       }
       if (!CHARACTER_ENCODING_LIST.includes(options.encoding)) {
-        throw new import_js_format8.InvalidArgumentError(
+        throw new import_js_format9.InvalidArgumentError(
           "Character encoding %v is not supported.",
           options.encoding
         );
@@ -541,17 +586,17 @@ function createRequestMock(options) {
     }
     if (options.stream) {
       if (options.secure !== void 0) {
-        throw new import_js_format8.InvalidArgumentError(
+        throw new import_js_format9.InvalidArgumentError(
           'The "stream" and "secure" options cannot be used together.'
         );
       }
       if (options.body !== void 0) {
-        throw new import_js_format8.InvalidArgumentError(
+        throw new import_js_format9.InvalidArgumentError(
           'The "stream" and "body" options cannot be used together.'
         );
       }
       if (options.encoding !== void 0) {
-        throw new import_js_format8.InvalidArgumentError(
+        throw new import_js_format9.InvalidArgumentError(
           'The "stream" and "encoding" options cannot be used together.'
         );
       }
@@ -580,6 +625,7 @@ function createRequestMock(options) {
     options.host,
     options.secure,
     options.body,
+    options.cookies,
     options.encoding,
     options.headers
   );
@@ -589,7 +635,7 @@ function createRequestMock(options) {
 __name(createRequestMock, "createRequestMock");
 function createRequestStream(secure, body, encoding) {
   if (encoding !== void 0 && typeof encoding !== "string") {
-    throw new import_js_format8.InvalidArgumentError(
+    throw new import_js_format9.InvalidArgumentError(
       'Parameter "encoding" must be a String, but %v was given.',
       encoding
     );
@@ -613,30 +659,40 @@ function createRequestStream(secure, body, encoding) {
   return request;
 }
 __name(createRequestStream, "createRequestStream");
-function createRequestHeaders(host, secure, body, encoding, headers) {
+function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (host !== void 0 && typeof host !== "string") {
-    throw new import_js_format8.InvalidArgumentError(
+    throw new import_js_format9.InvalidArgumentError(
       'Parameter "host" must be a non-empty String, but %v was given.',
       host
     );
   }
   host = host || "localhost";
   if (secure !== void 0 && typeof secure !== "boolean") {
-    throw new import_js_format8.InvalidArgumentError(
+    throw new import_js_format9.InvalidArgumentError(
       'Parameter "secure" must be a Boolean, but %v was given.',
       secure
     );
   }
   secure = Boolean(secure);
-  if (headers !== void 0 && typeof headers !== "object" || Array.isArray(headers)) {
-    throw new import_js_format8.InvalidArgumentError(
-      'Parameter "headers" must be an Object, but %v was given.',
-      headers
-    );
+  if (cookies !== void 0) {
+    if (!cookies || typeof cookies !== "object" || Array.isArray(cookies)) {
+      throw new import_js_format9.InvalidArgumentError(
+        'Parameter "cookies" must be an Object, but %v was given.',
+        cookies
+      );
+    }
+  }
+  if (headers !== void 0) {
+    if (!headers || typeof headers !== "object" || Array.isArray(headers)) {
+      throw new import_js_format9.InvalidArgumentError(
+        'Parameter "headers" must be an Object, but %v was given.',
+        headers
+      );
+    }
   }
   headers = headers || {};
   if (encoding !== void 0 && typeof encoding !== "string") {
-    throw new import_js_format8.InvalidArgumentError(
+    throw new import_js_format9.InvalidArgumentError(
       'Parameter "encoding" must be a String, but %v was given.',
       encoding
     );
@@ -651,6 +707,14 @@ function createRequestHeaders(host, secure, body, encoding, headers) {
   }
   if (secure) {
     res["x-forwarded-proto"] = "https";
+  }
+  if (typeof cookies === "object" && Object.keys(cookies).length) {
+    if (res["cookie"]) {
+      const existedCookies = parseCookieString(res["cookie"]);
+      res["cookie"] = createCookieString({ ...existedCookies, ...cookies });
+    } else {
+      res["cookie"] = createCookieString(cookies);
+    }
   }
   if (body != null && !("content-type" in res)) {
     if (typeof body === "string") {
@@ -785,12 +849,12 @@ function patchBody(response) {
 __name(patchBody, "patchBody");
 
 // src/utils/get-request-pathname.js
-var import_js_format9 = require("@e22m4u/js-format");
+var import_js_format10 = require("@e22m4u/js-format");
 var HOST_RE2 = /^https?:\/\/[^/]+/;
 var QUERY_STRING_RE = /\?.*$/;
 function getRequestPathname(request) {
   if (!request || typeof request !== "object" || Array.isArray(request) || typeof request.url !== "string") {
-    throw new import_js_format9.InvalidArgumentError(
+    throw new import_js_format10.InvalidArgumentError(
       'Parameter "request" must be an instance of IncomingMessage, but %v was given.',
       request
     );
@@ -801,30 +865,6 @@ function getRequestPathname(request) {
   );
 }
 __name(getRequestPathname, "getRequestPathname");
-
-// src/utils/create-cookie-string.js
-var import_js_format10 = require("@e22m4u/js-format");
-function createCookieString(data) {
-  if (!data || typeof data !== "object" || Array.isArray(data)) {
-    throw new import_js_format10.InvalidArgumentError(
-      "Cookie data must be an Object, but %v was given.",
-      data
-    );
-  }
-  let cookies = "";
-  for (const key in data) {
-    if (!Object.prototype.hasOwnProperty.call(data, key)) {
-      continue;
-    }
-    const val = data[key];
-    if (val == null) {
-      continue;
-    }
-    cookies += `${key}=${val}; `;
-  }
-  return cookies.trim();
-}
-__name(createCookieString, "createCookieString");
 
 // src/request-context.js
 var import_js_format11 = require("@e22m4u/js-format");

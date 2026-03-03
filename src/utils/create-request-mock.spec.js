@@ -103,6 +103,39 @@ describe('createRequestMock', function () {
     mustThrowFor('http://example.com/pathname?foo=bar#');
   });
 
+  it('should require the option "cookies" to be an Object', function () {
+    const throwable = v => () => createRequestMock({cookies: v});
+    const error = v =>
+      format('Option "cookies" must be an Object, but %s was given.', v);
+    expect(throwable('str')).to.throw(error('"str"'));
+    expect(throwable('')).to.throw(error('""'));
+    expect(throwable(10)).to.throw(error('10'));
+    expect(throwable(0)).to.throw(error('0'));
+    expect(throwable(true)).to.throw(error('true'));
+    expect(throwable(false)).to.throw(error('false'));
+    expect(throwable([])).to.throw(error('Array'));
+    expect(throwable(null)).to.throw(error('null'));
+    throwable({foo: 'bar'})();
+    throwable({})();
+    throwable(undefined)();
+  });
+
+  it('should require values in the option "cookies" to be a String', function () {
+    const throwable = v => () => createRequestMock({cookies: {test: v}});
+    const error = v =>
+      format('Cookie "test" must be a String, but %s was given.', v);
+    expect(throwable(10)).to.throw(error('10'));
+    expect(throwable(0)).to.throw(error('0'));
+    expect(throwable(true)).to.throw(error('true'));
+    expect(throwable(false)).to.throw(error('false'));
+    expect(throwable([])).to.throw(error('Array'));
+    expect(throwable({})).to.throw(error('Object'));
+    expect(throwable(null)).to.throw(error('null'));
+    throwable('str')();
+    throwable('')();
+    throwable(undefined)();
+  });
+
   it('should require the option "headers" to be an Object', function () {
     const throwable = v => () => createRequestMock({headers: v});
     const error = v =>
@@ -120,7 +153,7 @@ describe('createRequestMock', function () {
     throwable(undefined)();
   });
 
-  it('should require values of the option "headers" to be a String or an Array', function () {
+  it('should require values in the option "headers" to be a String or an Array', function () {
     const throwable = v => () => createRequestMock({headers: {Test: v}});
     const error = v =>
       format(
@@ -372,6 +405,19 @@ describe('createRequestMock', function () {
   it('should set the header "x-forwarded-proto" when the option "secure" is true', async function () {
     const req = createRequestMock({secure: true});
     expect(req.headers['x-forwarded-proto']).to.be.eq('https');
+  });
+
+  it('should set the "cookie" header from the "cookie" option', function () {
+    const req = createRequestMock({cookies: {p1: 'foo', p2: 'bar'}});
+    expect(req.headers['cookie']).to.be.eq('p1=foo; p2=bar');
+  });
+
+  it('should merge the "cookie" header with the "cookie" option', function () {
+    const req = createRequestMock({
+      headers: {cookie: 'p1=foo; p2=bar'},
+      cookies: {p2: 'baz', p3: 'qux'},
+    });
+    expect(req.headers['cookie']).to.be.eq('p1=foo; p2=baz; p3=qux');
   });
 
   it('should set the "content-type" header for a String body', function () {

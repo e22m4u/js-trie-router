@@ -16,6 +16,7 @@ type RequestOptions = {
   method?: string;
   secure?: boolean;
   url?: string;
+  cookies?: object;
   headers?: RequestHeadersInput;
   body?: unknown;
   stream?: Readable;

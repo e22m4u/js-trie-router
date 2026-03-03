@@ -27,6 +27,6 @@ describe('createCookieString', function () {
   it('should return the cookie string for the given object', function () {
     const data = {foo: 'bar', baz: 'quz'};
     const result = createCookieString(data);
-    expect(result).to.be.eq('foo=bar; baz=quz;');
+    expect(result).to.be.eq('foo=bar; baz=quz');
   });
 });

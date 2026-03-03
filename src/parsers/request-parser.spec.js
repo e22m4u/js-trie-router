@@ -78,7 +78,7 @@ describe('RequestParser', function () {
 
     it('should return the result object with parsed cookies', function () {
       const S = new RequestParser();
-      const req = createRequestMock({headers: {cookie: 'p1=foo; p2=bar;'}});
+      const req = createRequestMock({headers: {cookie: 'p1=foo; p2=bar'}});
       const res = S.parse(req);
       expect(res).to.be.eql({
         query: {},
@@ -86,7 +86,7 @@ describe('RequestParser', function () {
         body: undefined,
         headers: {
           host: 'localhost',
-          cookie: 'p1=foo; p2=bar;',
+          cookie: 'p1=foo; p2=bar',
         },
       });
     });

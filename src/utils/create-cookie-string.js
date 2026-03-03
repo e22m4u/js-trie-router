@@ -24,5 +24,5 @@ export function createCookieString(data) {
     }
     cookies += `${key}=${val}; `;
   }
-  return cookies.trim();
+  return cookies.trim().replace(/;$/, '');
 }

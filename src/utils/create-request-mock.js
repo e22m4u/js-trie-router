@@ -4,6 +4,8 @@ import {IncomingMessage} from 'http';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {isReadableStream} from './is-readable-stream.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
+import {createCookieString} from './create-cookie-string.js';
+import {parseCookieString} from './parse-cookie-string.js';
 
 /**
  * Supported options.
@@ -13,6 +15,7 @@ const SUPPORTED_OPTIONS = [
   'method',
   'secure',
   'url',
+  'cookies',
   'headers',
   'body',
   'stream',
@@ -76,6 +79,30 @@ export function createRequestMock(options) {
           options.url,
         );
       }
+    }
+    // options.cookies
+    if (options.cookies !== undefined) {
+      if (
+        !options.cookies ||
+        typeof options.cookies !== 'object' ||
+        Array.isArray(options.cookies)
+      ) {
+        throw new InvalidArgumentError(
+          'Option "cookies" must be an Object, but %v was given.',
+          options.cookies,
+        );
+      }
+      // options.cookies[k]
+      Object.keys(options.cookies).forEach(cookieName => {
+        const cookieValue = options.cookies[cookieName];
+        if (cookieValue !== undefined && typeof cookieValue !== 'string') {
+          throw new InvalidArgumentError(
+            'Cookie %v must be a String, but %v was given.',
+            cookieName,
+            cookieValue,
+          );
+        }
+      });
     }
     // options.headers
     if (options.headers !== undefined) {
@@ -189,6 +216,7 @@ export function createRequestMock(options) {
     options.host,
     options.secure,
     options.body,
+    options.cookies,
     options.encoding,
     options.headers,
   );
@@ -244,11 +272,12 @@ function createRequestStream(secure, body, encoding) {
  * @param {string|undefined} host
  * @param {boolean|undefined} secure
  * @param {*} body
+ * @param {object|undefined} cookies
  * @param {string|undefined} encoding
  * @param {object|undefined} headers
  * @returns {object}
  */
-function createRequestHeaders(host, secure, body, encoding, headers) {
+function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
   if (host !== undefined && typeof host !== 'string') {
     throw new InvalidArgumentError(
       'Parameter "host" must be a non-empty String, but %v was given.',
@@ -263,14 +292,21 @@ function createRequestHeaders(host, secure, body, encoding, headers) {
     );
   }
   secure = Boolean(secure);
-  if (
-    (headers !== undefined && typeof headers !== 'object') ||
-    Array.isArray(headers)
-  ) {
-    throw new InvalidArgumentError(
-      'Parameter "headers" must be an Object, but %v was given.',
-      headers,
-    );
+  if (cookies !== undefined) {
+    if (!cookies || typeof cookies !== 'object' || Array.isArray(cookies)) {
+      throw new InvalidArgumentError(
+        'Parameter "cookies" must be an Object, but %v was given.',
+        cookies,
+      );
+    }
+  }
+  if (headers !== undefined) {
+    if (!headers || typeof headers !== 'object' || Array.isArray(headers)) {
+      throw new InvalidArgumentError(
+        'Parameter "headers" must be an Object, but %v was given.',
+        headers,
+      );
+    }
   }
   headers = headers || {};
   if (encoding !== undefined && typeof encoding !== 'string') {
@@ -289,6 +325,17 @@ function createRequestHeaders(host, secure, body, encoding, headers) {
   }
   if (secure) {
     res['x-forwarded-proto'] = 'https';
+  }
+  // формирование заголовка Cookie используя
+  // существующие данные заголовка и объекта,
+  // переданного в параметр данной функции
+  if (typeof cookies === 'object' && Object.keys(cookies).length) {
+    if (res['cookie']) {
+      const existedCookies = parseCookieString(res['cookie']);
+      res['cookie'] = createCookieString({...existedCookies, ...cookies});
+    } else {
+      res['cookie'] = createCookieString(cookies);
+    }
   }
   // установка заголовка "content-type"
   // в зависимости от тела запроса
