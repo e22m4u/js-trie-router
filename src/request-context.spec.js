@@ -131,7 +131,7 @@ describe('RequestContext', function () {
 
   describe('path', function () {
     it('should return the request pathname with the query string', function () {
-      const req = createRequestMock({path: '/pathname?foo=bar'});
+      const req = createRequestMock({url: '/pathname?foo=bar'});
       const res = createResponseMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();
@@ -143,7 +143,7 @@ describe('RequestContext', function () {
 
   describe('pathname', function () {
     it('should return the request pathname without the query string', function () {
-      const req = createRequestMock({path: '/pathname?foo=bar'});
+      const req = createRequestMock({url: '/pathname?foo=bar'});
       const res = createResponseMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();
@@ -153,7 +153,7 @@ describe('RequestContext', function () {
     });
 
     it('should set the cache to the property "_pathname" and use it for the next access', function () {
-      const req = createRequestMock({path: '/pathname'});
+      const req = createRequestMock({url: '/pathname'});
       const res = createResponseMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();
@@ -168,7 +168,7 @@ describe('RequestContext', function () {
 
   describe('state', function () {
     it('should has an empty object by default', function () {
-      const req = createRequestMock({path: '/pathname'});
+      const req = createRequestMock({url: '/pathname'});
       const res = createResponseMock();
       const route = createRouteMock();
       const cont = new ServiceContainer();

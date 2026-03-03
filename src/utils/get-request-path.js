@@ -6,17 +6,12 @@ import {InvalidArgumentError} from '@e22m4u/js-format';
 const HOST_RE = /^https?:\/\/[^/]+/;
 
 /**
- * Query string RegExp.
- */
-const QUERY_STRING_RE = /\?.*$/;
-
-/**
- * Get request pathname.
+ * Get request path.
  *
- * @param {import('http').IncomingMessage} request
+ * @param {import('http').IncomingHttpHeaders} request
  * @returns {string}
  */
-export function getRequestPathname(request) {
+export function getRequestPath(request) {
   if (
     !request ||
     typeof request !== 'object' ||
@@ -29,8 +24,5 @@ export function getRequestPathname(request) {
       request,
     );
   }
-  return ((request.url || '/').replace(HOST_RE, '') || '/').replace(
-    QUERY_STRING_RE,
-    '',
-  );
+  return (request.url || '/').replace(HOST_RE, '') || '/';
 }

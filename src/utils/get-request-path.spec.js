@@ -1,10 +1,10 @@
 import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
-import {getRequestPathname} from './get-request-pathname.js';
+import {getRequestPath} from './get-request-path.js';
 
-describe('getRequestPathname', function () {
+describe('getRequestPath', function () {
   it('should require the parameter "request" to be an Object with the "url" property', function () {
-    const throwable = v => () => getRequestPathname(v);
+    const throwable = v => () => getRequestPath(v);
     const error = v =>
       format(
         'Parameter "request" must be an instance of IncomingMessage, ' +
@@ -24,21 +24,19 @@ describe('getRequestPathname', function () {
     throwable({url: ''})();
   });
 
-  it('should return the request path without the query string', function () {
-    const res1 = getRequestPathname({url: 'pathname?foo=bar'});
-    const res2 = getRequestPathname({url: '/pathname?foo=bar'});
-    const res3 = getRequestPathname({
-      url: 'http://example.com/pathname?foo=bar',
-    });
-    expect(res1).to.be.eq('pathname');
-    expect(res2).to.be.eq('/pathname');
-    expect(res3).to.be.eq('/pathname');
+  it('should return the request path with a query string', function () {
+    const res1 = getRequestPath({url: 'pathname?foo=bar'});
+    const res2 = getRequestPath({url: '/pathname?foo=bar'});
+    const res3 = getRequestPath({url: 'http://example.com/pathname?foo=bar'});
+    expect(res1).to.be.eq('pathname?foo=bar');
+    expect(res2).to.be.eq('/pathname?foo=bar');
+    expect(res3).to.be.eq('/pathname?foo=bar');
   });
 
   it('should preserve a trailing slash', function () {
-    const res1 = getRequestPathname({url: '/pathname/'});
+    const res1 = getRequestPath({url: '/pathname/'});
     expect(res1).to.be.eq('/pathname/');
-    const res2 = getRequestPathname({url: '/pathname/?foo=bar'});
-    expect(res2).to.be.eq('/pathname/');
+    const res2 = getRequestPath({url: '/pathname/?foo=bar'});
+    expect(res2).to.be.eq('/pathname/?foo=bar');
   });
 });

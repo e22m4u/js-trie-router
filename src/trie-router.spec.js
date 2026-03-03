@@ -85,7 +85,7 @@ describe('TrieRouter', function () {
           done();
         },
       });
-      const req = createRequestMock({path: '/test'});
+      const req = createRequestMock({url: '/test'});
       const res = createResponseMock();
       router.requestListener(req, res);
     });
@@ -100,7 +100,7 @@ describe('TrieRouter', function () {
           done();
         },
       });
-      const req = createRequestMock({path: '/foo-bar'});
+      const req = createRequestMock({url: '/foo-bar'});
       const res = createResponseMock();
       router.requestListener(req, res);
     });
@@ -115,7 +115,7 @@ describe('TrieRouter', function () {
           done();
         },
       });
-      const req = createRequestMock({path: '?p1=foo&p2=bar'});
+      const req = createRequestMock({url: '?p1=foo&p2=bar'});
       const res = createResponseMock();
       router.requestListener(req, res);
     });
@@ -382,7 +382,7 @@ describe('TrieRouter', function () {
         router.addHook(RouterHookType.ON_REQUEST, () => {
           hookCalled = true;
         });
-        const req = createRequestMock({path: '/does-not-exist'});
+        const req = createRequestMock({url: '/does-not-exist'});
         const res = createResponseMock();
         await router.requestListener(req, res);
         expect(hookCalled).to.be.true;
@@ -401,7 +401,7 @@ describe('TrieRouter', function () {
             return 'OK';
           },
         });
-        const req = createRequestMock({path: ROOT_PATH});
+        const req = createRequestMock();
         const res = createResponseMock();
         await router.requestListener(req, res);
         expect(handlerCalled).to.be.false;
@@ -423,7 +423,7 @@ describe('TrieRouter', function () {
             return 'OK';
           },
         });
-        const req = createRequestMock({path: ROOT_PATH});
+        const req = createRequestMock();
         const res = createResponseMock();
         await router.requestListener(req, res);
         const body = await res.getBody();
@@ -585,10 +585,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -607,10 +604,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -630,10 +624,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -658,10 +649,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -837,10 +825,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -859,10 +844,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -882,10 +864,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -910,10 +889,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1122,10 +1098,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1153,10 +1126,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1176,10 +1146,7 @@ describe('TrieRouter', function () {
             return 'Hello World!';
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1202,10 +1169,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1223,10 +1187,7 @@ describe('TrieRouter', function () {
             return 'a';
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1250,10 +1211,7 @@ describe('TrieRouter', function () {
             return 'a';
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1274,10 +1232,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1492,10 +1447,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1523,10 +1475,7 @@ describe('TrieRouter', function () {
             throw new Error('Should not be called!');
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1546,10 +1495,7 @@ describe('TrieRouter', function () {
             return data.toUpperCase();
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1572,10 +1518,7 @@ describe('TrieRouter', function () {
             return data.toUpperCase();
           },
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1592,10 +1535,7 @@ describe('TrieRouter', function () {
           },
           postHandler: [(ctx, data) => data + 'b', (ctx, data) => data + 'c'],
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1615,10 +1555,7 @@ describe('TrieRouter', function () {
             async (ctx, data) => data + 'c',
           ],
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1638,10 +1575,7 @@ describe('TrieRouter', function () {
           },
           postHandler: [(ctx, data) => data + 'b', (ctx, data) => data + 'c'],
         });
-        const req = createRequestMock({
-          method: HttpMethod.GET,
-          path: ROOT_PATH,
-        });
+        const req = createRequestMock({method: HttpMethod.GET});
         const res = createResponseMock();
         await router.requestListener(req, res);
         const responseBody = await res.getBody();
@@ -1703,8 +1637,8 @@ describe('TrieRouter', function () {
           handler: () => 'OK',
         });
         const req = createRequestMock({
-          method: 'OPTIONS',
-          path: '/api/resource',
+          method: HttpMethod.OPTIONS,
+          url: '/api/resource',
         });
         const res = createResponseMock();
         await router.requestListener(req, res);
@@ -1725,7 +1659,7 @@ describe('TrieRouter', function () {
         });
         const req = createRequestMock({
           method: HttpMethod.OPTIONS,
-          path: '/api/resource',
+          url: '/api/resource',
         });
         const res = createResponseMock();
         await router.requestListener(req, res);
@@ -1739,7 +1673,7 @@ describe('TrieRouter', function () {
         const router = new TrieRouter();
         const req = createRequestMock({
           method: HttpMethod.OPTIONS,
-          path: '/unknown',
+          url: '/unknown',
         });
         const res = createResponseMock();
         await router.requestListener(req, res);

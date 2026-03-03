@@ -1,7 +1,7 @@
 import {Socket} from 'net';
 import {expect} from 'chai';
-import {Stream} from 'stream';
 import {TLSSocket} from 'tls';
+import {Readable, Stream} from 'stream';
 import {format} from '@e22m4u/js-format';
 import {createRequestMock} from './create-request-mock.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
@@ -18,9 +18,9 @@ describe('createRequestMock', function () {
     expect(throwable(true)).to.throw(error('true'));
     expect(throwable(false)).to.throw(error('false'));
     expect(throwable([])).to.throw(error('Array'));
+    expect(throwable(null)).to.throw(error('null'));
     throwable({})();
     throwable(undefined)();
-    throwable(null)();
   });
 
   it('should require the option "host" to be a String', function () {
@@ -33,10 +33,10 @@ describe('createRequestMock', function () {
     expect(throwable(false)).to.throw(error('false'));
     expect(throwable([])).to.throw(error('Array'));
     expect(throwable({})).to.throw(error('Object'));
+    expect(throwable(null)).to.throw(error('null'));
     throwable('str')();
     throwable('')();
     throwable(undefined)();
-    throwable(null)();
   });
 
   it('should require the option "method" to be a String', function () {
@@ -49,10 +49,10 @@ describe('createRequestMock', function () {
     expect(throwable(false)).to.throw(error('false'));
     expect(throwable([])).to.throw(error('Array'));
     expect(throwable({})).to.throw(error('Object'));
+    expect(throwable(null)).to.throw(error('null'));
     throwable('str')();
     throwable('')();
     throwable(undefined)();
-    throwable(null)();
   });
 
   it('should require the option "secure" to be a Boolean', function () {
@@ -65,63 +65,42 @@ describe('createRequestMock', function () {
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable([])).to.throw(error('Array'));
     expect(throwable({})).to.throw(error('Object'));
+    expect(throwable(null)).to.throw(error('null'));
     throwable(true)();
     throwable(false)();
     throwable(undefined)();
-    throwable(null)();
   });
 
-  it('should require the option "path" to be a String', function () {
-    const throwable = v => () => createRequestMock({path: v});
+  it('should require the option "url" to be a String', function () {
+    const throwable = v => () => createRequestMock({url: v});
     const error = v =>
-      format('Option "path" must be a String, but %s was given.', v);
+      format('Option "url" must be a String, but %s was given.', v);
     expect(throwable(10)).to.throw(error('10'));
     expect(throwable(0)).to.throw(error('0'));
     expect(throwable(true)).to.throw(error('true'));
     expect(throwable(false)).to.throw(error('false'));
     expect(throwable([])).to.throw(error('Array'));
     expect(throwable({})).to.throw(error('Object'));
-    throwable('str')();
+    expect(throwable(null)).to.throw(error('null'));
+    throwable('/path')();
+    throwable('/')();
     throwable('')();
     throwable(undefined)();
-    throwable(null)();
   });
 
-  it('should require the option "query" to be a String or Object', function () {
-    const throwable = v => () => createRequestMock({query: v});
-    const error = v =>
-      format('Option "query" must be a String or Object, but %s was given.', v);
-    expect(throwable(10)).to.throw(error('10'));
-    expect(throwable(0)).to.throw(error('0'));
-    expect(throwable(true)).to.throw(error('true'));
-    expect(throwable(false)).to.throw(error('false'));
-    expect(throwable([])).to.throw(error('Array'));
-    throwable('str')();
-    throwable('')();
-    throwable({foo: 'bar'})();
-    throwable({})();
-    throwable(undefined)();
-    throwable(null)();
-  });
-
-  it('should require the option "cookies" to be a String or Object', function () {
-    const throwable = v => () => createRequestMock({cookies: v});
-    const error = v =>
-      format(
-        'Option "cookies" must be a String or Object, but %s was given.',
-        v,
+  it('should require the option "url" to not contain "#" symbol', function () {
+    const throwable = v => () => createRequestMock({url: v});
+    const mustThrowFor = v => {
+      expect(throwable(v)).to.throw(
+        format('Option "url" must not contain "#", but %v was given.', v),
       );
-    expect(throwable(10)).to.throw(error('10'));
-    expect(throwable(0)).to.throw(error('0'));
-    expect(throwable(true)).to.throw(error('true'));
-    expect(throwable(false)).to.throw(error('false'));
-    expect(throwable([])).to.throw(error('Array'));
-    throwable('str')();
-    throwable('')();
-    throwable({foo: 'bar'})();
-    throwable({})();
-    throwable(undefined)();
-    throwable(null)();
+    };
+    mustThrowFor('#');
+    mustThrowFor('pathname#');
+    mustThrowFor('/pathname#');
+    mustThrowFor('http://example.com/#');
+    mustThrowFor('http://example.com/pathname#');
+    mustThrowFor('http://example.com/pathname?foo=bar#');
   });
 
   it('should require the option "headers" to be an Object', function () {
@@ -135,10 +114,49 @@ describe('createRequestMock', function () {
     expect(throwable(true)).to.throw(error('true'));
     expect(throwable(false)).to.throw(error('false'));
     expect(throwable([])).to.throw(error('Array'));
+    expect(throwable(null)).to.throw(error('null'));
     throwable({foo: 'bar'})();
     throwable({})();
     throwable(undefined)();
-    throwable(null)();
+  });
+
+  it('should require values of the option "headers" to be a String or an Array', function () {
+    const throwable = v => () => createRequestMock({headers: {Test: v}});
+    const error = v =>
+      format(
+        'Header "Test" must be a String or an Array, but %s was given.',
+        v,
+      );
+    expect(throwable(10)).to.throw(error('10'));
+    expect(throwable(0)).to.throw(error('0'));
+    expect(throwable(true)).to.throw(error('true'));
+    expect(throwable(false)).to.throw(error('false'));
+    expect(throwable({})).to.throw(error('Object'));
+    expect(throwable(null)).to.throw(error('null'));
+    throwable('str')();
+    throwable('')();
+    throwable([])();
+    throwable(undefined)();
+  });
+
+  it('should require elements in the option "headers" to be a String', function () {
+    const throwable = v => () => createRequestMock({headers: {Test: [v]}});
+    const error = v =>
+      format(
+        'Element 0 of the header "Test" must be a String, ' +
+          'but %s was given.',
+        v,
+      );
+    expect(throwable(10)).to.throw(error('10'));
+    expect(throwable(0)).to.throw(error('0'));
+    expect(throwable(true)).to.throw(error('true'));
+    expect(throwable(false)).to.throw(error('false'));
+    expect(throwable([])).to.throw(error('Array'));
+    expect(throwable({})).to.throw(error('Object'));
+    expect(throwable(undefined)).to.throw(error('undefined'));
+    expect(throwable(null)).to.throw(error('null'));
+    throwable('str')();
+    throwable('')();
   });
 
   it('should require the option "stream" to be a Stream', function () {
@@ -153,9 +171,9 @@ describe('createRequestMock', function () {
     expect(throwable(false)).to.throw(error('false'));
     expect(throwable([])).to.throw(error('Array'));
     expect(throwable({})).to.throw(error('Object'));
+    expect(throwable(null)).to.throw(error('null'));
     throwable(new Stream())();
     throwable(undefined)();
-    throwable(null)();
   });
 
   it('should require the option "encoding" to be a String', function () {
@@ -168,9 +186,14 @@ describe('createRequestMock', function () {
     expect(throwable(false)).to.throw(error('false'));
     expect(throwable([])).to.throw(error('Array'));
     expect(throwable({})).to.throw(error('Object'));
+    expect(throwable(null)).to.throw(error('null'));
     throwable('utf-8')();
     throwable(undefined)();
-    throwable(null)();
+  });
+
+  it('should not allow unsupported options', function () {
+    const throwable = () => createRequestMock({unknownOption: 'value'});
+    expect(throwable).to.throw('Option "unknownOption" is not supported.');
   });
 
   it('should require the option "encoding" to be a correct value', function () {
@@ -188,7 +211,6 @@ describe('createRequestMock', function () {
     expect(throwable(true)).to.throw(error);
     expect(throwable(false)).to.throw(error);
     throwable(undefined)();
-    throwable(null)();
   });
 
   it('should not allow using the "stream" and "body" options together', function () {
@@ -199,7 +221,6 @@ describe('createRequestMock', function () {
     expect(throwable({foo: 'bar'})).to.throw(error);
     expect(throwable(Buffer.from('str'))).to.throw(error);
     throwable(undefined)();
-    throwable(null)();
   });
 
   it('should not allow using the "stream" and "encoding" options together', function () {
@@ -209,7 +230,6 @@ describe('createRequestMock', function () {
       'The "stream" and "encoding" options cannot be used together.';
     expect(throwable('utf-8')).to.throw(error);
     throwable(undefined)();
-    throwable(null)();
   });
 
   it('should use "localhost" as the default host', function () {
@@ -259,6 +279,30 @@ describe('createRequestMock', function () {
     expect(req.socket).to.be.instanceof(TLSSocket);
   });
 
+  it('should handle an undefined body without writing it to the stream', async function () {
+    const req = createRequestMock({body: undefined});
+    expect(req.headers['content-length']).to.be.undefined;
+    const chunks = [];
+    const data = await new Promise((resolve, reject) => {
+      req.on('data', chunk => chunks.push(Buffer.from(chunk)));
+      req.on('error', err => reject(err));
+      req.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+    });
+    expect(data).to.be.eq('');
+  });
+
+  it('should handle a null body without writing it to the stream', async function () {
+    const req = createRequestMock({body: null});
+    expect(req.headers['content-length']).to.be.undefined;
+    const chunks = [];
+    const data = await new Promise((resolve, reject) => {
+      req.on('data', chunk => chunks.push(Buffer.from(chunk)));
+      req.on('error', err => reject(err));
+      req.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+    });
+    expect(data).to.be.eq('');
+  });
+
   it('should pass a string body to the stream with "utf-8" encoding by default', async function () {
     const body = 'requestBody';
     const req = createRequestMock({body});
@@ -283,6 +327,18 @@ describe('createRequestMock', function () {
     expect(data).to.be.eq(body);
   });
 
+  it('should stringify and pass an Object body to the stream', async function () {
+    const body = {foo: 'bar'};
+    const req = createRequestMock({body});
+    const chunks = [];
+    const data = await new Promise((resolve, reject) => {
+      req.on('data', chunk => chunks.push(Buffer.from(chunk)));
+      req.on('error', err => reject(err));
+      req.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+    });
+    expect(data).to.be.eq(JSON.stringify(body));
+  });
+
   it('should pass a binary data to the stream', async function () {
     const body = Buffer.from('test');
     const req = createRequestMock({body});
@@ -295,37 +351,9 @@ describe('createRequestMock', function () {
     expect(data).to.be.eql(body);
   });
 
-  it('should set the path value to the request url', function () {
-    const req = createRequestMock({path: 'test'});
+  it('should set the "url" option to the request url', function () {
+    const req = createRequestMock({url: '/test'});
     expect(req.url).to.be.eq('/test');
-  });
-
-  it('should set the path value to the request url with the prefix "/"', function () {
-    const req = createRequestMock({path: '/test'});
-    expect(req.url).to.be.eq('/test');
-  });
-
-  it('should set the query string to the request url', async function () {
-    const req = createRequestMock({query: 'p1=foo&p2=bar'});
-    expect(req.url).to.be.eq('/?p1=foo&p2=bar');
-  });
-
-  it('should set the query string to the request url with the prefix "?"', async function () {
-    const req = createRequestMock({query: '?p1=foo&p2=bar'});
-    expect(req.url).to.be.eq('/?p1=foo&p2=bar');
-  });
-
-  it('should construct the request url from the "path" and "query" options', function () {
-    const req1 = createRequestMock({
-      path: 'test',
-      query: 'p1=foo&p2=bar',
-    });
-    const req2 = createRequestMock({
-      path: '/test',
-      query: {p1: 'baz', p2: 'qux'},
-    });
-    expect(req1.url).to.be.eq('/test?p1=foo&p2=bar');
-    expect(req2.url).to.be.eq('/test?p1=baz&p2=qux');
   });
 
   it('should set the property "method" in upper case', async function () {
@@ -344,16 +372,6 @@ describe('createRequestMock', function () {
   it('should set the header "x-forwarded-proto" when the option "secure" is true', async function () {
     const req = createRequestMock({secure: true});
     expect(req.headers['x-forwarded-proto']).to.be.eq('https');
-  });
-
-  it('should set the "cookie" header from a String', function () {
-    const req = createRequestMock({cookies: 'test'});
-    expect(req.headers['cookie']).to.be.eq('test');
-  });
-
-  it('should set the "cookie" header from an Object', function () {
-    const req = createRequestMock({cookies: {p1: 'foo', p2: 'bar'}});
-    expect(req.headers['cookie']).to.be.eq('p1=foo; p2=bar;');
   });
 
   it('should set the "content-type" header for a String body', function () {
@@ -409,5 +427,36 @@ describe('createRequestMock', function () {
       headers: {'content-length': '100'},
     });
     expect(req.headers['content-length']).to.be.eq('100');
+  });
+
+  it('should not calculate "content-length" automatically if "transfer-encoding" is provided', function () {
+    const req = createRequestMock({
+      body: 'test',
+      headers: {'transfer-encoding': 'chunked'},
+    });
+    expect(req.headers['content-length']).to.be.undefined;
+    expect(req.headers['transfer-encoding']).to.be.eq('chunked');
+  });
+
+  it('should convert header keys from the "headers" option to lower case', function () {
+    const req = createRequestMock({headers: {Auth: 'secret'}});
+    expect(req.headers['auth']).to.be.eq('secret');
+  });
+
+  it('should set default IP to socket properties', function () {
+    const req = createRequestMock();
+    expect(req.socket.remoteAddress).to.be.eq('127.0.0.1');
+    expect(req.socket.localAddress).to.be.eq('127.0.0.1');
+  });
+
+  it('should set default IP to socket properties when a custom stream is provided', function () {
+    const customStream = new Readable({
+      read() {
+        this.push(null);
+      },
+    });
+    const request = createRequestMock({stream: customStream});
+    expect(request.socket.remoteAddress).to.equal('127.0.0.1');
+    expect(request.socket.localAddress).to.equal('127.0.0.1');
   });
 });

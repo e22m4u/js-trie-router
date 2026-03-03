@@ -3,6 +3,7 @@ import {InvalidArgumentError} from '@e22m4u/js-format';
 import {ServiceContainer, isServiceContainer} from '@e22m4u/js-service';
 
 import {
+  getRequestPath,
   isReadableStream,
   isWritableStream,
   getRequestPathname,
@@ -139,10 +140,22 @@ export class RequestContext {
   /**
    * Path.
    *
+   * @type {string|undefined}
+   * @private
+   */
+  _path = undefined;
+
+  /**
+   * Path.
+   *
    * @returns {string}
    */
   get path() {
-    return this.request.url;
+    if (this._path != null) {
+      return this._path;
+    }
+    this._path = getRequestPath(this.request);
+    return this._path;
   }
 
   /**

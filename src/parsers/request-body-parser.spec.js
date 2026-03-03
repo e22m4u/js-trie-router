@@ -215,7 +215,7 @@ describe('RequestBodyParser', function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const headers = {
         'content-type': 'text/plain',
-        'content-length': Buffer.byteLength(body, 'utf-8'),
+        'content-length': Buffer.byteLength(body, 'utf-8').toString(),
       };
       for await (const method of Object.values(HttpMethod)) {
         const req = createRequestMock({method, body, headers});

@@ -8,11 +8,9 @@ type RequestOptions = {
   host?: string;
   method?: string;
   secure?: boolean;
-  path?: string;
-  query?: string | object;
-  cookies?: object;
-  headers?: object;
-  body?: string;
+  url?: string;
+  headers?: {[name: string]: string | string[]};
+  body?: unknown;
   stream?: Readable;
   encoding?: BufferEncoding;
 };

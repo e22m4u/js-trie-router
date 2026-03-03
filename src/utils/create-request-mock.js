@@ -1,10 +1,8 @@
 import {Socket} from 'net';
 import {TLSSocket} from 'tls';
 import {IncomingMessage} from 'http';
-import queryString from 'querystring';
 import {InvalidArgumentError} from '@e22m4u/js-format';
 import {isReadableStream} from './is-readable-stream.js';
-import {createCookieString} from './create-cookie-string.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 
 /**
@@ -12,15 +10,27 @@ import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
  *   host?: string;
  *   method?: string;
  *   secure?: boolean;
- *   path?: string;
- *   query?: string | object;
- *   cookies?: object;
+ *   url?: string;
  *   headers?: object;
- *   body?: string;
+ *   body?: unknown;
  *   stream?: import('stream').Readable;
  *   encoding?: import('buffer').BufferEncoding;
  * }} RequestOptions
  */
+
+/**
+ * Supported options.
+ */
+const SUPPORTED_OPTIONS = [
+  'host',
+  'method',
+  'secure',
+  'url',
+  'headers',
+  'body',
+  'stream',
+  'encoding',
+];
 
 /**
  * Create request mock.
@@ -29,122 +39,169 @@ import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
  * @returns {import('http').IncomingMessage}
  */
 export function createRequestMock(options) {
-  if (
-    (options != null && typeof options !== 'object') ||
-    Array.isArray(options)
-  ) {
-    throw new InvalidArgumentError(
-      'Parameter "options" must be an Object, but %v was given.',
-      options,
-    );
+  if (options !== undefined) {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+      throw new InvalidArgumentError(
+        'Parameter "options" must be an Object, but %v was given.',
+        options,
+      );
+    }
+    Object.keys(options).forEach(optionName => {
+      if (!SUPPORTED_OPTIONS.includes(optionName)) {
+        throw new InvalidArgumentError(
+          'Option %v is not supported.',
+          optionName,
+        );
+      }
+    });
+    // options.host
+    if (options.host !== undefined && typeof options.host !== 'string') {
+      throw new InvalidArgumentError(
+        'Option "host" must be a String, but %v was given.',
+        options.host,
+      );
+    }
+    // options.method
+    if (options.method !== undefined && typeof options.method !== 'string') {
+      throw new InvalidArgumentError(
+        'Option "method" must be a String, but %v was given.',
+        options.method,
+      );
+    }
+    // options.secure
+    if (options.secure !== undefined && typeof options.secure !== 'boolean') {
+      throw new InvalidArgumentError(
+        'Option "secure" must be a Boolean, but %v was given.',
+        options.secure,
+      );
+    }
+    // option.url
+    if (options.url !== undefined) {
+      if (typeof options.url !== 'string') {
+        throw new InvalidArgumentError(
+          'Option "url" must be a String, but %v was given.',
+          options.url,
+        );
+      }
+      if (options.url.indexOf('#') !== -1) {
+        throw new InvalidArgumentError(
+          'Option "url" must not contain "#", but %v was given.',
+          options.url,
+        );
+      }
+    }
+    // options.headers
+    if (options.headers !== undefined) {
+      if (
+        !options.headers ||
+        typeof options.headers !== 'object' ||
+        Array.isArray(options.headers)
+      ) {
+        throw new InvalidArgumentError(
+          'Option "headers" must be an Object, but %v was given.',
+          options.headers,
+        );
+      }
+      // options.headers[k]
+      Object.keys(options.headers).forEach(headerName => {
+        const headerValue = options.headers[headerName];
+        if (headerValue !== undefined) {
+          if (typeof headerValue !== 'string' && !Array.isArray(headerValue)) {
+            throw new InvalidArgumentError(
+              'Header %v must be a String or an Array, but %v was given.',
+              headerName,
+              headerValue,
+            );
+          }
+          // options.headers[k][n]
+          if (Array.isArray(headerValue)) {
+            headerValue.forEach((headerEl, index) => {
+              if (typeof headerEl !== 'string') {
+                throw new InvalidArgumentError(
+                  'Element %d of the header %v must be a String, ' +
+                    'but %v was given.',
+                  index,
+                  headerName,
+                  headerEl,
+                );
+              }
+            });
+          }
+        }
+      });
+    }
+    // options.stream
+    if (options.stream !== undefined && !isReadableStream(options.stream)) {
+      throw new InvalidArgumentError(
+        'Option "stream" must be a Stream, but %v was given.',
+        options.stream,
+      );
+    }
+    // options.encoding
+    if (options.encoding !== undefined) {
+      if (typeof options.encoding !== 'string') {
+        throw new InvalidArgumentError(
+          'Option "encoding" must be a String, but %v was given.',
+          options.encoding,
+        );
+      }
+      if (!CHARACTER_ENCODING_LIST.includes(options.encoding)) {
+        throw new InvalidArgumentError(
+          'Character encoding %v is not supported.',
+          options.encoding,
+        );
+      }
+    }
+    // если передан поток, выполняется
+    // проверка на несовместимые опции
+    if (options.stream) {
+      if (options.secure !== undefined) {
+        throw new InvalidArgumentError(
+          'The "stream" and "secure" options cannot be used together.',
+        );
+      }
+      if (options.body !== undefined) {
+        throw new InvalidArgumentError(
+          'The "stream" and "body" options cannot be used together.',
+        );
+      }
+      if (options.encoding !== undefined) {
+        throw new InvalidArgumentError(
+          'The "stream" and "encoding" options cannot be used together.',
+        );
+      }
+    }
   }
   options = options || {};
-  if (options.host != null && typeof options.host !== 'string') {
-    throw new InvalidArgumentError(
-      'Option "host" must be a String, but %v was given.',
-      options.host,
-    );
-  }
-  if (options.method != null && typeof options.method !== 'string') {
-    throw new InvalidArgumentError(
-      'Option "method" must be a String, but %v was given.',
-      options.method,
-    );
-  }
-  if (options.secure != null && typeof options.secure !== 'boolean') {
-    throw new InvalidArgumentError(
-      'Option "secure" must be a Boolean, but %v was given.',
-      options.secure,
-    );
-  }
-  if (options.path != null && typeof options.path !== 'string') {
-    throw new InvalidArgumentError(
-      'Option "path" must be a String, but %v was given.',
-      options.path,
-    );
-  }
-  if (
-    (options.query != null &&
-      typeof options.query !== 'object' &&
-      typeof options.query !== 'string') ||
-    Array.isArray(options.query)
-  ) {
-    throw new InvalidArgumentError(
-      'Option "query" must be a String or Object, but %v was given.',
-      options.query,
-    );
-  }
-  if (
-    (options.cookies != null &&
-      typeof options.cookies !== 'string' &&
-      typeof options.cookies !== 'object') ||
-    Array.isArray(options.cookies)
-  ) {
-    throw new InvalidArgumentError(
-      'Option "cookies" must be a String or Object, but %v was given.',
-      options.cookies,
-    );
-  }
-  if (
-    (options.headers != null && typeof options.headers !== 'object') ||
-    Array.isArray(options.headers)
-  ) {
-    throw new InvalidArgumentError(
-      'Option "headers" must be an Object, but %v was given.',
-      options.headers,
-    );
-  }
-  if (options.stream != null && !isReadableStream(options.stream)) {
-    throw new InvalidArgumentError(
-      'Option "stream" must be a Stream, but %v was given.',
-      options.stream,
-    );
-  }
-  if (options.encoding != null) {
-    if (typeof options.encoding !== 'string') {
-      throw new InvalidArgumentError(
-        'Option "encoding" must be a String, but %v was given.',
-        options.encoding,
-      );
-    }
-    if (!CHARACTER_ENCODING_LIST.includes(options.encoding)) {
-      throw new InvalidArgumentError(
-        'Character encoding %v is not supported.',
-        options.encoding,
-      );
-    }
-  }
-  // если передан поток, выполняется
-  // проверка на несовместимые опции
+  let request;
   if (options.stream) {
-    if (options.secure != null) {
-      throw new InvalidArgumentError(
-        'The "stream" and "secure" options cannot be used together.',
-      );
-    }
-    if (options.body != null) {
-      throw new InvalidArgumentError(
-        'The "stream" and "body" options cannot be used together.',
-      );
-    }
-    if (options.encoding != null) {
-      throw new InvalidArgumentError(
-        'The "stream" and "encoding" options cannot be used together.',
-      );
-    }
+    // перенаправление данных из переданного потока
+    // в новый IncomingMessage, чтобы сохранить
+    // работу проверки instanceof
+    const socket = new Socket();
+    request = new IncomingMessage(socket);
+    options.stream.on('data', chunk => request.push(chunk));
+    options.stream.on('end', () => request.push(null));
+    options.stream.on('error', err => request.emit('error', err));
+  } else {
+    request = createRequestStream(
+      options.secure,
+      options.body,
+      options.encoding,
+    );
   }
-  // если передан поток, он будет использован
-  // в качестве объекта запроса, в противном
-  // случае создается новый
-  const request =
-    options.stream ||
-    createRequestStream(options.secure, options.body, options.encoding);
-  request.url = createRequestUrl(options.path || '/', options.query);
+  // добавление свойств сокета
+  // для определения IP адреса
+  Object.defineProperty(request.socket, 'remoteAddress', {value: '127.0.0.1'});
+  Object.defineProperty(request.socket, 'localAddress', {value: '127.0.0.1'});
+  // определение остальных свойств
+  // экземпляра IncomingMessage
+  request.httpVersion = '1.1';
+  request.url = options.url || '/';
   request.headers = createRequestHeaders(
     options.host,
     options.secure,
     options.body,
-    options.cookies,
     options.encoding,
     options.headers,
   );
@@ -161,7 +218,7 @@ export function createRequestMock(options) {
  * @returns {import('http').IncomingMessage}
  */
 function createRequestStream(secure, body, encoding) {
-  if (encoding != null && typeof encoding !== 'string') {
+  if (encoding !== undefined && typeof encoding !== 'string') {
     throw new InvalidArgumentError(
       'Parameter "encoding" must be a String, but %v was given.',
       encoding,
@@ -171,6 +228,8 @@ function createRequestStream(secure, body, encoding) {
   // для безопасного подключения
   // использует обертка TLSSocket
   let socket = new Socket();
+  // при использовании опции "secure"
+  // создается новый экземпляр TLSSocket
   if (secure) {
     socket = new TLSSocket(socket);
   }
@@ -183,7 +242,7 @@ function createRequestStream(secure, body, encoding) {
     } else if (Buffer.isBuffer(body)) {
       request.push(body);
     } else {
-      request.push(JSON.stringify(body));
+      request.push(JSON.stringify(body), encoding);
     }
   }
   // передача "null" определяет
@@ -193,80 +252,32 @@ function createRequestStream(secure, body, encoding) {
 }
 
 /**
- * Create request url.
- *
- * @param {string} path
- * @param {string|object|null|undefined} query
- * @returns {string}
- */
-function createRequestUrl(path, query) {
-  if (typeof path !== 'string') {
-    throw new InvalidArgumentError(
-      'Parameter "path" must be a String, but %v was given.',
-      path,
-    );
-  }
-  if (
-    (query != null && typeof query !== 'string' && typeof query !== 'object') ||
-    Array.isArray(query)
-  ) {
-    throw new InvalidArgumentError(
-      'Parameter "query" must be a String or Object, but %v was given.',
-      query,
-    );
-  }
-  let url = ('/' + path).replace('//', '/');
-  if (typeof query === 'object') {
-    const qs = queryString.stringify(query);
-    if (qs) {
-      url += `?${qs}`;
-    }
-  } else if (typeof query === 'string') {
-    url += `?${query.replace(/^\?/, '')}`;
-  }
-  return url;
-}
-
-/**
  * Create request headers.
  *
  * @param {string|null|undefined} host
  * @param {boolean|null|undefined} secure
  * @param {*} body
- * @param {string|object|null|undefined} cookies
  * @param {import('buffer').BufferEncoding|null|undefined} encoding
  * @param {object|null|undefined} headers
  * @returns {object}
  */
-function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
-  if (host != null && typeof host !== 'string') {
+function createRequestHeaders(host, secure, body, encoding, headers) {
+  if (host !== undefined && typeof host !== 'string') {
     throw new InvalidArgumentError(
       'Parameter "host" must be a non-empty String, but %v was given.',
       host,
     );
   }
   host = host || 'localhost';
-  if (secure != null && typeof secure !== 'boolean') {
+  if (secure !== undefined && typeof secure !== 'boolean') {
     throw new InvalidArgumentError(
-      'Parameter "secure" must be a String, but %v was given.',
+      'Parameter "secure" must be a Boolean, but %v was given.',
       secure,
     );
   }
   secure = Boolean(secure);
   if (
-    (cookies != null &&
-      typeof cookies !== 'object' &&
-      typeof cookies !== 'string') ||
-    Array.isArray(cookies)
-  ) {
-    throw new InvalidArgumentError(
-      'Parameter "cookies" must be a String or an Object, ' +
-        'but %v was given.',
-      cookies,
-    );
-  }
-  if (
-    (headers != null && typeof headers !== 'object') ||
+    (headers !== undefined && typeof headers !== 'object') ||
     Array.isArray(headers)
   ) {
     throw new InvalidArgumentError(
@@ -275,58 +286,51 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
     );
   }
   headers = headers || {};
-  if (encoding != null && typeof encoding !== 'string') {
+  if (encoding !== undefined && typeof encoding !== 'string') {
     throw new InvalidArgumentError(
       'Parameter "encoding" must be a String, but %v was given.',
       encoding,
     );
   }
   encoding = encoding || 'utf-8';
-  const obj = {...headers};
-  obj['host'] = host;
-  if (secure) {
-    obj['x-forwarded-proto'] = 'https';
+  const res = {};
+  Object.keys(headers).forEach(headerName => {
+    res[headerName.toLowerCase()] = headers[headerName];
+  });
+  if (res.host === undefined) {
+    res['host'] = host;
   }
-  // формирование заголовка Cookie
-  // из строки или объекта
-  if (cookies != null) {
-    if (typeof cookies === 'string') {
-      obj['cookie'] = obj['cookie'] ? obj['cookie'] : '';
-      obj['cookie'] += obj['cookie'] ? `; ${cookies}` : cookies;
-    } else if (typeof cookies === 'object') {
-      obj['cookie'] = obj['cookie'] ? obj['cookie'] : '';
-      const newCookies = createCookieString(cookies);
-      obj['cookie'] += obj['cookie'] ? `; ${newCookies}` : newCookies;
-    }
+  if (secure) {
+    res['x-forwarded-proto'] = 'https';
   }
   // установка заголовка "content-type"
   // в зависимости от тела запроса
-  if (obj['content-type'] == null) {
+  if (body != null && !('content-type' in res)) {
     if (typeof body === 'string') {
-      obj['content-type'] = 'text/plain';
+      res['content-type'] = 'text/plain';
     } else if (Buffer.isBuffer(body)) {
-      obj['content-type'] = 'application/octet-stream';
+      res['content-type'] = 'application/octet-stream';
     } else if (
       typeof body === 'object' ||
       typeof body === 'boolean' ||
       typeof body === 'number'
     ) {
-      obj['content-type'] = 'application/json';
+      res['content-type'] = 'application/json';
     }
   }
   // подсчет количества байт тела
   // для заголовка "content-length"
   if (
     body != null &&
-    obj['transfer-encoding'] == null &&
-    obj['content-length'] == null
+    res['transfer-encoding'] == null &&
+    res['content-length'] == null
   ) {
     if (typeof body === 'string') {
       const length = Buffer.byteLength(body, encoding);
-      obj['content-length'] = String(length);
+      res['content-length'] = String(length);
     } else if (Buffer.isBuffer(body)) {
       const length = Buffer.byteLength(body);
-      obj['content-length'] = String(length);
+      res['content-length'] = String(length);
     } else if (
       typeof body === 'object' ||
       typeof body === 'boolean' ||
@@ -334,8 +338,8 @@ function createRequestHeaders(host, secure, body, cookies, encoding, headers) {
     ) {
       const json = JSON.stringify(body);
       const length = Buffer.byteLength(json, encoding);
-      obj['content-length'] = String(length);
+      res['content-length'] = String(length);
     }
   }
-  return obj;
+  return res;
 }

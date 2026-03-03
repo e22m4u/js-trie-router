@@ -66,7 +66,7 @@ describe('RequestParser', function () {
 
     it('should return the result object with the parsed query', function () {
       const S = new RequestParser();
-      const req = createRequestMock({path: '/path?p1=foo&p2=bar'});
+      const req = createRequestMock({url: '/path?p1=foo&p2=bar'});
       const res = S.parse(req);
       expect(res).to.be.eql({
         query: {p1: 'foo', p2: 'bar'},
