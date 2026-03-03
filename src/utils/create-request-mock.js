@@ -6,19 +6,6 @@ import {isReadableStream} from './is-readable-stream.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 
 /**
- * @typedef {{
- *   host?: string;
- *   method?: string;
- *   secure?: boolean;
- *   url?: string;
- *   headers?: object;
- *   body?: unknown;
- *   stream?: import('stream').Readable;
- *   encoding?: import('buffer').BufferEncoding;
- * }} RequestOptions
- */
-
-/**
  * Supported options.
  */
 const SUPPORTED_OPTIONS = [
@@ -35,7 +22,7 @@ const SUPPORTED_OPTIONS = [
 /**
  * Create request mock.
  *
- * @param {RequestOptions} [options]
+ * @param {import('./create-request-mock.js').RequestOptions} [options]
  * @returns {import('http').IncomingMessage}
  */
 export function createRequestMock(options) {
@@ -212,9 +199,9 @@ export function createRequestMock(options) {
 /**
  * Create request stream.
  *
- * @param {boolean|null|undefined} secure
+ * @param {boolean|undefined} secure
  * @param {*} body
- * @param {import('buffer').BufferEncoding|null|undefined} encoding
+ * @param {string|undefined} encoding
  * @returns {import('http').IncomingMessage}
  */
 function createRequestStream(secure, body, encoding) {
@@ -234,8 +221,8 @@ function createRequestStream(secure, body, encoding) {
     socket = new TLSSocket(socket);
   }
   const request = new IncomingMessage(socket);
-  // тело запроса должно являться
-  // строкой или бинарными данными
+  // если тело определено, то данные
+  // передаются в текущий запрос
   if (body != null) {
     if (typeof body === 'string') {
       request.push(body, encoding);
@@ -254,11 +241,11 @@ function createRequestStream(secure, body, encoding) {
 /**
  * Create request headers.
  *
- * @param {string|null|undefined} host
- * @param {boolean|null|undefined} secure
+ * @param {string|undefined} host
+ * @param {boolean|undefined} secure
  * @param {*} body
- * @param {import('buffer').BufferEncoding|null|undefined} encoding
- * @param {object|null|undefined} headers
+ * @param {string|undefined} encoding
+ * @param {object|undefined} headers
  * @returns {object}
  */
 function createRequestHeaders(host, secure, body, encoding, headers) {

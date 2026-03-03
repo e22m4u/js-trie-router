@@ -2,6 +2,13 @@ import {Readable} from 'stream';
 import {IncomingMessage} from 'http';
 
 /**
+ * Request headers input.
+ */
+type RequestHeadersInput = {
+  [name: string]: string | string[];
+};
+
+/**
  * Request options.
  */
 type RequestOptions = {
@@ -9,7 +16,7 @@ type RequestOptions = {
   method?: string;
   secure?: boolean;
   url?: string;
-  headers?: {[name: string]: string | string[]};
+  headers?: RequestHeadersInput;
   body?: unknown;
   stream?: Readable;
   encoding?: BufferEncoding;
