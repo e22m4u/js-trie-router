@@ -326,11 +326,6 @@ describe('createRequestMock', function () {
     throwable(undefined)();
   });
 
-  it('should use "localhost" as the default host', function () {
-    const req = createRequestMock();
-    expect(req.headers['host']).to.be.eq('localhost');
-  });
-
   it('should use "GET" as the default method', function () {
     const req = createRequestMock();
     expect(req.method).to.be.eq('GET');
@@ -346,12 +341,12 @@ describe('createRequestMock', function () {
     expect(req.url).to.be.eq('/');
   });
 
-  it('should use "localhost" as the default value for the "host" header', function () {
+  it('should use "localhost" as the default "host" header', function () {
     const req = createRequestMock();
     expect(req.headers).to.be.eql({host: 'localhost'});
   });
 
-  it('should use "utf-8" encoding by default', async function () {
+  it('should use the "utf-8" encoding by default', async function () {
     const body = 'test';
     const req = createRequestMock({body: Buffer.from(body)});
     const chunks = [];
@@ -421,7 +416,7 @@ describe('createRequestMock', function () {
     expect(data).to.be.eq(body);
   });
 
-  it('should stringify and pass an Object body to the stream', async function () {
+  it('should pass an object body to the stream as JSON', async function () {
     const body = {foo: 'bar'};
     const req = createRequestMock({body});
     const chunks = [];
@@ -433,7 +428,7 @@ describe('createRequestMock', function () {
     expect(data).to.be.eq(JSON.stringify(body));
   });
 
-  it('should pass a binary data to the stream', async function () {
+  it('should pass a Buffer body to the stream', async function () {
     const body = Buffer.from('test');
     const req = createRequestMock({body});
     const chunks = [];
@@ -445,17 +440,17 @@ describe('createRequestMock', function () {
     expect(data).to.be.eql(body);
   });
 
-  it('should pass the "url" option to the request url', function () {
+  it('should set the "url" option to the request url', function () {
     const req = createRequestMock({url: '/test'});
     expect(req.url).to.be.eq('/test');
   });
 
-  it('should pass the "path" option to the request url', function () {
+  it('should set the "path" option to the request url', function () {
     const req = createRequestMock({path: '/test'});
     expect(req.url).to.be.eq('/test');
   });
 
-  it('should pass the "query" option to the request url', async function () {
+  it('should set the "query" option to the request url', async function () {
     const req = createRequestMock({query: {foo: 'bar', baz: 'qux'}});
     expect(req.url).to.be.eq('/?foo=bar&baz=qux');
   });
@@ -465,7 +460,7 @@ describe('createRequestMock', function () {
     expect(req.url).to.be.eq('/test?foo=bar');
   });
 
-  it('should set the property "method" in upper case', async function () {
+  it('should set the "method" option to the request method in upper case', async function () {
     const req1 = createRequestMock({method: 'get'});
     const req2 = createRequestMock({method: 'post'});
     expect(req1.method).to.be.eq('GET');
