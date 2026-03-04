@@ -293,8 +293,6 @@ import queryString from 'querystring';
 import {TrieRouter, HttpMethod, RequestBodyParser} from '@e22m4u/js-trie-router';
 
 const router = new TrieRouter();
-
-// извлечение сервиса из контейнера
 const bodyParser = router.getService(RequestBodyParser);
 
 // регистрация парсера для обработки данных формы
