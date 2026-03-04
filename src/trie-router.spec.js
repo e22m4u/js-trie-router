@@ -28,7 +28,7 @@ describe('TrieRouter', function () {
       const optionsInput = {requestBodyBytesLimit: 10};
       const router = new TrieRouter(optionsInput);
       const options = router.getService(TrieRouterOptions);
-      expect(options.getRequestBodyBytesLimit()).to.be.eq(10);
+      expect(options.requestBodyBytesLimit).to.be.eq(10);
     });
 
     it('should use the service container and the router options from parameters', function () {
@@ -37,7 +37,7 @@ describe('TrieRouter', function () {
       const router = new TrieRouter(container, optionsInput);
       const options = router.getService(TrieRouterOptions);
       expect(router.container).to.be.eq(container);
-      expect(options.getRequestBodyBytesLimit()).to.be.eq(10);
+      expect(options.requestBodyBytesLimit).to.be.eq(10);
     });
   });
 

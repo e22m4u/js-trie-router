@@ -147,14 +147,15 @@ export class RequestBodyParser extends DebuggableService {
     // если текущий медиа тип исключен
     // настройками, то парсинг пропускается
     const options = this.getService(TrieRouterOptions);
-    const isMediaTypeIgnored = options.hasIgnoredMediaType(mediaType);
+    const mediaTypeLc = mediaType.toLowerCase();
+    const isMediaTypeIgnored = options.ignoredMediaTypes.includes(mediaTypeLc);
     if (isMediaTypeIgnored) {
       debug('Media type %v is ignored.', mediaType);
       return;
     }
     // если парсер для текущего медиа типа
     // не определен, то выбрасывается ошибка
-    const parser = this._parsers[mediaType.toLowerCase()];
+    const parser = this._parsers[mediaTypeLc];
     if (!parser) {
       throw createError(
         HttpErrors.UnsupportedMediaType,
@@ -164,7 +165,7 @@ export class RequestBodyParser extends DebuggableService {
     }
     // определение максимального количества
     // байт, извлекаемых из тела запроса
-    const bodyBytesLimit = options.getRequestBodyBytesLimit();
+    const bodyBytesLimit = options.requestBodyBytesLimit;
     debug('Fetching a request body.');
     debug('Body limit is %v bytes.', bodyBytesLimit);
     // извлечение тела запроса для последующего
