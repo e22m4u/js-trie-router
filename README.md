@@ -255,7 +255,7 @@ const router = new TrieRouter({
   ignoredMediaTypes: [
     'application/octet-stream',
     'multipart/form-data'
-  ]
+  ],
 });
 
 // регистрация маршрута для обработки файлов
