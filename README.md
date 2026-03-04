@@ -281,6 +281,8 @@ router.defineRoute({
 ```js
 // доступ к сервису через маршрутизатор
 const bodyParser = router.getService(RequestBodyParser);
+
+// bodyParser.defineParser(...)
 ```
 
 Регистрируемая функция принимает извлеченные данные в виде строки и возвращает
