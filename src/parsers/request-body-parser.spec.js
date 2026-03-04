@@ -30,11 +30,11 @@ describe('RequestBodyParser', function () {
       throwable('text/plain')();
     });
 
-    it('should require the parameter "parser" to be a Function', function () {
+    it('should require the parameter "parserFn" to be a Function', function () {
       const S = new RequestBodyParser();
       const throwable = v => () => S.defineParser('str', v);
       const error = v =>
-        format('Parameter "parser" must be a Function, but %s was given.', v);
+        format('Parameter "parserFn" must be a Function, but %s was given.', v);
       expect(throwable('str')).to.throw(error('"str"'));
       expect(throwable('')).to.throw(error('""'));
       expect(throwable(10)).to.throw(error('10'));

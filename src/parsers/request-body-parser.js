@@ -29,10 +29,10 @@ export class RequestBodyParser extends DebuggableService {
    * Set parser.
    *
    * @param {string} mediaType
-   * @param {Function} parser
+   * @param {Function} parserFn
    * @returns {this}
    */
-  defineParser(mediaType, parser) {
+  defineParser(mediaType, parserFn) {
     if (!mediaType || typeof mediaType !== 'string') {
       throw new InvalidArgumentError(
         'Parameter "mediaType" must be a non-empty String, ' +
@@ -40,13 +40,13 @@ export class RequestBodyParser extends DebuggableService {
         mediaType,
       );
     }
-    if (!parser || typeof parser !== 'function') {
+    if (!parserFn || typeof parserFn !== 'function') {
       throw new InvalidArgumentError(
-        'Parameter "parser" must be a Function, but %v was given.',
-        parser,
+        'Parameter "parserFn" must be a Function, but %v was given.',
+        parserFn,
       );
     }
-    this._parsers[mediaType.toLowerCase()] = parser;
+    this._parsers[mediaType.toLowerCase()] = parserFn;
     return this;
   }
 
@@ -81,14 +81,14 @@ export class RequestBodyParser extends DebuggableService {
         mediaType,
       );
     }
-    const parser = this._parsers[mediaType.toLowerCase()];
-    if (!parser) {
+    const parserFn = this._parsers[mediaType.toLowerCase()];
+    if (!parserFn) {
       throw new InvalidArgumentError(
         'Media type %v does not have a parser.',
         mediaType,
       );
     }
-    return parser;
+    return parserFn;
   }
 
   /**
@@ -155,8 +155,8 @@ export class RequestBodyParser extends DebuggableService {
     }
     // если парсер для текущего медиа типа
     // не определен, то выбрасывается ошибка
-    const parser = this._parsers[mediaTypeLc];
-    if (!parser) {
+    const parserFn = this._parsers[mediaTypeLc];
+    if (!parserFn) {
       throw createError(
         HttpErrors.UnsupportedMediaType,
         'Media type %v is not supported.',
@@ -173,7 +173,7 @@ export class RequestBodyParser extends DebuggableService {
     return fetchRequestBody(request, bodyBytesLimit).then(rawBody => {
       if (rawBody != null) {
         debug('Read %v bytes.', Buffer.byteLength(rawBody, 'utf8'));
-        return parser(rawBody);
+        return parserFn(rawBody);
       }
       debug('Request body has no content.');
       return rawBody;

@@ -15,9 +15,9 @@ export declare class RequestBodyParser extends DebuggableService {
    * Define parser.
    *
    * @param mediaType
-   * @param parser
+   * @param parserFn
    */
-  defineParser(mediaType: string, parser: BodyParserFunction): this;
+  defineParser(mediaType: string, parserFn: BodyParserFunction): this;
 
   /**
    * Has parser.
