@@ -2,9 +2,9 @@ import {Readable} from 'stream';
 import {IncomingMessage} from 'http';
 
 /**
- * Request query input.
+ * Request query object input.
  */
-type RequestQueryInput = {
+type RequestQueryObjectInput = {
   [name: string]: unknown;
 };
 
@@ -24,7 +24,7 @@ type RequestOptions = {
   secure?: boolean;
   url?: string;
   path?: string;
-  query?: RequestQueryInput;
+  query?: string | RequestQueryObjectInput;
   cookies?: object;
   headers?: RequestHeadersInput;
   body?: unknown;

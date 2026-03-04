@@ -152,6 +152,26 @@ describe('createRequestMock', function () {
     mustThrowWith('');
   });
 
+  it('should require the option "query" to be a String or an Object', function () {
+    const throwable = v => () => createRequestMock({query: v});
+    const error = v =>
+      format(
+        'Option "query" must be a String or an Object, but %s was given.',
+        v,
+      );
+    expect(throwable(10)).to.throw(error('10'));
+    expect(throwable(0)).to.throw(error('0'));
+    expect(throwable(true)).to.throw(error('true'));
+    expect(throwable(false)).to.throw(error('false'));
+    expect(throwable([])).to.throw(error('Array'));
+    expect(throwable(null)).to.throw(error('null'));
+    throwable({foo: 'bar'})();
+    throwable({})();
+    throwable('foo=bar')();
+    throwable('')();
+    throwable(undefined)();
+  });
+
   it('should require the option "cookies" to be an Object', function () {
     const throwable = v => () => createRequestMock({cookies: v});
     const error = v =>
@@ -336,17 +356,17 @@ describe('createRequestMock', function () {
     expect(req.socket).to.be.instanceof(Socket);
   });
 
-  it('should use the default path "/" without a query string', function () {
+  it('should use "/" as the default value of the request url', function () {
     const req = createRequestMock();
     expect(req.url).to.be.eq('/');
   });
 
-  it('should use "localhost" as the default "host" header', function () {
+  it('should use "localhost" as the default value of the "host" header', function () {
     const req = createRequestMock();
     expect(req.headers).to.be.eql({host: 'localhost'});
   });
 
-  it('should use the "utf-8" encoding by default', async function () {
+  it('should use "utf-8" as the default value of the data encoding', async function () {
     const body = 'test';
     const req = createRequestMock({body: Buffer.from(body)});
     const chunks = [];
@@ -416,7 +436,43 @@ describe('createRequestMock', function () {
     expect(data).to.be.eq(body);
   });
 
-  it('should pass an object body to the stream as JSON', async function () {
+  it('should pass a number from the "body" option to the stream as a string', async function () {
+    const body = 10;
+    const req = createRequestMock({body});
+    const chunks = [];
+    const data = await new Promise((resolve, reject) => {
+      req.on('data', chunk => chunks.push(Buffer.from(chunk)));
+      req.on('error', err => reject(err));
+      req.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+    });
+    expect(data).to.be.eq('10');
+  });
+
+  it('should pass a boolean from the "body" option to the stream as a string', async function () {
+    const body = true;
+    const req = createRequestMock({body});
+    const chunks = [];
+    const data = await new Promise((resolve, reject) => {
+      req.on('data', chunk => chunks.push(Buffer.from(chunk)));
+      req.on('error', err => reject(err));
+      req.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+    });
+    expect(data).to.be.eq('true');
+  });
+
+  it('should pass an array from the "body" option to the stream as JSON', async function () {
+    const body = [1, 2];
+    const req = createRequestMock({body});
+    const chunks = [];
+    const data = await new Promise((resolve, reject) => {
+      req.on('data', chunk => chunks.push(Buffer.from(chunk)));
+      req.on('error', err => reject(err));
+      req.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+    });
+    expect(data).to.be.eq(JSON.stringify(body));
+  });
+
+  it('should pass an object from the "body" option to the stream as JSON', async function () {
     const body = {foo: 'bar'};
     const req = createRequestMock({body});
     const chunks = [];
@@ -428,7 +484,7 @@ describe('createRequestMock', function () {
     expect(data).to.be.eq(JSON.stringify(body));
   });
 
-  it('should pass a Buffer body to the stream', async function () {
+  it('should pass a Buffer from the "body" option to the stream', async function () {
     const body = Buffer.from('test');
     const req = createRequestMock({body});
     const chunks = [];
@@ -440,27 +496,38 @@ describe('createRequestMock', function () {
     expect(data).to.be.eql(body);
   });
 
-  it('should set the "url" option to the request url', function () {
+  it('should pass a value form the "url" option to the request url', function () {
     const req = createRequestMock({url: '/test'});
     expect(req.url).to.be.eq('/test');
   });
 
-  it('should set the "path" option to the request url', function () {
+  it('should pass a value form the "path" option to the request url', function () {
     const req = createRequestMock({path: '/test'});
     expect(req.url).to.be.eq('/test');
   });
 
-  it('should set the "query" option to the request url', async function () {
+  it('should pass a string form the "query" option to the request url', async function () {
+    const req1 = createRequestMock({query: 'p1=foo&p2=bar'});
+    const req2 = createRequestMock({query: '?p1=foo&p2=bar'});
+    expect(req1.url).to.be.eq('/?p1=foo&p2=bar');
+    expect(req2.url).to.be.eq('/?p1=foo&p2=bar');
+  });
+
+  it('should pass an object form the "query" option to the request url', async function () {
     const req = createRequestMock({query: {foo: 'bar', baz: 'qux'}});
     expect(req.url).to.be.eq('/?foo=bar&baz=qux');
   });
 
   it('should combine the "path" and "query" options in the request url', function () {
-    const req = createRequestMock({path: '/test', query: {foo: 'bar'}});
-    expect(req.url).to.be.eq('/test?foo=bar');
+    const req1 = createRequestMock({path: '/test', query: 'foo=bar'});
+    const req2 = createRequestMock({path: '/test', query: '?foo=bar'});
+    const req3 = createRequestMock({path: '/test', query: {foo: 'bar'}});
+    expect(req1.url).to.be.eq('/test?foo=bar');
+    expect(req2.url).to.be.eq('/test?foo=bar');
+    expect(req3.url).to.be.eq('/test?foo=bar');
   });
 
-  it('should set the "method" option to the request method in upper case', async function () {
+  it('should set a value from the "method" option to the request method in upper case', async function () {
     const req1 = createRequestMock({method: 'get'});
     const req2 = createRequestMock({method: 'post'});
     expect(req1.method).to.be.eq('GET');
@@ -478,12 +545,12 @@ describe('createRequestMock', function () {
     expect(req.headers['x-forwarded-proto']).to.be.eq('https');
   });
 
-  it('should set the "cookie" header from the "cookie" option', function () {
+  it('should serialize and set a value from the "cookies" option to the "cookie" header', function () {
     const req = createRequestMock({cookies: {p1: 'foo', p2: 'bar'}});
     expect(req.headers['cookie']).to.be.eq('p1=foo; p2=bar');
   });
 
-  it('should merge the "cookie" header with the "cookie" option', function () {
+  it('should merge the "cookie" header with the "cookies" option', function () {
     const req = createRequestMock({
       headers: {cookie: 'p1=foo; p2=bar'},
       cookies: {p2: 'baz', p3: 'qux'},

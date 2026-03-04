@@ -116,12 +116,13 @@ export function createRequestMock(options) {
     // options.query
     if (options.query !== undefined) {
       if (
-        !options.query ||
-        typeof options.query !== 'object' ||
+        options.query === null ||
+        (typeof options.query !== 'string' &&
+          typeof options.query !== 'object') ||
         Array.isArray(options.query)
       ) {
         throw new InvalidArgumentError(
-          'Option "query" must be an Object, but %v was given.',
+          'Option "query" must be a String or an Object, but %v was given.',
           options.query,
         );
       }
@@ -335,7 +336,7 @@ function createRequestStream(secure, body, encoding) {
  * Create request url.
  *
  * @param {string|undefined} path
- * @param {object|undefined} query
+ * @param {string|object|undefined} query
  * @returns {string}
  */
 function createRequestUrl(path, query) {
@@ -346,9 +347,13 @@ function createRequestUrl(path, query) {
     );
   }
   if (query !== undefined) {
-    if (!query || typeof query !== 'object' || Array.isArray(query)) {
+    if (
+      query === null ||
+      (typeof query !== 'string' && typeof query !== 'object') ||
+      Array.isArray(query)
+    ) {
       throw new InvalidArgumentError(
-        'Parameter "query" must be an Object, but %v was given.',
+        'Parameter "query" must be a String or an Object, but %v was given.',
         query,
       );
     }
@@ -359,6 +364,8 @@ function createRequestUrl(path, query) {
     if (qs) {
       res += `?${qs}`;
     }
+  } else if (typeof query === 'string' && query !== '' && query !== '?') {
+    res += `?${query.replace(/^\?/, '')}`;
   }
   return res;
 }

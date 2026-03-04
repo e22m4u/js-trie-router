@@ -544,9 +544,9 @@ function createRequestMock(options) {
       }
     }
     if (options.query !== void 0) {
-      if (!options.query || typeof options.query !== "object" || Array.isArray(options.query)) {
+      if (options.query === null || typeof options.query !== "string" && typeof options.query !== "object" || Array.isArray(options.query)) {
         throw new import_js_format9.InvalidArgumentError(
-          'Option "query" must be an Object, but %v was given.',
+          'Option "query" must be a String or an Object, but %v was given.',
           options.query
         );
       }
@@ -721,9 +721,9 @@ function createRequestUrl(path, query) {
     );
   }
   if (query !== void 0) {
-    if (!query || typeof query !== "object" || Array.isArray(query)) {
+    if (query === null || typeof query !== "string" && typeof query !== "object" || Array.isArray(query)) {
       throw new import_js_format9.InvalidArgumentError(
-        'Parameter "query" must be an Object, but %v was given.',
+        'Parameter "query" must be a String or an Object, but %v was given.',
         query
       );
     }
@@ -734,6 +734,8 @@ function createRequestUrl(path, query) {
     if (qs) {
       res += `?${qs}`;
     }
+  } else if (typeof query === "string" && query !== "" && query !== "?") {
+    res += `?${query.replace(/^\?/, "")}`;
   }
   return res;
 }
