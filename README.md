@@ -290,7 +290,7 @@ const bodyParser = router.getService(RequestBodyParser);
 
 ```js
 import queryString from 'querystring';
-import {TrieRouter, RequestBodyParser} from '@e22m4u/js-trie-router';
+import {TrieRouter, HttpMethod, RequestBodyParser} from '@e22m4u/js-trie-router';
 
 const router = new TrieRouter();
 
@@ -305,7 +305,7 @@ bodyParser.defineParser(
 
 // определение маршрута
 router.defineRoute({
-  method: 'POST',
+  method: HttpMethod.POST,
   path: '/submit',
   handler(ctx) {
     // свойство содержит результат
