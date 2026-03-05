@@ -3,6 +3,7 @@ export * from './route/index.js';
 export * from './utils/index.js';
 export * from './hooks/index.js';
 export * from './trie-router.js';
+export * from './branch/index.js';
 export * from './parsers/index.js';
 export * from './senders/index.js';
 export * from './request-context.js';

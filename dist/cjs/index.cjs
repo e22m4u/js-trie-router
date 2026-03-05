@@ -43,6 +43,7 @@ __export(index_exports, {
   RequestQueryParser: () => RequestQueryParser,
   Route: () => Route,
   RouteRegistry: () => RouteRegistry,
+  RouterBranch: () => RouterBranch,
   RouterDataSender: () => RouterDataSender,
   RouterErrorSender: () => RouterErrorSender,
   RouterHookInvoker: () => RouterHookInvoker,
@@ -65,12 +66,14 @@ __export(index_exports, {
   isResponseSent: () => isResponseSent,
   isWritableStream: () => isWritableStream,
   mergeDeep: () => mergeDeep,
+  mergeRouterBranchDefinitions: () => mergeRouterBranchDefinitions,
   parseContentType: () => parseContentType,
   parseCookieString: () => parseCookieString,
   parseJsonBody: () => parseJsonBody,
   toCamelCase: () => toCamelCase,
   toPascalCase: () => toPascalCase,
-  validateRouteDefinition: () => validateRouteDefinition
+  validateRouteDefinition: () => validateRouteDefinition,
+  validateRouterBranchDefinition: () => validateRouterBranchDefinition
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -2797,6 +2800,7 @@ var TrieRouter = _TrieRouter;
   RequestQueryParser,
   Route,
   RouteRegistry,
+  RouterBranch,
   RouterDataSender,
   RouterErrorSender,
   RouterHookInvoker,
@@ -2819,10 +2823,12 @@ var TrieRouter = _TrieRouter;
   isResponseSent,
   isWritableStream,
   mergeDeep,
+  mergeRouterBranchDefinitions,
   parseContentType,
   parseCookieString,
   parseJsonBody,
   toCamelCase,
   toPascalCase,
-  validateRouteDefinition
+  validateRouteDefinition,
+  validateRouterBranchDefinition
 });
