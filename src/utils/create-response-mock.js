@@ -72,7 +72,9 @@ function patchHeaders(response) {
         );
       }
       const key = name.toLowerCase();
-      this._headers[key] = String(value);
+      this._headers[key] = Array.isArray(value)
+        ? [...value.map(String)]
+        : String(value);
       return this;
     },
   });

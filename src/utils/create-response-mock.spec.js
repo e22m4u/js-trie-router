@@ -79,6 +79,22 @@ describe('createResponseMock', function () {
       expect(ret).to.be.eq(res);
       expect(res._headers['num']).to.be.eq('10');
     });
+
+    it('should not stringify an array value', function () {
+      const res = createResponseMock();
+      expect(res._headers['key']).to.be.eq(undefined);
+      const ret = res.setHeader('key', ['foo', 'bar']);
+      expect(ret).to.be.eq(res);
+      expect(res._headers['key']).to.be.eql(['foo', 'bar']);
+    });
+
+    it('should stringify an array elements', function () {
+      const res = createResponseMock();
+      expect(res._headers['key']).to.be.eq(undefined);
+      const ret = res.setHeader('key', [1, 2, 3]);
+      expect(ret).to.be.eq(res);
+      expect(res._headers['key']).to.be.eql(['1', '2', '3']);
+    });
   });
 
   describe('getHeader', function () {
