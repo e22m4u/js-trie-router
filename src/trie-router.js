@@ -1,10 +1,10 @@
 import {RouterBranch} from './branch/index.js';
+import {RouteRegistry} from './route/index.js';
 import {RequestParser} from './parsers/index.js';
 import {RequestContext} from './request-context.js';
 import {ServerResponse, IncomingMessage} from 'http';
 import {DebuggableService} from './debuggable-service.js';
 import {TrieRouterOptions} from './trie-router-options.js';
-import {HttpMethod, RouteRegistry} from './route/index.js';
 import {RouterDataSender, RouterErrorSender} from './senders/index.js';
 import {isServiceContainer, ServiceContainer} from '@e22m4u/js-service';
 import {isPromise, isResponseSent, getRequestPathname} from './utils/index.js';
@@ -165,27 +165,6 @@ export class TrieRouter extends DebuggableService {
       const resolved =
         this.getService(RouteRegistry).matchRouteByRequest(request);
       if (!resolved) {
-        // обработка метода OPTIONS выполняется автоматически
-        // перед отправкой ошибки 404, если для пути запроса
-        // имеются другие методы, то вместо ошибки 404 будет
-        // отправлен ответ с "Allow*" заголовками
-        if (request.method.toUpperCase() === HttpMethod.OPTIONS) {
-          const allowedMethods =
-            this.getService(RouteRegistry).getAllowedMethodsForRequestPath(
-              requestPath,
-            );
-          if (allowedMethods.length > 0) {
-            debug('Auto-handling OPTIONS request.');
-            if (!allowedMethods.includes('OPTIONS')) {
-              allowedMethods.push('OPTIONS');
-            }
-            const allowHeader = allowedMethods.join(', ');
-            response.statusCode = 204;
-            response.setHeader('Allow', allowHeader);
-            response.end();
-            return;
-          }
-        }
         debug(
           'No route found for the request %s %v.',
           request.method,

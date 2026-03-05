@@ -1625,64 +1625,6 @@ describe('TrieRouter', function () {
         });
       });
     });
-
-    describe('OPTIONS method handling', function () {
-      it('should automatically return 204 with specific headers for an unhandled OPTIONS request', async function () {
-        const router = new TrieRouter();
-        router.defineRoute({
-          method: HttpMethod.GET,
-          path: '/api/resource',
-          handler: () => 'OK',
-        });
-        router.defineRoute({
-          method: HttpMethod.POST,
-          path: '/api/resource',
-          handler: () => 'OK',
-        });
-        const req = createRequestMock({
-          method: HttpMethod.OPTIONS,
-          path: '/api/resource',
-        });
-        const res = createResponseMock();
-        await router.handleRequest(req, res);
-        expect(res.statusCode).to.be.eq(204);
-        expect(res.getHeader('Allow')).to.be.eq('GET, POST, OPTIONS');
-      });
-
-      it('should execute a custom OPTIONS handler when it is explicitly defined', async function () {
-        const router = new TrieRouter();
-        let customOptionsCalled = false;
-        router.defineRoute({
-          method: HttpMethod.OPTIONS,
-          path: '/api/resource',
-          handler: () => {
-            customOptionsCalled = true;
-            return 'Custom OPTIONS response';
-          },
-        });
-        const req = createRequestMock({
-          method: HttpMethod.OPTIONS,
-          path: '/api/resource',
-        });
-        const res = createResponseMock();
-        await router.handleRequest(req, res);
-        const body = await res.getBody();
-        expect(customOptionsCalled).to.be.true;
-        expect(res.statusCode).to.be.eq(200);
-        expect(body).to.be.eq('Custom OPTIONS response');
-      });
-
-      it('should return 404 for an OPTIONS request if the path does not exist for any method', async function () {
-        const router = new TrieRouter();
-        const req = createRequestMock({
-          method: HttpMethod.OPTIONS,
-          path: '/unknown',
-        });
-        const res = createResponseMock();
-        await router.handleRequest(req, res);
-        expect(res.statusCode).to.be.eq(404);
-      });
-    });
   });
 
   describe('addHook', function () {

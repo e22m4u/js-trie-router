@@ -1793,35 +1793,6 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
       requestPath
     );
   }
-  /**
-   * Get allowed methods for request path.
-   *
-   * @param {string} requestPath
-   * @returns {string[]}
-   */
-  getAllowedMethodsForRequestPath(requestPath) {
-    if (typeof requestPath !== "string") {
-      throw new import_js_format15.InvalidArgumentError(
-        'Parameter "requestPath" must be a String, but %v was given.',
-        requestPath
-      );
-    }
-    const debug = this.getDebuggerFor(this.getAllowedMethodsForRequestPath);
-    const allowedMethods = [];
-    for (const method of Object.values(HttpMethod)) {
-      const rawTriePath = `${method}/${requestPath}`;
-      const triePath = rawTriePath.replace(/\/+/g, "/");
-      if (this._trie.match(triePath)) {
-        allowedMethods.push(method);
-      }
-    }
-    if (allowedMethods.length) {
-      debug("Allowed methods for %v are: %l.", requestPath, allowedMethods);
-    } else {
-      debug("Path %v does not have allowed methods.", requestPath);
-    }
-    return allowedMethods;
-  }
 };
 __name(_RouteRegistry, "RouteRegistry");
 var RouteRegistry = _RouteRegistry;
@@ -2684,22 +2655,6 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
       }
       const resolved = this.getService(RouteRegistry).matchRouteByRequest(request);
       if (!resolved) {
-        if (request.method.toUpperCase() === HttpMethod.OPTIONS) {
-          const allowedMethods = this.getService(RouteRegistry).getAllowedMethodsForRequestPath(
-            requestPath
-          );
-          if (allowedMethods.length > 0) {
-            debug("Auto-handling OPTIONS request.");
-            if (!allowedMethods.includes("OPTIONS")) {
-              allowedMethods.push("OPTIONS");
-            }
-            const allowHeader = allowedMethods.join(", ");
-            response.statusCode = 204;
-            response.setHeader("Allow", allowHeader);
-            response.end();
-            return;
-          }
-        }
         debug(
           "No route found for the request %s %v.",
           request.method,

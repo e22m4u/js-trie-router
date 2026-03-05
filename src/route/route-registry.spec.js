@@ -2,7 +2,6 @@ import {expect} from 'chai';
 import {format} from '@e22m4u/js-format';
 import {Route, HttpMethod} from './route.js';
 import {RouteRegistry} from './route-registry.js';
-import {ServiceContainer} from '@e22m4u/js-service';
 import {RouterHookRegistry, RouterHookType} from '../hooks/index.js';
 
 describe('RouteRegistry', function () {
@@ -151,97 +150,6 @@ describe('RouteRegistry', function () {
       expect(res.route.path).to.be.eq('/foo/:p1/bar/:p2');
       expect(res.route.handler).to.be.eq(handler);
       expect(res.params).to.be.eql({p1: 'baz', p2: 'qux'});
-    });
-  });
-
-  describe('getAllowedMethodsForRequestPath', function () {
-    it('should require the parameter "requestPath" to be a String', function () {
-      const S = new RouteRegistry();
-      const throwable = v => () => S.getAllowedMethodsForRequestPath(v);
-      const error = v =>
-        format(
-          'Parameter "requestPath" must be a String, but %s was given.',
-          v,
-        );
-      expect(throwable(10)).to.throw(error('10'));
-      expect(throwable(0)).to.throw(error('0'));
-      expect(throwable(true)).to.throw(error('true'));
-      expect(throwable(false)).to.throw(error('false'));
-      expect(throwable([])).to.throw(error('Array'));
-      expect(throwable({})).to.throw(error('Object'));
-      expect(throwable(undefined)).to.throw(error('undefined'));
-      expect(throwable(null)).to.throw(error('null'));
-      expect(throwable(() => undefined)).to.throw(error('Function'));
-      throwable('str')();
-      throwable('')();
-    });
-
-    it('should return an empty array if no routes match the path', function () {
-      const S = new RouteRegistry(new ServiceContainer());
-      S.defineRoute({
-        method: HttpMethod.GET,
-        path: '/foo',
-        handler: () => undefined,
-      });
-      const res = S.getAllowedMethodsForRequestPath('/bar');
-      expect(res).to.be.eql([]);
-    });
-
-    it('should return an array with a single method if only one matches', function () {
-      const S = new RouteRegistry(new ServiceContainer());
-      S.defineRoute({
-        method: HttpMethod.POST,
-        path: '/foo',
-        handler: () => undefined,
-      });
-      const res = S.getAllowedMethodsForRequestPath('/foo');
-      expect(res).to.be.eql([HttpMethod.POST]);
-    });
-
-    it('should return an array with multiple methods if several routes match the path', function () {
-      const S = new RouteRegistry(new ServiceContainer());
-      const handler = () => undefined;
-      S.defineRoute({method: HttpMethod.GET, path: '/foo', handler});
-      S.defineRoute({method: HttpMethod.POST, path: '/foo', handler});
-      S.defineRoute({method: HttpMethod.DELETE, path: '/foo', handler});
-      const res = S.getAllowedMethodsForRequestPath('/foo');
-      expect(res).to.be.eql([
-        HttpMethod.GET,
-        HttpMethod.POST,
-        HttpMethod.DELETE,
-      ]);
-    });
-
-    it('should correctly resolve allowed methods for paths with parameters', function () {
-      const S = new RouteRegistry(new ServiceContainer());
-      const handler = () => undefined;
-      S.defineRoute({method: HttpMethod.GET, path: '/users/:id', handler});
-      S.defineRoute({method: HttpMethod.PUT, path: '/users/:id', handler});
-      S.defineRoute({method: HttpMethod.POST, path: '/users', handler});
-      const res = S.getAllowedMethodsForRequestPath('/users/123');
-      expect(res).to.be.eql([HttpMethod.GET, HttpMethod.PUT]);
-    });
-
-    it('should distinguish between paths with and without trailing slash', function () {
-      const S = new RouteRegistry(new ServiceContainer());
-      const handler = () => undefined;
-      S.defineRoute({method: HttpMethod.GET, path: '/foo', handler});
-      S.defineRoute({method: HttpMethod.POST, path: '/foo/', handler});
-      const res1 = S.getAllowedMethodsForRequestPath('/foo');
-      expect(res1).to.be.eql([HttpMethod.GET]);
-      const res2 = S.getAllowedMethodsForRequestPath('/foo/');
-      expect(res2).to.be.eql([HttpMethod.POST]);
-    });
-
-    it('should check for the explicitly defined OPTIONS method', function () {
-      const S = new RouteRegistry(new ServiceContainer());
-      S.defineRoute({
-        method: HttpMethod.OPTIONS,
-        path: '/api',
-        handler: () => undefined,
-      });
-      const res = S.getAllowedMethodsForRequestPath('/api');
-      expect(res).to.be.eql([HttpMethod.OPTIONS]);
     });
   });
 });

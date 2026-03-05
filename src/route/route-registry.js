@@ -1,4 +1,4 @@
-import {HttpMethod, Route} from './route.js';
+import {Route} from './route.js';
 import {PathTrie} from '@e22m4u/js-path-trie';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {getRequestPathname} from '../utils/index.js';
@@ -123,35 +123,5 @@ export class RouteRegistry extends DebuggableService {
       request.method.toUpperCase(),
       requestPath,
     );
-  }
-
-  /**
-   * Get allowed methods for request path.
-   *
-   * @param {string} requestPath
-   * @returns {string[]}
-   */
-  getAllowedMethodsForRequestPath(requestPath) {
-    if (typeof requestPath !== 'string') {
-      throw new InvalidArgumentError(
-        'Parameter "requestPath" must be a String, but %v was given.',
-        requestPath,
-      );
-    }
-    const debug = this.getDebuggerFor(this.getAllowedMethodsForRequestPath);
-    const allowedMethods = [];
-    for (const method of Object.values(HttpMethod)) {
-      const rawTriePath = `${method}/${requestPath}`;
-      const triePath = rawTriePath.replace(/\/+/g, '/');
-      if (this._trie.match(triePath)) {
-        allowedMethods.push(method);
-      }
-    }
-    if (allowedMethods.length) {
-      debug('Allowed methods for %v are: %l.', requestPath, allowedMethods);
-    } else {
-      debug('Path %v does not have allowed methods.', requestPath);
-    }
-    return allowedMethods;
   }
 }
