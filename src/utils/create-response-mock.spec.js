@@ -91,9 +91,9 @@ describe('createResponseMock', function () {
     it('should stringify an array elements', function () {
       const res = createResponseMock();
       expect(res._headers['key']).to.be.eq(undefined);
-      const ret = res.setHeader('key', [1, 2, 3]);
+      const ret = res.setHeader('key', [1, 2]);
       expect(ret).to.be.eq(res);
-      expect(res._headers['key']).to.be.eql(['1', '2', '3']);
+      expect(res._headers['key']).to.be.eql(['1', '2']);
     });
   });
 
