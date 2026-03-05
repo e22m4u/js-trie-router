@@ -2428,8 +2428,8 @@ var _RouterDataSender = class _RouterDataSender extends DebuggableService {
       return;
     }
     if (isReadableStream(data)) {
-      if (!response.getHeader("content-type")) {
-        response.setHeader("content-type", "application/octet-stream");
+      if (!response.getHeader("Content-Type")) {
+        response.setHeader("Content-Type", "application/octet-stream");
       }
       data.pipe(response);
       debug("Sending response with a Stream.");
@@ -2441,13 +2441,13 @@ var _RouterDataSender = class _RouterDataSender extends DebuggableService {
       case "boolean":
       case "object":
         if (Buffer.isBuffer(data)) {
-          if (!response.getHeader("content-type")) {
-            response.setHeader("content-type", "application/octet-stream");
+          if (!response.getHeader("Content-Type")) {
+            response.setHeader("Content-Type", "application/octet-stream");
           }
           debugMsg = "Buffer has been sent as binary data.";
         } else {
-          if (!response.getHeader("content-type")) {
-            response.setHeader("content-type", "application/json");
+          if (!response.getHeader("Content-Type")) {
+            response.setHeader("Content-Type", "application/json");
           }
           debugMsg = (0, import_js_format21.format)(
             "%v has been sent as JSON.",
@@ -2457,8 +2457,8 @@ var _RouterDataSender = class _RouterDataSender extends DebuggableService {
         }
         break;
       default:
-        if (!response.getHeader("content-type")) {
-          response.setHeader("content-type", "text/plain");
+        if (!response.getHeader("Content-Type")) {
+          response.setHeader("Content-Type", "text/plain");
         }
         debugMsg = "Response data has been sent as plain text.";
         data = String(data);
@@ -2525,7 +2525,7 @@ var _RouterErrorSender = class _RouterErrorSender extends DebuggableService {
       console.error(error);
     }
     response.statusCode = statusCode;
-    response.setHeader("content-type", "application/json; charset=utf-8");
+    response.setHeader("Content-Type", "application/json; charset=utf-8");
     response.end(JSON.stringify(body, null, 2), "utf-8");
     debug(
       "%s error has been sent for the request %s %v.",
@@ -2544,7 +2544,7 @@ var _RouterErrorSender = class _RouterErrorSender extends DebuggableService {
   send404(request, response) {
     const debug = this.getDebuggerFor(this.send404);
     response.statusCode = 404;
-    response.setHeader("content-type", "text/plain; charset=utf-8");
+    response.setHeader("Content-Type", "text/plain; charset=utf-8");
     response.end("404 Not Found", "utf-8");
     debug(
       "404 error has been sent for the request %s %v.",

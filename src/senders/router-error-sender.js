@@ -63,7 +63,7 @@ export class RouterErrorSender extends DebuggableService {
       console.error(error);
     }
     response.statusCode = statusCode;
-    response.setHeader('content-type', 'application/json; charset=utf-8');
+    response.setHeader('Content-Type', 'application/json; charset=utf-8');
     response.end(JSON.stringify(body, null, 2), 'utf-8');
     debug(
       '%s error has been sent for the request %s %v.',
@@ -83,7 +83,7 @@ export class RouterErrorSender extends DebuggableService {
   send404(request, response) {
     const debug = this.getDebuggerFor(this.send404);
     response.statusCode = 404;
-    response.setHeader('content-type', 'text/plain; charset=utf-8');
+    response.setHeader('Content-Type', 'text/plain; charset=utf-8');
     response.end('404 Not Found', 'utf-8');
     debug(
       '404 error has been sent for the request %s %v.',

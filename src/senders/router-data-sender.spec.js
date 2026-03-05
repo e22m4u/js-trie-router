@@ -80,7 +80,7 @@ describe('RouterDataSender', function () {
       writable._final = function (callback) {
         const sentData = Buffer.concat(chunks).toString('utf-8');
         expect(sentData).to.be.eq(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq('application/octet-stream');
         callback();
         done();
@@ -90,7 +90,7 @@ describe('RouterDataSender', function () {
       S.send(res, stream);
     });
 
-    it('should allow override the "content-type" header for a readable stream', function (done) {
+    it('should allow override the "Content-Type" header for a readable stream', function (done) {
       const data = 'text';
       const stream = new Readable();
       stream._read = () => {};
@@ -98,7 +98,7 @@ describe('RouterDataSender', function () {
       stream.push(null);
       const res = createResponseMock();
       const contentType = 'custom/type';
-      res.setHeader('content-type', contentType);
+      res.setHeader('Content-Type', contentType);
       const writable = new Writable();
       const chunks = [];
       writable._write = function (chunk, encoding, done) {
@@ -108,7 +108,7 @@ describe('RouterDataSender', function () {
       writable._final = function (callback) {
         const sentData = Buffer.concat(chunks).toString('utf-8');
         expect(sentData).to.be.eq(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq(contentType);
         callback();
         done();
@@ -131,7 +131,7 @@ describe('RouterDataSender', function () {
         const sentJson = Buffer.concat(chunks).toString('utf-8');
         const sentData = JSON.parse(sentJson);
         expect(sentData).to.be.eql(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq('application/json');
         callback();
         done();
@@ -141,11 +141,11 @@ describe('RouterDataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the "content-type" header for a number value', function (done) {
+    it('should allow override the "Content-Type" header for a number value', function (done) {
       const data = 10;
       const res = createResponseMock();
       const contentType = 'custom/type';
-      res.setHeader('content-type', contentType);
+      res.setHeader('Content-Type', contentType);
       const writable = new Writable();
       const chunks = [];
       writable._write = function (chunk, encoding, done) {
@@ -156,7 +156,7 @@ describe('RouterDataSender', function () {
         const sentJson = Buffer.concat(chunks).toString('utf-8');
         const sentData = JSON.parse(sentJson);
         expect(sentData).to.be.eql(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq(contentType);
         callback();
         done();
@@ -179,7 +179,7 @@ describe('RouterDataSender', function () {
         const sentJson = Buffer.concat(chunks).toString('utf-8');
         const sentData = JSON.parse(sentJson);
         expect(sentData).to.be.eql(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq('application/json');
         callback();
         done();
@@ -189,11 +189,11 @@ describe('RouterDataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the "content-type" header for a boolean value', function (done) {
+    it('should allow override the "Content-Type" header for a boolean value', function (done) {
       const data = true;
       const res = createResponseMock();
       const contentType = 'custom/type';
-      res.setHeader('content-type', contentType);
+      res.setHeader('Content-Type', contentType);
       const writable = new Writable();
       const chunks = [];
       writable._write = function (chunk, encoding, done) {
@@ -204,7 +204,7 @@ describe('RouterDataSender', function () {
         const sentJson = Buffer.concat(chunks).toString('utf-8');
         const sentData = JSON.parse(sentJson);
         expect(sentData).to.be.eql(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq(contentType);
         callback();
         done();
@@ -226,7 +226,7 @@ describe('RouterDataSender', function () {
       writable._final = function (callback) {
         const sentData = Buffer.concat(chunks);
         expect(sentData).to.be.eql(sentData);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq('application/octet-stream');
         callback();
         done();
@@ -236,11 +236,11 @@ describe('RouterDataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the "content-type" header for a Buffer', function (done) {
+    it('should allow override the "Content-Type" header for a Buffer', function (done) {
       const data = Buffer.from('text');
       const res = createResponseMock();
       const contentType = 'custom/type';
-      res.setHeader('content-type', contentType);
+      res.setHeader('Content-Type', contentType);
       const writable = new Writable();
       const chunks = [];
       writable._write = function (chunk, encoding, done) {
@@ -250,7 +250,7 @@ describe('RouterDataSender', function () {
       writable._final = function (callback) {
         const sentData = Buffer.concat(chunks);
         expect(sentData).to.be.eql(sentData);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq(contentType);
         callback();
         done();
@@ -273,7 +273,7 @@ describe('RouterDataSender', function () {
         const sentJson = Buffer.concat(chunks).toString('utf-8');
         const sentData = JSON.parse(sentJson);
         expect(sentData).to.be.eql(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq('application/json');
         callback();
         done();
@@ -283,11 +283,11 @@ describe('RouterDataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the "content-type" header for an object value', function (done) {
+    it('should allow override the "Content-Type" header for an object value', function (done) {
       const data = {foo: 'bar'};
       const res = createResponseMock();
       const contentType = 'custom/type';
-      res.setHeader('content-type', contentType);
+      res.setHeader('Content-Type', contentType);
       const writable = new Writable();
       const chunks = [];
       writable._write = function (chunk, encoding, done) {
@@ -298,7 +298,7 @@ describe('RouterDataSender', function () {
         const sentJson = Buffer.concat(chunks).toString('utf-8');
         const sentData = JSON.parse(sentJson);
         expect(sentData).to.be.eql(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq(contentType);
         callback();
         done();
@@ -320,7 +320,7 @@ describe('RouterDataSender', function () {
       writable._final = function (callback) {
         const sentData = Buffer.concat(chunks).toString('utf-8');
         expect(sentData).to.be.eq(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq('text/plain');
         callback();
         done();
@@ -330,11 +330,11 @@ describe('RouterDataSender', function () {
       S.send(res, data);
     });
 
-    it('should allow override the "content-type" header for a string value', function (done) {
+    it('should allow override the "Content-Type" header for a string value', function (done) {
       const data = 'text';
       const res = createResponseMock();
       const contentType = 'custom/type';
-      res.setHeader('content-type', contentType);
+      res.setHeader('Content-Type', contentType);
       const writable = new Writable();
       const chunks = [];
       writable._write = function (chunk, encoding, done) {
@@ -344,7 +344,7 @@ describe('RouterDataSender', function () {
       writable._final = function (callback) {
         const sentData = Buffer.concat(chunks).toString('utf-8');
         expect(sentData).to.be.eq(data);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq(contentType);
         callback();
         done();

@@ -25,7 +25,7 @@ describe('RouterErrorSender', function () {
         const data = JSON.parse(json);
         expect(data).to.be.eql({error: {message: 'Unauthorized'}});
         expect(res.statusCode).to.be.eq(401);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq('application/json; charset=utf-8');
         callback();
         done();
@@ -57,7 +57,7 @@ describe('RouterErrorSender', function () {
         expect(data.error).not.to.have.property('shouldNotBeExposedProp');
         expect(data).to.be.eql(expectedData);
         expect(res.statusCode).to.be.eq(401);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq('application/json; charset=utf-8');
         callback();
         done();
@@ -82,7 +82,7 @@ describe('RouterErrorSender', function () {
         const body = Buffer.concat(chunks).toString('utf-8');
         expect(body).to.be.eql('404 Not Found');
         expect(res.statusCode).to.be.eq(404);
-        const ct = res.getHeader('content-type');
+        const ct = res.getHeader('Content-Type');
         expect(ct).to.be.eq('text/plain; charset=utf-8');
         callback();
         done();

@@ -33,10 +33,10 @@ export class RouterDataSender extends DebuggableService {
     // если ответ контроллера является стримом,
     // то поток отправляет бинарные данные
     if (isReadableStream(data)) {
-      // если заголовок "content-type" не определен ранее,
+      // если заголовок "Content-Type" не определен ранее,
       // то устанавливается заголовок потоковых данных
-      if (!response.getHeader('content-type')) {
-        response.setHeader('content-type', 'application/octet-stream');
+      if (!response.getHeader('Content-Type')) {
+        response.setHeader('Content-Type', 'application/octet-stream');
       }
       data.pipe(response);
       debug('Sending response with a Stream.');
@@ -49,21 +49,21 @@ export class RouterDataSender extends DebuggableService {
       case 'number':
       case 'boolean':
       case 'object':
-        // для бинарных данных предусмотрен специальный "content-type",
+        // для бинарных данных предусмотрен специальный "Content-Type",
         // который устанавливается автоматически, если не был определен
         // ранее (к примеру, в обработчике маршрута)
         if (Buffer.isBuffer(data)) {
-          if (!response.getHeader('content-type')) {
-            response.setHeader('content-type', 'application/octet-stream');
+          if (!response.getHeader('Content-Type')) {
+            response.setHeader('Content-Type', 'application/octet-stream');
           }
           debugMsg = 'Buffer has been sent as binary data.';
         }
         // объекты, массивы, числа и логические значения
         // отправляются в виде JSON строки, с соответствующим
-        // заголовком "content-type" (если не был определен)
+        // заголовком "Content-Type" (если не был определен)
         else {
-          if (!response.getHeader('content-type')) {
-            response.setHeader('content-type', 'application/json');
+          if (!response.getHeader('Content-Type')) {
+            response.setHeader('Content-Type', 'application/json');
           }
           debugMsg = format(
             '%v has been sent as JSON.',
@@ -73,8 +73,8 @@ export class RouterDataSender extends DebuggableService {
         }
         break;
       default:
-        if (!response.getHeader('content-type')) {
-          response.setHeader('content-type', 'text/plain');
+        if (!response.getHeader('Content-Type')) {
+          response.setHeader('Content-Type', 'text/plain');
         }
         debugMsg = 'Response data has been sent as plain text.';
         data = String(data);
