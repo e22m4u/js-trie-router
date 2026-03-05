@@ -83,7 +83,7 @@ export class TrieRouter extends DebuggableService {
    * Example:
    * ```js
    * const router = new TrieRouter();
-   * const apiBranch = router.createBranch({path: 'api'});
+   * const apiBranch = router.createBranch({path: '/api'});
    *
    * // GET /api/hello
    * apiBranch.defineRoute({

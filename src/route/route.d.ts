@@ -7,6 +7,7 @@ import {RouterHookRegistry} from '../hooks/index.js';
  */
 export declare const HttpMethod: {
   GET: 'GET';
+  HEAD: 'HEAD';
   POST: 'POST';
   PUT: 'PUT';
   PATCH: 'PATCH';

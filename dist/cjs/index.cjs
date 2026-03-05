@@ -1586,6 +1586,7 @@ __name(validateRouteDefinition, "validateRouteDefinition");
 // src/route/route.js
 var HttpMethod = {
   GET: "GET",
+  HEAD: "HEAD",
   POST: "POST",
   PUT: "PUT",
   PATCH: "PATCH",
@@ -2616,7 +2617,7 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
    * Example:
    * ```js
    * const router = new TrieRouter();
-   * const apiBranch = router.createBranch({path: 'api'});
+   * const apiBranch = router.createBranch({path: '/api'});
    *
    * // GET /api/hello
    * apiBranch.defineRoute({

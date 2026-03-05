@@ -24,6 +24,7 @@ import {validateRouteDefinition} from './validate-route-definition.js';
  *
  * @type {{
  *   GET: 'GET',
+ *   HEAD: 'HEAD',
  *   POST: 'POST',
  *   PUT: 'PUT',
  *   PATCH: 'PATCH',
@@ -33,6 +34,7 @@ import {validateRouteDefinition} from './validate-route-definition.js';
  */
 export const HttpMethod = {
   GET: 'GET',
+  HEAD: 'HEAD',
   POST: 'POST',
   PUT: 'PUT',
   PATCH: 'PATCH',
