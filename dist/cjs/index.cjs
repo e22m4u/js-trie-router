@@ -86,7 +86,10 @@ var import_js_debug = require("@e22m4u/js-debug");
 // src/debuggable-service.js
 var import_js_service = require("@e22m4u/js-service");
 var MODULE_DEBUG_NAMESPACE = "jsTrieRouter";
-var _DebuggableService = class _DebuggableService extends import_js_service.DebuggableService {
+var DebuggableService = class extends import_js_service.DebuggableService {
+  static {
+    __name(this, "DebuggableService");
+  }
   /**
    * Constructor.
    *
@@ -99,8 +102,6 @@ var _DebuggableService = class _DebuggableService extends import_js_service.Debu
     });
   }
 };
-__name(_DebuggableService, "DebuggableService");
-var DebuggableService = _DebuggableService;
 
 // src/utils/clone-deep.js
 function cloneDeep(value) {
@@ -953,7 +954,10 @@ __name(getRequestPathname, "getRequestPathname");
 // src/request-context.js
 var import_js_format11 = require("@e22m4u/js-format");
 var import_js_service2 = require("@e22m4u/js-service");
-var _RequestContext = class _RequestContext {
+var RequestContext = class {
+  static {
+    __name(this, "RequestContext");
+  }
   /**
    * Service container.
    *
@@ -1139,8 +1143,6 @@ var _RequestContext = class _RequestContext {
     this._route = route;
   }
 };
-__name(_RequestContext, "RequestContext");
-var RequestContext = _RequestContext;
 
 // src/hooks/router-hook-invoker.js
 var import_js_format13 = require("@e22m4u/js-format");
@@ -1154,7 +1156,10 @@ var RouterHookType = {
   POST_HANDLER: "postHandler"
 };
 var ROUTER_HOOK_TYPES = Object.values(RouterHookType);
-var _RouterHookRegistry = class _RouterHookRegistry {
+var RouterHookRegistry = class {
+  static {
+    __name(this, "RouterHookRegistry");
+  }
   /**
    * Hooks.
    *
@@ -1237,11 +1242,12 @@ var _RouterHookRegistry = class _RouterHookRegistry {
     return this._hooks.get(type) || [];
   }
 };
-__name(_RouterHookRegistry, "RouterHookRegistry");
-var RouterHookRegistry = _RouterHookRegistry;
 
 // src/hooks/router-hook-invoker.js
-var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
+var RouterHookInvoker = class extends DebuggableService {
+  static {
+    __name(this, "RouterHookInvoker");
+  }
   /**
    * Invoke on-request hooks.
    *
@@ -1502,8 +1508,6 @@ var _RouterHookInvoker = class _RouterHookInvoker extends DebuggableService {
     return currentData;
   }
 };
-__name(_RouterHookInvoker, "RouterHookInvoker");
-var RouterHookInvoker = _RouterHookInvoker;
 
 // src/route/validate-route-definition.js
 var import_js_format14 = require("@e22m4u/js-format");
@@ -1594,7 +1598,10 @@ var HttpMethod = {
   OPTIONS: "OPTIONS"
 };
 var DEFAULT_META = Object.freeze({});
-var _Route = class _Route extends import_js_debug.Debuggable {
+var Route = class extends import_js_debug.Debuggable {
+  static {
+    __name(this, "Route");
+  }
   /**
    * Definition.
    *
@@ -1696,14 +1703,15 @@ var _Route = class _Route extends import_js_debug.Debuggable {
     return this.handler(context);
   }
 };
-__name(_Route, "Route");
-var Route = _Route;
 
 // src/route/route-registry.js
 var import_js_path_trie = require("@e22m4u/js-path-trie");
 var import_js_service3 = require("@e22m4u/js-service");
 var import_js_format15 = require("@e22m4u/js-format");
-var _RouteRegistry = class _RouteRegistry extends DebuggableService {
+var RouteRegistry = class extends DebuggableService {
+  static {
+    __name(this, "RouteRegistry");
+  }
   /**
    * Constructor.
    *
@@ -1794,8 +1802,6 @@ var _RouteRegistry = class _RouteRegistry extends DebuggableService {
     );
   }
 };
-__name(_RouteRegistry, "RouteRegistry");
-var RouteRegistry = _RouteRegistry;
 
 // src/branch/router-branch.js
 var import_js_format17 = require("@e22m4u/js-format");
@@ -1906,7 +1912,10 @@ function mergeRouterBranchDefinitions(firstDef, secondDef) {
 __name(mergeRouterBranchDefinitions, "mergeRouterBranchDefinitions");
 
 // src/branch/router-branch.js
-var _RouterBranch = class _RouterBranch extends DebuggableService {
+var RouterBranch = class _RouterBranch extends DebuggableService {
+  static {
+    __name(this, "RouterBranch");
+  }
   /**
    * Router.
    *
@@ -2025,8 +2034,6 @@ var _RouterBranch = class _RouterBranch extends DebuggableService {
     return new _RouterBranch(this._router, branchDef, this);
   }
 };
-__name(_RouterBranch, "RouterBranch");
-var RouterBranch = _RouterBranch;
 
 // src/parsers/request-parser.js
 var import_http3 = require("http");
@@ -2038,7 +2045,10 @@ var import_js_format19 = require("@e22m4u/js-format");
 
 // src/trie-router-options.js
 var import_js_format18 = require("@e22m4u/js-format");
-var _TrieRouterOptions = class _TrieRouterOptions {
+var TrieRouterOptions = class {
+  static {
+    __name(this, "TrieRouterOptions");
+  }
   /**
    * Request body bytes limit.
    *
@@ -2113,11 +2123,12 @@ var _TrieRouterOptions = class _TrieRouterOptions {
     }
   }
 };
-__name(_TrieRouterOptions, "TrieRouterOptions");
-var TrieRouterOptions = _TrieRouterOptions;
 
 // src/parsers/request-body-parser.js
-var _RequestBodyParser = class _RequestBodyParser extends DebuggableService {
+var RequestBodyParser = class extends DebuggableService {
+  static {
+    __name(this, "RequestBodyParser");
+  }
   /**
    * Parsers.
    *
@@ -2260,8 +2271,6 @@ var _RequestBodyParser = class _RequestBodyParser extends DebuggableService {
     });
   }
 };
-__name(_RequestBodyParser, "RequestBodyParser");
-var RequestBodyParser = _RequestBodyParser;
 function parseJsonBody(input) {
   if (typeof input !== "string") {
     return void 0;
@@ -2276,7 +2285,10 @@ __name(parseJsonBody, "parseJsonBody");
 
 // src/parsers/request-query-parser.js
 var import_querystring2 = __toESM(require("querystring"), 1);
-var _RequestQueryParser = class _RequestQueryParser extends DebuggableService {
+var RequestQueryParser = class extends DebuggableService {
+  static {
+    __name(this, "RequestQueryParser");
+  }
   /**
    * Parse
    *
@@ -2302,11 +2314,12 @@ var _RequestQueryParser = class _RequestQueryParser extends DebuggableService {
     return query;
   }
 };
-__name(_RequestQueryParser, "RequestQueryParser");
-var RequestQueryParser = _RequestQueryParser;
 
 // src/parsers/request-cookies-parser.js
-var _RequestCookiesParser = class _RequestCookiesParser extends DebuggableService {
+var RequestCookiesParser = class extends DebuggableService {
+  static {
+    __name(this, "RequestCookiesParser");
+  }
   /**
    * Parse
    *
@@ -2332,11 +2345,12 @@ var _RequestCookiesParser = class _RequestCookiesParser extends DebuggableServic
     return cookies;
   }
 };
-__name(_RequestCookiesParser, "RequestCookiesParser");
-var RequestCookiesParser = _RequestCookiesParser;
 
 // src/parsers/request-parser.js
-var _RequestParser = class _RequestParser extends DebuggableService {
+var RequestParser = class extends DebuggableService {
+  static {
+    __name(this, "RequestParser");
+  }
   /**
    * Parse.
    *
@@ -2374,15 +2388,16 @@ var _RequestParser = class _RequestParser extends DebuggableService {
     return promises.length ? Promise.all(promises).then(() => data) : data;
   }
 };
-__name(_RequestParser, "RequestParser");
-var RequestParser = _RequestParser;
 
 // src/trie-router.js
 var import_http4 = require("http");
 
 // src/senders/router-data-sender.js
 var import_js_format21 = require("@e22m4u/js-format");
-var _RouterDataSender = class _RouterDataSender extends DebuggableService {
+var RouterDataSender = class extends DebuggableService {
+  static {
+    __name(this, "RouterDataSender");
+  }
   /**
    * Send.
    *
@@ -2443,14 +2458,15 @@ var _RouterDataSender = class _RouterDataSender extends DebuggableService {
     debug(debugMsg);
   }
 };
-__name(_RouterDataSender, "RouterDataSender");
-var RouterDataSender = _RouterDataSender;
 
 // src/senders/router-error-sender.js
 var import_util = require("util");
 var import_statuses = __toESM(require("statuses"), 1);
 var EXPOSED_ERROR_PROPERTIES = ["code", "details"];
-var _RouterErrorSender = class _RouterErrorSender extends DebuggableService {
+var RouterErrorSender = class extends DebuggableService {
+  static {
+    __name(this, "RouterErrorSender");
+  }
   /**
    * Handle.
    *
@@ -2528,12 +2544,13 @@ var _RouterErrorSender = class _RouterErrorSender extends DebuggableService {
     );
   }
 };
-__name(_RouterErrorSender, "RouterErrorSender");
-var RouterErrorSender = _RouterErrorSender;
 
 // src/trie-router.js
 var import_js_service4 = require("@e22m4u/js-service");
-var _TrieRouter = class _TrieRouter extends DebuggableService {
+var TrieRouter = class extends DebuggableService {
+  static {
+    __name(this, "TrieRouter");
+  }
   /**
    * Constructor.
    *
@@ -2740,8 +2757,6 @@ var _TrieRouter = class _TrieRouter extends DebuggableService {
     return this.getService(RouterHookRegistry).hasHook(type, hook);
   }
 };
-__name(_TrieRouter, "TrieRouter");
-var TrieRouter = _TrieRouter;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   CHARACTER_ENCODING_LIST,
