@@ -123,7 +123,7 @@ describe('fetchRequestBody', function () {
       );
     });
 
-    it('should not throw an error if the body length does match with the header', async function () {
+    it('should not throw an error if the body length matches the header', async function () {
       const body = 'Lorem Ipsum is simply dummy text.';
       const contentLength = String(Buffer.from(body).byteLength);
       const req = createRequestMock({

@@ -7,7 +7,7 @@ import {createRequestMock} from './create-request-mock.js';
 import {CHARACTER_ENCODING_LIST} from './fetch-request-body.js';
 
 describe('createRequestMock', function () {
-  it('should require the option "options" to be an Object', function () {
+  it('should require the parameter "options" to be an Object', function () {
     const throwable = v => () => createRequestMock(v);
     const error = v =>
       format('Parameter "options" must be an Object, but %s was given.', v);
@@ -496,24 +496,24 @@ describe('createRequestMock', function () {
     expect(data).to.be.eql(body);
   });
 
-  it('should pass a value form the "url" option to the request url', function () {
+  it('should pass a value from the "url" option to the request url', function () {
     const req = createRequestMock({url: '/test'});
     expect(req.url).to.be.eq('/test');
   });
 
-  it('should pass a value form the "path" option to the request url', function () {
+  it('should pass a value from the "path" option to the request url', function () {
     const req = createRequestMock({path: '/test'});
     expect(req.url).to.be.eq('/test');
   });
 
-  it('should pass a string form the "query" option to the request url', async function () {
+  it('should pass a string from the "query" option to the request url', async function () {
     const req1 = createRequestMock({query: 'p1=foo&p2=bar'});
     const req2 = createRequestMock({query: '?p1=foo&p2=bar'});
     expect(req1.url).to.be.eq('/?p1=foo&p2=bar');
     expect(req2.url).to.be.eq('/?p1=foo&p2=bar');
   });
 
-  it('should pass an object form the "query" option to the request url', async function () {
+  it('should pass an object from the "query" option to the request url', async function () {
     const req = createRequestMock({query: {foo: 'bar', baz: 'qux'}});
     expect(req.url).to.be.eq('/?foo=bar&baz=qux');
   });
