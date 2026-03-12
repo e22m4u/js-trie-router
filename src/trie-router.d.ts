@@ -3,9 +3,17 @@ import {RouteDefinition} from './route/index.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {IncomingMessage, ServerResponse} from 'http';
 import {DebuggableService} from './debuggable-service.js';
-import {RouterHook, RouterHookType} from './hooks/index.js';
 import {TrieRouterOptionsInput} from './trie-router-options.js';
 import {RouterBranch, RouterBranchDefinition} from './branch/index.js';
+
+import {
+  RouterHook,
+  OnRequestHook,
+  RouterHookType,
+  PreHandlerHook,
+  PostHandlerHook,
+  OnDefineRouteHook,
+} from './hooks/index.js';
 
 /**
  * Trie router.
@@ -104,6 +112,44 @@ export declare class TrieRouter extends DebuggableService {
     request: IncomingMessage,
     response: ServerResponse,
   ): Promise<void>;
+
+  /**
+   * Add hook (overload for "onDefineRoute" hook).
+   *
+   * @param type
+   * @param hook
+   */
+  addHook(
+    type: typeof RouterHookType.ON_DEFINE_ROUTE,
+    hook: OnDefineRouteHook,
+  ): this;
+
+  /**
+   * Add hook (overload for "onRequest" hook).
+   *
+   * @param type
+   * @param hook
+   */
+  addHook(type: typeof RouterHookType.ON_REQUEST, hook: OnRequestHook): this;
+
+  /**
+   * Add hook (overload for "preHandler" hook).
+   *
+   * @param type
+   * @param hook
+   */
+  addHook(type: typeof RouterHookType.PRE_HANDLER, hook: PreHandlerHook): this;
+
+  /**
+   * Add hook (overload for "postHandler" hook).
+   *
+   * @param type
+   * @param hook
+   */
+  addHook(
+    type: typeof RouterHookType.POST_HANDLER,
+    hook: PostHandlerHook,
+  ): this;
 
   /**
    * Add hook.
