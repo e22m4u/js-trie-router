@@ -1,4 +1,3 @@
-import {inspect} from 'util';
 import getStatusMessage from 'statuses';
 import {getRequestPathname} from '../utils/index.js';
 import {DebuggableService} from '../debuggable-service.js';
@@ -44,24 +43,6 @@ export class RouterErrorSender extends DebuggableService {
         body.error[name] = safeError[name];
       }
     });
-    const requestData = {
-      url: request.url,
-      method: request.method,
-      headers: request.headers,
-    };
-    const inspectOptions = {
-      showHidden: false,
-      depth: null,
-      colors: true,
-      compact: false,
-    };
-    console.warn(inspect(requestData, inspectOptions));
-    console.warn(inspect(body, inspectOptions));
-    if (error.stack) {
-      console.log(error.stack);
-    } else {
-      console.error(error);
-    }
     response.statusCode = statusCode;
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
     response.end(JSON.stringify(body, null, 2), 'utf-8');

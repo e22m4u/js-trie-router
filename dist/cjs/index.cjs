@@ -2460,7 +2460,6 @@ var RouterDataSender = class extends DebuggableService {
 };
 
 // src/senders/router-error-sender.js
-var import_util = require("util");
 var import_statuses = __toESM(require("statuses"), 1);
 var EXPOSED_ERROR_PROPERTIES = ["code", "details"];
 var RouterErrorSender = class extends DebuggableService {
@@ -2497,24 +2496,6 @@ var RouterErrorSender = class extends DebuggableService {
         body.error[name] = safeError[name];
       }
     });
-    const requestData = {
-      url: request.url,
-      method: request.method,
-      headers: request.headers
-    };
-    const inspectOptions = {
-      showHidden: false,
-      depth: null,
-      colors: true,
-      compact: false
-    };
-    console.warn((0, import_util.inspect)(requestData, inspectOptions));
-    console.warn((0, import_util.inspect)(body, inspectOptions));
-    if (error.stack) {
-      console.log(error.stack);
-    } else {
-      console.error(error);
-    }
     response.statusCode = statusCode;
     response.setHeader("Content-Type", "application/json; charset=utf-8");
     response.end(JSON.stringify(body, null, 2), "utf-8");
