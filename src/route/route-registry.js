@@ -78,7 +78,7 @@ export class RouteRegistry extends DebuggableService {
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;
     this._trie.add(triePath, route);
-    debug('Registered a route %s %v.', route.method.toUpperCase(), route.path);
+    debug('Route %s %v registered.', route.method.toUpperCase(), route.path);
     return route;
   }
 

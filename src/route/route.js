@@ -151,7 +151,7 @@ export class Route extends Debuggable {
         this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
       });
     }
-    this.ctorDebug('Created a route %s %v.', this.method, this.path);
+    this.ctorDebug('Route %s %v created.', this.method, this.path);
   }
 
   /**

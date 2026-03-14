@@ -1688,7 +1688,7 @@ var Route = class extends import_js_debug.Debuggable {
         this._hookRegistry.addHook(RouterHookType.POST_HANDLER, hook);
       });
     }
-    this.ctorDebug("Created a route %s %v.", this.method, this.path);
+    this.ctorDebug("Route %s %v created.", this.method, this.path);
   }
   /**
    * Handle request.
@@ -1758,7 +1758,7 @@ var RouteRegistry = class extends DebuggableService {
     const route = new Route(routeDef);
     const triePath = `${route.method}/${route.path}`;
     this._trie.add(triePath, route);
-    debug("Registered a route %s %v.", route.method.toUpperCase(), route.path);
+    debug("Route %s %v registered.", route.method.toUpperCase(), route.path);
     return route;
   }
   /**
