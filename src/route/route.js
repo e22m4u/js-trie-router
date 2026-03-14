@@ -127,7 +127,7 @@ export class Route extends Debuggable {
   constructor(routeDef) {
     super({
       namespace: MODULE_DEBUG_NAMESPACE,
-      noEnvironmentNamespace: true,
+      noGlobalNamespace: true,
       noInstantiationMessage: true,
     });
     validateRouteDefinition(routeDef);

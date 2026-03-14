@@ -21,7 +21,7 @@ export class DebuggableService extends BaseDebuggableService {
   constructor(container = undefined) {
     super(container, {
       namespace: MODULE_DEBUG_NAMESPACE,
-      noEnvironmentNamespace: true,
+      noGlobalNamespace: true,
     });
   }
 }
