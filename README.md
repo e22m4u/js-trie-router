@@ -66,7 +66,7 @@ const {TrieRouter} = require('@e22m4u/js-trie-router');
 
 ## Использование
 
-Базовый пример создания экземпляра роутера, объявления маршрута
+Базовый пример создания экземпляра маршутизатора, объявления маршрута
 и передачи слушателя запросов HTTP серверу.
 
 ```js
@@ -74,7 +74,7 @@ import http from 'http';
 import {TrieRouter, HttpMethod} from '@e22m4u/js-trie-router';
 
 const server = new http.Server(); // создание экземпляра HTTP сервера
-const router = new TrieRouter();  // создание экземпляра роутера
+const router = new TrieRouter();  // создание экземпляра маршутизатора
 
 router.defineRoute({
   method: HttpMethod.GET,   // метод запроса "GET", "POST" и т.д.
