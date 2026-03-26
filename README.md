@@ -84,7 +84,7 @@ router.defineRoute({
   },
 });
 
-// подключение обработчика и запуск сервера
+// установка обработчика запросов и запуск сервера
 server.on('request', (req, res) => router.handleRequest(req, res));
 server.listen(3000, 'localhost');
 
