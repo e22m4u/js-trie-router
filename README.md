@@ -76,6 +76,7 @@ import {TrieRouter, HttpMethod} from '@e22m4u/js-trie-router';
 const server = new http.Server(); // создание экземпляра HTTP сервера
 const router = new TrieRouter();  // создание экземпляра маршутизатора
 
+// определение маршрута
 router.defineRoute({
   method: HttpMethod.GET,   // метод запроса "GET", "POST" и т.д.
   path: '/',                // шаблон пути, пример "/user/:id"
