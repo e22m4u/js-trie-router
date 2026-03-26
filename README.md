@@ -62,7 +62,7 @@ const {TrieRouter} = require('@e22m4u/js-trie-router');
 | модуль                                                                                         | описание                                       |
 |------------------------------------------------------------------------------------------------|------------------------------------------------|
 | [@e22m4u/js-trie-router-cors](https://www.npmjs.com/package/@e22m4u/js-trie-router-cors)       | Модуль поддержки CORS (кросс-доменные запросы) |
-| [@e22m4u/js-trie-router-openapi](https://www.npmjs.com/package/@e22m4u/js-trie-router-openapi) | Модуль для создания OpenAPI документа          |
+| [@e22m4u/js-trie-router-openapi](https://www.npmjs.com/package/@e22m4u/js-trie-router-openapi) | Модуль для создания OpenAPI 3.1 документа      |
 
 ## Использование
 
