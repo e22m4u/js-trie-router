@@ -84,7 +84,7 @@ router.defineRoute({
   },
 });
 
-// установка обработчика запросов и запуск сервера
+// установка обработчика запросов и запуск сервера на 3000 порту
 server.on('request', (req, res) => router.handleRequest(req, res));
 server.listen(3000, 'localhost');
 
