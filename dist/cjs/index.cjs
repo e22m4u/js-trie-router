@@ -1378,7 +1378,7 @@ var RouterHookInvoker = class extends DebuggableService {
       ),
       ...context.route.getHookRegistry().getHooks(RouterHookType.PRE_HANDLER)
     ];
-    let result = void 0;
+    let result;
     for (let i = 0; i < hooks.length; i++) {
       const hook = hooks[i];
       result = hook(context);

@@ -224,7 +224,7 @@ export class RouterHookInvoker extends DebuggableService {
       ),
       ...context.route.getHookRegistry().getHooks(RouterHookType.PRE_HANDLER),
     ];
-    let result = undefined;
+    let result;
     // итерация по хукам выполняется по индексу,
     // чтобы знать, с какого места продолжать
     // в асинхронном режиме
