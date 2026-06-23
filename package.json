@@ -5,10 +5,11 @@
   "author": "Mikhail Evstropov <e22m4u@yandex.ru>",
   "license": "MIT",
   "keywords": [
+    "js-trie-router",
     "router",
+    "server",
     "trie",
     "http",
-    "server",
     "nodejs"
   ],
   "homepage": "https://gitverse.ru/e22m4u/js-trie-router",
