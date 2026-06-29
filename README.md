@@ -62,11 +62,11 @@ const {TrieRouter} = require('@e22m4u/js-trie-router');
 
 Расширение функционала выполняется с помощью NPM модулей.
 
-| модуль                                                                                                        | описание                                       |
-|---------------------------------------------------------------------------------------------------------------|------------------------------------------------|
-| [&#8203;@e22m4u/js-trie-router-cors](https://www.npmjs.com/package/@e22m4u/js-trie-router-cors)               | Модуль поддержки CORS (кросс-доменные запросы) |
-| [&#8203;@e22m4u/js-trie-router-json-schema](https://www.npmjs.com/package/@e22m4u/js-trie-router-json-schema) | Модуль валидации данны и приведения типов      |
-| [&#8203;@e22m4u/js-trie-router-openapi](https://www.npmjs.com/package/@e22m4u/js-trie-router-openapi)         | Модуль для создания OpenAPI документа          |
+| модуль                                                                                                 | описание                                       |
+|--------------------------------------------------------------------------------------------------------|------------------------------------------------|
+| [@e22m4u/js-trie-router-cors](https://www.npmjs.com/package/@e22m4u/js-trie-router-cors)               | Модуль поддержки CORS (кросс-доменные запросы) |
+| [@e22m4u/js-trie-router-json-schema](https://www.npmjs.com/package/@e22m4u/js-trie-router-json-schema) | Модуль валидации данны и приведения типов      |
+| [@e22m4u/js-trie-router-openapi](https://www.npmjs.com/package/@e22m4u/js-trie-router-openapi)         | Модуль для создания OpenAPI документа          |
 
 ## Использование
 
