@@ -12,10 +12,10 @@
     "http",
     "nodejs"
   ],
-  "homepage": "https://gitverse.ru/e22m4u/js-trie-router",
+  "homepage": "https://github.com/e22m4u/js-trie-router",
   "repository": {
     "type": "git",
-    "url": "git+https://gitverse.ru/e22m4u/js-trie-router.git"
+    "url": "git+https://github.com/e22m4u/js-trie-router.git"
   },
   "type": "module",
   "types": "./src/index.d.ts",
