@@ -32,7 +32,6 @@ export default [{
     'jsdoc/require-returns-description': 0,
     'jsdoc/require-property-description': 0,
     'jsdoc/tag-lines': ['error', 'any', {startLines: 1}],
-    'mocha/handle-done-callback': 0,
   },
   files: ['src/**/*.js'],
 }];
